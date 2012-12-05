@@ -22,6 +22,7 @@
 		</id>
 		<property name="userId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
 		<property name="modifiedDate" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="lastClear" type="com.liferay.portal.dao.orm.hibernate.LongType" />
 		<property name="online" type="com.liferay.portal.dao.orm.hibernate.BooleanType" column="online_" />
 		<property name="awake" type="com.liferay.portal.dao.orm.hibernate.BooleanType" />
 		<property name="activePanelIds" type="com.liferay.portal.dao.orm.hibernate.StringType" />

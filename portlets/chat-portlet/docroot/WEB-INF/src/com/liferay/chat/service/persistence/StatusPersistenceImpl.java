@@ -2093,6 +2093,7 @@ public class StatusPersistenceImpl extends BasePersistenceImpl<Status>
 		statusImpl.setStatusId(status.getStatusId());
 		statusImpl.setUserId(status.getUserId());
 		statusImpl.setModifiedDate(status.getModifiedDate());
+		statusImpl.setLastClear(status.getLastClear());
 		statusImpl.setOnline(status.isOnline());
 		statusImpl.setAwake(status.isAwake());
 		statusImpl.setActivePanelIds(status.getActivePanelIds());

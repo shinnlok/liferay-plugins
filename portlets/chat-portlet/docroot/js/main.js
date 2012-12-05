@@ -144,6 +144,8 @@ AUI().use(
 			instance._panelTitle = options.panelTitle;
 			instance._panelIcon = options.panelIcon;
 
+			instance._created = Liferay.Chat.Util.getCurrentTimestamp();
+
 			var panelHTML = instance._setPanelHTML(options.panelHTML);
 
 			instance.set('panelHTML', panelHTML);
@@ -158,6 +160,14 @@ AUI().use(
 		};
 
 		Liferay.Chat.Panel.prototype = {
+			clearHistory: function() {
+				var instance = this; 
+				
+				A.all('.user.selected').all('.panel-output').setContent("");
+
+				instance.fire('clearHistory');
+			},
+
 			close: function() {
 				var instance = this;
 
@@ -256,6 +266,9 @@ AUI().use(
 						else if (target.hasClass('close')) {
 							instance.close();
 						}
+						else if (target.hasClass('clear-history')) {
+							instance.clearHistory();
+						}
 					}
 				);
 
@@ -296,6 +309,7 @@ AUI().use(
 			instance._chatOutput = instance._panel.one('.panel-output');
 			instance._statusMessage = instance._panel.one('.panel-profile');
 
+			instance._created = Liferay.Chat.Util.getCurrentTimestamp();
 			instance._lastMessageTime = 0;
 			instance._lastTypedTime = 0;
 			instance._typingDelay = 5000;
@@ -588,6 +602,7 @@ AUI().use(
 									'</div>' +
 									'<div class="chat-panel">' +
 										'<div class="panel-window">' +
+											'<div class="panel-button clear-history"></div>' +
 											'<div class="panel-button minimize"></div>' +
 											'<div class="panel-button close"></div>' +
 											'<img alt="" class="panel-icon" src="' + userImagePath + '" />' +
@@ -657,6 +672,8 @@ AUI().use(
 				instance._soundContainer = instance._chatContainer.one('.chat-sound');
 				instance._tabsContainer = instance._chatContainer.one('.chat-tabs');
 
+				instance._created = Liferay.Chat.Util.getCurrentTimestamp();
+
 				instance._sendTask = A.debounce(instance.send, 100, instance);
 
 				instance._sound = new SWFObject('/chat-portlet/alert.swf', 'alertsound', '0', '0', '8');
@@ -664,6 +681,8 @@ AUI().use(
 				instance._updatePresenceTask = A.debounce(instance._updatePresence, 30000, instance);
 
 				instance._updatePresenceTask.delay(0);
+
+				instance._clearTime = 0;
 
 				Liferay.Poller.addListener(instance._portletId, instance._onPollerUpdate, instance);
 
@@ -784,6 +803,7 @@ AUI().use(
 				panel.on('close', instance._onPanelClose, instance);
 				panel.on('hide', instance._onPanelHide, instance);
 				panel.on('show', instance._onPanelShow, instance);
+				panel.on('clearHistory', instance._onPanelClear, instance);
 			},
 
 			_createBuddyListPanel: function() {
@@ -903,7 +923,7 @@ AUI().use(
 					for (var i in entryCache) {
 						var entry = entryCache[i];
 
-						if (entry.flag) {
+						if (entry.flag || entry.createDate > instance._clearTime) {
 							chat.update(
 								{
 									cache: true,
@@ -1048,6 +1068,21 @@ AUI().use(
 				}
 			},
 
+			_onPanelClear: function(event) {
+				var instance = this;
+
+				var panel = event.target;
+
+				instance._clearTime = Liferay.Chat.Util.getCurrentTimestamp();
+
+				instance.send(
+					{
+						clearTime: instance._clearTime,
+						currentUserId: themeDisplay.getUserId()
+					}
+				);
+			},
+
 			_onPanelClose: function(event) {
 				var instance = this;
 
@@ -1060,6 +1095,8 @@ AUI().use(
 				if (panel instanceof Liferay.Chat.Conversation) {
 					delete instance._chatSessions[userId];
 				}
+
+				instance._closedChats[userId] = Liferay.Chat.Util.getCurrentTimestamp();
 
 				instance._openPanelId = '';
 				instance._saveSettings();
@@ -1103,6 +1140,8 @@ AUI().use(
 
 			_onPollerUpdate: function(response, chunkId) {
 				var instance = this;
+
+				instance._clearTime = response.clearTime.lastClearTime;
 
 				instance._updateBuddies(response.buddies);
 

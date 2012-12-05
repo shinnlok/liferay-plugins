@@ -116,6 +116,20 @@ public interface StatusModel extends BaseModel<Status> {
 	public void setModifiedDate(long modifiedDate);
 
 	/**
+	 * Returns the last clear of this status.
+	 *
+	 * @return the last clear of this status
+	 */
+	public long getLastClear();
+
+	/**
+	 * Sets the last clear of this status.
+	 *
+	 * @param lastClear the last clear of this status
+	 */
+	public void setLastClear(long lastClear);
+
+	/**
 	 * Returns the online of this status.
 	 *
 	 * @return the online of this status

@@ -61,12 +61,44 @@ public class ChatPollerProcessor extends BasePollerProcessor {
 
 		getBuddies(pollerRequest, pollerResponse);
 		getEntries(pollerRequest, pollerResponse);
+		getClearTime(pollerRequest, pollerResponse);
 	}
 
 	@Override
 	protected void doSend(PollerRequest pollerRequest) throws Exception {
 		addEntry(pollerRequest);
 		updateStatus(pollerRequest);
+		clearHistory(pollerRequest);
+	}
+
+	protected void clearHistory(PollerRequest pollerRequest)
+		throws Exception {
+
+		long clearTime = getLong(pollerRequest, "clearTime");
+
+		long currentUserId = getLong(pollerRequest, "currentUserId");
+
+		if(clearTime != -1 && currentUserId != -1) {
+			Status status = StatusLocalServiceUtil.getUserStatus(currentUserId);
+
+			status.setModifiedDate(clearTime);
+			status.setLastClear(clearTime);
+
+			StatusLocalServiceUtil.updateStatus(status);
+		}
+	}
+
+	protected void getClearTime(
+			PollerRequest pollerRequest, PollerResponse pollerResponse)
+		throws Exception {
+
+		long lastClearTime = StatusLocalServiceUtil.getUserStatus(pollerRequest.getUserId()).getLastClear();
+
+		JSONObject clearTimeJSON = JSONFactoryUtil.createJSONObject();
+
+		clearTimeJSON.put("lastClearTime", lastClearTime);
+
+		pollerResponse.setParameter("clearTime", clearTimeJSON);
 	}
 
 	protected void getBuddies(

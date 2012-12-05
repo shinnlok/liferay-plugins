@@ -35,7 +35,7 @@ import java.io.ObjectOutput;
 public class StatusCacheModel implements CacheModel<Status>, Externalizable {
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(17);
+		StringBundler sb = new StringBundler(19);
 
 		sb.append("{statusId=");
 		sb.append(statusId);
@@ -43,6 +43,8 @@ public class StatusCacheModel implements CacheModel<Status>, Externalizable {
 		sb.append(userId);
 		sb.append(", modifiedDate=");
 		sb.append(modifiedDate);
+		sb.append(", lastClear=");
+		sb.append(lastClear);
 		sb.append(", online=");
 		sb.append(online);
 		sb.append(", awake=");
@@ -64,6 +66,7 @@ public class StatusCacheModel implements CacheModel<Status>, Externalizable {
 		statusImpl.setStatusId(statusId);
 		statusImpl.setUserId(userId);
 		statusImpl.setModifiedDate(modifiedDate);
+		statusImpl.setLastClear(lastClear);
 		statusImpl.setOnline(online);
 		statusImpl.setAwake(awake);
 
@@ -92,6 +95,7 @@ public class StatusCacheModel implements CacheModel<Status>, Externalizable {
 		statusId = objectInput.readLong();
 		userId = objectInput.readLong();
 		modifiedDate = objectInput.readLong();
+		lastClear = objectInput.readLong();
 		online = objectInput.readBoolean();
 		awake = objectInput.readBoolean();
 		activePanelIds = objectInput.readUTF();
@@ -104,6 +108,7 @@ public class StatusCacheModel implements CacheModel<Status>, Externalizable {
 		objectOutput.writeLong(statusId);
 		objectOutput.writeLong(userId);
 		objectOutput.writeLong(modifiedDate);
+		objectOutput.writeLong(lastClear);
 		objectOutput.writeBoolean(online);
 		objectOutput.writeBoolean(awake);
 
@@ -127,6 +132,7 @@ public class StatusCacheModel implements CacheModel<Status>, Externalizable {
 	public long statusId;
 	public long userId;
 	public long modifiedDate;
+	public long lastClear;
 	public boolean online;
 	public boolean awake;
 	public String activePanelIds;

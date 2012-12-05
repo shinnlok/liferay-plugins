@@ -47,6 +47,7 @@ public class StatusWrapper implements Status, ModelWrapper<Status> {
 		attributes.put("statusId", getStatusId());
 		attributes.put("userId", getUserId());
 		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("lastClear", getLastClear());
 		attributes.put("online", getOnline());
 		attributes.put("awake", getAwake());
 		attributes.put("activePanelIds", getActivePanelIds());
@@ -73,6 +74,12 @@ public class StatusWrapper implements Status, ModelWrapper<Status> {
 
 		if (modifiedDate != null) {
 			setModifiedDate(modifiedDate);
+		}
+
+		Long lastClear = (Long)attributes.get("lastClear");
+
+		if (lastClear != null) {
+			setLastClear(lastClear);
 		}
 
 		Boolean online = (Boolean)attributes.get("online");
@@ -196,6 +203,24 @@ public class StatusWrapper implements Status, ModelWrapper<Status> {
 	*/
 	public void setModifiedDate(long modifiedDate) {
 		_status.setModifiedDate(modifiedDate);
+	}
+
+	/**
+	* Returns the last clear of this status.
+	*
+	* @return the last clear of this status
+	*/
+	public long getLastClear() {
+		return _status.getLastClear();
+	}
+
+	/**
+	* Sets the last clear of this status.
+	*
+	* @param lastClear the last clear of this status
+	*/
+	public void setLastClear(long lastClear) {
+		_status.setLastClear(lastClear);
 	}
 
 	/**

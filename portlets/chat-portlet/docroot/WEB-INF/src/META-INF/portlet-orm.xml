@@ -27,6 +27,7 @@
 			<id name="statusId" />
 			<basic name="userId" />
 			<basic name="modifiedDate" />
+			<basic name="lastClear" />
 			<basic name="online">
 				<column name="ONLINE_" />
 			</basic>

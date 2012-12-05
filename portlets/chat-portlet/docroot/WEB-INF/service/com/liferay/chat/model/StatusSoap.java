@@ -32,6 +32,7 @@ public class StatusSoap implements Serializable {
 		soapModel.setStatusId(model.getStatusId());
 		soapModel.setUserId(model.getUserId());
 		soapModel.setModifiedDate(model.getModifiedDate());
+		soapModel.setLastClear(model.getLastClear());
 		soapModel.setOnline(model.getOnline());
 		soapModel.setAwake(model.getAwake());
 		soapModel.setActivePanelIds(model.getActivePanelIds());
@@ -113,6 +114,14 @@ public class StatusSoap implements Serializable {
 		_modifiedDate = modifiedDate;
 	}
 
+	public long getLastClear() {
+		return _lastClear;
+	}
+
+	public void setLastClear(long lastClear) {
+		_lastClear = lastClear;
+	}
+
 	public boolean getOnline() {
 		return _online;
 	}
@@ -168,6 +177,7 @@ public class StatusSoap implements Serializable {
 	private long _statusId;
 	private long _userId;
 	private long _modifiedDate;
+	private long _lastClear;
 	private boolean _online;
 	private boolean _awake;
 	private String _activePanelIds;

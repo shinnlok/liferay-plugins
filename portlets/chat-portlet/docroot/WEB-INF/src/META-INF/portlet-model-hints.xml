@@ -15,6 +15,7 @@
 		<field name="statusId" type="long" />
 		<field name="userId" type="long" />
 		<field name="modifiedDate" type="long" />
+		<field name="lastClear" type="long" />
 		<field name="online" type="boolean" />
 		<field name="awake" type="boolean" />
 		<field name="activePanelIds" type="String">
