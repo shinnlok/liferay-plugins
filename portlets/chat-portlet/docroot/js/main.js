@@ -161,8 +161,8 @@ AUI().use(
 
 		Liferay.Chat.Panel.prototype = {
 			clearHistory: function() {
-				var instance = this; 
-				
+				var instance = this;
+
 				A.all('.user.selected').all('.panel-output').setContent("");
 
 				instance.fire('clearHistory');
