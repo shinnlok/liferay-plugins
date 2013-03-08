@@ -763,7 +763,7 @@ public class ContactsCenterPortlet extends MVCPortlet {
 			LinkedHashMap<String, Object> params =
 				new LinkedHashMap<String, Object>();
 
-			params.put("inherit", true);
+			params.put("inherit", Boolean.TRUE);
 
 			Group group = themeDisplay.getScopeGroup();
 			Layout layout = themeDisplay.getLayout();
@@ -975,10 +975,9 @@ public class ContactsCenterPortlet extends MVCPortlet {
 
 			userJSONObject.put("connected", connected);
 
-			boolean following =
-				SocialRelationLocalServiceUtil.hasRelation(
-					themeDisplay.getUserId(), user.getUserId(),
-					SocialRelationConstants.TYPE_UNI_FOLLOWER);
+			boolean following = SocialRelationLocalServiceUtil.hasRelation(
+				themeDisplay.getUserId(), user.getUserId(),
+				SocialRelationConstants.TYPE_UNI_FOLLOWER);
 
 			userJSONObject.put("following", following);
 		}

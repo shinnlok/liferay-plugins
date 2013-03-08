@@ -14,12 +14,61 @@
 
 package com.liferay.polls.model.impl;
 
+import com.liferay.polls.model.PollsChoice;
+import com.liferay.polls.service.PollsChoiceLocalServiceUtil;
+import com.liferay.polls.service.PollsVoteLocalServiceUtil;
+import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.service.ServiceContext;
+
+import java.util.Date;
+import java.util.List;
+
 /**
- * @author Juan Fernández
+ * @author Brian Wing Shun Chan
  */
 public class PollsQuestionImpl extends PollsQuestionBaseImpl {
 
 	public PollsQuestionImpl() {
+	}
+
+	public List<PollsChoice> getPollsChoices() throws SystemException {
+		return PollsChoiceLocalServiceUtil.getPollsChoices(
+			getPollsQuestionId());
+	}
+
+	public int getPollsVotesCount() throws SystemException {
+		return PollsVoteLocalServiceUtil.getPollsQuestionPollsVotesCount(
+			getPollsQuestionId());
+	}
+
+	public boolean isExpired() {
+		Date expirationDate = getExpirationDate();
+
+		if ((expirationDate != null) && (expirationDate.before(new Date()))) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	public boolean isExpired(
+		ServiceContext serviceContext, Date defaultCreateDate) {
+
+		Date expirationDate = getExpirationDate();
+
+		if (expirationDate == null) {
+			return false;
+		}
+
+		Date createDate = serviceContext.getCreateDate(defaultCreateDate);
+
+		if (createDate.after(expirationDate)) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 }
