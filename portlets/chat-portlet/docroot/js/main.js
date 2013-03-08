@@ -1074,11 +1074,11 @@ AUI().use(
 
 				instance._updateBuddies(response.buddies);
 
-				if (instance._cacheLoaded) {
-					instance._updateConversations(response.entries);
-				}
+				var entries = response.entries;
 
-				if (instance._initialRequest) {
+				var initialRequest = instance._initialRequest;
+
+				if (initialRequest) {
 					instance._loadCache(response.entries);
 
 					if (instance._activePanelId.length) {
@@ -1089,10 +1089,13 @@ AUI().use(
 						}
 					}
 
-					instance._cacheLoaded = true;
-					instance._initialRequest = false;
-
 					instance._chatContainer.one('.chat-tabs > .buddy-list').removeClass('loading');
+				}
+
+				instance._updateConversations(entries);
+
+				if (initialRequest) {
+					instance._initialRequest = false;
 				}
 			},
 
@@ -1192,7 +1195,9 @@ AUI().use(
 
 					var entryProcessed = (entryIds.indexOf('|' + entry.entryId) > -1);
 
-					if (!entryProcessed) {
+					var messageIsUnread = (entry.flag === 0);
+
+					if (!entryProcessed || (instance._initialRequest && messageIsUnread)) {
 						var userId = entry.toUserId;
 						var incoming = false;
 
