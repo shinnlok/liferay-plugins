@@ -49,6 +49,7 @@ public class EntryWrapper implements Entry, ModelWrapper<Entry> {
 		attributes.put("fromUserId", getFromUserId());
 		attributes.put("toUserId", getToUserId());
 		attributes.put("content", getContent());
+		attributes.put("flag", getFlag());
 
 		return attributes;
 	}
@@ -82,6 +83,12 @@ public class EntryWrapper implements Entry, ModelWrapper<Entry> {
 
 		if (content != null) {
 			setContent(content);
+		}
+
+		Integer flag = (Integer)attributes.get("flag");
+
+		if (flag != null) {
+			setFlag(flag);
 		}
 	}
 
@@ -233,6 +240,24 @@ public class EntryWrapper implements Entry, ModelWrapper<Entry> {
 		_entry.setContent(content);
 	}
 
+	/**
+	* Returns the flag of this entry.
+	*
+	* @return the flag of this entry
+	*/
+	public int getFlag() {
+		return _entry.getFlag();
+	}
+
+	/**
+	* Sets the flag of this entry.
+	*
+	* @param flag the flag of this entry
+	*/
+	public void setFlag(int flag) {
+		_entry.setFlag(flag);
+	}
+
 	public boolean isNew() {
 		return _entry.isNew();
 	}
@@ -263,6 +288,16 @@ public class EntryWrapper implements Entry, ModelWrapper<Entry> {
 
 	public com.liferay.portlet.expando.model.ExpandoBridge getExpandoBridge() {
 		return _entry.getExpandoBridge();
+	}
+
+	public void setExpandoBridgeAttributes(
+		com.liferay.portal.model.BaseModel<?> baseModel) {
+		_entry.setExpandoBridgeAttributes(baseModel);
+	}
+
+	public void setExpandoBridgeAttributes(
+		com.liferay.portlet.expando.model.ExpandoBridge expandoBridge) {
+		_entry.setExpandoBridgeAttributes(expandoBridge);
 	}
 
 	public void setExpandoBridgeAttributes(

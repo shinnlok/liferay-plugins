@@ -480,6 +480,97 @@
 </p>
 
 <liferay-ui:header
+	title="Environment Variables"
+/>
+
+<p>
+	java.home=
+
+		<%
+		new SecurityExceptionTest(out, themeDisplay, false) {
+
+			protected void test() throws Exception {
+				System.getenv("java.home");
+			}
+
+		};
+		%>
+
+	java.io.tmpdir=
+
+		<%
+		new SecurityExceptionTest(out, themeDisplay, true) {
+
+			protected void test() throws Exception {
+				System.getenv("java.io.tmpdir");
+			}
+
+		};
+		%>
+
+	java.vendor=
+
+		<%
+		new SecurityExceptionTest(out, themeDisplay, false) {
+
+			protected void test() throws Exception {
+				System.getenv("java.vendor");
+			}
+
+		};
+		%>
+
+	java.vendor.url=
+
+		<%
+		new SecurityExceptionTest(out, themeDisplay, true) {
+
+			protected void test() throws Exception {
+				System.getenv("java.vendor.url");
+			}
+
+		};
+		%>
+
+	java.vm.specification.name=
+
+		<%
+		new SecurityExceptionTest(out, themeDisplay, true) {
+
+			protected void test() throws Exception {
+				System.getenv("java.vm.specification.name");
+			}
+
+		};
+		%>
+
+	java.vm.vendor=
+
+		<%
+		new SecurityExceptionTest(out, themeDisplay, false) {
+
+			protected void test() throws Exception {
+				System.getenv("java.vm.vendor");
+			}
+
+		};
+		%>
+
+	java.vm.version=
+
+		<%
+		new SecurityExceptionTest(out, themeDisplay, false) {
+
+			protected void test() throws Exception {
+				System.getenv("java.vm.version");
+			}
+
+		};
+		%>
+
+</p>
+
+<liferay-ui:header
 	title="Expando Bridge"
 />
 
@@ -934,6 +1025,61 @@
 <p>
 	/portal/test/pacl/failure=<%= _assertFalse(FailureStrutsAction.isInstantiated()) %><br />
 	/portal/test/pacl/success=<%= _assertTrue(SuccessStrutsAction.isInstantiated()) %>
+</p>
+
+<liferay-ui:header
+	title="Java Security"
+/>
+
+<p>
+	<h3>Crypto</h3>
+</p>
+
+<p>
+	AES Encrypt=
+
+		<%
+		new SecurityExceptionTest(out, themeDisplay, false) {
+
+			protected void test() throws Exception {
+				KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+
+				keyGenerator.init(128);
+
+				SecretKey secretKey = keyGenerator.generateKey();
+
+				Cipher cipher = Cipher.getInstance("AES");
+
+				cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+
+				String text = "Hello World";
+
+				cipher.doFinal(text.getBytes());
+			}
+		};
+		%>
+
+	HmacMD5=
+
+		<%
+		new SecurityExceptionTest(out, themeDisplay, false) {
+
+			protected void test() throws Exception {
+				Mac mac = Mac.getInstance("HmacMD5");
+
+				String key = "123456789";
+
+				SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(), "HmacMD5");
+
+				mac.init(secretKeySpec);
+
+				String text = "Hello World";
+
+				mac.doFinal(text.getBytes());
+			}
+		};
+		%>
+
 </p>
 
 <liferay-ui:header

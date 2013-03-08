@@ -25,7 +25,7 @@ import java.util.Map;
  * This class is a wrapper for {@link PollsQuestion}.
  * </p>
  *
- * @author    Juan Fernï¿½ndez
+ * @author    Juan Fern√°ndez
  * @see       PollsQuestion
  * @generated
  */
@@ -641,6 +641,16 @@ public class PollsQuestionWrapper implements PollsQuestion,
 	}
 
 	public void setExpandoBridgeAttributes(
+		com.liferay.portal.model.BaseModel<?> baseModel) {
+		_pollsQuestion.setExpandoBridgeAttributes(baseModel);
+	}
+
+	public void setExpandoBridgeAttributes(
+		com.liferay.portlet.expando.model.ExpandoBridge expandoBridge) {
+		_pollsQuestion.setExpandoBridgeAttributes(expandoBridge);
+	}
+
+	public void setExpandoBridgeAttributes(
 		com.liferay.portal.service.ServiceContext serviceContext) {
 		_pollsQuestion.setExpandoBridgeAttributes(serviceContext);
 	}
@@ -689,6 +699,26 @@ public class PollsQuestionWrapper implements PollsQuestion,
 	public void persist()
 		throws com.liferay.portal.kernel.exception.SystemException {
 		_pollsQuestion.persist();
+	}
+
+	public java.util.List<com.liferay.polls.model.PollsChoice> getPollsChoices()
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _pollsQuestion.getPollsChoices();
+	}
+
+	public int getPollsVotesCount()
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _pollsQuestion.getPollsVotesCount();
+	}
+
+	public boolean isExpired() {
+		return _pollsQuestion.isExpired();
+	}
+
+	public boolean isExpired(
+		com.liferay.portal.service.ServiceContext serviceContext,
+		java.util.Date defaultCreateDate) {
+		return _pollsQuestion.isExpired(serviceContext, defaultCreateDate);
 	}
 
 	/**
