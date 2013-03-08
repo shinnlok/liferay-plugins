@@ -434,6 +434,8 @@ else {
 		function(event) {
 			event.preventDefault();
 
+			var currentPage = A.DataType.Number.parse(currentPageNode.html());
+
 			var currentTargetClass = event.currentTarget.getAttribute('class');
 
 			if ((currentTargetClass == 'delete-site') || (currentTargetClass == "leave-site") || (currentTargetClass == "join-site") || (currentTargetClass == "request-site")) {
@@ -444,6 +446,10 @@ else {
 				var siteNode = event.currentTarget.ancestor('li');
 
 				var siteName = siteNode.one('.name a');
+
+				if (!siteName) {
+					siteName = siteNode.one('.name');
+				}
 
 				var unescapedSiteName = Liferay.Util.unescapeHTML(siteName.getContent());
 
@@ -472,7 +478,11 @@ else {
 								success: function(event, id, obj) {
 									siteName.insert(siteAction, 'replace');
 
-									setTimeout("Liferay.SO.Sites.updateSites();", 2000);
+									var updateSites = function() {
+										Liferay.SO.Sites.updateSites(false, keywordsInput.get('value'), getRequestTemplate(currentPage));
+									}
+
+									setTimeout(updateSites, 2000);
 
 									<c:if test="<%= themeDisplay.isStatePopUp() %>">
 										if (window.parent) {
@@ -491,7 +501,7 @@ else {
 					{
 						after: {
 							success: function(event, id, obj) {
-								Liferay.SO.Sites.updateSites();
+								Liferay.SO.Sites.updateSites(false, keywordsInput.get('value'), getRequestTemplate(currentPage));
 
 								<c:if test="<%= themeDisplay.isStatePopUp() %>">
 									if (window.parent) {
