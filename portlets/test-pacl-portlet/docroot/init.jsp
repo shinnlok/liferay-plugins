@@ -101,6 +101,12 @@ page import="java.util.List" %><%@
 page import="java.util.Locale" %><%@
 page import="java.util.Map" %>
 
+<%@ page import="javax.crypto.Cipher" %><%@
+page import="javax.crypto.KeyGenerator" %><%@
+page import="javax.crypto.Mac" %><%@
+page import="javax.crypto.SecretKey" %><%@
+page import="javax.crypto.spec.SecretKeySpec" %>
+
 <%@ page import="javax.naming.Context" %><%@
 page import="javax.naming.InitialContext" %>
 

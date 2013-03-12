@@ -341,6 +341,13 @@ public class CalendarBookingLocalServiceWrapper
 			startTime, endTime);
 	}
 
+	public java.util.List<com.liferay.calendar.model.CalendarBooking> getCalendarBookings(
+		long calendarId, long startTime, long endTime, int max)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _calendarBookingLocalService.getCalendarBookings(calendarId,
+			startTime, endTime, max);
+	}
+
 	public int getCalendarBookingsCount(long calendarId,
 		long parentCalendarBookingId)
 		throws com.liferay.portal.kernel.exception.SystemException {
@@ -503,14 +510,14 @@ public class CalendarBookingLocalServiceWrapper
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #getWrappedService}
+	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedService}
 	 */
 	public CalendarBookingLocalService getWrappedCalendarBookingLocalService() {
 		return _calendarBookingLocalService;
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #setWrappedService}
+	 * @deprecated As of 6.1.0, replaced by {@link #setWrappedService}
 	 */
 	public void setWrappedCalendarBookingLocalService(
 		CalendarBookingLocalService calendarBookingLocalService) {

@@ -989,7 +989,7 @@ public class CalendarBookingWrapper implements CalendarBooking,
 	}
 
 	/**
-	* @deprecated Renamed to {@link #isApproved()}
+	* @deprecated As of 6.1.0, replaced by {@link #isApproved()}
 	*/
 	public boolean getApproved() {
 		return _calendarBooking.getApproved();
@@ -1109,6 +1109,16 @@ public class CalendarBookingWrapper implements CalendarBooking,
 	}
 
 	public void setExpandoBridgeAttributes(
+		com.liferay.portal.model.BaseModel<?> baseModel) {
+		_calendarBooking.setExpandoBridgeAttributes(baseModel);
+	}
+
+	public void setExpandoBridgeAttributes(
+		com.liferay.portlet.expando.model.ExpandoBridge expandoBridge) {
+		_calendarBooking.setExpandoBridgeAttributes(expandoBridge);
+	}
+
+	public void setExpandoBridgeAttributes(
 		com.liferay.portal.service.ServiceContext serviceContext) {
 		_calendarBooking.setExpandoBridgeAttributes(serviceContext);
 	}
@@ -1208,7 +1218,7 @@ public class CalendarBookingWrapper implements CalendarBooking,
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #getWrappedModel}
+	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedModel}
 	 */
 	public CalendarBooking getWrappedCalendarBooking() {
 		return _calendarBooking;

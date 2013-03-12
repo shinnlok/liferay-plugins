@@ -24,7 +24,7 @@ import java.util.Map;
  * This class is a wrapper for {@link PollsChoice}.
  * </p>
  *
- * @author    Juan Fernï¿½ndez
+ * @author    Juan Fern√°ndez
  * @see       PollsChoice
  * @generated
  */
@@ -337,6 +337,16 @@ public class PollsChoiceWrapper implements PollsChoice,
 	}
 
 	public void setExpandoBridgeAttributes(
+		com.liferay.portal.model.BaseModel<?> baseModel) {
+		_pollsChoice.setExpandoBridgeAttributes(baseModel);
+	}
+
+	public void setExpandoBridgeAttributes(
+		com.liferay.portlet.expando.model.ExpandoBridge expandoBridge) {
+		_pollsChoice.setExpandoBridgeAttributes(expandoBridge);
+	}
+
+	public void setExpandoBridgeAttributes(
 		com.liferay.portal.service.ServiceContext serviceContext) {
 		_pollsChoice.setExpandoBridgeAttributes(serviceContext);
 	}
@@ -387,8 +397,13 @@ public class PollsChoiceWrapper implements PollsChoice,
 		_pollsChoice.persist();
 	}
 
+	public int getPollsVotesCount()
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _pollsChoice.getPollsVotesCount();
+	}
+
 	/**
-	 * @deprecated Renamed to {@link #getWrappedModel}
+	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedModel}
 	 */
 	public PollsChoice getWrappedPollsChoice() {
 		return _pollsChoice;

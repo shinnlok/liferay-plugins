@@ -372,6 +372,16 @@ public class CheckoutWrapper implements Checkout, ModelWrapper<Checkout> {
 	}
 
 	public void setExpandoBridgeAttributes(
+		com.liferay.portal.model.BaseModel<?> baseModel) {
+		_checkout.setExpandoBridgeAttributes(baseModel);
+	}
+
+	public void setExpandoBridgeAttributes(
+		com.liferay.portlet.expando.model.ExpandoBridge expandoBridge) {
+		_checkout.setExpandoBridgeAttributes(expandoBridge);
+	}
+
+	public void setExpandoBridgeAttributes(
 		com.liferay.portal.service.ServiceContext serviceContext) {
 		_checkout.setExpandoBridgeAttributes(serviceContext);
 	}
@@ -417,7 +427,7 @@ public class CheckoutWrapper implements Checkout, ModelWrapper<Checkout> {
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #getWrappedModel}
+	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedModel}
 	 */
 	public Checkout getWrappedCheckout() {
 		return _checkout;

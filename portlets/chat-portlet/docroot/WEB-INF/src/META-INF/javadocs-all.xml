@@ -69,6 +69,7 @@
 				<name>jabberId</name>
 				<type>java.lang.String</type>
 			</param>
+			<return/>
 		</method>
 		<method>
 			<name>getScreenName</name>
@@ -76,6 +77,7 @@
 				<name>jabberId</name>
 				<type>java.lang.String</type>
 			</param>
+			<return/>
 		</method>
 		<method>
 			<name>getStatuses</name>
@@ -91,6 +93,7 @@
 				<name>buddies</name>
 				<type>java.util.List</type>
 			</param>
+			<return/>
 		</method>
 		<method>
 			<name>login</name>
@@ -191,6 +194,7 @@
 				<name>jabberId</name>
 				<type>java.lang.String</type>
 			</param>
+			<return/>
 		</method>
 		<method>
 			<name>getScreenName</name>
@@ -198,6 +202,7 @@
 				<name>jabberId</name>
 				<type>java.lang.String</type>
 			</param>
+			<return/>
 		</method>
 		<method>
 			<name>getStatuses</name>
@@ -213,6 +218,7 @@
 				<name>buddies</name>
 				<type>java.util.List</type>
 			</param>
+			<return/>
 		</method>
 		<method>
 			<name>login</name>
@@ -264,17 +270,10 @@
 		</method>
 		<method>
 			<name>connect</name>
+			<return/>
 			<throws>
-				<name>PortalException</name>
-				<type>com.liferay.portal.kernel.exception.PortalException</type>
-			</throws>
-			<throws>
-				<name>SystemException</name>
-				<type>com.liferay.portal.kernel.exception.SystemException</type>
-			</throws>
-			<throws>
-				<name>org.jivesoftware.smack.XMPPException</name>
-				<type>org.jivesoftware.smack.XMPPException</type>
+				<name>Exception</name>
+				<type>java.lang.Exception</type>
 			</throws>
 		</method>
 		<method>
@@ -287,17 +286,10 @@
 				<name>password</name>
 				<type>java.lang.String</type>
 			</param>
+			<return/>
 			<throws>
-				<name>PortalException</name>
-				<type>com.liferay.portal.kernel.exception.PortalException</type>
-			</throws>
-			<throws>
-				<name>SystemException</name>
-				<type>com.liferay.portal.kernel.exception.SystemException</type>
-			</throws>
-			<throws>
-				<name>org.jivesoftware.smack.XMPPException</name>
-				<type>org.jivesoftware.smack.XMPPException</type>
+				<name>Exception</name>
+				<type>java.lang.Exception</type>
 			</throws>
 		</method>
 		<method>
@@ -306,9 +298,15 @@
 				<name>userId</name>
 				<type>long</type>
 			</param>
+			<return/>
 		</method>
 		<method>
 			<name>getConnectionConfiguration</name>
+			<return/>
+			<throws>
+				<name>UnknownHostException</name>
+				<type>java.net.UnknownHostException</type>
+			</throws>
 		</method>
 		<method>
 			<name>getFullJabberId</name>
@@ -316,6 +314,7 @@
 				<name>screenName</name>
 				<type>java.lang.String</type>
 			</param>
+			<return/>
 		</method>
 		<method>
 			<name>getJabberId</name>
@@ -323,6 +322,7 @@
 				<name>screenName</name>
 				<type>java.lang.String</type>
 			</param>
+			<return/>
 		</method>
 		<method>
 			<name>importUser</name>
@@ -335,16 +335,8 @@
 				<type>java.lang.String</type>
 			</param>
 			<throws>
-				<name>PortalException</name>
-				<type>com.liferay.portal.kernel.exception.PortalException</type>
-			</throws>
-			<throws>
-				<name>SystemException</name>
-				<type>com.liferay.portal.kernel.exception.SystemException</type>
-			</throws>
-			<throws>
-				<name>org.jivesoftware.smack.XMPPException</name>
-				<type>org.jivesoftware.smack.XMPPException</type>
+				<name>Exception</name>
+				<type>java.lang.Exception</type>
 			</throws>
 		</method>
 		<method>
@@ -425,6 +417,7 @@
 				<name>jabberId</name>
 				<type>java.lang.String</type>
 			</param>
+			<return/>
 		</method>
 		<method>
 			<name>getScreenName</name>
@@ -432,6 +425,7 @@
 				<name>jabberId</name>
 				<type>java.lang.String</type>
 			</param>
+			<return/>
 		</method>
 		<method>
 			<name>getStatuses</name>
@@ -447,6 +441,7 @@
 				<name>buddies</name>
 				<type>java.util.List</type>
 			</param>
+			<return/>
 		</method>
 		<method>
 			<name>login</name>
@@ -505,6 +500,7 @@
 		</method>
 		<method>
 			<name>getJabber</name>
+			<return/>
 		</method>
 		<field>
 			<name>_jabber</name>
@@ -646,6 +642,7 @@
 				<name>arguments</name>
 				<type>java.lang.Object[]</type>
 			</param>
+			<return/>
 			<throws>
 				<name>Throwable</name>
 				<type>java.lang.Throwable</type>
@@ -742,10 +739,10 @@
 			<name>_methodParameterTypes14</name>
 		</field>
 		<field>
-			<name>_methodName15</name>
+			<name>_methodName39</name>
 		</field>
 		<field>
-			<name>_methodParameterTypes15</name>
+			<name>_methodParameterTypes39</name>
 		</field>
 		<field>
 			<name>_methodName40</name>
@@ -754,10 +751,10 @@
 			<name>_methodParameterTypes40</name>
 		</field>
 		<field>
-			<name>_methodName41</name>
+			<name>_methodName45</name>
 		</field>
 		<field>
-			<name>_methodParameterTypes41</name>
+			<name>_methodParameterTypes45</name>
 		</field>
 		<field>
 			<name>_methodName46</name>
@@ -782,12 +779,6 @@
 		</field>
 		<field>
 			<name>_methodParameterTypes49</name>
-		</field>
-		<field>
-			<name>_methodName50</name>
-		</field>
-		<field>
-			<name>_methodParameterTypes50</name>
 		</field>
 	</javadoc>
 	<javadoc>
@@ -811,6 +802,7 @@
 				<name>arguments</name>
 				<type>java.lang.Object[]</type>
 			</param>
+			<return/>
 			<throws>
 				<name>Throwable</name>
 				<type>java.lang.Throwable</type>
@@ -907,10 +899,10 @@
 			<name>_methodParameterTypes14</name>
 		</field>
 		<field>
-			<name>_methodName15</name>
+			<name>_methodName39</name>
 		</field>
 		<field>
-			<name>_methodParameterTypes15</name>
+			<name>_methodParameterTypes39</name>
 		</field>
 		<field>
 			<name>_methodName40</name>
@@ -919,10 +911,10 @@
 			<name>_methodParameterTypes40</name>
 		</field>
 		<field>
-			<name>_methodName41</name>
+			<name>_methodName45</name>
 		</field>
 		<field>
-			<name>_methodParameterTypes41</name>
+			<name>_methodParameterTypes45</name>
 		</field>
 		<field>
 			<name>_methodName46</name>
@@ -953,12 +945,6 @@
 		</field>
 		<field>
 			<name>_methodParameterTypes50</name>
-		</field>
-		<field>
-			<name>_methodName51</name>
-		</field>
-		<field>
-			<name>_methodParameterTypes51</name>
 		</field>
 	</javadoc>
 	<javadoc>
@@ -983,6 +969,7 @@
 				<name>content</name>
 				<type>java.lang.String</type>
 			</param>
+			<return/>
 			<throws>
 				<name>SystemException</name>
 				<type>com.liferay.portal.kernel.exception.SystemException</type>
@@ -1002,6 +989,7 @@
 				<name>content</name>
 				<type>java.lang.String</type>
 			</param>
+			<return/>
 			<throws>
 				<name>SystemException</name>
 				<type>com.liferay.portal.kernel.exception.SystemException</type>
@@ -1036,6 +1024,7 @@
 				<name>end</name>
 				<type>int</type>
 			</param>
+			<return/>
 			<throws>
 				<name>SystemException</name>
 				<type>com.liferay.portal.kernel.exception.SystemException</type>
@@ -1055,6 +1044,7 @@
 				<name>end</name>
 				<type>int</type>
 			</param>
+			<return/>
 			<throws>
 				<name>SystemException</name>
 				<type>com.liferay.portal.kernel.exception.SystemException</type>
@@ -1087,6 +1077,7 @@
 				<name>end</name>
 				<type>int</type>
 			</param>
+			<return/>
 			<throws>
 				<name>SystemException</name>
 				<type>com.liferay.portal.kernel.exception.SystemException</type>
@@ -1103,6 +1094,10 @@
 				<type>long</type>
 			</param>
 			<param>
+				<name>groupNames</name>
+				<type>java.lang.String[]</type>
+			</param>
+			<param>
 				<name>start</name>
 				<type>int</type>
 			</param>
@@ -1110,6 +1105,7 @@
 				<name>end</name>
 				<type>int</type>
 			</param>
+			<return/>
 			<throws>
 				<name>SystemException</name>
 				<type>com.liferay.portal.kernel.exception.SystemException</type>
@@ -1137,6 +1133,7 @@
 				<name>end</name>
 				<type>int</type>
 			</param>
+			<return/>
 			<throws>
 				<name>SystemException</name>
 				<type>com.liferay.portal.kernel.exception.SystemException</type>
@@ -1148,6 +1145,7 @@
 				<name>userId</name>
 				<type>long</type>
 			</param>
+			<return/>
 			<throws>
 				<name>SystemException</name>
 				<type>com.liferay.portal.kernel.exception.SystemException</type>
@@ -1163,6 +1161,7 @@
 				<name>modifiedDate</name>
 				<type>long</type>
 			</param>
+			<return/>
 			<throws>
 				<name>SystemException</name>
 				<type>com.liferay.portal.kernel.exception.SystemException</type>
@@ -1198,6 +1197,7 @@
 				<name>playSound</name>
 				<type>int</type>
 			</param>
+			<return/>
 			<throws>
 				<name>SystemException</name>
 				<type>com.liferay.portal.kernel.exception.SystemException</type>
@@ -1229,6 +1229,7 @@
 				<name>end</name>
 				<type>int</type>
 			</param>
+			<return/>
 			<throws>
 				<name>SystemException</name>
 				<type>com.liferay.portal.kernel.exception.SystemException</type>
@@ -1252,6 +1253,7 @@
 				<name>end</name>
 				<type>int</type>
 			</param>
+			<return/>
 			<throws>
 				<name>SystemException</name>
 				<type>com.liferay.portal.kernel.exception.SystemException</type>
@@ -1271,6 +1273,7 @@
 				<name>end</name>
 				<type>int</type>
 			</param>
+			<return/>
 			<throws>
 				<name>SystemException</name>
 				<type>com.liferay.portal.kernel.exception.SystemException</type>
@@ -1312,6 +1315,7 @@
 				<name>end</name>
 				<type>int</type>
 			</param>
+			<return/>
 			<throws>
 				<name>SystemException</name>
 				<type>com.liferay.portal.kernel.exception.SystemException</type>
@@ -1339,6 +1343,7 @@
 				<name>end</name>
 				<type>int</type>
 			</param>
+			<return/>
 			<throws>
 				<name>SystemException</name>
 				<type>com.liferay.portal.kernel.exception.SystemException</type>
@@ -1355,6 +1360,10 @@
 				<type>long</type>
 			</param>
 			<param>
+				<name>groupNames</name>
+				<type>java.lang.String[]</type>
+			</param>
+			<param>
 				<name>start</name>
 				<type>int</type>
 			</param>
@@ -1362,10 +1371,19 @@
 				<name>end</name>
 				<type>int</type>
 			</param>
+			<return/>
 			<throws>
 				<name>SystemException</name>
 				<type>com.liferay.portal.kernel.exception.SystemException</type>
 			</throws>
+		</method>
+		<method>
+			<name>getFindByUsersGroups_SQL</name>
+			<param>
+				<name>groupNames</name>
+				<type>java.lang.String[]</type>
+			</param>
+			<return/>
 		</method>
 		<field>
 			<name>FIND_BY_MODIFIED_DATE</name>
@@ -1378,11 +1396,80 @@
 		</field>
 	</javadoc>
 	<javadoc>
+		<name>BuddyFinder</name>
+		<type>com.liferay.chat.util.BuddyFinder</type>
+		<author><![CDATA[Ankit Srivastava]]></author>
+		<method>
+			<name>getBuddies</name>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>userId</name>
+				<type>long</type>
+			</param>
+			<return/>
+			<throws>
+				<name>SystemException</name>
+				<type>com.liferay.portal.kernel.exception.SystemException</type>
+			</throws>
+		</method>
+	</javadoc>
+	<javadoc>
+		<name>BuddyFinderUtil</name>
+		<type>com.liferay.chat.util.BuddyFinderUtil</type>
+		<author><![CDATA[Brian Wing Shun Chan]]></author>
+		<author><![CDATA[Ankit Srivastava]]></author>
+		<method>
+			<name>getBuddies</name>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>userId</name>
+				<type>long</type>
+			</param>
+			<return/>
+			<throws>
+				<name>SystemException</name>
+				<type>com.liferay.portal.kernel.exception.SystemException</type>
+			</throws>
+		</method>
+		<method>
+			<name>getBuddyFinder</name>
+			<return/>
+		</method>
+		<method>
+			<name>setBuddyFinder</name>
+			<param>
+				<name>buddyFinder</name>
+				<type>BuddyFinder</type>
+			</param>
+		</method>
+		<field>
+			<name>_buddyFinder</name>
+		</field>
+	</javadoc>
+	<javadoc>
+		<name>ChatConstants</name>
+		<type>com.liferay.chat.util.ChatConstants</type>
+		<author><![CDATA[Brian Wing Shun Chan]]></author>
+		<field>
+			<name>MAX_POLL_LATENCY</name>
+		</field>
+		<field>
+			<name>ONLINE_DELTA</name>
+		</field>
+	</javadoc>
+	<javadoc>
 		<name>ChatExtensionsUtil</name>
 		<type>com.liferay.chat.util.ChatExtensionsUtil</type>
 		<author><![CDATA[Ryan Park]]></author>
 		<method>
 			<name>getExtensions</name>
+			<return/>
 		</method>
 		<method>
 			<name>register</name>
@@ -1407,6 +1494,7 @@
 		</method>
 		<method>
 			<name>_getExtensions</name>
+			<return/>
 		</method>
 		<method>
 			<name>_register</name>
@@ -1460,11 +1548,35 @@
 		</field>
 	</javadoc>
 	<javadoc>
+		<name>DefaultBuddyFinderImpl</name>
+		<type>com.liferay.chat.util.DefaultBuddyFinderImpl</type>
+		<author><![CDATA[Ankit Srivastava]]></author>
+		<method>
+			<name>getBuddies</name>
+			<param>
+				<name>companyId</name>
+				<type>long</type>
+			</param>
+			<param>
+				<name>userId</name>
+				<type>long</type>
+			</param>
+			<return/>
+			<throws>
+				<name>SystemException</name>
+				<type>com.liferay.portal.kernel.exception.SystemException</type>
+			</throws>
+		</method>
+	</javadoc>
+	<javadoc>
 		<name>PortletPropsKeys</name>
 		<type>com.liferay.chat.util.PortletPropsKeys</type>
 		<author><![CDATA[Brian Wing Shun Chan]]></author>
 		<field>
 			<name>BUDDY_LIST_MAX_BUDDIES</name>
+		</field>
+		<field>
+			<name>BUDDY_LIST_SITE_EXCLUDES</name>
 		</field>
 		<field>
 			<name>BUDDY_LIST_STRATEGY</name>
@@ -1500,6 +1612,9 @@
 		<author><![CDATA[Brian Wing Shun Chan]]></author>
 		<field>
 			<name>BUDDY_LIST_MAX_BUDDIES</name>
+		</field>
+		<field>
+			<name>BUDDY_LIST_SITE_EXCLUDES</name>
 		</field>
 		<field>
 			<name>BUDDY_LIST_STRATEGY</name>

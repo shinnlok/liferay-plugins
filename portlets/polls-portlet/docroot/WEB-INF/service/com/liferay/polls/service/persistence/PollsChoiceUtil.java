@@ -32,7 +32,7 @@ import java.util.List;
  * Caching information and settings can be found in <code>portal.properties</code>
  * </p>
  *
- * @author Juan Fernï¿½ndez
+ * @author Juan Fern√°ndez
  * @see PollsChoicePersistence
  * @see PollsChoicePersistenceImpl
  * @generated
@@ -676,7 +676,7 @@ public class PollsChoiceUtil {
 	}
 
 	/**
-	 * @deprecated
+	 * @deprecated As of 6.2.0
 	 */
 	public void setPersistence(PollsChoicePersistence persistence) {
 	}

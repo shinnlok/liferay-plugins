@@ -548,6 +548,16 @@ public class KaleoNotificationWrapper implements KaleoNotification,
 	}
 
 	public void setExpandoBridgeAttributes(
+		com.liferay.portal.model.BaseModel<?> baseModel) {
+		_kaleoNotification.setExpandoBridgeAttributes(baseModel);
+	}
+
+	public void setExpandoBridgeAttributes(
+		com.liferay.portlet.expando.model.ExpandoBridge expandoBridge) {
+		_kaleoNotification.setExpandoBridgeAttributes(expandoBridge);
+	}
+
+	public void setExpandoBridgeAttributes(
 		com.liferay.portal.service.ServiceContext serviceContext) {
 		_kaleoNotification.setExpandoBridgeAttributes(serviceContext);
 	}
@@ -594,7 +604,7 @@ public class KaleoNotificationWrapper implements KaleoNotification,
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #getWrappedModel}
+	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedModel}
 	 */
 	public KaleoNotification getWrappedKaleoNotification() {
 		return _kaleoNotification;

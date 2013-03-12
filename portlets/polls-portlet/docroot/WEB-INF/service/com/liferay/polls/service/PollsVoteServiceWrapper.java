@@ -21,7 +21,7 @@ import com.liferay.portal.service.ServiceWrapper;
  * This class is a wrapper for {@link PollsVoteService}.
  * </p>
  *
- * @author    Juan Fernï¿½ndez
+ * @author    Juan Fern√°ndez
  * @see       PollsVoteService
  * @generated
  */
@@ -55,15 +55,24 @@ public class PollsVoteServiceWrapper implements PollsVoteService,
 		return _pollsVoteService.invokeMethod(name, parameterTypes, arguments);
 	}
 
+	public com.liferay.polls.model.PollsVote addPollsVote(
+		long pollsQuestionId, long pollsChoiceId,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return _pollsVoteService.addPollsVote(pollsQuestionId, pollsChoiceId,
+			serviceContext);
+	}
+
 	/**
-	 * @deprecated Renamed to {@link #getWrappedService}
+	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedService}
 	 */
 	public PollsVoteService getWrappedPollsVoteService() {
 		return _pollsVoteService;
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #setWrappedService}
+	 * @deprecated As of 6.1.0, replaced by {@link #setWrappedService}
 	 */
 	public void setWrappedPollsVoteService(PollsVoteService pollsVoteService) {
 		_pollsVoteService = pollsVoteService;

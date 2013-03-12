@@ -435,6 +435,16 @@ public class WSRPConsumerWrapper implements WSRPConsumer,
 	}
 
 	public void setExpandoBridgeAttributes(
+		com.liferay.portal.model.BaseModel<?> baseModel) {
+		_wsrpConsumer.setExpandoBridgeAttributes(baseModel);
+	}
+
+	public void setExpandoBridgeAttributes(
+		com.liferay.portlet.expando.model.ExpandoBridge expandoBridge) {
+		_wsrpConsumer.setExpandoBridgeAttributes(expandoBridge);
+	}
+
+	public void setExpandoBridgeAttributes(
 		com.liferay.portal.service.ServiceContext serviceContext) {
 		_wsrpConsumer.setExpandoBridgeAttributes(serviceContext);
 	}
@@ -498,7 +508,7 @@ public class WSRPConsumerWrapper implements WSRPConsumer,
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #getWrappedModel}
+	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedModel}
 	 */
 	public WSRPConsumer getWrappedWSRPConsumer() {
 		return _wsrpConsumer;
