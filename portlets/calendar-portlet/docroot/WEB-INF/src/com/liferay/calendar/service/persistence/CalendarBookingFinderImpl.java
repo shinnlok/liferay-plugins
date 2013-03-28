@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -589,13 +589,13 @@ public class CalendarBookingFinderImpl
 
 		StringBundler sb = new StringBundler(7);
 
-		sb.append("(((startTime >= ? OR ? = -1) AND ");
-		sb.append("(endTime <= ? OR ? = -1) AND ");
+		sb.append("(((startTime >= ? OR CAST_LONG(?) = -1) AND ");
+		sb.append("(endTime <= ? OR CAST_LONG(?) = -1) AND ");
 		sb.append("(recurrence IS NULL OR recurrence = '')) ");
 
 		if (recurring) {
 			sb.append(" OR (");
-			sb.append("(endTime <= ? OR ? = -1) AND ");
+			sb.append("(endTime <= ? OR CAST_LONG(?) = -1) AND ");
 			sb.append("(recurrence IS NOT NULL AND recurrence != ''))");
 		}
 

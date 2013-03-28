@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -36,16 +36,12 @@ import com.liferay.portlet.asset.model.BaseAssetRendererFactory;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletURL;
 
-import javax.servlet.http.HttpServletRequest;
-
 /**
  * @author Fabio Pezzutto
  * @author Eduardo Lundgren
  */
 public class CalendarBookingAssetRendererFactory
 	extends BaseAssetRendererFactory {
-
-	public static final String CLASS_NAME = CalendarBooking.class.getName();
 
 	public static final String TYPE = "calendar";
 
@@ -59,7 +55,7 @@ public class CalendarBookingAssetRendererFactory
 	}
 
 	public String getClassName() {
-		return CLASS_NAME;
+		return CalendarBooking.class.getName();
 	}
 
 	public String getType() {
@@ -72,11 +68,9 @@ public class CalendarBookingAssetRendererFactory
 			LiferayPortletResponse liferayPortletResponse)
 		throws PortalException, SystemException {
 
-		HttpServletRequest request =
-			liferayPortletRequest.getHttpServletRequest();
-
-		ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
-			WebKeys.THEME_DISPLAY);
+		ThemeDisplay themeDisplay =
+			(ThemeDisplay)liferayPortletRequest.getAttribute(
+				WebKeys.THEME_DISPLAY);
 
 		CalendarResource calendarResource =
 			CalendarResourceUtil.getGroupCalendarResource(
@@ -92,8 +86,8 @@ public class CalendarBookingAssetRendererFactory
 		}
 
 		PortletURL portletURL = PortletURLFactoryUtil.create(
-			request, PortletKeys.CALENDAR, getControlPanelPlid(themeDisplay),
-			PortletRequest.RENDER_PHASE);
+			liferayPortletRequest, PortletKeys.CALENDAR,
+			getControlPanelPlid(themeDisplay), PortletRequest.RENDER_PHASE);
 
 		portletURL.setParameter("mvcPath", "/edit_calendar_booking.jsp");
 		portletURL.setParameter(

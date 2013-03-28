@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -15,6 +15,7 @@
 package com.liferay.calendar.service.impl;
 
 import com.liferay.calendar.CalendarResourceCodeException;
+import com.liferay.calendar.CalendarResourceNameException;
 import com.liferay.calendar.DuplicateCalendarResourceException;
 import com.liferay.calendar.model.Calendar;
 import com.liferay.calendar.model.CalendarBooking;
@@ -25,6 +26,7 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.ContentTypes;
+import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.Group;
@@ -86,7 +88,7 @@ public class CalendarResourceLocalServiceImpl
 
 		Date now = new Date();
 
-		validate(groupId, classNameId, classPK, code);
+		validate(groupId, classNameId, classPK, code, nameMap);
 
 		CalendarResource calendarResource = calendarResourcePersistence.create(
 			calendarResourceId);
@@ -285,6 +287,8 @@ public class CalendarResourceLocalServiceImpl
 
 		// Calendar resource
 
+		validate(nameMap);
+
 		CalendarResource calendarResource =
 			calendarResourcePersistence.findByPrimaryKey(calendarResourceId);
 
@@ -294,11 +298,6 @@ public class CalendarResourceLocalServiceImpl
 		calendarResource.setActive(active);
 
 		calendarResourcePersistence.update(calendarResource);
-
-		// Resources
-
-		resourceLocalService.updateModelResources(
-			calendarResource, serviceContext);
 
 		// Asset
 
@@ -355,10 +354,19 @@ public class CalendarResourceLocalServiceImpl
 	}
 
 	protected void validate(
-			long groupId, long classNameId, long classPK, String code)
+			long groupId, long classNameId, long classPK, String code,
+			Map<Locale, String> nameMap)
 		throws PortalException, SystemException {
 
-		validate(groupId, code);
+		validate(nameMap);
+
+		if (Validator.isNull(code) || (code.indexOf(CharPool.SPACE) != -1)) {
+			throw new CalendarResourceCodeException();
+		}
+
+		if (calendarResourcePersistence.countByG_C(groupId, code) > 0) {
+			throw new DuplicateCalendarResourceException();
+		}
 
 		CalendarResource calendarResource =
 			calendarResourcePersistence.fetchByC_C(classNameId, classPK);
@@ -368,15 +376,13 @@ public class CalendarResourceLocalServiceImpl
 		}
 	}
 
-	protected void validate(long groupId, String code)
-		throws PortalException, SystemException {
+	protected void validate(Map<Locale, String> nameMap)
+		throws PortalException {
 
-		if (Validator.isNull(code) || (code.indexOf(CharPool.SPACE) != -1)) {
-			throw new CalendarResourceCodeException();
-		}
+		Locale locale = LocaleUtil.getDefault();
 
-		if (calendarResourcePersistence.countByG_C(groupId, code) > 0) {
-			throw new DuplicateCalendarResourceException();
+		if (nameMap.isEmpty() || Validator.isNull(nameMap.get(locale))) {
+			throw new CalendarResourceNameException();
 		}
 	}
 

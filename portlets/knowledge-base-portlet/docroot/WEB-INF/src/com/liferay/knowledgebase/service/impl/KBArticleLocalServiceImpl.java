@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -53,6 +53,7 @@ import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.MimeTypesUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StreamUtil;
 import com.liferay.portal.kernel.util.StringBundler;
@@ -795,65 +796,58 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 		// KB article
 
 		User user = userPersistence.findByPrimaryKey(userId);
-		int version = KBArticleConstants.DEFAULT_VERSION;
-		int status = WorkflowConstants.STATUS_DRAFT;
 
 		validate(title, content);
 
 		KBArticle oldKBArticle = getLatestKBArticle(
 			resourcePrimKey, WorkflowConstants.STATUS_ANY);
 
-		long oldResourcePrimKey = oldKBArticle.getResourcePrimKey();
-		long oldGroupId = oldKBArticle.getGroupId();
-		Date oldCreateDate = oldKBArticle.getCreateDate();
-		long oldRootResourcePrimKey = oldKBArticle.getRootResourcePrimKey();
-		long oldParentResourcePrimKey = oldKBArticle.getParentResourcePrimKey();
 		int oldVersion = oldKBArticle.getVersion();
-		double oldPriority = oldKBArticle.getPriority();
-		int oldViewCount = oldKBArticle.getViewCount();
-		int oldStatus = oldKBArticle.getStatus();
 
 		KBArticle kbArticle = null;
 
-		if (oldStatus == WorkflowConstants.STATUS_APPROVED) {
+		if (oldKBArticle.isApproved()) {
 			long kbArticleId = counterLocalService.increment();
 
 			kbArticle = kbArticlePersistence.create(kbArticleId);
-			version = oldVersion + 1;
+
+			kbArticle.setResourcePrimKey(oldKBArticle.getResourcePrimKey());
+			kbArticle.setGroupId(oldKBArticle.getGroupId());
+			kbArticle.setCompanyId(user.getCompanyId());
+			kbArticle.setUserId(user.getUserId());
+			kbArticle.setUserName(user.getFullName());
+			kbArticle.setCreateDate(oldKBArticle.getCreateDate());
+			kbArticle.setRootResourcePrimKey(
+				oldKBArticle.getRootResourcePrimKey());
+			kbArticle.setParentResourcePrimKey(
+				oldKBArticle.getParentResourcePrimKey());
+			kbArticle.setVersion(oldVersion + 1);
+			kbArticle.setPriority(oldKBArticle.getPriority());
+			kbArticle.setViewCount(oldKBArticle.getViewCount());
 		}
 		else {
 			kbArticle = oldKBArticle;
-			version = oldVersion;
 		}
 
-		if (oldStatus == WorkflowConstants.STATUS_PENDING) {
-			status = WorkflowConstants.STATUS_PENDING;
+		if (oldKBArticle.isPending()) {
+			kbArticle.setStatus(WorkflowConstants.STATUS_PENDING);
+		}
+		else {
+			kbArticle.setStatus(WorkflowConstants.STATUS_DRAFT);
 		}
 
-		kbArticle.setResourcePrimKey(oldResourcePrimKey);
-		kbArticle.setGroupId(oldGroupId);
-		kbArticle.setCompanyId(user.getCompanyId());
-		kbArticle.setUserId(user.getUserId());
-		kbArticle.setUserName(user.getFullName());
-		kbArticle.setCreateDate(oldCreateDate);
 		kbArticle.setModifiedDate(serviceContext.getModifiedDate(null));
-		kbArticle.setRootResourcePrimKey(oldRootResourcePrimKey);
-		kbArticle.setParentResourcePrimKey(oldParentResourcePrimKey);
-		kbArticle.setVersion(version);
 		kbArticle.setTitle(title);
 		kbArticle.setContent(content);
 		kbArticle.setDescription(description);
-		kbArticle.setPriority(oldPriority);
 		kbArticle.setSections(
 			StringUtil.merge(AdminUtil.escapeSections(sections)));
-		kbArticle.setViewCount(oldViewCount);
 		kbArticle.setLatest(true);
 		kbArticle.setMain(false);
-		kbArticle.setStatus(status);
 
 		kbArticlePersistence.update(kbArticle);
 
-		if (oldVersion < version) {
+		if (oldKBArticle.isApproved()) {
 			oldKBArticle.setLatest(false);
 
 			kbArticlePersistence.update(oldKBArticle);
@@ -1113,11 +1107,15 @@ public class KBArticleLocalServiceImpl extends KBArticleLocalServiceBaseImpl {
 
 				String shortFileName = FileUtil.getShortFileName(fileName);
 
+				String mimeType = MimeTypesUtil.getContentType(
+					inputStream, fileName);
+
 				PortletFileRepositoryUtil.addPortletFileEntry(
 					serviceContext.getScopeGroupId(), userId,
+					KBArticle.class.getName(), kbArticle.getClassPK(),
 					PortletKeys.KNOWLEDGE_BASE_ARTICLE,
 					kbArticle.getAttachmentsFolderId(), inputStream,
-					shortFileName);
+					shortFileName, mimeType);
 			}
 			finally {
 				StreamUtil.cleanUp(inputStream);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -50,7 +50,7 @@ package com.liferay.polls.service.http;
  * The SOAP utility is only generated for remote services.
  * </p>
  *
- * @author    Juan Fernï¿½ndez
+ * @author    Juan Fern√°ndez
  * @see       PollsChoiceServiceHttp
  * @see       com.liferay.polls.model.PollsChoiceSoap
  * @see       com.liferay.polls.service.PollsChoiceServiceUtil

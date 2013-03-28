@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -61,20 +61,22 @@ try {
 								<aui:fieldset>
 
 									<%
-									DDMStructure ddmStructure = recordSet.getDDMStructure();
+									long classNameId = PortalUtil.getClassNameId(DDMStructure.class);
+
+									long classPK = recordSet.getDDMStructureId();
 
 									if (formDDMTemplateId > 0) {
-										try {
-											ddmTemplate = DDMTemplateLocalServiceUtil.getTemplate(formDDMTemplateId);
+										classNameId = PortalUtil.getClassNameId(DDMTemplate.class);
 
-											ddmStructure.setXsd(ddmTemplate.getScript());
-										}
-										catch (NoSuchTemplateException nste) {
-										}
+										classPK = formDDMTemplateId;
 									}
 									%>
 
-									<%= DDMXSDUtil.getHTML(pageContext, ddmStructure.getXsd(), locale) %>
+									<liferay-ddm:html
+										classNameId="<%= classNameId %>"
+										classPK="<%= classPK %>"
+										requestedLocale="<%= locale %>"
+									/>
 
 									<aui:button-row>
 										<aui:button onClick='<%= renderResponse.getNamespace() + "publishRecord();" %>' type="submit" value="send" />

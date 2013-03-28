@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -25,10 +25,8 @@ import com.liferay.portlet.expando.model.BaseCustomAttributesDisplay;
 public class CalendarCustomAttributesDisplay
 	extends BaseCustomAttributesDisplay {
 
-	public static final String CLASS_NAME = CalendarBooking.class.getName();
-
 	public String getClassName() {
-		return CLASS_NAME;
+		return CalendarBooking.class.getName();
 	}
 
 	@Override

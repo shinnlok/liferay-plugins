@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -196,12 +196,12 @@ public class CalendarLocalServiceUtil {
 	}
 
 	/**
-	* Returns the calendar with the UUID in the group.
+	* Returns the calendar matching the UUID and group.
 	*
-	* @param uuid the UUID of calendar
-	* @param groupId the group id of the calendar
-	* @return the calendar
-	* @throws PortalException if a calendar with the UUID in the group could not be found
+	* @param uuid the calendar's UUID
+	* @param groupId the primary key of the group
+	* @return the matching calendar
+	* @throws PortalException if a matching calendar could not be found
 	* @throws SystemException if a system exception occurred
 	*/
 	public static com.liferay.calendar.model.Calendar getCalendarByUuidAndGroupId(
@@ -407,7 +407,7 @@ public class CalendarLocalServiceUtil {
 	}
 
 	/**
-	 * @deprecated
+	 * @deprecated As of 6.2.0
 	 */
 	public void setService(CalendarLocalService service) {
 	}
