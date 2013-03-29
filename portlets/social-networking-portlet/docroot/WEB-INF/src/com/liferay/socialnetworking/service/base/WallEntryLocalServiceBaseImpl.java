@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -114,11 +114,12 @@ public abstract class WallEntryLocalServiceBaseImpl extends BaseLocalServiceImpl
 	 *
 	 * @param wallEntry the wall entry
 	 * @return the wall entry that was removed
+	 * @throws PortalException
 	 * @throws SystemException if a system exception occurred
 	 */
 	@Indexable(type = IndexableType.DELETE)
 	public WallEntry deleteWallEntry(WallEntry wallEntry)
-		throws SystemException {
+		throws PortalException, SystemException {
 		return wallEntryPersistence.remove(wallEntry);
 	}
 

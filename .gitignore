@@ -7,12 +7,15 @@
 *.swp
 .ant_targets
 .ant-targets-build.xml
+.ivy/
 .sass-cache/
 .sass_cache_*.css
 _sass_cache_*.css
+ivy.xml.MD5
 
 /*/*/bin
 /*/*/classes
+/*/*/temp
 /*/*/test-classes
 /*/*/test-results
 /*/*/tmp
@@ -22,3 +25,4 @@ _sass_cache_*.css
 
 /build.*.properties
 /dist
+/tools/*/*/*/lib

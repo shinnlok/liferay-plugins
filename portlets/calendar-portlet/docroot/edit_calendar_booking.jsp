@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -43,11 +43,6 @@ long endTime = BeanParamUtil.getLong(calendarBooking, request, "endTime", defaul
 java.util.Calendar endTimeJCalendar = JCalendarUtil.getJCalendar(endTime, userTimeZone);
 
 boolean allDay = BeanParamUtil.getBoolean(calendarBooking, request, "allDay");
-
-if (!allDay) {
-	com.liferay.portal.kernel.util.CalendarUtil.roundByMinutes(startTimeJCalendar, 30);
-	com.liferay.portal.kernel.util.CalendarUtil.roundByMinutes(endTimeJCalendar, 30);
-}
 
 long firstReminder = BeanParamUtil.getLong(calendarBooking, request, "firstReminder");
 String firstReminderType = BeanParamUtil.getString(calendarBooking, request, "firstReminderType", PortletPropsValues.CALENDAR_NOTIFICATION_DEFAULT_TYPE);
@@ -408,7 +403,7 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 
 					calendarList.activeItem.set('visible', true);
 
-					<portlet:namespace />toggler.expand();
+					<portlet:namespace />toggler.toggle();
 
 					instance.hide();
 
@@ -567,7 +562,7 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 			color: '#F8F8F8',
 			content: '&nbsp;',
 			editingEvent: true,
-			endDate: Liferay.CalendarUtil.toUserTimeZone(new Date(<%= endTime %>)),
+			endDate: Liferay.CalendarUtil.toLocalTime(new Date(<%= endTime %>)),
 			on: {
 				endDateChange: function(event) {
 					event.stopPropagation();
@@ -578,7 +573,7 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 			},
 			preventDateChange: true,
 			scheduler: scheduler,
-			startDate: Liferay.CalendarUtil.toUserTimeZone(new Date(<%= startTime %>))
+			startDate: Liferay.CalendarUtil.toLocalTime(new Date(<%= startTime %>))
 		}
 	);
 

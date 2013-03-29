@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -119,11 +119,12 @@ public abstract class KBCommentLocalServiceBaseImpl extends BaseLocalServiceImpl
 	 *
 	 * @param kbComment the k b comment
 	 * @return the k b comment that was removed
+	 * @throws PortalException
 	 * @throws SystemException if a system exception occurred
 	 */
 	@Indexable(type = IndexableType.DELETE)
 	public KBComment deleteKBComment(KBComment kbComment)
-		throws SystemException {
+		throws PortalException, SystemException {
 		return kbCommentPersistence.remove(kbComment);
 	}
 
