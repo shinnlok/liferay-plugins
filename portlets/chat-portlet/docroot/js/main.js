@@ -197,6 +197,10 @@ AUI().use(
 				instance.fire('hide');
 			},
 
+			openMenu: function(target) {
+				target.toggleClass('menu-selected');
+			},
+
 			resumeEvents: function() {
 				var instance = this;
 
@@ -260,13 +264,24 @@ AUI().use(
 					function(event) {
 						var target = event.currentTarget;
 
-						if (target.hasClass('minimize')) {
+						if (target.hasClass('menu')) {
+							instance.openMenu(target);
+						}
+						else if (target.hasClass('minimize')) {
 							instance.hide();
 						}
 						else if (target.hasClass('close')) {
 							instance.close();
 						}
-						else if (target.hasClass('clear-history')) {
+					}
+				);
+
+				panel.all('.panel-menu-button').on(
+					'click',
+					function(event) {
+						var target = event.currentTarget;
+
+						if (target.hasClass('clear-history')) {
 							instance.clearHistory();
 						}
 					}
@@ -599,10 +614,15 @@ AUI().use(
 									'<div class="panel-trigger">' +
 										'<span class="trigger-name"></span>' +
 										'<div class="typing-status"></div>' +
+										'<div class="panel-button close chat-tab-icon" style="background-image: url(' + userImagePath + ')"></div>' +
 									'</div>' +
 									'<div class="chat-panel">' +
 										'<div class="panel-window">' +
-											'<div class="panel-button clear-history"></div>' +
+											'<div class="panel-button menu">' +
+												'<ul class="panel-menu">' +
+													'<li class="panel-menu-button clear-history">Clear History</li>' +
+												'</ul>' +
+											'</div>' +
 											'<div class="panel-button minimize"></div>' +
 											'<div class="panel-button close"></div>' +
 											'<img alt="" class="panel-icon" src="' + userImagePath + '" />' +
@@ -662,6 +682,7 @@ AUI().use(
 			init: function() {
 				var instance = this;
 
+				instance._closedChats = {};
 				instance._initialRequest = true;
 				instance._notificationTimeout = 8000;
 
@@ -804,6 +825,7 @@ AUI().use(
 				panel.on('hide', instance._onPanelHide, instance);
 				panel.on('show', instance._onPanelShow, instance);
 				panel.on('clearHistory', instance._onPanelClear, instance);
+				panel.on('openMenu', instance._openMenu, instance);
 			},
 
 			_createBuddyListPanel: function() {
@@ -923,7 +945,7 @@ AUI().use(
 					for (var i in entryCache) {
 						var entry = entryCache[i];
 
-						if (entry.flag || entry.createDate > instance._clearTime) {
+						if (entry.flag && (entry.createDate > instance._clearTime)) {
 							chat.update(
 								{
 									cache: true,
