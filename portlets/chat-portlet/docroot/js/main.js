@@ -3,6 +3,7 @@ AUI().use(
 	'anim-easing',
 	'aui-base',
 	'aui-live-search',
+	'aui-overlay-context-panel',
 	'liferay-poller',
 	'stylesheet',
 	'swfobject',
@@ -197,10 +198,6 @@ AUI().use(
 				instance.fire('hide');
 			},
 
-			openMenu: function(target) {
-				target.toggleClass('menu-selected');
-			},
-
 			resumeEvents: function() {
 				var instance = this;
 
@@ -259,29 +256,27 @@ AUI().use(
 
 				instance._popupTrigger.on('click', instance.toggle, instance);
 
-				panel.all('.panel-button').on(
+				panel.delegate(
 					'click',
 					function(event) {
 						var target = event.currentTarget;
 
-						if (target.hasClass('menu')) {
-							instance.openMenu(target);
-						}
-						else if (target.hasClass('minimize')) {
+						if (target.hasClass('minimize')) {
 							instance.hide();
 						}
 						else if (target.hasClass('close')) {
 							instance.close();
 						}
-					}
-				);
+					},
+					'.panel-button'
+				)
 
-				panel.all('.panel-menu-button').on(
+				panel.all('.chat-menu-content a').on(
 					'click',
 					function(event) {
 						var target = event.currentTarget;
 
-						if (target.hasClass('clear-history')) {
+						if (target.hasClass('chat-clear-history')) {
 							instance.clearHistory();
 						}
 					}
@@ -610,7 +605,12 @@ AUI().use(
 
 					var userImagePath = Liferay.Chat.Util.getUserImagePath(instance._panelIcon);
 
-					var html = '<li class="user user_' + instance._panelId + '" panelId="' + instance._panelId + '">' +
+					var panelId = instance._panelId;
+
+					var panelIdMenu = panelId + 'ChatMenu';
+					var panelIdMenuButton = panelIdMenu + 'Button';
+
+					var html = '<li class="user user_' + panelId + '" panelId="' + panelId + '">' +
 									'<div class="panel-trigger">' +
 										'<span class="trigger-name"></span>' +
 										'<div class="typing-status"></div>' +
@@ -618,10 +618,17 @@ AUI().use(
 									'</div>' +
 									'<div class="chat-panel">' +
 										'<div class="panel-window">' +
-											'<div class="panel-button menu">' +
-												'<ul class="panel-menu">' +
-													'<li class="panel-menu-button clear-history">Clear History</li>' +
-												'</ul>' +
+											'<div class="panel-button menu" id="' + panelIdMenuButton + '">' +
+												'<span>Options</span>' +
+											'</div>'+
+											'<div class="aui-menu chat-menu aui-overlaycontext-hidden" id="' + panelIdMenu + '">' +
+												'<div class="aui-menu-content chat-menu-content">' +
+													'<ul class="aui-helper-clearfix">' +
+														'<li class="aui-menu-item chat-menu-item">' +
+															'<a class="chat-clear-history" href="javscript:;" onclick="return false;">Clear History</a>' +
+														'</li>' +
+													'</ul>' +
+												'</div>' +
 											'</div>' +
 											'<div class="panel-button minimize"></div>' +
 											'<div class="panel-button close"></div>' +
@@ -825,7 +832,6 @@ AUI().use(
 				panel.on('hide', instance._onPanelHide, instance);
 				panel.on('show', instance._onPanelShow, instance);
 				panel.on('clearHistory', instance._onPanelClear, instance);
-				panel.on('openMenu', instance._openMenu, instance);
 			},
 
 			_createBuddyListPanel: function() {
@@ -927,6 +933,9 @@ AUI().use(
 
 				var userId = options.userId;
 
+				var chatMenu = userId + 'ChatMenu';
+				var chatMenuButton = chatMenu + 'Button';
+
 				var chat = new Liferay.Chat.Conversation(
 					{
 						panelId: options.userId,
@@ -964,6 +973,19 @@ AUI().use(
 				else {
 					chat.setAsRead();
 				}
+
+				instance._menu = new A.OverlayContext(
+					{
+						boundingBox: '#' + chatMenu,
+						cancellableHide: true,
+						hideDelay: 500,
+						hideOnDocumentClick: true,
+						showArrow: false,
+						showDelay: 0,
+						showOn: 'click',
+						trigger: '#' + chatMenuButton
+					}
+				).render();
 
 				return chat;
 			},
@@ -1103,6 +1125,8 @@ AUI().use(
 						currentUserId: themeDisplay.getUserId()
 					}
 				);
+
+				instance._menu.hide();
 			},
 
 			_onPanelClose: function(event) {

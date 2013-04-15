@@ -8,7 +8,7 @@ html body {
 /* ---------- Bottom Dock ---------- */
 
 .chat-bar {
-	background: #E5E5E5 url(../images/btm-dock_bg.png) repeat-x;
+	background: #E5E5E5 url(../images/bottom_dock_bg.png) repeat-x;
 	border: 1px solid #B5B5B5;
 	border-bottom-width: 0;
 	bottom: 0;
@@ -135,7 +135,7 @@ html body {
 	}
 
 	.panel-trigger .panel-button.close.chat-tab-icon:hover, &.selected .chat-tab-icon {
-		background: url(../images/12x12x_icon.png) no-repeat 1px 3px !important;
+		background: url(../images/close_button.png) no-repeat 1px 3px !important;
 		background-size: 12px;
 		border-width: 0;
 	}
@@ -301,52 +301,53 @@ html body {
 }
 
 .panel-button {
+	background-position: left bottom;
+	background-repeat: no-repeat;
 	cursor: pointer;
 	height: 12px;
 	width: 12px;
 
 	&.menu {
-		background: url(../images/menu_icon.png) left bottom;
+		background-image: url(../images/menu_button.png);
 		position: absolute;
 		right: 36px;
 		top: 6px;
 
-		.panel-menu {
-			border: 1px solid #B5B5B5;
-			display: inline-block;
-			position: absolute;
-			top: 9999px;
-			z-index: 1;
-
-			.panel-menu-button {
-				background-color: #E5E5E5;
-				float: none;
-				padding: 5px;
-				white-space: nowrap;
-
-				&:hover {
-					background-color: #FFF;
-				}
-			}
-		}
-
-		&.menu-selected .panel-menu {
-			top: 15px;
+		span {
+			display: none;
 		}
 	}
 
 	&.close {
-		background: url(../images/12x12x_icon.png) left bottom;
+		background-image: url(../images/close_button.png);
 		position: absolute;
 		right: 4px;
 		top: 6px;
 	}
 
 	&.minimize {
-		background: url(../images/12x12minus_icon.png) left bottom;
+		background-image: url(../images/minimize_button.png);
 		position: absolute;
 		right: 20px;
 		top: 6px;
+	}
+}
+
+.chat-menu {
+	.chat-menu-content {
+		min-width: auto;
+
+		.chat-menu-item {
+			white-space: nowrap;
+
+			&:hover {
+				background-color: #5B677D;
+
+				a {
+					color: #FFF;
+				}
+			}
+		}
 	}
 }
 
