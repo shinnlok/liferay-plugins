@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This file is part of Liferay Social Office. Liferay Social Office is free
  * software: you can redistribute it and/or modify it under the terms of the GNU
@@ -55,7 +55,8 @@ public class TasksEntryLocalServiceImpl extends TasksEntryLocalServiceBaseImpl {
 	public TasksEntry addTasksEntry(
 			long userId, String title, int priority, long assigneeUserId,
 			int dueDateMonth, int dueDateDay, int dueDateYear, int dueDateHour,
-			int dueDateMinute, boolean neverDue, ServiceContext serviceContext)
+			int dueDateMinute, boolean addDueDate,
+			ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
 		// Tasks entry
@@ -68,7 +69,7 @@ public class TasksEntryLocalServiceImpl extends TasksEntryLocalServiceBaseImpl {
 
 		Date dueDate = null;
 
-		if (!neverDue) {
+		if (addDueDate) {
 			dueDate = PortalUtil.getDate(
 				dueDateMonth, dueDateDay, dueDateYear, dueDateHour,
 				dueDateMinute, user.getTimeZone(),
@@ -287,7 +288,7 @@ public class TasksEntryLocalServiceImpl extends TasksEntryLocalServiceBaseImpl {
 			long tasksEntryId, String title, int priority, long assigneeUserId,
 			long resolverUserId, int dueDateMonth, int dueDateDay,
 			int dueDateYear, int dueDateHour, int dueDateMinute,
-			boolean neverDue, int status, ServiceContext serviceContext)
+			boolean addDueDate, int status, ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
 		// Tasks entry
@@ -303,7 +304,7 @@ public class TasksEntryLocalServiceImpl extends TasksEntryLocalServiceBaseImpl {
 
 		Date dueDate = null;
 
-		if (!neverDue) {
+		if (addDueDate) {
 			dueDate = PortalUtil.getDate(
 				dueDateMonth, dueDateDay, dueDateYear, dueDateHour,
 				dueDateMinute, user.getTimeZone(),
@@ -341,23 +342,7 @@ public class TasksEntryLocalServiceImpl extends TasksEntryLocalServiceBaseImpl {
 
 		// Social
 
-		int activity = TasksActivityKeys.UPDATE_ENTRY;
-
-		if (status == TasksEntryConstants.STATUS_RESOLVED) {
-			activity = TasksActivityKeys.RESOLVE_ENTRY;
-		}
-		else if (status == TasksEntryConstants.STATUS_REOPENED) {
-			activity = TasksActivityKeys.REOPEN_ENTRY;
-		}
-
-		JSONObject extraDataJSONObject = JSONFactoryUtil.createJSONObject();
-
-		extraDataJSONObject.put("title", tasksEntry.getTitle());
-
-		SocialActivityLocalServiceUtil.addActivity(
-			serviceContext.getUserId(), tasksEntry.getGroupId(),
-			TasksEntry.class.getName(), tasksEntryId, activity,
-			extraDataJSONObject.toString(), assigneeUserId);
+		addSocialActivity(status, tasksEntry, serviceContext);
 
 		// Notifications
 
@@ -371,6 +356,8 @@ public class TasksEntryLocalServiceImpl extends TasksEntryLocalServiceBaseImpl {
 			long tasksEntryId, long resolverUserId, int status,
 			ServiceContext serviceContext)
 		throws PortalException, SystemException {
+
+		// Tasks entry
 
 		Date now = new Date();
 
@@ -394,6 +381,10 @@ public class TasksEntryLocalServiceImpl extends TasksEntryLocalServiceBaseImpl {
 
 		tasksEntryPersistence.update(tasksEntry);
 
+		// Social
+
+		addSocialActivity(status, tasksEntry, serviceContext);
+
 		// Notifications
 
 		sendNotificationEvent(
@@ -401,6 +392,29 @@ public class TasksEntryLocalServiceImpl extends TasksEntryLocalServiceBaseImpl {
 			serviceContext);
 
 		return tasksEntry;
+	}
+
+	protected void addSocialActivity(
+			int status, TasksEntry tasksEntry, ServiceContext serviceContext)
+		throws PortalException, SystemException {
+
+		int activity = TasksActivityKeys.UPDATE_ENTRY;
+
+		if (status == TasksEntryConstants.STATUS_RESOLVED) {
+			activity = TasksActivityKeys.RESOLVE_ENTRY;
+		}
+		else if (status == TasksEntryConstants.STATUS_REOPENED) {
+			activity = TasksActivityKeys.REOPEN_ENTRY;
+		}
+
+		JSONObject extraDataJSONObject = JSONFactoryUtil.createJSONObject();
+
+		extraDataJSONObject.put("title", tasksEntry.getTitle());
+
+		SocialActivityLocalServiceUtil.addActivity(
+			serviceContext.getUserId(), tasksEntry.getGroupId(),
+			TasksEntry.class.getName(), tasksEntry.getTasksEntryId(), activity,
+			extraDataJSONObject.toString(), tasksEntry.getAssigneeUserId());
 	}
 
 	protected void sendNotificationEvent(

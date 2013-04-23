@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -21,7 +21,7 @@ import com.liferay.portal.service.ServiceWrapper;
  * This class is a wrapper for {@link PollsChoiceLocalService}.
  * </p>
  *
- * @author    Juan Fernï¿½ndez
+ * @author    Juan Fern√°ndez
  * @see       PollsChoiceLocalService
  * @generated
  */
@@ -254,15 +254,45 @@ public class PollsChoiceLocalServiceWrapper implements PollsChoiceLocalService,
 			arguments);
 	}
 
+	public com.liferay.polls.model.PollsChoice addPollsChoice(
+		long pollsQuestionId, java.lang.String name,
+		java.lang.String description,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return _pollsChoiceLocalService.addPollsChoice(pollsQuestionId, name,
+			description, serviceContext);
+	}
+
+	public java.util.List<com.liferay.polls.model.PollsChoice> getPollsChoices(
+		long pollsQuestionId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _pollsChoiceLocalService.getPollsChoices(pollsQuestionId);
+	}
+
+	public int getPollsChoicesCount(long pollsQuestionId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _pollsChoiceLocalService.getPollsChoicesCount(pollsQuestionId);
+	}
+
+	public com.liferay.polls.model.PollsChoice updatePollsChoice(
+		long pollsChoiceId, long pollsQuestionId, java.lang.String name,
+		java.lang.String description)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return _pollsChoiceLocalService.updatePollsChoice(pollsChoiceId,
+			pollsQuestionId, name, description);
+	}
+
 	/**
-	 * @deprecated Renamed to {@link #getWrappedService}
+	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedService}
 	 */
 	public PollsChoiceLocalService getWrappedPollsChoiceLocalService() {
 		return _pollsChoiceLocalService;
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #setWrappedService}
+	 * @deprecated As of 6.1.0, replaced by {@link #setWrappedService}
 	 */
 	public void setWrappedPollsChoiceLocalService(
 		PollsChoiceLocalService pollsChoiceLocalService) {

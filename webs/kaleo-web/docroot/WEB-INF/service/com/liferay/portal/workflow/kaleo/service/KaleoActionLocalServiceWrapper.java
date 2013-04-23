@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -277,6 +277,13 @@ public class KaleoActionLocalServiceWrapper implements KaleoActionLocalService,
 	}
 
 	public java.util.List<com.liferay.portal.workflow.kaleo.model.KaleoAction> getKaleoActions(
+		java.lang.String kaleoClassName, long kaleoClassPK)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _kaleoActionLocalService.getKaleoActions(kaleoClassName,
+			kaleoClassPK);
+	}
+
+	public java.util.List<com.liferay.portal.workflow.kaleo.model.KaleoAction> getKaleoActions(
 		java.lang.String kaleoClassName, long kaleoClassPK,
 		java.lang.String executionType)
 		throws com.liferay.portal.kernel.exception.SystemException {
@@ -285,14 +292,14 @@ public class KaleoActionLocalServiceWrapper implements KaleoActionLocalService,
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #getWrappedService}
+	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedService}
 	 */
 	public KaleoActionLocalService getWrappedKaleoActionLocalService() {
 		return _kaleoActionLocalService;
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #setWrappedService}
+	 * @deprecated As of 6.1.0, replaced by {@link #setWrappedService}
 	 */
 	public void setWrappedKaleoActionLocalService(
 		KaleoActionLocalService kaleoActionLocalService) {

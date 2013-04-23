@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -16,8 +16,8 @@ package com.liferay.portal.workflow.kaleo.parser;
 
 import com.liferay.portal.workflow.kaleo.definition.Node;
 import com.liferay.portal.workflow.kaleo.definition.NodeType;
+import com.liferay.portal.workflow.kaleo.util.NodeTypeDependentObjectRegistry;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -25,24 +25,18 @@ import java.util.Map;
  */
 public class NodeValidatorRegistry {
 
-	public NodeValidator<Node> getValidator(NodeType nodeType) {
-		NodeValidator<Node> nodeValidator = _nodeValidators.get(nodeType);
-
-		if (nodeValidator == null) {
-			throw new IllegalArgumentException(
-				"No node validator found for " + nodeType);
-		}
-
-		return nodeValidator;
+	public NodeValidator<Node> getNodeValidator(NodeType nodeType) {
+		return _nodeValidators.getNodeTypeDependentObjects(nodeType);
 	}
 
 	public void setNodeValidators(
-		Map<NodeType, NodeValidator<Node>> nodeValidators) {
+		Map<String, NodeValidator<Node>> nodeValidators) {
 
-		_nodeValidators = nodeValidators;
+		_nodeValidators.setNodeTypeDependentObjects(nodeValidators);
 	}
 
-	private Map<NodeType, NodeValidator<Node>> _nodeValidators =
-		new HashMap<NodeType, NodeValidator<Node>>();
+	private static NodeTypeDependentObjectRegistry<NodeValidator<Node>>
+		_nodeValidators =
+			new NodeTypeDependentObjectRegistry<NodeValidator<Node>>();
 
 }

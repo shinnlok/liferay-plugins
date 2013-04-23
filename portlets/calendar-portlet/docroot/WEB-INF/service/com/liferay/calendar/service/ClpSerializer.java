@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -303,8 +303,17 @@ public class ClpSerializer {
 		}
 
 		if (className.equals(
+					"com.liferay.calendar.CalendarResourceNameException")) {
+			return new com.liferay.calendar.CalendarResourceNameException();
+		}
+
+		if (className.equals(
 					"com.liferay.calendar.DuplicateCalendarResourceException")) {
 			return new com.liferay.calendar.DuplicateCalendarResourceException();
+		}
+
+		if (className.equals("com.liferay.calendar.RequiredCalendarException")) {
+			return new com.liferay.calendar.RequiredCalendarException();
 		}
 
 		if (className.equals("com.liferay.calendar.NoSuchCalendarException")) {

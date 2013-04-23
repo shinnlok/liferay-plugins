@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -35,6 +35,7 @@ import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQueryFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.Property;
 import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
+import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.ArrayUtil;
@@ -216,9 +217,27 @@ public class CalendarBookingLocalServiceImpl
 			deleteCalendarBooking(childCalendarBooking);
 		}
 
+		// Subscriptions
+
+		subscriptionLocalService.deleteSubscriptions(
+			calendarBooking.getCompanyId(), CalendarBooking.class.getName(),
+			calendarBooking.getCalendarBookingId());
+
 		// Asset
 
 		assetEntryLocalService.deleteEntry(
+			CalendarBooking.class.getName(),
+			calendarBooking.getCalendarBookingId());
+
+		// Message boards
+
+		mbMessageLocalService.deleteDiscussionMessages(
+			CalendarBooking.class.getName(),
+			calendarBooking.getCalendarBookingId());
+
+		// Ratings
+
+		ratingsStatsLocalService.deleteStats(
 			CalendarBooking.class.getName(),
 			calendarBooking.getCalendarBookingId());
 
@@ -238,47 +257,48 @@ public class CalendarBookingLocalServiceImpl
 	}
 
 	public void deleteCalendarBookingInstance(
-			long calendarBookingId, long startTime, boolean allFollowing)
+			CalendarBooking calendarBooking, long startTime,
+			boolean allFollowing)
 		throws PortalException, SystemException {
 
-		CalendarBooking calendarBooking =
-			calendarBookingPersistence.findByPrimaryKey(calendarBookingId);
-
-		java.util.Calendar newStartTimeJCalendar = JCalendarUtil.getJCalendar(
+		java.util.Calendar startTimeJCalendar = JCalendarUtil.getJCalendar(
 			startTime);
-
-		java.util.Calendar oldStartTimeJCalendar = JCalendarUtil.getJCalendar(
-			calendarBooking.getStartTime());
-
-		newStartTimeJCalendar.set(
-			java.util.Calendar.HOUR_OF_DAY,
-			oldStartTimeJCalendar.get(java.util.Calendar.HOUR_OF_DAY));
-		newStartTimeJCalendar.set(
-			java.util.Calendar.MINUTE,
-			oldStartTimeJCalendar.get(java.util.Calendar.MINUTE));
-		newStartTimeJCalendar.set(
-			java.util.Calendar.SECOND,
-			oldStartTimeJCalendar.get(java.util.Calendar.SECOND));
 
 		Recurrence recurrenceObj = calendarBooking.getRecurrenceObj();
 
 		if (allFollowing) {
+			if (startTime == calendarBooking.getStartTime()) {
+				deleteCalendarBooking(calendarBooking);
+
+				return;
+			}
+
 			if (recurrenceObj.getCount() > 0) {
 				recurrenceObj.setCount(0);
 			}
 
-			newStartTimeJCalendar.add(java.util.Calendar.DATE, -1);
+			startTimeJCalendar.add(java.util.Calendar.DATE, -1);
 
-			recurrenceObj.setUntilJCalendar(newStartTimeJCalendar);
+			recurrenceObj.setUntilJCalendar(startTimeJCalendar);
 		}
 		else {
-			recurrenceObj.addExceptionDate(newStartTimeJCalendar);
+			recurrenceObj.addExceptionDate(startTimeJCalendar);
 		}
 
 		calendarBooking.setRecurrence(
 			RecurrenceSerializer.serialize(recurrenceObj));
 
 		calendarBookingPersistence.update(calendarBooking);
+	}
+
+	public void deleteCalendarBookingInstance(
+			long calendarBookingId, long startTime, boolean allFollowing)
+		throws PortalException, SystemException {
+
+		CalendarBooking calendarBooking =
+			calendarBookingPersistence.findByPrimaryKey(calendarBookingId);
+
+		deleteCalendarBookingInstance(calendarBooking, startTime, allFollowing);
 	}
 
 	public void deleteCalendarBookings(long calendarId)
@@ -323,6 +343,14 @@ public class CalendarBookingLocalServiceImpl
 			long calendarId, long startTime, long endTime)
 		throws SystemException {
 
+		return getCalendarBookings(
+			calendarId, startTime, endTime, QueryUtil.ALL_POS);
+	}
+
+	public List<CalendarBooking> getCalendarBookings(
+			long calendarId, long startTime, long endTime, int max)
+		throws SystemException {
+
 		DynamicQuery dynamicQuery = DynamicQueryFactoryUtil.forClass(
 			CalendarBooking.class, getClassLoader());
 
@@ -340,7 +368,11 @@ public class CalendarBookingLocalServiceImpl
 		if (endTime >= 0) {
 			Property propertyEndTime = PropertyFactoryUtil.forName("endTime");
 
-			dynamicQuery.add(propertyEndTime.gt(endTime));
+			dynamicQuery.add(propertyEndTime.lt(endTime));
+		}
+
+		if (max > 0) {
+			dynamicQuery.setLimit(0, max);
 		}
 
 		return dynamicQuery(dynamicQuery);
@@ -589,10 +621,29 @@ public class CalendarBookingLocalServiceImpl
 			ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
-		deleteCalendarBookingInstance(
-			calendarBookingId, startTime, allFollowing);
+		CalendarBooking calendarBooking =
+			calendarBookingPersistence.findByPrimaryKey(calendarBookingId);
 
-		if (!allFollowing) {
+		String oldRecurrence = calendarBooking.getRecurrence();
+
+		deleteCalendarBookingInstance(calendarBooking, startTime, allFollowing);
+
+		if (allFollowing) {
+			Recurrence recurrenceObj = RecurrenceSerializer.deserialize(
+				recurrence);
+
+			if (oldRecurrence.equals(recurrence) &&
+				(recurrenceObj.getCount() > 0)) {
+
+				int index = RecurrenceUtil.getIndexOfInstance(
+					recurrence, calendarBooking.getStartTime(), startTime);
+
+				recurrenceObj.setCount(recurrenceObj.getCount() - index);
+
+				recurrence = RecurrenceSerializer.serialize(recurrenceObj);
+			}
+		}
+		else {
 			recurrence = StringPool.BLANK;
 		}
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -67,9 +67,10 @@ public class StatusClp extends BaseModelImpl<Status> implements Status {
 		attributes.put("statusId", getStatusId());
 		attributes.put("userId", getUserId());
 		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("lastClear", getLastClear());
 		attributes.put("online", getOnline());
 		attributes.put("awake", getAwake());
-		attributes.put("activePanelId", getActivePanelId());
+		attributes.put("activePanelIds", getActivePanelIds());
 		attributes.put("message", getMessage());
 		attributes.put("playSound", getPlaySound());
 
@@ -96,6 +97,12 @@ public class StatusClp extends BaseModelImpl<Status> implements Status {
 			setModifiedDate(modifiedDate);
 		}
 
+		Long lastClear = (Long)attributes.get("lastClear");
+
+		if (lastClear != null) {
+			setLastClear(lastClear);
+		}
+
 		Boolean online = (Boolean)attributes.get("online");
 
 		if (online != null) {
@@ -108,10 +115,10 @@ public class StatusClp extends BaseModelImpl<Status> implements Status {
 			setAwake(awake);
 		}
 
-		String activePanelId = (String)attributes.get("activePanelId");
+		String activePanelIds = (String)attributes.get("activePanelIds");
 
-		if (activePanelId != null) {
-			setActivePanelId(activePanelId);
+		if (activePanelIds != null) {
+			setActivePanelIds(activePanelIds);
 		}
 
 		String message = (String)attributes.get("message");
@@ -159,6 +166,14 @@ public class StatusClp extends BaseModelImpl<Status> implements Status {
 		_modifiedDate = modifiedDate;
 	}
 
+	public long getLastClear() {
+		return _lastClear;
+	}
+
+	public void setLastClear(long lastClear) {
+		_lastClear = lastClear;
+	}
+
 	public boolean getOnline() {
 		return _online;
 	}
@@ -183,12 +198,12 @@ public class StatusClp extends BaseModelImpl<Status> implements Status {
 		_awake = awake;
 	}
 
-	public String getActivePanelId() {
-		return _activePanelId;
+	public String getActivePanelIds() {
+		return _activePanelIds;
 	}
 
-	public void setActivePanelId(String activePanelId) {
-		_activePanelId = activePanelId;
+	public void setActivePanelIds(String activePanelIds) {
+		_activePanelIds = activePanelIds;
 	}
 
 	public String getMessage() {
@@ -241,9 +256,10 @@ public class StatusClp extends BaseModelImpl<Status> implements Status {
 		clone.setStatusId(getStatusId());
 		clone.setUserId(getUserId());
 		clone.setModifiedDate(getModifiedDate());
+		clone.setLastClear(getLastClear());
 		clone.setOnline(getOnline());
 		clone.setAwake(getAwake());
-		clone.setActivePanelId(getActivePanelId());
+		clone.setActivePanelIds(getActivePanelIds());
 		clone.setMessage(getMessage());
 		clone.setPlaySound(getPlaySound());
 
@@ -296,7 +312,7 @@ public class StatusClp extends BaseModelImpl<Status> implements Status {
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(17);
+		StringBundler sb = new StringBundler(19);
 
 		sb.append("{statusId=");
 		sb.append(getStatusId());
@@ -304,12 +320,14 @@ public class StatusClp extends BaseModelImpl<Status> implements Status {
 		sb.append(getUserId());
 		sb.append(", modifiedDate=");
 		sb.append(getModifiedDate());
+		sb.append(", lastClear=");
+		sb.append(getLastClear());
 		sb.append(", online=");
 		sb.append(getOnline());
 		sb.append(", awake=");
 		sb.append(getAwake());
-		sb.append(", activePanelId=");
-		sb.append(getActivePanelId());
+		sb.append(", activePanelIds=");
+		sb.append(getActivePanelIds());
 		sb.append(", message=");
 		sb.append(getMessage());
 		sb.append(", playSound=");
@@ -320,7 +338,7 @@ public class StatusClp extends BaseModelImpl<Status> implements Status {
 	}
 
 	public String toXmlString() {
-		StringBundler sb = new StringBundler(28);
+		StringBundler sb = new StringBundler(31);
 
 		sb.append("<model><model-name>");
 		sb.append("com.liferay.chat.model.Status");
@@ -339,6 +357,10 @@ public class StatusClp extends BaseModelImpl<Status> implements Status {
 		sb.append(getModifiedDate());
 		sb.append("]]></column-value></column>");
 		sb.append(
+			"<column><column-name>lastClear</column-name><column-value><![CDATA[");
+		sb.append(getLastClear());
+		sb.append("]]></column-value></column>");
+		sb.append(
 			"<column><column-name>online</column-name><column-value><![CDATA[");
 		sb.append(getOnline());
 		sb.append("]]></column-value></column>");
@@ -347,8 +369,8 @@ public class StatusClp extends BaseModelImpl<Status> implements Status {
 		sb.append(getAwake());
 		sb.append("]]></column-value></column>");
 		sb.append(
-			"<column><column-name>activePanelId</column-name><column-value><![CDATA[");
-		sb.append(getActivePanelId());
+			"<column><column-name>activePanelIds</column-name><column-value><![CDATA[");
+		sb.append(getActivePanelIds());
 		sb.append("]]></column-value></column>");
 		sb.append(
 			"<column><column-name>message</column-name><column-value><![CDATA[");
@@ -368,9 +390,10 @@ public class StatusClp extends BaseModelImpl<Status> implements Status {
 	private long _userId;
 	private String _userUuid;
 	private long _modifiedDate;
+	private long _lastClear;
 	private boolean _online;
 	private boolean _awake;
-	private String _activePanelId;
+	private String _activePanelIds;
 	private String _message;
 	private boolean _playSound;
 	private BaseModel<?> _statusRemoteModel;

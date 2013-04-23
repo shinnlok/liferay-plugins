@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -30,7 +30,7 @@ import com.liferay.portal.service.PersistedModelLocalService;
  * This is a local service. Methods of this service will not have security checks based on the propagated JAAS credentials because this service can only be accessed from within the same VM.
  * </p>
  *
- * @author Juan Fernï¿½ndez
+ * @author Juan Fern√°ndez
  * @see PollsQuestionLocalServiceUtil
  * @see com.liferay.polls.service.base.PollsQuestionLocalServiceBaseImpl
  * @see com.liferay.polls.service.impl.PollsQuestionLocalServiceImpl
@@ -84,11 +84,13 @@ public interface PollsQuestionLocalService extends BaseLocalService,
 	*
 	* @param pollsQuestion the polls question
 	* @return the polls question that was removed
+	* @throws PortalException
 	* @throws SystemException if a system exception occurred
 	*/
 	public com.liferay.polls.model.PollsQuestion deletePollsQuestion(
 		com.liferay.polls.model.PollsQuestion pollsQuestion)
-		throws com.liferay.portal.kernel.exception.SystemException;
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException;
 
 	public com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery();
 
@@ -180,12 +182,12 @@ public interface PollsQuestionLocalService extends BaseLocalService,
 			com.liferay.portal.kernel.exception.SystemException;
 
 	/**
-	* Returns the polls question with the UUID in the group.
+	* Returns the polls question matching the UUID and group.
 	*
-	* @param uuid the UUID of polls question
-	* @param groupId the group id of the polls question
-	* @return the polls question
-	* @throws PortalException if a polls question with the UUID in the group could not be found
+	* @param uuid the polls question's UUID
+	* @param groupId the primary key of the group
+	* @return the matching polls question
+	* @throws PortalException if a matching polls question could not be found
 	* @throws SystemException if a system exception occurred
 	*/
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
@@ -249,4 +251,43 @@ public interface PollsQuestionLocalService extends BaseLocalService,
 	public java.lang.Object invokeMethod(java.lang.String name,
 		java.lang.String[] parameterTypes, java.lang.Object[] arguments)
 		throws java.lang.Throwable;
+
+	public com.liferay.polls.model.PollsQuestion addPollsQuestion(long userId,
+		java.util.Map<java.util.Locale, java.lang.String> titleMap,
+		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
+		int expirationDateMonth, int expirationDateDay, int expirationDateYear,
+		int expirationDateHour, int expirationDateMinute, boolean neverExpire,
+		java.util.List<com.liferay.polls.model.PollsChoice> pollsChoices,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException;
+
+	public void deletePollsQuestions(long groupId)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException;
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public java.util.List<com.liferay.polls.model.PollsQuestion> getPollsQuestions(
+		long groupId)
+		throws com.liferay.portal.kernel.exception.SystemException;
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public java.util.List<com.liferay.polls.model.PollsQuestion> getPollsQuestions(
+		long groupId, int start, int end)
+		throws com.liferay.portal.kernel.exception.SystemException;
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public int getPollsQuestionsCount(long groupId)
+		throws com.liferay.portal.kernel.exception.SystemException;
+
+	public com.liferay.polls.model.PollsQuestion updatePollsQuestion(
+		long userId, long pollsQuestionId,
+		java.util.Map<java.util.Locale, java.lang.String> titleMap,
+		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
+		int expirationDateMonth, int expirationDateDay, int expirationDateYear,
+		int expirationDateHour, int expirationDateMinute, boolean neverExpire,
+		java.util.List<com.liferay.polls.model.PollsChoice> pollsChoices,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException;
 }

@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -25,7 +25,7 @@ Calendar calendar = (Calendar)row.getObject();
 <liferay-ui:icon-menu>
 	<c:if test="<%= CalendarPermission.contains(permissionChecker, calendar, ActionKeys.UPDATE) %>">
 		<portlet:renderURL var="editURL">
-			<portlet:param name="jspPage" value="/edit_calendar.jsp" />
+			<portlet:param name="mvcPath" value="/edit_calendar.jsp" />
 			<portlet:param name="redirect" value="<%= currentURL %>" />
 			<portlet:param name="calendarId" value="<%= String.valueOf(calendar.getCalendarId()) %>" />
 			<portlet:param name="calendarResourceId" value="<%= String.valueOf(calendar.getCalendarResourceId()) %>" />
@@ -75,7 +75,7 @@ Calendar calendar = (Calendar)row.getObject();
 		<liferay-security:permissionsURL
 			modelResource="<%= Calendar.class.getName() %>"
 			modelResourceDescription="<%= calendar.getName(locale) %>"
-			resourceGroupId="<%= calendar.getGroupId() %>"
+			resourceGroupId="<%= calendar.getResourceGroupId() %>"
 			resourcePrimKey="<%= String.valueOf(calendar.getCalendarId()) %>"
 			var="permissionsURL"
 		/>
@@ -86,7 +86,21 @@ Calendar calendar = (Calendar)row.getObject();
 		/>
 	</c:if>
 
-	<c:if test="<%= CalendarPermission.contains(permissionChecker, calendar, ActionKeys.DELETE) %>">
+	<c:if test="<%= enableRSS %>">
+		<liferay-portlet:resourceURL id="calendarBookingsRSS" varImpl="calendarRSSURL">
+			<portlet:param name="calendarId" value="<%= String.valueOf(calendar.getCalendarId()) %>" />
+			<portlet:param name="timeInterval" value="<%= String.valueOf(rssTimeInterval) %>" />
+		</liferay-portlet:resourceURL>
+
+		<liferay-ui:rss
+			delta="<%= rssDelta %>"
+			displayStyle="<%= rssDisplayStyle %>"
+			feedType="<%= rssFeedType %>"
+			resourceURL="<%= calendarRSSURL %>"
+		/>
+	</c:if>
+
+	<c:if test="<%= CalendarPermission.contains(permissionChecker, calendar, ActionKeys.DELETE) && !calendar.isDefaultCalendar() %>">
 		<portlet:actionURL name="deleteCalendar" var="deleteURL">
 			<portlet:param name="<%= Constants.CMD %>" value="<%= Constants.DELETE %>" />
 			<portlet:param name="redirect" value="<%= currentURL %>" />

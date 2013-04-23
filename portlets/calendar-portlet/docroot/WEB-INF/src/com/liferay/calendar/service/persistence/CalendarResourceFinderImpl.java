@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -360,7 +360,7 @@ public class CalendarResourceFinderImpl
 			sql = CustomSQLUtil.replaceKeywords(
 				sql, "lower(name)", StringPool.LIKE, false, names);
 			sql = CustomSQLUtil.replaceKeywords(
-				sql, "description", StringPool.LIKE, false, descriptions);
+				sql, "description", StringPool.LIKE, true, descriptions);
 			sql = CustomSQLUtil.replaceAndOperator(sql, andOperator);
 
 			StringBundler sb = new StringBundler();

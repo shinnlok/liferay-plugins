@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -179,6 +179,23 @@ public class CalendarBookingServiceSoap {
 			java.util.List<com.liferay.calendar.model.CalendarBooking> returnValue =
 				CalendarBookingServiceUtil.getCalendarBookings(calendarId,
 					startTime, endTime);
+
+			return com.liferay.calendar.model.CalendarBookingSoap.toSoapModels(returnValue);
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
+	public static com.liferay.calendar.model.CalendarBookingSoap[] getCalendarBookings(
+		long calendarId, long startTime, long endTime, int max)
+		throws RemoteException {
+		try {
+			java.util.List<com.liferay.calendar.model.CalendarBooking> returnValue =
+				CalendarBookingServiceUtil.getCalendarBookings(calendarId,
+					startTime, endTime, max);
 
 			return com.liferay.calendar.model.CalendarBookingSoap.toSoapModels(returnValue);
 		}

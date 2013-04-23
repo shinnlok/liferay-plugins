@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -18,6 +18,7 @@ import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.repository.model.FileEntry;
+import com.liferay.portal.kernel.template.TemplateConstants;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
@@ -29,6 +30,10 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.kernel.xml.Attribute;
+import com.liferay.portal.kernel.xml.Document;
+import com.liferay.portal.kernel.xml.Element;
+import com.liferay.portal.kernel.xml.SAXReaderUtil;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.Layout;
 import com.liferay.portal.model.LayoutConstants;
@@ -59,6 +64,7 @@ import com.liferay.portlet.dynamicdatamapping.service.DDMTemplateLocalServiceUti
 import com.liferay.portlet.journal.model.JournalArticle;
 import com.liferay.portlet.journal.model.JournalArticleConstants;
 import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
+import com.liferay.portlet.journal.util.JournalConverterUtil;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -395,13 +401,16 @@ public class FileSystemImporter extends BaseImporter {
 
 		String xsd = StringUtil.read(inputStream);
 
+		if (isJournalStructureXSD(xsd)) {
+			xsd = JournalConverterUtil.getDDMXSD(xsd);
+		}
+
 		setServiceContext(fileName);
 
-		long classNameId = PortalUtil.getClassNameId(JournalArticle.class);
-
 		DDMStructure ddmStructure = DDMStructureLocalServiceUtil.addStructure(
-			userId, groupId, parentDDMStructureKey, classNameId,
-			ddmStructureKey, nameMap, null, xsd,
+			userId, groupId, parentDDMStructureKey,
+			PortalUtil.getClassNameId(JournalArticle.class), ddmStructureKey,
+			nameMap, null, xsd,
 			PropsUtil.get(PropsKeys.JOURNAL_ARTICLE_STORAGE_TYPE),
 			DDMStructureConstants.TYPE_DEFAULT, serviceContext);
 
@@ -426,6 +435,8 @@ public class FileSystemImporter extends BaseImporter {
 
 		Map<Locale, String> nameMap = getMap(name);
 
+		String language = getDDMTemplateLanguage(fileName);
+
 		String xsl = StringUtil.read(inputStream);
 
 		xsl = replaceFileEntryURL(xsl);
@@ -433,17 +444,14 @@ public class FileSystemImporter extends BaseImporter {
 		setServiceContext(fileName);
 
 		DDMStructure ddmStructure = DDMStructureLocalServiceUtil.getStructure(
-			groupId, ddmStructureKey);
-
-		long classNameId = PortalUtil.getClassNameId(DDMStructure.class);
+			groupId, PortalUtil.getClassNameId(JournalArticle.class),
+			ddmStructureKey);
 
 		DDMTemplate ddmTemplate = DDMTemplateLocalServiceUtil.addTemplate(
-			userId, groupId, classNameId, ddmStructure.getStructureId(),
-			ddmTemplateKey, nameMap, null,
-			DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY,
-			DDMTemplateConstants.TEMPLATE_MODE_CREATE,
-			DDMTemplateConstants.LANG_TYPE_XSD, xsl, false, false, null, null,
-			serviceContext);
+			userId, groupId, PortalUtil.getClassNameId(DDMStructure.class),
+			ddmStructure.getStructureId(), ddmTemplateKey, nameMap, null,
+			DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY, null, language, xsl,
+			false, false, null, null, serviceContext);
 
 		addJournalArticles(
 			ddmStructureKey, ddmTemplate.getTemplateKey(),
@@ -547,6 +555,20 @@ public class FileSystemImporter extends BaseImporter {
 		setupSitemap("sitemap.json");
 	}
 
+	protected String getDDMTemplateLanguage(String fileName) {
+		String extension = FileUtil.getExtension(fileName);
+
+		if (extension.equals(TemplateConstants.LANG_TYPE_CSS) ||
+			extension.equals(TemplateConstants.LANG_TYPE_FTL) ||
+			extension.equals(TemplateConstants.LANG_TYPE_VM) ||
+			extension.equals(TemplateConstants.LANG_TYPE_XSL)) {
+
+			return extension;
+		}
+
+		return TemplateConstants.LANG_TYPE_VM;
+	}
+
 	protected JSONObject getDefaultPortletJSONObject(String journalArticleId) {
 		JSONObject portletJSONObject = JSONFactoryUtil.createJSONObject();
 
@@ -631,6 +653,21 @@ public class FileSystemImporter extends BaseImporter {
 		return map;
 	}
 
+	protected boolean isJournalStructureXSD(String xsd) throws Exception {
+		Document document = SAXReaderUtil.read(xsd);
+
+		Element rootElement = document.getRootElement();
+
+		Attribute availableLocalesAttribute = rootElement.attribute(
+			"available-locales");
+
+		if (availableLocalesAttribute == null) {
+			return true;
+		}
+
+		return false;
+	}
+
 	protected File[] listFiles(File dir) {
 		File[] files = dir.listFiles();
 
@@ -704,12 +741,11 @@ public class FileSystemImporter extends BaseImporter {
 	protected void setServiceContext(String name) {
 		JSONObject assetJSONObject = _assetJSONObjectMap.get(name);
 
-		if (assetJSONObject == null) {
-			return;
-		}
+		String[] assetTagNames = null;
 
-		String[] assetTagNames = getJSONArrayAsStringArray(
-			assetJSONObject, "tags");
+		if (assetJSONObject != null) {
+			assetTagNames = getJSONArrayAsStringArray(assetJSONObject, "tags");
+		}
 
 		serviceContext.setAssetTagNames(assetTagNames);
 	}

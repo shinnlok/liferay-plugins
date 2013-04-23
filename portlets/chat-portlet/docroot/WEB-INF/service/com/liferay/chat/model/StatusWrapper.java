@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -47,9 +47,10 @@ public class StatusWrapper implements Status, ModelWrapper<Status> {
 		attributes.put("statusId", getStatusId());
 		attributes.put("userId", getUserId());
 		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("lastClear", getLastClear());
 		attributes.put("online", getOnline());
 		attributes.put("awake", getAwake());
-		attributes.put("activePanelId", getActivePanelId());
+		attributes.put("activePanelIds", getActivePanelIds());
 		attributes.put("message", getMessage());
 		attributes.put("playSound", getPlaySound());
 
@@ -75,6 +76,12 @@ public class StatusWrapper implements Status, ModelWrapper<Status> {
 			setModifiedDate(modifiedDate);
 		}
 
+		Long lastClear = (Long)attributes.get("lastClear");
+
+		if (lastClear != null) {
+			setLastClear(lastClear);
+		}
+
 		Boolean online = (Boolean)attributes.get("online");
 
 		if (online != null) {
@@ -87,10 +94,10 @@ public class StatusWrapper implements Status, ModelWrapper<Status> {
 			setAwake(awake);
 		}
 
-		String activePanelId = (String)attributes.get("activePanelId");
+		String activePanelIds = (String)attributes.get("activePanelIds");
 
-		if (activePanelId != null) {
-			setActivePanelId(activePanelId);
+		if (activePanelIds != null) {
+			setActivePanelIds(activePanelIds);
 		}
 
 		String message = (String)attributes.get("message");
@@ -199,6 +206,24 @@ public class StatusWrapper implements Status, ModelWrapper<Status> {
 	}
 
 	/**
+	* Returns the last clear of this status.
+	*
+	* @return the last clear of this status
+	*/
+	public long getLastClear() {
+		return _status.getLastClear();
+	}
+
+	/**
+	* Sets the last clear of this status.
+	*
+	* @param lastClear the last clear of this status
+	*/
+	public void setLastClear(long lastClear) {
+		_status.setLastClear(lastClear);
+	}
+
+	/**
 	* Returns the online of this status.
 	*
 	* @return the online of this status
@@ -253,21 +278,21 @@ public class StatusWrapper implements Status, ModelWrapper<Status> {
 	}
 
 	/**
-	* Returns the active panel ID of this status.
+	* Returns the active panel IDs of this status.
 	*
-	* @return the active panel ID of this status
+	* @return the active panel IDs of this status
 	*/
-	public java.lang.String getActivePanelId() {
-		return _status.getActivePanelId();
+	public java.lang.String getActivePanelIds() {
+		return _status.getActivePanelIds();
 	}
 
 	/**
-	* Sets the active panel ID of this status.
+	* Sets the active panel IDs of this status.
 	*
-	* @param activePanelId the active panel ID of this status
+	* @param activePanelIds the active panel IDs of this status
 	*/
-	public void setActivePanelId(java.lang.String activePanelId) {
-		_status.setActivePanelId(activePanelId);
+	public void setActivePanelIds(java.lang.String activePanelIds) {
+		_status.setActivePanelIds(activePanelIds);
 	}
 
 	/**
@@ -348,6 +373,16 @@ public class StatusWrapper implements Status, ModelWrapper<Status> {
 	}
 
 	public void setExpandoBridgeAttributes(
+		com.liferay.portal.model.BaseModel<?> baseModel) {
+		_status.setExpandoBridgeAttributes(baseModel);
+	}
+
+	public void setExpandoBridgeAttributes(
+		com.liferay.portlet.expando.model.ExpandoBridge expandoBridge) {
+		_status.setExpandoBridgeAttributes(expandoBridge);
+	}
+
+	public void setExpandoBridgeAttributes(
 		com.liferay.portal.service.ServiceContext serviceContext) {
 		_status.setExpandoBridgeAttributes(serviceContext);
 	}
@@ -393,7 +428,7 @@ public class StatusWrapper implements Status, ModelWrapper<Status> {
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #getWrappedModel}
+	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedModel}
 	 */
 	public Status getWrappedStatus() {
 		return _status;

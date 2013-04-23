@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -35,6 +35,7 @@ import com.liferay.portal.kernel.util.InstanceFactory;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.PropsUtil;
+import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -48,6 +49,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
  * The persistence implementation for the message service.
@@ -1881,6 +1883,11 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 		return count.intValue();
 	}
 
+	@Override
+	protected Set<String> getBadColumnNames() {
+		return _badColumnNames;
+	}
+
 	/**
 	 * Initializes the message persistence.
 	 */
@@ -1895,7 +1902,7 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 
 				for (String listenerClassName : listenerClassNames) {
 					listenersList.add((ModelListener<Message>)InstanceFactory.newInstance(
-							listenerClassName));
+							getClassLoader(), listenerClassName));
 				}
 
 				listeners = listenersList.toArray(new ModelListener[listenersList.size()]);
@@ -1923,6 +1930,9 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 	private static final boolean _HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE = GetterUtil.getBoolean(PropsUtil.get(
 				PropsKeys.HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE));
 	private static Log _log = LogFactoryUtil.getLog(MessagePersistenceImpl.class);
+	private static Set<String> _badColumnNames = SetUtil.fromArray(new String[] {
+				"to", "size"
+			});
 	private static Message _nullMessage = new MessageImpl() {
 			@Override
 			public Object clone() {

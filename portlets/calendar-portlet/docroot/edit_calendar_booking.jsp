@@ -1,6 +1,6 @@
 <%--
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -25,10 +25,9 @@ long date = ParamUtil.getLong(request, "date", nowJCalendar.getTimeInMillis());
 
 CalendarBooking calendarBooking = (CalendarBooking)request.getAttribute(WebKeys.CALENDAR_BOOKING);
 
-long calendarBookingId = BeanParamUtil.getLong(calendarBooking, request, "calendarBookingId");
+long calendarBookingId = BeanPropertiesUtil.getLong(calendarBooking, "calendarBookingId");
 
 long calendarId = BeanParamUtil.getLong(calendarBooking, request, "calendarId", userDefaultCalendar.getCalendarId());
-String title = BeanParamUtil.getString(calendarBooking, request, "titleCurrentValue");
 
 long startTime = BeanParamUtil.getLong(calendarBooking, request, "startTime", nowJCalendar.getTimeInMillis());
 
@@ -44,15 +43,12 @@ java.util.Calendar endTimeJCalendar = JCalendarUtil.getJCalendar(endTime, userTi
 
 boolean allDay = BeanParamUtil.getBoolean(calendarBooking, request, "allDay");
 
-if (!allDay) {
-	com.liferay.portal.kernel.util.CalendarUtil.roundByMinutes(startTimeJCalendar, 30);
-	com.liferay.portal.kernel.util.CalendarUtil.roundByMinutes(endTimeJCalendar, 30);
-}
-
 long firstReminder = BeanParamUtil.getLong(calendarBooking, request, "firstReminder");
 String firstReminderType = BeanParamUtil.getString(calendarBooking, request, "firstReminderType", PortletPropsValues.CALENDAR_NOTIFICATION_DEFAULT_TYPE);
 long secondReminder = BeanParamUtil.getLong(calendarBooking, request, "secondReminder");
 String secondReminderType = BeanParamUtil.getString(calendarBooking, request, "secondReminderType", PortletPropsValues.CALENDAR_NOTIFICATION_DEFAULT_TYPE);
+
+int status = BeanParamUtil.getInteger(calendarBooking, request, "status");
 
 JSONArray acceptedCalendarsJSONArray = JSONFactoryUtil.createJSONArray();
 JSONArray declinedCalendarsJSONArray = JSONFactoryUtil.createJSONArray();
@@ -99,12 +95,14 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 
 <aui:form action="<%= updateCalendarBookingURL %>" method="post" name="fm" onSubmit='<%= "event.preventDefault(); " + renderResponse.getNamespace() + "updateCalendarBooking();" %>'>
 	<aui:input name="mvcPath" type="hidden" value="/edit_calendar_booking.jsp" />
-	<aui:input name="redirect" type="hidden" value="<%= currentURL %>" />
 	<aui:input name="calendarBookingId" type="hidden" value="<%= calendarBookingId %>" />
 	<aui:input name="childCalendarIds" type="hidden" />
 	<aui:input name="oldStartTime" type="hidden" value="<%= startTimeJCalendar.getTimeInMillis() %>" />
+	<aui:input name="status" type="hidden" value ="<%= status %>" />
 	<aui:input name="allFollowing" type="hidden" />
 	<aui:input name="updateCalendarBookingInstance" type="hidden" />
+
+	<liferay-ui:error exception="<%= CalendarBookingDurationException.class %>" message="please-enter-a-start-date-that-comes-before-the-end-date" />
 
 	<liferay-ui:asset-categories-error />
 
@@ -338,8 +336,12 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 
 	Liferay.Util.focusFormField(document.<portlet:namespace />fm.<portlet:namespace />title);
 
-	<c:if test="<%= calendarBooking == null %>">
-		document.<portlet:namespace />fm.<portlet:namespace />title_<%= LanguageUtil.getLanguageId(request) %>.value = '<%= HtmlUtil.escapeJS(title) %>';
+	<%
+	String titleCurrentValue = ParamUtil.getString(request, "titleCurrentValue");
+	%>
+
+	<c:if test="<%= Validator.isNotNull(titleCurrentValue) %>">
+		document.<portlet:namespace />fm.<portlet:namespace />title_<%= themeDisplay.getLanguageId() %>.value = '<%= HtmlUtil.escapeJS(titleCurrentValue) %>';
 	</c:if>
 </aui:script>
 
@@ -358,10 +360,12 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 
 	var syncCalendarsMap = function() {
 		Liferay.CalendarUtil.syncCalendarsMap(
-			window.<portlet:namespace />calendarListAccepted,
-			window.<portlet:namespace />calendarListDeclined,
-			window.<portlet:namespace />calendarListMaybe,
-			window.<portlet:namespace />calendarListPending
+			[
+				window.<portlet:namespace />calendarListAccepted,
+				window.<portlet:namespace />calendarListDeclined,
+				window.<portlet:namespace />calendarListMaybe,
+				window.<portlet:namespace />calendarListPending
+			]
 		);
 
 		A.each(
@@ -408,7 +412,7 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 
 					calendarList.activeItem.set('visible', true);
 
-					<portlet:namespace />toggler.expand();
+					<portlet:namespace />toggler.toggle();
 
 					instance.hide();
 
@@ -567,7 +571,7 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 			color: '#F8F8F8',
 			content: '&nbsp;',
 			editingEvent: true,
-			endDate: Liferay.CalendarUtil.toUserTimeZone(new Date(<%= endTime %>)),
+			endDate: Liferay.CalendarUtil.toLocalTime(new Date(<%= endTime %>)),
 			on: {
 				endDateChange: function(event) {
 					event.stopPropagation();
@@ -578,7 +582,7 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 			},
 			preventDateChange: true,
 			scheduler: scheduler,
-			startDate: Liferay.CalendarUtil.toUserTimeZone(new Date(<%= startTime %>))
+			startDate: Liferay.CalendarUtil.toLocalTime(new Date(<%= startTime %>))
 		}
 	);
 

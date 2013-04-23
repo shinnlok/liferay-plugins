@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -182,12 +182,12 @@ public interface CalendarBookingLocalService extends BaseLocalService,
 			com.liferay.portal.kernel.exception.SystemException;
 
 	/**
-	* Returns the calendar booking with the UUID in the group.
+	* Returns the calendar booking matching the UUID and group.
 	*
-	* @param uuid the UUID of calendar booking
-	* @param groupId the group id of the calendar booking
-	* @return the calendar booking
-	* @throws PortalException if a calendar booking with the UUID in the group could not be found
+	* @param uuid the calendar booking's UUID
+	* @param groupId the primary key of the group
+	* @return the matching calendar booking
+	* @throws PortalException if a matching calendar booking could not be found
 	* @throws SystemException if a system exception occurred
 	*/
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
@@ -269,6 +269,12 @@ public interface CalendarBookingLocalService extends BaseLocalService,
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException;
 
+	public void deleteCalendarBookingInstance(
+		com.liferay.calendar.model.CalendarBooking calendarBooking,
+		long startTime, boolean allFollowing)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException;
+
 	public void deleteCalendarBookingInstance(long calendarBookingId,
 		long startTime, boolean allFollowing)
 		throws com.liferay.portal.kernel.exception.PortalException,
@@ -297,6 +303,11 @@ public interface CalendarBookingLocalService extends BaseLocalService,
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public java.util.List<com.liferay.calendar.model.CalendarBooking> getCalendarBookings(
 		long calendarId, long startTime, long endTime)
+		throws com.liferay.portal.kernel.exception.SystemException;
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public java.util.List<com.liferay.calendar.model.CalendarBooking> getCalendarBookings(
+		long calendarId, long startTime, long endTime, int max)
 		throws com.liferay.portal.kernel.exception.SystemException;
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)

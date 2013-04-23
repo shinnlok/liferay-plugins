@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -226,12 +226,12 @@ public abstract class WSRPProducerLocalServiceBaseImpl
 	}
 
 	/**
-	 * Returns the w s r p producer with the UUID in the group.
+	 * Returns the w s r p producer matching the UUID and group.
 	 *
-	 * @param uuid the UUID of w s r p producer
-	 * @param groupId the group id of the w s r p producer
-	 * @return the w s r p producer
-	 * @throws PortalException if a w s r p producer with the UUID in the group could not be found
+	 * @param uuid the w s r p producer's UUID
+	 * @param groupId the primary key of the group
+	 * @return the matching w s r p producer
+	 * @throws PortalException if a matching w s r p producer could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
 	public WSRPProducer getWSRPProducerByUuidAndGroupId(String uuid,

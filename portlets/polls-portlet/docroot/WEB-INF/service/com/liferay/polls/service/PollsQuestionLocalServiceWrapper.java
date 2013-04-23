@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -21,7 +21,7 @@ import com.liferay.portal.service.ServiceWrapper;
  * This class is a wrapper for {@link PollsQuestionLocalService}.
  * </p>
  *
- * @author    Juan Fernï¿½ndez
+ * @author    Juan Fern√°ndez
  * @see       PollsQuestionLocalService
  * @generated
  */
@@ -77,11 +77,13 @@ public class PollsQuestionLocalServiceWrapper
 	*
 	* @param pollsQuestion the polls question
 	* @return the polls question that was removed
+	* @throws PortalException
 	* @throws SystemException if a system exception occurred
 	*/
 	public com.liferay.polls.model.PollsQuestion deletePollsQuestion(
 		com.liferay.polls.model.PollsQuestion pollsQuestion)
-		throws com.liferay.portal.kernel.exception.SystemException {
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
 		return _pollsQuestionLocalService.deletePollsQuestion(pollsQuestion);
 	}
 
@@ -189,12 +191,12 @@ public class PollsQuestionLocalServiceWrapper
 	}
 
 	/**
-	* Returns the polls question with the UUID in the group.
+	* Returns the polls question matching the UUID and group.
 	*
-	* @param uuid the UUID of polls question
-	* @param groupId the group id of the polls question
-	* @return the polls question
-	* @throws PortalException if a polls question with the UUID in the group could not be found
+	* @param uuid the polls question's UUID
+	* @param groupId the primary key of the group
+	* @return the matching polls question
+	* @throws PortalException if a matching polls question could not be found
 	* @throws SystemException if a system exception occurred
 	*/
 	public com.liferay.polls.model.PollsQuestion getPollsQuestionByUuidAndGroupId(
@@ -272,15 +274,69 @@ public class PollsQuestionLocalServiceWrapper
 			arguments);
 	}
 
+	public com.liferay.polls.model.PollsQuestion addPollsQuestion(long userId,
+		java.util.Map<java.util.Locale, java.lang.String> titleMap,
+		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
+		int expirationDateMonth, int expirationDateDay, int expirationDateYear,
+		int expirationDateHour, int expirationDateMinute, boolean neverExpire,
+		java.util.List<com.liferay.polls.model.PollsChoice> pollsChoices,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return _pollsQuestionLocalService.addPollsQuestion(userId, titleMap,
+			descriptionMap, expirationDateMonth, expirationDateDay,
+			expirationDateYear, expirationDateHour, expirationDateMinute,
+			neverExpire, pollsChoices, serviceContext);
+	}
+
+	public void deletePollsQuestions(long groupId)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		_pollsQuestionLocalService.deletePollsQuestions(groupId);
+	}
+
+	public java.util.List<com.liferay.polls.model.PollsQuestion> getPollsQuestions(
+		long groupId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _pollsQuestionLocalService.getPollsQuestions(groupId);
+	}
+
+	public java.util.List<com.liferay.polls.model.PollsQuestion> getPollsQuestions(
+		long groupId, int start, int end)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _pollsQuestionLocalService.getPollsQuestions(groupId, start, end);
+	}
+
+	public int getPollsQuestionsCount(long groupId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _pollsQuestionLocalService.getPollsQuestionsCount(groupId);
+	}
+
+	public com.liferay.polls.model.PollsQuestion updatePollsQuestion(
+		long userId, long pollsQuestionId,
+		java.util.Map<java.util.Locale, java.lang.String> titleMap,
+		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
+		int expirationDateMonth, int expirationDateDay, int expirationDateYear,
+		int expirationDateHour, int expirationDateMinute, boolean neverExpire,
+		java.util.List<com.liferay.polls.model.PollsChoice> pollsChoices,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return _pollsQuestionLocalService.updatePollsQuestion(userId,
+			pollsQuestionId, titleMap, descriptionMap, expirationDateMonth,
+			expirationDateDay, expirationDateYear, expirationDateHour,
+			expirationDateMinute, neverExpire, pollsChoices, serviceContext);
+	}
+
 	/**
-	 * @deprecated Renamed to {@link #getWrappedService}
+	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedService}
 	 */
 	public PollsQuestionLocalService getWrappedPollsQuestionLocalService() {
 		return _pollsQuestionLocalService;
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #setWrappedService}
+	 * @deprecated As of 6.1.0, replaced by {@link #setWrappedService}
 	 */
 	public void setWrappedPollsQuestionLocalService(
 		PollsQuestionLocalService pollsQuestionLocalService) {

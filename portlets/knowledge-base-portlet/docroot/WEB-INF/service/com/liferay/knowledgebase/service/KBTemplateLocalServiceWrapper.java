@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -190,12 +190,12 @@ public class KBTemplateLocalServiceWrapper implements KBTemplateLocalService,
 	}
 
 	/**
-	* Returns the k b template with the UUID in the group.
+	* Returns the k b template matching the UUID and group.
 	*
-	* @param uuid the UUID of k b template
-	* @param groupId the group id of the k b template
-	* @return the k b template
-	* @throws PortalException if a k b template with the UUID in the group could not be found
+	* @param uuid the k b template's UUID
+	* @param groupId the primary key of the group
+	* @return the matching k b template
+	* @throws PortalException if a matching k b template could not be found
 	* @throws SystemException if a system exception occurred
 	*/
 	public com.liferay.knowledgebase.model.KBTemplate getKBTemplateByUuidAndGroupId(
@@ -336,14 +336,14 @@ public class KBTemplateLocalServiceWrapper implements KBTemplateLocalService,
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #getWrappedService}
+	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedService}
 	 */
 	public KBTemplateLocalService getWrappedKBTemplateLocalService() {
 		return _kbTemplateLocalService;
 	}
 
 	/**
-	 * @deprecated Renamed to {@link #setWrappedService}
+	 * @deprecated As of 6.1.0, replaced by {@link #setWrappedService}
 	 */
 	public void setWrappedKBTemplateLocalService(
 		KBTemplateLocalService kbTemplateLocalService) {

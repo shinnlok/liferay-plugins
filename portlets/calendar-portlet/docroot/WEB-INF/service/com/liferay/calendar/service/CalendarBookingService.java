@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2012 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -109,6 +109,20 @@ public interface CalendarBookingService extends BaseService, InvokableService {
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public java.util.List<com.liferay.calendar.model.CalendarBooking> getCalendarBookings(
 		long calendarId, long startTime, long endTime)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException;
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public java.util.List<com.liferay.calendar.model.CalendarBooking> getCalendarBookings(
+		long calendarId, long startTime, long endTime, int max)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException;
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public java.lang.String getCalendarBookingsRSS(long calendarId,
+		long startTime, long endTime, int max, java.lang.String type,
+		double version, java.lang.String displayStyle,
+		com.liferay.portal.theme.ThemeDisplay themeDisplay)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException;
 
