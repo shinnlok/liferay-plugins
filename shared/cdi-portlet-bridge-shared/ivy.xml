@@ -16,10 +16,10 @@
 	</configurations>
 
 	<publications>
-		<artifact ext="jar" type="sources" m2:classifier="sources" />
-		<artifact ext="zip" type="javadoc" m2:classifier="javadoc"  />
 		<artifact type="jar" />
 		<artifact type="pom" />
+		<artifact ext="jar" m2:classifier="sources" type="sources" />
+		<artifact ext="zip" m2:classifier="javadoc" type="javadoc" />
 	</publications>
 
 	<dependencies defaultconf="default">

@@ -40,6 +40,9 @@
 		</antcall>
 	</target>
 
+	<target name="deploy" depends="jar">
+	</target>
+
 	<target name="jar" depends="compile">
 		<mkdir dir="${sdk.dir}/dist" />
 

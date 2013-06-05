@@ -2,7 +2,7 @@
 	<settings defaultResolver="default" />
 
 	<credentials host="${sonatype.snapshot.hostname}" realm="${sonatype.snapshot.realm}" passwd="${sonatype.snapshot.password}" username="${sonatype.snapshot.username}" />
-	<credentials host="${sonatype.staging.hostname}" realm="${sonatype.staging.realm}" passwd="${sonatype.staging.password}" username="${sonatype.staging.username}" />
+	<credentials host="${sonatype.release.hostname}" realm="${sonatype.release.realm}" passwd="${sonatype.release.password}" username="${sonatype.release.username}" />
 
 	<resolvers>
 		<filesystem m2compatible="true" name="local-m2">
@@ -20,7 +20,7 @@
 		</url>
 
 		<url m2compatible="true" name="sonatype-m2-staging">
-			<artifact pattern="${sonatype.staging.url}/[organisation]/[module]/[revision]/[artifact]-[revision](-[classifier]).[ext]" />
+			<artifact pattern="${sonatype.release.url}/[organisation]/[module]/[revision]/[artifact]-[revision](-[classifier]).[ext]" />
 		</url>
 
 		<chain dual="true" name="default">

@@ -19,8 +19,14 @@
 	</if>
 
 	<path id="ivy.lib.path">
-		<fileset dir="${ivy.home}" includes="ivy-${ivy.version}.jar" />
-		<fileset dir="${sdk.dir}/lib" includes="bcpg-jdk16.jar,bcprov-jdk16.jar" />
+		<fileset
+			dir="${ivy.home}"
+			includes="ivy-${ivy.version}.jar"
+		/>
+		<fileset
+			dir="${sdk.dir}/lib"
+			includes="bcpg-jdk16.jar,bcprov-jdk16.jar"
+		/>
 	</path>
 
 	<taskdef classpathref="ivy.lib.path" resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" />
