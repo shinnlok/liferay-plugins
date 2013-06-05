@@ -144,7 +144,7 @@ if (microblogsEntries != null) {
 
 				<div class="footer">
 					<span class="modified-date">
-						<%= dateFormatDateTime.format(microblogsEntry.getModifiedDate()) %>
+						<%= dateTimeFormat.format(microblogsEntry.getModifiedDate()) %>
 					</span>
 
 					<span class="action-container">

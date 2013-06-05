@@ -61,7 +61,7 @@ List<MBMessage> messages = treeWalker.getMessages();
 					</c:otherwise>
 				</c:choose>
 
-				<span class="post-date"><%= dateFormatDateTime.format(message.getModifiedDate()) %></span>
+				<span class="post-date"><%= dateTimeFormat.format(message.getModifiedDate()) %></span>
 
 				<c:if test="<%= DateUtil.compareTo(message.getCreateDate(), message.getModifiedDate()) != 0 %>">
 					<span class="edit-notice"><liferay-ui:message key="modified" /></span>

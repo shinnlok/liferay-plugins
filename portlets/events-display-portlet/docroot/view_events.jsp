@@ -87,10 +87,10 @@ List<CalEvent> events = (List<CalEvent>)request.getAttribute("view.jsp-events");
 					<span class="event-time">
 						<c:choose>
 							<c:when test="<%= event.isTimeZoneSensitive() %>">
-								<%= dateFormatTime.format(Time.getDate(event.getStartDate(), timeZone)) %>
+								<%= format.format(Time.getDate(event.getStartDate(), timeZone)) %>
 							</c:when>
 							<c:otherwise>
-								<%= dateFormatTime.format(event.getStartDate()) %>
+								<%= format.format(event.getStartDate()) %>
 							</c:otherwise>
 						</c:choose>
 					</span>

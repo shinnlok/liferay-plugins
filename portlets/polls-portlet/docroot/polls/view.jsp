@@ -72,7 +72,7 @@
 			row.addText(LanguageUtil.get(pageContext, "never"), rowURL);
 		}
 		else {
-			row.addText(dateFormatDateTime.format(question.getLastVoteDate()), rowURL);
+			row.addText(dateTimeFormat.format(question.getLastVoteDate()), rowURL);
 		}
 
 		// Expiration date
@@ -81,7 +81,7 @@
 			row.addText(LanguageUtil.get(pageContext, "never"), rowURL);
 		}
 		else {
-			row.addText(dateFormatDateTime.format(question.getExpirationDate()), rowURL);
+			row.addText(dateTimeFormat.format(question.getExpirationDate()), rowURL);
 		}
 
 		// Action

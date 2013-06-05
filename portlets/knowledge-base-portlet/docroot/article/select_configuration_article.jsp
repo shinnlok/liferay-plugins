@@ -76,7 +76,7 @@ String orderByType = ParamUtil.getString(request, "orderByType", "desc");
 			href="<%= rowURL %>"
 			name="create-date"
 			orderable="<%= true %>"
-			value='<%= dateFormatDate.format(kbArticle.getCreateDate()) + "<br />" + dateFormatTime.format(kbArticle.getCreateDate()) %>'
+			value='<%= dateFormat.format(kbArticle.getCreateDate()) + "<br />" + timeFormat.format(kbArticle.getCreateDate()) %>'
 		/>
 
 		<liferay-ui:search-container-column-text
@@ -84,7 +84,7 @@ String orderByType = ParamUtil.getString(request, "orderByType", "desc");
 			href="<%= rowURL %>"
 			name="modified-date"
 			orderable="<%= true %>"
-			value='<%= dateFormatDate.format(kbArticle.getModifiedDate()) + "<br />" + dateFormatTime.format(kbArticle.getModifiedDate()) %>'
+			value='<%= dateFormat.format(kbArticle.getModifiedDate()) + "<br />" + timeFormat.format(kbArticle.getModifiedDate()) %>'
 		/>
 
 		<liferay-ui:search-container-column-text

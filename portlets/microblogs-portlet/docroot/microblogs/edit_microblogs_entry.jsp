@@ -51,7 +51,7 @@ boolean edit = ParamUtil.getBoolean(request, "edit");
 boolean repost = ParamUtil.getBoolean(request, "repost");
 
 if ((microblogsEntry != null) && !edit) {
-	modifiedDate = dateFormatDateTime.format(microblogsEntry.getModifiedDate());
+	modifiedDate = dateTimeFormat.format(microblogsEntry.getModifiedDate());
 
 	receiverUserId = microblogsEntry.getUserId();
 

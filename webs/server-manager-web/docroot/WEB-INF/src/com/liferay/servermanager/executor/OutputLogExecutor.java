@@ -92,10 +92,10 @@ public class OutputLogExecutor extends BaseExecutor {
 	protected String getTomcatDateString() {
 		Date date = new Date();
 
-		return _simpleDateFormat.format(date);
+		return _format.format(date);
 	}
 
-	private static Format _simpleDateFormat =
+	private static Format _format =
 		FastDateFormatFactoryUtil.getSimpleDateFormat("yyyy-MM-dd");
 
 }

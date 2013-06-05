@@ -119,7 +119,7 @@ String orderByType = ParamUtil.getString(request, "orderByType", "desc");
 					name="date"
 					orderable="<%= true %>"
 					orderableProperty="modified-date"
-					value='<%= dateFormatDate.format(curKBArticle.getModifiedDate()) + "<br />" + dateFormatTime.format(curKBArticle.getModifiedDate()) %>'
+					value='<%= dateFormat.format(curKBArticle.getModifiedDate()) + "<br />" + timeFormat.format(curKBArticle.getModifiedDate()) %>'
 				/>
 
 				<c:if test="<%= (status == WorkflowConstants.STATUS_ANY) || KBArticlePermission.contains(permissionChecker, kbArticle, ActionKeys.UPDATE) %>">

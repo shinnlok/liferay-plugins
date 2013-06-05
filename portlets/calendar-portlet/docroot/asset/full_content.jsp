@@ -90,7 +90,7 @@
 		java.util.Calendar startTimeJCalendar = JCalendarUtil.getJCalendar(calendarBooking.getStartTime(), user.getTimeZone());
 		%>
 
-		<liferay-ui:message key="start-date" />: <%= dateFormatLongDate.format(startTimeJCalendar.getTime()) + ", " + dateFormatTime.format(startTimeJCalendar.getTime()) %>
+		<liferay-ui:message key="start-date" />: <%= dateFormatLongDate.format(startTimeJCalendar.getTime()) + ", " + timeFormat.format(startTimeJCalendar.getTime()) %>
 
 		<br />
 
@@ -103,7 +103,7 @@
 		java.util.Calendar endTimeJCalendar = JCalendarUtil.getJCalendar(calendarBooking.getEndTime(), user.getTimeZone());
 		%>
 
-		<liferay-ui:message key="end-date" />: <%= dateFormatLongDate.format(endTimeJCalendar.getTime()) + ", " + dateFormatTime.format(endTimeJCalendar.getTime()) %>
+		<liferay-ui:message key="end-date" />: <%= dateFormatLongDate.format(endTimeJCalendar.getTime()) + ", " + timeFormat.format(endTimeJCalendar.getTime()) %>
 
 		<c:if test="<%= Validator.isNotNull(calendarBooking.getLocation()) %>">
 			<br /><br />

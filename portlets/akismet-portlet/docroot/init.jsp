@@ -70,7 +70,7 @@ page import="javax.portlet.WindowState" %>
 <%
 PortletURL portletURL = renderResponse.createRenderURL();
 
-DateFormat longDateFormatDate = DateFormat.getDateInstance(DateFormat.LONG, locale);
+DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.LONG, locale);
 
-longDateFormatDate.setTimeZone(timeZone);
+dateFormat.setTimeZone(timeZone);
 %>

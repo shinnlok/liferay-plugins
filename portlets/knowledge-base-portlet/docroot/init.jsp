@@ -155,7 +155,7 @@ String rootPortletId = portletDisplay.getRootPortletId();
 
 String templatePath = portletConfig.getInitParameter("template-path");
 
-Format dateFormatDate = FastDateFormatFactoryUtil.getDate(FastDateFormatConstants.LONG, locale, timeZone);
-Format dateFormatDateTime = FastDateFormatFactoryUtil.getDateTime(FastDateFormatConstants.LONG, FastDateFormatConstants.SHORT, locale, timeZone);
-Format dateFormatTime = FastDateFormatFactoryUtil.getTime(locale, timeZone);
+Format dateFormat = FastDateFormatFactoryUtil.getDate(FastDateFormatConstants.LONG, locale, timeZone);
+Format dateTimeFormat = FastDateFormatFactoryUtil.getDateTime(FastDateFormatConstants.LONG, FastDateFormatConstants.SHORT, locale, timeZone);
+Format timeFormat = FastDateFormatFactoryUtil.getTime(locale, timeZone);
 %>

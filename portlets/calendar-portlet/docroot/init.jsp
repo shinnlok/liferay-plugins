@@ -164,15 +164,15 @@ long rssTimeInterval = GetterUtil.getLong(preferences.getValue("rssTimeInterval"
 TimeZone userTimeZone = TimeZone.getTimeZone(timeZoneId);
 TimeZone utcTimeZone = TimeZone.getTimeZone(StringPool.UTC);
 
-Format dateFormatDate = FastDateFormatFactoryUtil.getDate(locale);
-Format dateFormatLongDate = FastDateFormatFactoryUtil.getDate(FastDateFormatConstants.LONG, locale, timeZone);
+Format dateFormat = FastDateFormatFactoryUtil.getDate(locale);
+Format longDateFormat = FastDateFormatFactoryUtil.getDate(FastDateFormatConstants.LONG, locale, timeZone);
 
-Format dateFormatTime = null;
+Format timeFormat = null;
 
 if (isoTimeFormat) {
-	dateFormatTime = FastDateFormatFactoryUtil.getSimpleDateFormat("HH:mm", locale, timeZone);
+	timeFormat = FastDateFormatFactoryUtil.getSimpleDateFormat("HH:mm", locale, timeZone);
 }
 else {
-	dateFormatTime = FastDateFormatFactoryUtil.getSimpleDateFormat("hh:mm a", locale, timeZone);
+	timeFormat = FastDateFormatFactoryUtil.getSimpleDateFormat("hh:mm a", locale, timeZone);
 }
 %>

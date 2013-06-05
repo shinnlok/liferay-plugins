@@ -25,7 +25,7 @@ page import="com.liferay.portlet.polls.service.PollsChoiceLocalServiceUtil" %><%
 page import="com.liferay.portlet.polls.service.PollsVoteLocalServiceUtil" %>
 
 <%
-Format dateFormatDateTime = FastDateFormatFactoryUtil.getDateTime(locale, timeZone);
+Format format = FastDateFormatFactoryUtil.getDateTime(locale, timeZone);
 %>
 
 <%@ include file="/polls/init-ext.jsp" %>
