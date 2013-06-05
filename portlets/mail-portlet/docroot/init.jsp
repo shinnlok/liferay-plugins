@@ -65,5 +65,5 @@ page import="java.util.List" %>
 <liferay-theme:defineObjects />
 
 <%
-Format dateFormatDateTime = FastDateFormatFactoryUtil.getDateTime(locale, timeZone);
+Format format = FastDateFormatFactoryUtil.getDateTime(locale, timeZone);
 %>

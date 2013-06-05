@@ -89,5 +89,5 @@ int maxDaysDisplayed = PrefsParamUtil.getInteger(preferences, request, "maxDaysD
 
 Calendar cal = CalendarFactoryUtil.getCalendar(timeZone, locale);
 
-Format dateFormatTime = FastDateFormatFactoryUtil.getTime(locale);
+Format format = FastDateFormatFactoryUtil.getTime(locale);
 %>

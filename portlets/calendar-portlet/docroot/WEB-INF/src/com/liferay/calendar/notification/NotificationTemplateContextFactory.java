@@ -69,14 +69,14 @@ public class NotificationTemplateContextFactory {
 
 		TimeZone userTimezone = user.getTimeZone();
 
-		Format dateFormatDateTime = FastDateFormatFactoryUtil.getDateTime(
+		Format format = FastDateFormatFactoryUtil.getDateTime(
 			user.getLocale(), userTimezone);
 
 		String userTimezoneDisplayName = userTimezone.getDisplayName(
 			false, TimeZone.SHORT, user.getLocale());
 
 		String endTime =
-			dateFormatDateTime.format(calendarBooking.getEndTime()) +
+			format.format(calendarBooking.getEndTime()) +
 				StringPool.SPACE + userTimezoneDisplayName;
 
 		attributes.put("endTime", endTime);
@@ -95,7 +95,7 @@ public class NotificationTemplateContextFactory {
 				"javax.portlet.title.".concat(PortletKeys.CALENDAR)));
 
 		String startTime =
-			dateFormatDateTime.format(calendarBooking.getStartTime()) +
+			format.format(calendarBooking.getStartTime()) +
 				StringPool.SPACE + userTimezoneDisplayName;
 
 		attributes.put("startTime", startTime);

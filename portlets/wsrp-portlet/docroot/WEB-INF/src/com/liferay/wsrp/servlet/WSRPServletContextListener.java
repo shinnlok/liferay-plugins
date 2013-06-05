@@ -33,10 +33,12 @@ import javax.servlet.ServletContextListener;
 public class WSRPServletContextListener
 	extends BasePortalLifecycle implements ServletContextListener {
 
+	@Override
 	public void contextDestroyed(ServletContextEvent servletContextEvent) {
 		portalDestroy();
 	}
 
+	@Override
 	public void contextInitialized(ServletContextEvent servletContextEvent) {
 		registerPortalLifecycle();
 	}
@@ -44,12 +46,12 @@ public class WSRPServletContextListener
 	@Override
 	protected void doPortalDestroy() throws Exception {
 		MessageBusUtil.unregisterMessageListener(
-			DestinationNames.HOT_DEPLOY, _hotDeployMessageListener);
+			DestinationNames.HOT_DEPLOY, _messageListener);
 	}
 
 	@Override
 	protected void doPortalInit() {
-		_hotDeployMessageListener = new HotDeployMessageListener(
+		_messageListener = new HotDeployMessageListener(
 			ClpSerializer.getServletContextName()) {
 
 			@Override
@@ -71,9 +73,9 @@ public class WSRPServletContextListener
 		};
 
 		MessageBusUtil.registerMessageListener(
-			DestinationNames.HOT_DEPLOY, _hotDeployMessageListener);
+			DestinationNames.HOT_DEPLOY, _messageListener);
 	}
 
-	private MessageListener _hotDeployMessageListener;
+	private MessageListener _messageListener;
 
 }

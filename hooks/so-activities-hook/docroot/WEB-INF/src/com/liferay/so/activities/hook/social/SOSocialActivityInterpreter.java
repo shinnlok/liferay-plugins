@@ -58,7 +58,7 @@ public abstract class SOSocialActivityInterpreter
 		return assetRendererFactory.getAssetRenderer(activity.getClassPK());
 	}
 
-	protected Format getFormatDateTime(Locale locale, TimeZone timezone) {
+	protected Format getDateTimeFormat(Locale locale, TimeZone timezone) {
 		return FastDateFormatFactoryUtil.getSimpleDateFormat(
 			"EEEE, MMMMM dd, yyyy 'at' h:mm a", locale, timezone);
 	}
@@ -119,12 +119,12 @@ public abstract class SOSocialActivityInterpreter
 		sb.append("<div class=\"activity-header\">");
 		sb.append("<div class=\"activity-time\" title=\"");
 
-		Format dateFormatDate = getFormatDateTime(
+		Format dateTimeFormat = getDateTimeFormat(
 			serviceContext.getLocale(), serviceContext.getTimeZone());
 
 		Date activityDate = new Date(activity.getCreateDate());
 
-		sb.append(dateFormatDate.format(activityDate));
+		sb.append(dateTimeFormat.format(activityDate));
 
 		sb.append("\">");
 

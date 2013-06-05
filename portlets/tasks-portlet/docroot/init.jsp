@@ -100,5 +100,5 @@ if (group.isRegularSite()) {
 	tabs1Default = "all-tasks";
 }
 
-Format dateFormatDateTime = FastDateFormatFactoryUtil.getDateTime(locale, timeZone);
+Format format = FastDateFormatFactoryUtil.getDateTime(locale, timeZone);
 %>

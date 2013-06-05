@@ -206,7 +206,7 @@ taskListURL.setParameter("tabs2", tabs2);
 						buffer.append("<div class=\"due-date\">");
 					}
 
-					buffer.append(dateFormatDateTime.format(tasksEntry.getDueDate()));
+					buffer.append(dateTimeFormat.format(tasksEntry.getDueDate()));
 					buffer.append("</div>");
 				}
 
@@ -244,7 +244,7 @@ taskListURL.setParameter("tabs2", tabs2);
 			}
 			else {
 				if (tasksEntry.getDueDate() != null) {
-					buffer.append(dateFormatDateTime.format(tasksEntry.getDueDate()));
+					buffer.append(dateTimeFormat.format(tasksEntry.getDueDate()));
 				}
 			}
 			%>

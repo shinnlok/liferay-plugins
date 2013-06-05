@@ -92,7 +92,7 @@
 				<liferay-ui:search-container-column-text
 					href="<%= rowURL %>"
 					name="create-date"
-					value="<%= dateFormatDateTime.format(subscription.getCreateDate()) %>"
+					value="<%= dateTimeFormat.format(subscription.getCreateDate()) %>"
 				/>
 
 				<liferay-ui:search-container-column-jsp

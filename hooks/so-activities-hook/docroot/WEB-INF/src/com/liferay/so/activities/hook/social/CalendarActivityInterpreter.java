@@ -102,13 +102,13 @@ public class CalendarActivityInterpreter extends SOSocialActivityInterpreter {
 		sb.append(serviceContext.translate("date"));
 		sb.append(": </strong>");
 
-		Format dateFormatDate = getFormatDateTime(
+		Format format = getDateTimeFormat(
 			serviceContext.getLocale(), serviceContext.getTimeZone());
 
 		CalEvent event = CalEventLocalServiceUtil.getEvent(
 			activity.getClassPK());
 
-		sb.append(dateFormatDate.format((event.getStartDate())));
+		sb.append(format.format((event.getStartDate())));
 
 		sb.append("</div><div class=\"location\"><strong>");
 		sb.append(serviceContext.translate("location"));
