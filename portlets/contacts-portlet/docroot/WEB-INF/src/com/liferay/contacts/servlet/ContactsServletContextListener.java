@@ -38,10 +38,12 @@ import javax.servlet.ServletContextListener;
 public class ContactsServletContextListener
 	extends BasePortalLifecycle implements ServletContextListener {
 
+	@Override
 	public void contextDestroyed(ServletContextEvent servletContextEvent) {
 		portalDestroy();
 	}
 
+	@Override
 	public void contextInitialized(ServletContextEvent servletContextEvent) {
 		registerPortalLifecycle();
 	}
@@ -49,12 +51,12 @@ public class ContactsServletContextListener
 	@Override
 	protected void doPortalDestroy() throws Exception {
 		MessageBusUtil.unregisterMessageListener(
-			DestinationNames.HOT_DEPLOY, _hotDeployMessageListener);
+			DestinationNames.HOT_DEPLOY, _messageListener);
 	}
 
 	@Override
 	protected void doPortalInit() {
-		_hotDeployMessageListener = new HotDeployMessageListener(
+		_messageListener = new HotDeployMessageListener(
 			ClpSerializer.getServletContextName(), "chat-portlet") {
 
 			@Override
@@ -71,7 +73,7 @@ public class ContactsServletContextListener
 		};
 
 		MessageBusUtil.registerMessageListener(
-			DestinationNames.HOT_DEPLOY, _hotDeployMessageListener);
+			DestinationNames.HOT_DEPLOY, _messageListener);
 	}
 
 	protected void registerChatExtension() throws Exception {
@@ -93,7 +95,7 @@ public class ContactsServletContextListener
 			ClpSerializer.getServletContextName(), "/chat/view.jsp");
 	}
 
-	private MessageListener _hotDeployMessageListener;
+	private MessageListener _messageListener;
 	private MethodKey _registerMethodKey;
 
 }
