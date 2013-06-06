@@ -65,7 +65,7 @@ KBArticle kbArticle = (KBArticle)request.getAttribute(WebKeys.KNOWLEDGE_BASE_KB_
 									url="<%= KBArticleAssetEntriesUtil.getURL(request, themeDisplay, assetRendererFactory, assetRenderer) %>"
 								/>
 
-								<span class="kb-info"><%= dateFormatDate.format(assetEntry.getModifiedDate()) %></span>
+								<span class="kb-info"><%= dateFormat.format(assetEntry.getModifiedDate()) %></span>
 							</div>
 
 						<%

@@ -46,7 +46,7 @@ public class RSSUtil extends com.liferay.util.RSSUtil {
 			String content = ContentUtil.get(
 				PortletProps.get(PortletPropsKeys.CALENDAR_RSS_TEMPLATE));
 
-			Format dateFormatDateTime = FastDateFormatFactoryUtil.getDateTime(
+			Format format = FastDateFormatFactoryUtil.getDateTime(
 				themeDisplay.getLocale(), themeDisplay.getTimeZone());
 
 			content = StringUtil.replace(
@@ -58,9 +58,9 @@ public class RSSUtil extends com.liferay.util.RSSUtil {
 				},
 				new String[] {
 					calendarBooking.getDescription(themeDisplay.getLocale()),
-					dateFormatDateTime.format(calendarBooking.getEndTime()),
+					format.format(calendarBooking.getEndTime()),
 					calendarBooking.getLocation(),
-					dateFormatDateTime.format(calendarBooking.getStartTime()),
+					format.format(calendarBooking.getStartTime()),
 					calendarBooking.getTitle(themeDisplay.getLocale())
 				});
 

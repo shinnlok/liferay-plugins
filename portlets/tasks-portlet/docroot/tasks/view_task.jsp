@@ -84,7 +84,7 @@ TasksEntry tasksEntry = TasksEntryLocalServiceUtil.fetchTasksEntry(tasksEntryId)
 			</div>
 
 			<div class="task-data last modified-date">
-				<liferay-ui:message arguments="<%= dateFormatDateTime.format(tasksEntry.getModifiedDate()) %>" key="modified-on-x" />
+				<liferay-ui:message arguments="<%= dateTimeFormat.format(tasksEntry.getModifiedDate()) %>" key="modified-on-x" />
 			</div>
 		</div>
 
@@ -117,7 +117,7 @@ TasksEntry tasksEntry = TasksEntryLocalServiceUtil.fetchTasksEntry(tasksEntryId)
 				</td>
 				<td>
 					<div class="task-data due-date">
-						<%= dateFormatDateTime.format(tasksEntry.getDueDate()) %>
+						<%= dateTimeFormat.format(tasksEntry.getDueDate()) %>
 					</div>
 				</td>
 			</tr>

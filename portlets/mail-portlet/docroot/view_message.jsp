@@ -124,7 +124,7 @@ MailManager mailManager = MailManager.getInstance(request);
 				<liferay-ui:message key="date" />
 			</td>
 			<td>
-				<%= dateFormatDateTime.format(message.getSentDate()) %>
+				<%= dateTimeFormat.format(message.getSentDate()) %>
 			</td>
 		</tr>
 		</table>

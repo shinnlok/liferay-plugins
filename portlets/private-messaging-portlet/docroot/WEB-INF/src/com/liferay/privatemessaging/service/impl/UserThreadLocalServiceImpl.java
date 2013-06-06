@@ -462,7 +462,7 @@ public class UserThreadLocalServiceImpl extends UserThreadLocalServiceBaseImpl {
 			InternetAddress to = new InternetAddress(
 				recipient.getEmailAddress());
 
-			Format dateFormatDateTime =
+			Format format =
 				FastDateFormatFactoryUtil.getSimpleDateFormat(
 					"MMMMM d 'at' h:mm a", recipient.getLocale(),
 					recipient.getTimeZone());
@@ -473,8 +473,7 @@ public class UserThreadLocalServiceImpl extends UserThreadLocalServiceBaseImpl {
 					"[$SENT_DATE$]", "[$THREAD_URL$]"
 				},
 				new String[] {
-					dateFormatDateTime.format(mbMessage.getCreateDate()),
-					threadURL
+					format.format(mbMessage.getCreateDate()), threadURL
 				}
 			);
 

@@ -104,7 +104,7 @@ String orderByType = ParamUtil.getString(request, "orderByType", "desc");
 				href="<%= rowURL %>"
 				name="create-date"
 				orderable="<%= true %>"
-				value='<%= dateFormatDate.format(tuple.getObject(3)) + "<br />" + dateFormatTime.format(tuple.getObject(3)) %>'
+				value='<%= dateFormat.format(tuple.getObject(3)) + "<br />" + timeFormat.format(tuple.getObject(3)) %>'
 			/>
 		</c:if>
 
@@ -114,7 +114,7 @@ String orderByType = ParamUtil.getString(request, "orderByType", "desc");
 				href="<%= rowURL %>"
 				name="modified-date"
 				orderable="<%= true %>"
-				value='<%= dateFormatDate.format(tuple.getObject(4)) + "<br />" + dateFormatTime.format(tuple.getObject(4)) %>'
+				value='<%= dateFormat.format(tuple.getObject(4)) + "<br />" + timeFormat.format(tuple.getObject(4)) %>'
 			/>
 		</c:if>
 

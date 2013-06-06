@@ -36,12 +36,12 @@ if (user2 != null) {
 
 		<%
 		for (ProjectsEntry projectsEntry : projectsEntries) {
-			String startDate = dateFormatDate.format(projectsEntry.getStartDate());
+			String startDate = dateFormat.format(projectsEntry.getStartDate());
 
 			String endDate = null;
 
 			if (projectsEntry.getEndDate() != null) {
-				endDate = dateFormatDate.format(projectsEntry.getEndDate());
+				endDate = dateFormat.format(projectsEntry.getEndDate());
 			}
 			else {
 				endDate = LanguageUtil.get(pageContext, "current");

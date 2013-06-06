@@ -121,8 +121,8 @@ else if (group.isUser()) {
 	user2 = UserLocalServiceUtil.getUserById(group.getClassPK());
 }
 
-Format dateFormatDate = FastDateFormatFactoryUtil.getDate(locale, timeZone);
-Format dateFormatDateTime = FastDateFormatFactoryUtil.getDateTime(locale, timeZone);
+Format dateFormat = FastDateFormatFactoryUtil.getDate(locale, timeZone);
+Format dateTimeFormat = FastDateFormatFactoryUtil.getDateTime(locale, timeZone);
 
 NumberFormat numberFormat = NumberFormat.getNumberInstance(locale);
 NumberFormat percentFormat = NumberFormat.getPercentInstance(locale);

@@ -44,5 +44,5 @@ PortletURL portletURL = renderResponse.createRenderURL();
 
 String currentURL = portletURL.toString();
 
-Format dateFormatDateTime = FastDateFormatFactoryUtil.getDateTime(locale, timeZone);
+Format format = FastDateFormatFactoryUtil.getDateTime(locale, timeZone);
 %>
