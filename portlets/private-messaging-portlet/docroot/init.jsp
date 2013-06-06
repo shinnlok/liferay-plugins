@@ -67,7 +67,7 @@ page import="com.liferay.privatemessaging.util.PrivateMessagingUtil" %>
 <liferay-theme:defineObjects />
 
 <%
-Format dateFormatDateTime = FastDateFormatFactoryUtil.getSimpleDateFormat("MMMMM d 'at' h:mm a", locale, timeZone);
+Format format = FastDateFormatFactoryUtil.getSimpleDateFormat("MMMMM d 'at' h:mm a", locale, timeZone);
 %>
 
 <%!

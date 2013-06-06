@@ -157,7 +157,7 @@ catch (NoSuchRecordSetException nsrse) {
 				>
 
 					<%
-					buffer.append(dateFormatDateTime.format(curRecordSet.getModifiedDate()));
+					buffer.append(dateTimeFormat.format(curRecordSet.getModifiedDate()));
 					%>
 
 				</liferay-ui:search-container-column-text>

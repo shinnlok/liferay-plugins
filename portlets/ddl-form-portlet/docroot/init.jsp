@@ -90,5 +90,5 @@ boolean multipleSubmissions = GetterUtil.getBoolean(preferences.getValue("multip
 
 String ddmResource = portletConfig.getInitParameter("ddm-resource");
 
-Format dateFormatDateTime = FastDateFormatFactoryUtil.getDateTime(locale, timeZone);
+Format format = FastDateFormatFactoryUtil.getDateTime(locale, timeZone);
 %>

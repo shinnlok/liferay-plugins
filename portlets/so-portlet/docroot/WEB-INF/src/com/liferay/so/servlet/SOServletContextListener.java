@@ -38,10 +38,12 @@ import javax.servlet.ServletContextListener;
 public class SOServletContextListener
 	extends BasePortalLifecycle implements ServletContextListener {
 
+	@Override
 	public void contextDestroyed(ServletContextEvent servletContextEvent) {
 		portalDestroy();
 	}
 
+	@Override
 	public void contextInitialized(ServletContextEvent servletContextEvent) {
 		registerPortalLifecycle();
 	}
@@ -49,12 +51,12 @@ public class SOServletContextListener
 	@Override
 	protected void doPortalDestroy() throws Exception {
 		MessageBusUtil.unregisterMessageListener(
-			DestinationNames.HOT_DEPLOY, _hotDeployMessageListener);
+			DestinationNames.HOT_DEPLOY, _messageListener);
 	}
 
 	@Override
 	protected void doPortalInit() {
-		_hotDeployMessageListener = new HotDeployMessageListener(
+		_messageListener = new HotDeployMessageListener(
 			ClpSerializer.getServletContextName(), "contacts-portlet") {
 
 			@Override
@@ -71,7 +73,7 @@ public class SOServletContextListener
 		};
 
 		MessageBusUtil.registerMessageListener(
-			DestinationNames.HOT_DEPLOY, _hotDeployMessageListener);
+			DestinationNames.HOT_DEPLOY, _messageListener);
 	}
 
 	protected void registerContactsExtension() throws Exception {
@@ -80,7 +82,7 @@ public class SOServletContextListener
 			ClpSerializer.getServletContextName(), "/contacts/projects.jsp");
 	}
 
-	private MessageListener _hotDeployMessageListener;
+	private MessageListener _messageListener;
 	private MethodKey _registerMethodKey = new MethodKey(
 		ClassResolverUtil.resolveByPortletClassLoader(
 			"com.liferay.contacts.util.ContactsExtensionsUtil",

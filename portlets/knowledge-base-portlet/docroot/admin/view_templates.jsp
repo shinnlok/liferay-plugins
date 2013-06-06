@@ -69,14 +69,14 @@
 					cssClass="kb-column-no-wrap"
 					name="create-date"
 					orderable="<%= true %>"
-					value='<%= dateFormatDate.format(kbTemplate.getCreateDate()) + "<br />" + dateFormatTime.format(kbTemplate.getCreateDate()) %>'
+					value='<%= dateFormat.format(kbTemplate.getCreateDate()) + "<br />" + timeFormat.format(kbTemplate.getCreateDate()) %>'
 				/>
 
 				<liferay-ui:search-container-column-text
 					cssClass="kb-column-no-wrap"
 					name="modified-date"
 					orderable="<%= true %>"
-					value='<%= dateFormatDate.format(kbTemplate.getModifiedDate()) + "<br />" + dateFormatTime.format(kbTemplate.getModifiedDate()) %>'
+					value='<%= dateFormat.format(kbTemplate.getModifiedDate()) + "<br />" + timeFormat.format(kbTemplate.getModifiedDate()) %>'
 				/>
 
 				<liferay-ui:search-container-column-jsp

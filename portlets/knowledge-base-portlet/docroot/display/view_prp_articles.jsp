@@ -81,7 +81,7 @@ String orderByType = ParamUtil.getString(request, "orderByType", "desc");
 				name="create-date"
 				orderable="<%= true %>"
 				orderableProperty="createDate"
-				value='<%= dateFormatDate.format(assetEntry.getCreateDate()) + "<br />" + dateFormatTime.format(assetEntry.getCreateDate()) %>'
+				value='<%= dateFormat.format(assetEntry.getCreateDate()) + "<br />" + timeFormat.format(assetEntry.getCreateDate()) %>'
 			/>
 		</c:if>
 
@@ -92,7 +92,7 @@ String orderByType = ParamUtil.getString(request, "orderByType", "desc");
 				name="modified-date"
 				orderable="<%= true %>"
 				orderableProperty="modifiedDate"
-				value='<%= dateFormatDate.format(assetEntry.getModifiedDate()) + "<br />" + dateFormatTime.format(assetEntry.getModifiedDate()) %>'
+				value='<%= dateFormat.format(assetEntry.getModifiedDate()) + "<br />" + timeFormat.format(assetEntry.getModifiedDate()) %>'
 			/>
 		</c:if>
 
