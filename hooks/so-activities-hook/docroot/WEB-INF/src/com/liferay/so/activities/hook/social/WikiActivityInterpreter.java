@@ -83,9 +83,18 @@ public class WikiActivityInterpreter extends SOSocialActivityInterpreter {
 				WikiPage wikiPage = WikiPageLocalServiceUtil.getPage(
 					pageResource.getResourcePrimKey());
 
-				JSONObject extraDataJSONObject =
-					JSONFactoryUtil.createJSONObject(
+				JSONObject extraDataJSONObject = null;
+
+				if (Validator.isNull(activitySet.getExtraData())) {
+					extraDataJSONObject = JSONFactoryUtil.createJSONObject();
+
+					extraDataJSONObject.put(
+						"sourceVersion", wikiPage.getVersion());
+				}
+				else {
+					extraDataJSONObject = JSONFactoryUtil.createJSONObject(
 						activitySet.getExtraData());
+				}
 
 				extraDataJSONObject.put(
 					"targetVersion",
