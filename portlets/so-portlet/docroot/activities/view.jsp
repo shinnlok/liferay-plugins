@@ -52,7 +52,39 @@ SearchContainer searchContainer = new SearchContainer(renderRequest, null, null,
 
 			var commentsList = commentsContainer.one('.comments-list');
 
-			commentsList.toggleClass('aui-helper-hidden');
+			var commentEntry = commentsList.one('.comment-entry');
+
+			if (commentEntry) {
+				commentsList.toggleClass('aui-helper-hidden');
+			}
+			else {
+				var uri = '<liferay-portlet:resourceURL id="getComments"></liferay-portlet:resourceURL>';
+
+				uri = Liferay.Util.addParams('activitySetId=' + currentTarget.getAttribute('data-activitySetId'), uri) || uri;
+
+				A.io.request(
+					uri,
+					{
+						after: {
+							success: function(event, id, obj) {
+								var responseData = this.get('responseData');
+
+								if (responseData) {
+									var comments = responseData.comments;
+
+									A.Array.map(
+										comments,
+										function(comment) {
+											Liferay.SO.Activities.addNewComment(commentsList, comment);
+										}
+									)
+								}
+							}
+						},
+						dataType: 'json',
+					}
+				);
+			}
 		},
 		'.view-comments a'
 	);
@@ -73,11 +105,11 @@ SearchContainer searchContainer = new SearchContainer(renderRequest, null, null,
 
 				cmdInput.val('<%= Constants.DELETE %>');
 
-				var mbMessageId = currentTarget.getAttribute('data-mbMessageId');
+				var mbMessageIdOrMicroblogsEntryId = currentTarget.getAttribute('data-mbMessageIdOrMicroblogsEntryId');
 
-				var mbMessageIdInput = form.one('#<portlet:namespace />mbMessageId');
+				var mbMessageIdOrMicroblogsEntryIdInput = form.one('#<portlet:namespace />mbMessageIdOrMicroblogsEntryId');
 
-				mbMessageIdInput.val(mbMessageId);
+				mbMessageIdOrMicroblogsEntryIdInput.val(mbMessageIdOrMicroblogsEntryId);
 
 				A.io.request(
 					form.attr('action'),
@@ -118,9 +150,9 @@ SearchContainer searchContainer = new SearchContainer(renderRequest, null, null,
 		function(event) {
 			var currentTarget = event.currentTarget;
 
-			var mbMessageId = currentTarget.getAttribute('data-mbMessageId');
+			var mbMessageIdOrMicroblogsEntryId = currentTarget.getAttribute('data-mbMessageIdOrMicroblogsEntryId');
 
-			var editForm = A.one('#<portlet:namespace />fm1' + mbMessageId);
+			var editForm = A.one('#<portlet:namespace />fm1' + mbMessageIdOrMicroblogsEntryId);
 
 			var commentEntry = currentTarget.ancestor('.comment-entry');
 
@@ -138,16 +170,16 @@ SearchContainer searchContainer = new SearchContainer(renderRequest, null, null,
 
 				editForm.removeClass('aui-helper-hidden');
 
-				editForm.set('id','<portlet:namespace />fm1' + mbMessageId);
-				editForm.set('name','<portlet:namespace />fm1' + mbMessageId);
+				editForm.set('id','<portlet:namespace />fm1' + mbMessageIdOrMicroblogsEntryId);
+				editForm.set('name','<portlet:namespace />fm1' + mbMessageIdOrMicroblogsEntryId);
 
 				var cmdInput = editForm.one('#<portlet:namespace /><%= Constants.CMD %>');
 
 				cmdInput.val('<%= Constants.EDIT %>');
 
-				var mbMessageIdInput = editForm.one('#<portlet:namespace />mbMessageId');
+				var mbMessageIdOrMicroblogsEntryIdInput = editForm.one('#<portlet:namespace />mbMessageIdOrMicroblogsEntryId');
 
-				mbMessageIdInput.val(mbMessageId);
+				mbMessageIdOrMicroblogsEntryIdInput.val(mbMessageIdOrMicroblogsEntryId);
 
 				var commentBody = commentEntry.one('.comment-body');
 
