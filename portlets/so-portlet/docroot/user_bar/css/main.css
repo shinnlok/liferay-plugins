@@ -40,7 +40,7 @@ $defaultTextColor: #202020;
 	}
 }
 
-body.show-dockbar, html > body.lfr-dockbar-pinned {
+body.show-dockbar, html > body.lfr-dockbar-pinned, body.controls-visible {
 	.portlet-dockbar {
 		overflow: visible;
 	}
@@ -106,6 +106,7 @@ html > body.lfr-dockbar-pinned {
 
 	.dashboard-nav {
 		position: relative;
+		z-index: 2;
 	}
 
 	a {
@@ -156,7 +157,6 @@ html > body.lfr-dockbar-pinned {
 		position: absolute;
 		right: 0;
 		top: 0;
-		z-index: 1;
 
 		.avatar {
 			display: inline-block;
@@ -390,6 +390,7 @@ html > body.lfr-dockbar-pinned {
 			position: absolute;
 			right: 0;
 			visibility: hidden;
+			z-index: 1;
 
 			a, a:hover, li.has-menu:hover a {
 				background-color: transparent;
@@ -497,9 +498,15 @@ html > body.lfr-dockbar-pinned {
 				&, li {
 					background-color: transparent;
 					border-width: 0;
+					color: $defaultTextColor;
 					display: block;
 					margin: 0;
 					padding: 0
+				}
+
+				.empty, .empty:hover {
+					border-width: 1px 0 0;
+					padding: 0.5em 1em 0.5em 2em;
 				}
 			}
 		}
@@ -515,8 +522,9 @@ html > body.lfr-dockbar-pinned {
 		}
 	}
 
-	.so-portlet-sites .portlet-body.search-focus {
+	.search-focus .so-portlet-sites .portlet-body {
 		visibility: visible;
+		z-index: 3;
 
 		.search {
 			width: auto;

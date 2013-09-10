@@ -357,6 +357,10 @@ public class CalendarPersistenceImpl extends BasePersistenceImpl<Calendar>
 		OrderByComparator orderByComparator) throws SystemException {
 		int count = countByResourceBlockId(resourceBlockId);
 
+		if (count == 0) {
+			return null;
+		}
+
 		List<Calendar> list = findByResourceBlockId(resourceBlockId, count - 1,
 				count, orderByComparator);
 
@@ -855,6 +859,10 @@ public class CalendarPersistenceImpl extends BasePersistenceImpl<Calendar>
 	public Calendar fetchByUuid_Last(String uuid,
 		OrderByComparator orderByComparator) throws SystemException {
 		int count = countByUuid(uuid);
+
+		if (count == 0) {
+			return null;
+		}
 
 		List<Calendar> list = findByUuid(uuid, count - 1, count,
 				orderByComparator);
@@ -1674,6 +1682,10 @@ public class CalendarPersistenceImpl extends BasePersistenceImpl<Calendar>
 		OrderByComparator orderByComparator) throws SystemException {
 		int count = countByUuid_C(uuid, companyId);
 
+		if (count == 0) {
+			return null;
+		}
+
 		List<Calendar> list = findByUuid_C(uuid, companyId, count - 1, count,
 				orderByComparator);
 
@@ -2228,6 +2240,10 @@ public class CalendarPersistenceImpl extends BasePersistenceImpl<Calendar>
 	public Calendar fetchByG_C_Last(long groupId, long calendarResourceId,
 		OrderByComparator orderByComparator) throws SystemException {
 		int count = countByG_C(groupId, calendarResourceId);
+
+		if (count == 0) {
+			return null;
+		}
 
 		List<Calendar> list = findByG_C(groupId, calendarResourceId, count - 1,
 				count, orderByComparator);
@@ -3109,6 +3125,10 @@ public class CalendarPersistenceImpl extends BasePersistenceImpl<Calendar>
 		throws SystemException {
 		int count = countByG_C_D(groupId, calendarResourceId, defaultCalendar);
 
+		if (count == 0) {
+			return null;
+		}
+
 		List<Calendar> list = findByG_C_D(groupId, calendarResourceId,
 				defaultCalendar, count - 1, count, orderByComparator);
 
@@ -3710,6 +3730,10 @@ public class CalendarPersistenceImpl extends BasePersistenceImpl<Calendar>
 	private static final String _FINDER_COLUMN_G_C_D_GROUPID_2 = "calendar.groupId = ? AND ";
 	private static final String _FINDER_COLUMN_G_C_D_CALENDARRESOURCEID_2 = "calendar.calendarResourceId = ? AND ";
 	private static final String _FINDER_COLUMN_G_C_D_DEFAULTCALENDAR_2 = "calendar.defaultCalendar = ?";
+
+	public CalendarPersistenceImpl() {
+		setModelClass(Calendar.class);
+	}
 
 	/**
 	 * Caches the calendar in the entity cache if it is enabled.

@@ -1,6 +1,9 @@
 @import "compass";
 
 .so-portlet-activities {
+	display: block;
+	width: 100%;
+
 	.activity-item {
 		border-bottom: 1px solid #E7E7E7;
 		min-height: 45px;
@@ -47,10 +50,12 @@
 
 	.activity-action {
 		color: #333333;
+		margin-bottom: .8em;
 	}
 
 	.activity-body, .grouped-activity-body-container {
 		border: 1px solid #E7E7E7;
+		margin: .8em 0 0;
 
 		span {
 			line-height: 1em;
@@ -84,7 +89,6 @@
 	}
 
 	.activity-body {
-		margin: .8em 0 0;
 		padding: .6em .9em;
 
 		&.document {
@@ -154,6 +158,23 @@
 		}
 	}
 
+	.microblogs-portlet-activity {
+		.activity-body {
+			overflow: hidden;
+			padding: 0;
+
+			.user-portrait {
+				padding: 2px
+			}
+
+			.microblog-content {
+				display: block;
+				line-height: 1.5em;
+				padding: .75em .75em .75em 45px;
+			}
+		}
+	}
+
 	.tasks-portlet-activity {
 		.activity-body-container {
 			&.high {
@@ -200,16 +221,18 @@
 		}
 	}
 
-	.comments-container .user-portrait {
-		height: 32px;
-		width: 32px;
-
-		.avatar {
+	.comments-container, .microblogs-portlet-activity .activity-body {
+		.user-portrait {
 			height: 32px;
-		}
+			width: 32px;
 
-		img {
-			max-width: 32px;
+			.avatar {
+				height: 32px;
+			}
+
+			img {
+				max-width: 32px;
+			}
 		}
 	}
 
@@ -281,6 +304,26 @@
 	.toggler-content-collapsed .activity-footer-toolbar {
 		border-top: 1px solid #EFEFEF;
 		margin-top: -2px;
+	}
+
+	.loading-bar {
+		display: block;
+		background-image: url(@theme_image_path@/aui/loading_indicator.gif);
+		background-position: 45% center;
+		background-repeat: no-repeat;
+		font-style: italic;
+		height: 100px;
+		margin-left: 25px;
+		width: 100%;
+	}
+
+	.loading-bar.loaded {
+		visibility: hidden;
+	}
+
+	.no-activities {
+		padding: 5px;
+		text-align: center;
 	}
 }
 
