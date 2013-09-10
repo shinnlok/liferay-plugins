@@ -281,10 +281,6 @@ if (entry == null) {
 							}
 							else {
 								Liferay.Util.getWindow('<portlet:namespace />Dialog').close();
-
-								var topWindow = Liferay.Util.getTop();
-
-								topWindow.document.location.reload();
 							}
 						}
 					}
@@ -304,7 +300,7 @@ if (entry == null) {
 	announcementEntries.delegate(
 		'click',
 		function(event) {
-			Liferay.Announcements.toggleEntry(event,'<portlet:namespace />');
+			Liferay.Announcements.toggleEntry(event);
 		},
 		'.toggle-entry'
 	);

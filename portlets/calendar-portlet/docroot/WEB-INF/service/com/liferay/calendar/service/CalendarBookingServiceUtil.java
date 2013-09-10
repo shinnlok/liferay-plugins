@@ -98,6 +98,12 @@ public class CalendarBookingServiceUtil {
 			allFollowing);
 	}
 
+	public static java.lang.String exportCalendarBooking(
+		long calendarBookingId, java.lang.String type)
+		throws java.lang.Exception {
+		return getService().exportCalendarBooking(calendarBookingId, type);
+	}
+
 	public static com.liferay.calendar.model.CalendarBooking fetchCalendarBooking(
 		long calendarBookingId)
 		throws com.liferay.portal.kernel.exception.PortalException,
@@ -159,6 +165,13 @@ public class CalendarBookingServiceUtil {
 			com.liferay.portal.kernel.exception.SystemException {
 		return getService()
 				   .getChildCalendarBookings(parentCalendarBookingId, status);
+	}
+
+	public static void invokeTransition(long calendarBookingId, int status,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		getService().invokeTransition(calendarBookingId, status, serviceContext);
 	}
 
 	public static void invokeTransition(long calendarBookingId,
