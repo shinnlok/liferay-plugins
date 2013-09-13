@@ -40,7 +40,7 @@ $defaultTextColor: #202020;
 	}
 }
 
-body.show-dockbar, html > body.lfr-dockbar-pinned {
+body.show-dockbar, html > body.lfr-dockbar-pinned, body.controls-visible {
 	.portlet-dockbar {
 		overflow: visible;
 	}
@@ -106,6 +106,8 @@ html > body.lfr-dockbar-pinned {
 
 	.dashboard-nav {
 		position: relative;
+		width: 100%;
+		z-index: 2;
 	}
 
 	a {
@@ -144,7 +146,8 @@ html > body.lfr-dockbar-pinned {
 	}
 
 	nav {
-		display:inline-block;
+		display: inline-block;
+		width: 90%;
 	}
 
 	.has-submenu {
@@ -156,12 +159,11 @@ html > body.lfr-dockbar-pinned {
 		position: absolute;
 		right: 0;
 		top: 0;
-		z-index: 1;
 
 		.avatar {
 			display: inline-block;
 			height: 24px;
-			margin: -5px 10px -4px -5px;
+			margin: -5px 5px -4px -5px;
 			overflow: hidden;
 			padding: 0;
 			vertical-align: middle;
@@ -212,6 +214,14 @@ html > body.lfr-dockbar-pinned {
 			}
 		}
 
+		.full-name {
+			display: inline-block;
+			max-width: 8.25em;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
 		.config-icon {
 			padding: 0.25em 6px;
 
@@ -231,14 +241,14 @@ html > body.lfr-dockbar-pinned {
 	}
 
 	.user-notification-events {
-		color: $defaultTextColor;
-
 		@include clear-both;
 
+		color: $defaultTextColor;
 		font-size: 1em;
 		right: 0;
-		top: 120%;
+		top: 135%;
 		width: 350px;
+		z-index: 2;
 
 		.aui-menu-content {
 			background-image: none;
@@ -351,6 +361,8 @@ html > body.lfr-dockbar-pinned {
 
 			@include border-radius(20px);
 
+			padding: 0 0.55em;
+
 			&:hover {
 				background: rgba(0,0,0, 0.8);
 
@@ -390,6 +402,7 @@ html > body.lfr-dockbar-pinned {
 			position: absolute;
 			right: 0;
 			visibility: hidden;
+			z-index: 1;
 
 			a, a:hover, li.has-menu:hover a {
 				background-color: transparent;
@@ -497,9 +510,15 @@ html > body.lfr-dockbar-pinned {
 				&, li {
 					background-color: transparent;
 					border-width: 0;
+					color: $defaultTextColor;
 					display: block;
 					margin: 0;
 					padding: 0
+				}
+
+				.empty, .empty:hover {
+					border-width: 1px 0 0;
+					padding: 0.5em 1em 0.5em 2em;
 				}
 			}
 		}
@@ -515,8 +534,9 @@ html > body.lfr-dockbar-pinned {
 		}
 	}
 
-	.so-portlet-sites .portlet-body.search-focus {
+	.search-focus .so-portlet-sites .portlet-body {
 		visibility: visible;
+		z-index: 3;
 
 		.search {
 			width: auto;
@@ -567,6 +587,31 @@ html > body.lfr-dockbar-pinned {
 
 		.full-name {
 			display: none;
+		}
+	}
+}
+
+.ie7 {
+	.so-portlet-user-bar {
+		.dashboard-nav, .user-toolbar {
+			@include clear-both;
+
+			li {
+				display: block;
+				float: left;
+
+				li {
+					float: none;
+				}
+			}
+		}
+
+		.user-toolbar .go-to .portlet-body {
+			margin-top: -0.75em;
+
+			input {
+				color: $defaultTextColor;
+			}
 		}
 	}
 }
