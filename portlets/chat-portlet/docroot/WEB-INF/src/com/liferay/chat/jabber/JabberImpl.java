@@ -255,8 +255,8 @@ public class JabberImpl implements Jabber {
 
 				String resource = getResource(from);
 
-				if (resource.equalsIgnoreCase(
-						PortletPropsValues.JABBER_RESOURCE)) {
+				if (StringUtil.equalsIgnoreCase(
+						resource, PortletPropsValues.JABBER_RESOURCE)) {
 
 					continue;
 				}
@@ -279,7 +279,6 @@ public class JabberImpl implements Jabber {
 					}
 				}
 			}
-
 		}
 		catch (Exception e) {
 			_log.error(e, e);
