@@ -56,8 +56,7 @@ public class KaleoDefinitionTestCase extends TestCase {
 
 		String error = assertInvalid(inputStream);
 
-		assertEquals(
-			"Incorrect number of incoming transitions for join join", error);
+		assertEquals("There are errors between fork fork and join join", error);
 
 		inputStream = getResource(
 			"/META-INF/definitions/incoming-transitions-join-2.xml");
@@ -65,7 +64,7 @@ public class KaleoDefinitionTestCase extends TestCase {
 		error = assertInvalid(inputStream);
 
 		assertEquals(
-			"Incorrect number of incoming transitions for join join1", error);
+			"There are errors between fork fork1 and join join1", error);
 
 		inputStream = getResource(
 			"/META-INF/definitions/incoming-transitions-join-3.xml");
@@ -73,15 +72,32 @@ public class KaleoDefinitionTestCase extends TestCase {
 		error = assertInvalid(inputStream);
 
 		assertEquals(
-			"Incorrect number of incoming transitions for join join", error);
+			"There are errors between fork fork1 and join join", error);
 
 		inputStream = getResource(
 			"/META-INF/definitions/incoming-transitions-join-4.xml");
 
 		error = assertInvalid(inputStream);
 
+		assertEquals("There are errors between fork fork and join join", error);
+
+		inputStream = getResource(
+			"/META-INF/definitions/incoming-transitions-join-5.xml");
+
+		error = assertInvalid(inputStream);
+
 		assertEquals(
-			"Incorrect number of incoming transitions for join join", error);
+			"There are errors between fork fork and join fork Join", error);
+
+		inputStream = getResource(
+			"/META-INF/definitions/incoming-transitions-join-6.xml");
+
+		assertValid(inputStream);
+
+		inputStream = getResource(
+			"/META-INF/definitions/incoming-transitions-join-7.xml");
+
+		assertValid(inputStream);
 	}
 
 	@Test
