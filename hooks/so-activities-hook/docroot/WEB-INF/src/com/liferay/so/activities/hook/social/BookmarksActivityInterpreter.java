@@ -30,6 +30,7 @@ import com.liferay.portlet.social.model.SocialActivityFeedEntry;
 import com.liferay.portlet.social.model.SocialActivitySet;
 import com.liferay.portlet.social.service.SocialActivityLocalServiceUtil;
 import com.liferay.portlet.social.service.SocialActivitySetLocalServiceUtil;
+import com.liferay.so.activities.util.SocialActivityKeyConstants;
 
 import java.io.IOException;
 
@@ -56,20 +57,16 @@ public class BookmarksActivityInterpreter extends SOSocialActivityInterpreter {
 			SocialActivity activity =
 				SocialActivityLocalServiceUtil.getActivity(activityId);
 
-			if (activity.getType() == _ACTIVITY_KEY_ADD_ENTRY) {
-				activitySet =
-					SocialActivitySetLocalServiceUtil.getUserActivitySet(
-						activity.getGroupId(), activity.getUserId(),
-						activity.getClassNameId(), activity.getType());
-			}
-			else if (activity.getType() == _ACTIVITY_KEY_UPDATE_ENTRY) {
+			if (activity.getType() ==
+					SocialActivityKeyConstants.BOOKMARKS_UPDATE_ENTRY) {
+
 				activitySet =
 					SocialActivitySetLocalServiceUtil.getClassActivitySet(
 						activity.getUserId(), activity.getClassNameId(),
 						activity.getClassPK(), activity.getType());
 			}
 
-			if ((activitySet != null) && !isExpired(activitySet)) {
+			if ((activitySet != null) && !isExpired(activitySet, false)) {
 				return activitySet.getActivitySetId();
 			}
 		}
@@ -93,7 +90,9 @@ public class BookmarksActivityInterpreter extends SOSocialActivityInterpreter {
 			SocialActivitySet activitySet, ServiceContext serviceContext)
 		throws Exception {
 
-		if (activitySet.getType() == _ACTIVITY_KEY_UPDATE_ENTRY) {
+		if (activitySet.getType() ==
+				SocialActivityKeyConstants.BOOKMARKS_UPDATE_ENTRY) {
+
 			return getBody(
 				activitySet.getClassName(), activitySet.getClassPK(),
 				serviceContext);
@@ -171,10 +170,14 @@ public class BookmarksActivityInterpreter extends SOSocialActivityInterpreter {
 	protected String getTitlePattern(
 		String groupName, SocialActivity activity) {
 
-		if (activity.getType() == _ACTIVITY_KEY_ADD_ENTRY) {
+		if (activity.getType() ==
+				SocialActivityKeyConstants.BOOKMARKS_ADD_ENTRY) {
+
 			return "added-a-new-bookmark";
 		}
-		else if (activity.getType() == _ACTIVITY_KEY_UPDATE_ENTRY) {
+		else if (activity.getType() ==
+					SocialActivityKeyConstants.BOOKMARKS_UPDATE_ENTRY) {
+
 			return "updated-a-bookmark";
 		}
 
@@ -185,10 +188,14 @@ public class BookmarksActivityInterpreter extends SOSocialActivityInterpreter {
 	protected String getTitlePattern(
 		String groupName, SocialActivitySet activitySet) {
 
-		if (activitySet.getType() == _ACTIVITY_KEY_ADD_ENTRY) {
+		if (activitySet.getType() ==
+				SocialActivityKeyConstants.BOOKMARKS_ADD_ENTRY) {
+
 			return "added-x-new-bookmarks";
 		}
-		else if (activitySet.getType() == _ACTIVITY_KEY_UPDATE_ENTRY) {
+		else if (activitySet.getType() ==
+					SocialActivityKeyConstants.BOOKMARKS_UPDATE_ENTRY) {
+
 			return "made-x-updates-to-a-bookmark";
 		}
 
@@ -221,18 +228,6 @@ public class BookmarksActivityInterpreter extends SOSocialActivityInterpreter {
 
 		return false;
 	}
-
-	/**
-	 * {@link
-	 * com.liferay.portlet.bookmarks.social.BookmarksActivityKeys#ADD_ENTRY}
-	 */
-	private static final int _ACTIVITY_KEY_ADD_ENTRY = 1;
-
-	/**
-	 * {@link
-	 * com.liferay.portlet.bookmarks.social.BookmarksActivityKeys#UPDATE_ENTRY}
-	 */
-	private static final int _ACTIVITY_KEY_UPDATE_ENTRY = 2;
 
 	private static final String[] _CLASS_NAMES =
 		{BookmarksEntry.class.getName()};

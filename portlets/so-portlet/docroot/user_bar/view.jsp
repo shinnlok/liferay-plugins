@@ -99,7 +99,7 @@ catch (NoSuchRoleException nsre) {
 							<img alt="<%= user.getFullName() %>" src="<%= HtmlUtil.escape(user.getPortraitURL(themeDisplay)) %>">
 						</span>
 
-						<span class="full-name"><%= user.getFullName() %></span>
+						<span class="full-name"><%= user.getFullName() %></span> &#x25BE;
 					</a>
 
 					<ul class="child-menu">
@@ -129,41 +129,61 @@ catch (NoSuchRoleException nsre) {
 						</c:if>
 					</ul>
 				</li>
-				<li class="config-item">
-					<a class="config-icon" href="javascript:;" id="<portlet:namespace/>toggleDockbar">
-						<img alt="<liferay-ui:message key="configuration" /> <liferay-ui:message key="icon" />" height="15" src="<%= request.getContextPath() + "/user_bar/images/cog.png" %>" width="15" />
 
-						<span class="aui-helper-hidden">
-							<liferay-ui:message key="toggle" /> <liferay-ui:message key="javax.portlet.title.145" />
-						</span>
-					</a>
-				</li>
+				<%
+				Group layoutGroup = null;
+
+				if (layout != null) {
+					layoutGroup = layout.getGroup();
+				}
+				%>
+
+				<c:if test="<%= (layoutGroup != null) || !layoutGroup.isControlPanel() %>">
+					<li class="config-item">
+						<a class="config-icon" href="javascript:;" id="<portlet:namespace/>toggleDockbar">
+							<img alt="<liferay-ui:message key="configuration" /> <liferay-ui:message key="icon" />" height="15" src="<%= request.getContextPath() + "/user_bar/images/cog.png" %>" width="15" />
+
+							<span class="aui-helper-hidden">
+								<liferay-ui:message key="toggle" /> <liferay-ui:message key="javax.portlet.title.145" />
+							</span>
+						</a>
+					</li>
+				</c:if>
 			</ul>
 		</div>
 	</liferay-util:body-top>
 
 	<aui:script use="aui-base,liferay-so-user-menu">
+		var body = A.one('body');
+
 		var userBar = A.one('#<portlet:namespace/>userBar');
 
 		var searchInput = userBar.one('.search input');
 
 		var goToString = '<liferay-ui:message key="go-to" /> ' + '\u25BE';
 
+		body.on(
+			'click',
+			function(event) {
+				A.fire('close-menus');
+			}
+		);
+
 		searchInput.set('value', goToString);
 
 		searchInput.on(
 			'click',
 			function(event) {
-				searchInput.set('value', '');
+				if (searchInput.get('value') == goToString) {
+					searchInput.set('value', '');
+				}
 			}
 		);
 
-		searchInput.on(
-			'blur',
+		A.on(
+			'close-menus',
 			function(event) {
-				var sitesPortlet = userBar.one('.so-portlet-sites .portlet-body');
-
-				if (!sitesPortlet.hasClass('search-focus')) {
+				if (!userBar.one('.go-to').hasClass('search-focus') || (searchInput.get('value') == "")) {
 					searchInput.set('value', goToString);
 				}
 			}
@@ -174,18 +194,21 @@ catch (NoSuchRoleException nsre) {
 		toggleDockbar.on(
 			'click',
 			function(event) {
+				event.preventDefault();
+
 				var body = A.one('body');
 
 				body.toggleClass('show-dockbar');
+
+				A.fire('close-menus', event);
 			}
-		)
+		);
 
 		new Liferay.SO.UserMenu(
 			{
 				node: '#<portlet:namespace/>userBar .go-to',
 				showClass: 'search-focus',
 				showOn: 'focus',
-				target: '#<portlet:namespace/>userBar .so-portlet-sites .portlet-body',
 				trigger: '#<portlet:namespace/>userBar .go-to .search input'
 			}
 		);
@@ -202,6 +225,7 @@ catch (NoSuchRoleException nsre) {
 		new Liferay.SO.UserMenu(
 			{
 				node: '#<portlet:namespace/>userBar .user-menu',
+				preventDefault: true,
 				showClass: 'menu-active',
 				trigger: '#<portlet:namespace/>userBar .user-info'
 			}
