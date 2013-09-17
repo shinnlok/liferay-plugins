@@ -27,6 +27,7 @@ import com.liferay.portlet.social.model.SocialActivityFeedEntry;
 import com.liferay.portlet.social.model.SocialActivitySet;
 import com.liferay.portlet.social.service.SocialActivityLocalServiceUtil;
 import com.liferay.portlet.social.service.SocialActivitySetLocalServiceUtil;
+import com.liferay.so.activities.util.SocialActivityKeyConstants;
 
 /**
  * @author Evan Thibodeau
@@ -43,27 +44,33 @@ public class BlogsActivityInterpreter extends SOSocialActivityInterpreter {
 		try {
 			SocialActivitySet activitySet = null;
 
+			boolean comment = false;
+
 			SocialActivity activity =
 				SocialActivityLocalServiceUtil.getActivity(activityId);
 
-			if ((activity.getType() == _ACTIVITY_KEY_ADD_COMMENT) ||
-				(activity.getType() == _ACTIVITY_KEY_ADD_ENTRY) ||
+			if ((activity.getType() ==
+					SocialActivityKeyConstants.BLOGS_ADD_COMMENT) ||
 				(activity.getType() ==
 					SocialActivityConstants.TYPE_ADD_COMMENT)) {
 
 				activitySet =
-					SocialActivitySetLocalServiceUtil.getUserActivitySet(
-						activity.getGroupId(), activity.getUserId(),
-						activity.getClassNameId(), activity.getType());
+					SocialActivitySetLocalServiceUtil.getClassActivitySet(
+						activity.getClassNameId(), activity.getClassPK(),
+						activity.getType());
+
+				comment = true;
 			}
-			else if (activity.getType() == _ACTIVITY_KEY_UPDATE_ENTRY) {
+			else if (activity.getType() ==
+						SocialActivityKeyConstants.BLOGS_UPDATE_ENTRY) {
+
 				activitySet =
 					SocialActivitySetLocalServiceUtil.getClassActivitySet(
 						activity.getUserId(), activity.getClassNameId(),
 						activity.getClassPK(), activity.getType());
 			}
 
-			if ((activitySet != null) && !isExpired(activitySet)) {
+			if ((activitySet != null) && !isExpired(activitySet, comment)) {
 				return activitySet.getActivitySetId();
 			}
 		}
@@ -87,7 +94,13 @@ public class BlogsActivityInterpreter extends SOSocialActivityInterpreter {
 			SocialActivitySet activitySet, ServiceContext serviceContext)
 		throws Exception {
 
-		if (activitySet.getType() == _ACTIVITY_KEY_UPDATE_ENTRY) {
+		if ((activitySet.getType() ==
+				SocialActivityKeyConstants.BLOGS_ADD_COMMENT) ||
+			(activitySet.getType() ==
+				SocialActivityKeyConstants.BLOGS_UPDATE_ENTRY) ||
+			(activitySet.getType() ==
+				SocialActivityConstants.TYPE_ADD_COMMENT)) {
+
 			return getBody(
 				activitySet.getClassName(), activitySet.getClassPK(),
 				serviceContext);
@@ -137,16 +150,22 @@ public class BlogsActivityInterpreter extends SOSocialActivityInterpreter {
 
 	@Override
 	protected String getTitlePattern(
-		String groupName,
-		com.liferay.portlet.social.model.SocialActivity activity) {
+		String groupName, SocialActivity activity) {
 
-		if (activity.getType() == _ACTIVITY_KEY_ADD_COMMENT) {
+		if ((activity.getType() ==
+				SocialActivityKeyConstants.BLOGS_ADD_COMMENT) ||
+			(activity.getType() == SocialActivityConstants.TYPE_ADD_COMMENT)) {
+
 			return "commented-on-a-blog-entry";
 		}
-		else if (activity.getType() == _ACTIVITY_KEY_ADD_ENTRY) {
+		else if (activity.getType() ==
+					SocialActivityKeyConstants.BLOGS_ADD_ENTRY) {
+
 			return "wrote-a-new-blog-entry";
 		}
-		else if (activity.getType() == _ACTIVITY_KEY_UPDATE_ENTRY) {
+		else if (activity.getType() ==
+					SocialActivityKeyConstants.BLOGS_UPDATE_ENTRY) {
+
 			return "updated-a-blog-entry";
 		}
 
@@ -157,33 +176,26 @@ public class BlogsActivityInterpreter extends SOSocialActivityInterpreter {
 	protected String getTitlePattern(
 		String groupName, SocialActivitySet activitySet) {
 
-		if (activitySet.getType() == _ACTIVITY_KEY_ADD_COMMENT) {
-			return "commented-on-x-blog-entries";
+		if ((activitySet.getType() ==
+				SocialActivityKeyConstants.BLOGS_ADD_COMMENT) ||
+			(activitySet.getType() ==
+				SocialActivityConstants.TYPE_ADD_COMMENT)) {
+
+			return "commented-on-a-blog-entry";
 		}
-		else if (activitySet.getType() == _ACTIVITY_KEY_ADD_ENTRY) {
+		else if (activitySet.getType() ==
+					SocialActivityKeyConstants.BLOGS_ADD_ENTRY) {
+
 			return "wrote-x-new-blog-entries";
 		}
-		else if (activitySet.getType() == _ACTIVITY_KEY_UPDATE_ENTRY) {
+		else if (activitySet.getType() ==
+					SocialActivityKeyConstants.BLOGS_UPDATE_ENTRY) {
+
 			return "made-x-updates-to-a-blog-entry";
 		}
 
 		return StringPool.BLANK;
 	}
-
-	/**
-	 * {@link com.liferay.portlet.blogs.social.BlogsActivityKeys#ADD_COMMENT}
-	 */
-	private static final int _ACTIVITY_KEY_ADD_COMMENT = 1;
-
-	/**
-	 * {@link com.liferay.portlet.blogs.social.BlogsActivityKeys#ADD_ENTRY}
-	 */
-	private static final int _ACTIVITY_KEY_ADD_ENTRY = 2;
-
-	/**
-	 * {@link com.liferay.portlet.blogs.social.BlogsActivityKeys#UPDATE_ENTRY}
-	 */
-	private static final int _ACTIVITY_KEY_UPDATE_ENTRY = 3;
 
 	private static final String[] _CLASS_NAMES = {BlogsEntry.class.getName()};
 
