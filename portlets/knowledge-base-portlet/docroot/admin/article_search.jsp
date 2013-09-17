@@ -47,7 +47,7 @@ KBArticleDisplayTerms displayTerms = (KBArticleDisplayTerms)searchContainer.getD
 				<aui:option label="between" selected="<%= !displayTerms.isAnytime() %>" value="<%= false %>" />
 			</aui:select>
 
-			<span class='<%= displayTerms.isAnytime() ? "aui-helper-hidden kb-date-field" : "kb-date-field" %>' id="<portlet:namespace />datesOptions">
+			<span class='<%= displayTerms.isAnytime() ? "hide kb-date-field" : "kb-date-field" %>' id="<portlet:namespace />datesOptions">
 				<liferay-ui:input-date
 					dayParam="<%= displayTerms.START_DATE_DAY %>"
 					dayValue="<%= displayTerms.getStartDateDay() %>"
@@ -55,8 +55,6 @@ KBArticleDisplayTerms displayTerms = (KBArticleDisplayTerms)searchContainer.getD
 					monthParam="<%= displayTerms.START_DATE_MONTH %>"
 					monthValue="<%= displayTerms.getStartDateMonth() %>"
 					yearParam="<%= displayTerms.START_DATE_YEAR %>"
-					yearRangeEnd="<%= displayTerms.getYearRangeEnd() %>"
-					yearRangeStart="<%= displayTerms.getYearRangeStart() %>"
 					yearValue="<%= displayTerms.getStartDateYear() %>"
 				/>
 
@@ -67,8 +65,6 @@ KBArticleDisplayTerms displayTerms = (KBArticleDisplayTerms)searchContainer.getD
 					monthParam="<%= displayTerms.END_DATE_MONTH %>"
 					monthValue="<%= displayTerms.getEndDateMonth() %>"
 					yearParam="<%= displayTerms.END_DATE_YEAR %>"
-					yearRangeEnd="<%= displayTerms.getYearRangeEnd() %>"
-					yearRangeStart="<%= displayTerms.getYearRangeStart() %>"
 					yearValue="<%= displayTerms.getEndDateYear() %>"
 				/>
 			</span>

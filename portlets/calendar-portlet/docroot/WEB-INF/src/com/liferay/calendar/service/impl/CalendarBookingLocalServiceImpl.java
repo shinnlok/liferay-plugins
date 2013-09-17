@@ -25,6 +25,9 @@ import com.liferay.calendar.recurrence.Recurrence;
 import com.liferay.calendar.recurrence.RecurrenceSerializer;
 import com.liferay.calendar.service.base.CalendarBookingLocalServiceBaseImpl;
 import com.liferay.calendar.social.CalendarActivityKeys;
+import com.liferay.calendar.util.CalendarDataFormat;
+import com.liferay.calendar.util.CalendarDataHandler;
+import com.liferay.calendar.util.CalendarDataHandlerFactory;
 import com.liferay.calendar.util.JCalendarUtil;
 import com.liferay.calendar.util.NotificationUtil;
 import com.liferay.calendar.util.PortletPropsValues;
@@ -355,6 +358,19 @@ public class CalendarBookingLocalServiceImpl
 	}
 
 	@Override
+	public String exportCalendarBooking(long calendarBookingId, String type)
+		throws Exception {
+
+		CalendarDataFormat calendarDataFormat = CalendarDataFormat.parse(type);
+
+		CalendarDataHandler calendarDataHandler =
+			CalendarDataHandlerFactory.getCalendarDataHandler(
+				calendarDataFormat);
+
+		return calendarDataHandler.exportCalendarBooking(calendarBookingId);
+	}
+
+	@Override
 	public CalendarBooking fetchCalendarBooking(String uuid, long groupId)
 		throws SystemException {
 
@@ -382,6 +398,14 @@ public class CalendarBookingLocalServiceImpl
 		throws SystemException {
 
 		return calendarBookingPersistence.findByCalendarId(calendarId);
+	}
+
+	@Override
+	public List<CalendarBooking> getCalendarBookings(
+			long calendarId, int[] statuses)
+		throws SystemException {
+
+		return calendarBookingPersistence.findByC_S(calendarId, statuses);
 	}
 
 	@Override
@@ -913,14 +937,15 @@ public class CalendarBookingLocalServiceImpl
 				trashEntryLocalService.addTrashEntry(
 					userId, calendarBooking.getGroupId(),
 					CalendarBooking.class.getName(),
-					calendarBooking.getCalendarBookingId(), oldStatus, null,
-					null);
+					calendarBooking.getCalendarBookingId(),
+					calendarBooking.getUuid(), null, oldStatus, null, null);
 			}
 			else {
 				trashEntryLocalService.addTrashEntry(
 					userId, calendarBooking.getGroupId(),
 					CalendarBooking.class.getName(),
 					calendarBooking.getCalendarBookingId(),
+					calendarBooking.getUuid(), null,
 					CalendarBookingWorkflowConstants.STATUS_PENDING, null,
 					null);
 			}

@@ -284,11 +284,10 @@ public class ConsumerPortlet extends GenericPortlet {
 		if (wsrpAuth.equals(expectedWsrpAuth)) {
 			return true;
 		}
-		else {
-			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-			return false;
-		}
+		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+		return false;
 	}
 
 	protected void doProcessAction(
@@ -1668,7 +1667,9 @@ public class ConsumerPortlet extends GenericPortlet {
 				String name = clientAttribute.getName();
 				String value = clientAttribute.getValue();
 
-				if (name.equalsIgnoreCase(HttpHeaders.CONTENT_DISPOSITION)) {
+				if (StringUtil.equalsIgnoreCase(
+						name, HttpHeaders.CONTENT_DISPOSITION)) {
+
 					resourceResponse.setProperty(
 						HttpHeaders.CONTENT_DISPOSITION, value);
 
@@ -2051,7 +2052,6 @@ public class ConsumerPortlet extends GenericPortlet {
 		portletSession.setAttribute(WebKeys.SESSION_CONTEXT, sessionContext);
 
 		serviceHolder.setSessionContext(sessionContext);
-
 	}
 
 	private static final String _BLOCKING_ACTION_TEMPLATE =
