@@ -389,6 +389,12 @@ public class CalendarBookingLocalServiceUtil {
 		getService().deleteCalendarBookings(calendarId);
 	}
 
+	public static java.lang.String exportCalendarBooking(
+		long calendarBookingId, java.lang.String type)
+		throws java.lang.Exception {
+		return getService().exportCalendarBooking(calendarBookingId, type);
+	}
+
 	public static com.liferay.calendar.model.CalendarBooking fetchCalendarBooking(
 		java.lang.String uuid, long groupId)
 		throws com.liferay.portal.kernel.exception.SystemException {
@@ -407,6 +413,12 @@ public class CalendarBookingLocalServiceUtil {
 		long calendarId)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		return getService().getCalendarBookings(calendarId);
+	}
+
+	public static java.util.List<com.liferay.calendar.model.CalendarBooking> getCalendarBookings(
+		long calendarId, int[] statuses)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getService().getCalendarBookings(calendarId, statuses);
 	}
 
 	public static java.util.List<com.liferay.calendar.model.CalendarBooking> getCalendarBookings(

@@ -74,6 +74,16 @@ public class DeployListenerDeployManagerImpl
 		return _deployManager.getInstalledPluginPackages();
 	}
 
+	@Override
+	public List<String[]> getLevelsRequiredDeploymentContexts() {
+		return _deployManager.getLevelsRequiredDeploymentContexts();
+	}
+
+	@Override
+	public List<String[]> getLevelsRequiredDeploymentWARFileNames() {
+		return _deployManager.getLevelsRequiredDeploymentWARFileNames();
+	}
+
 	public DeployManager getWrappedDeployManager() {
 		return _deployManager;
 	}
@@ -81,6 +91,11 @@ public class DeployListenerDeployManagerImpl
 	@Override
 	public boolean isDeployed(String context) {
 		return _deployManager.isDeployed(context);
+	}
+
+	@Override
+	public boolean isRequiredDeploymentContext(String context) {
+		return _deployManager.isRequiredDeploymentContext(context);
 	}
 
 	@Override

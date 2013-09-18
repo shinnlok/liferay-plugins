@@ -95,6 +95,13 @@ public class CalendarBookingServiceWrapper implements CalendarBookingService,
 	}
 
 	@Override
+	public java.lang.String exportCalendarBooking(long calendarBookingId,
+		java.lang.String type) throws java.lang.Exception {
+		return _calendarBookingService.exportCalendarBooking(calendarBookingId,
+			type);
+	}
+
+	@Override
 	public com.liferay.calendar.model.CalendarBooking fetchCalendarBooking(
 		long calendarBookingId)
 		throws com.liferay.portal.kernel.exception.PortalException,
@@ -163,6 +170,15 @@ public class CalendarBookingServiceWrapper implements CalendarBookingService,
 			com.liferay.portal.kernel.exception.SystemException {
 		return _calendarBookingService.getChildCalendarBookings(parentCalendarBookingId,
 			status);
+	}
+
+	@Override
+	public void invokeTransition(long calendarBookingId, int status,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		_calendarBookingService.invokeTransition(calendarBookingId, status,
+			serviceContext);
 	}
 
 	@Override

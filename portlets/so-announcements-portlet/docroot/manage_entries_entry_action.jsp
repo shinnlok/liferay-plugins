@@ -34,24 +34,19 @@ AnnouncementsEntry entry = (AnnouncementsEntry)row.getObject();
 		</portlet:renderURL>
 
 		<a href="<%= editURL %>">
-			<liferay-ui:icon
-				image="edit"
-				label="<%= true %>"
-			/>
+			<i class="icon-edit"></i>
+
+			<span><liferay-ui:message key="edit" /></span>
 		</a>
 	</span>
 </c:if>
 
 <c:if test="<%= permissionChecker.hasPermission(entry.getGroupId(), AnnouncementsEntry.class.getName(), entry.getClassPK(), ActionKeys.DELETE) %>">
-	<span class="action delete-entry">
-		<liferay-portlet:actionURL name="deleteEntry" var="deleteURL">
-			<portlet:param name="redirect" value="<%= currentURL %>" />
-			<portlet:param name="entryId" value="<%= String.valueOf(entry.getEntryId()) %>" />
-		</liferay-portlet:actionURL>
+	<span class="action delete-entry" data-entryId="<%= String.valueOf(entry.getEntryId()) %>">
+		<a href="javascript:;">
+			<i class="icon-remove"></i>
 
-		<liferay-ui:icon-delete
-			label="<%= true %>"
-			url="<%= deleteURL %>"
-		/>
+			<span><liferay-ui:message key="delete" /></span>
+		</a>
 	</span>
 </c:if>

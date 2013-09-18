@@ -250,7 +250,7 @@ public class FileSystemImporter extends BaseImporter {
 
 		File[] files = dlDocumentsDir.listFiles();
 
-		if (Validator.isNull(files)) {
+		if (ArrayUtil.isEmpty(files)) {
 			return;
 		}
 
@@ -306,7 +306,7 @@ public class FileSystemImporter extends BaseImporter {
 
 		File[] files = folder.listFiles();
 
-		if (Validator.isNull(files)) {
+		if (ArrayUtil.isEmpty(files)) {
 			return folderId;
 		}
 
@@ -704,7 +704,7 @@ public class FileSystemImporter extends BaseImporter {
 	protected String getJournalId(String fileName) {
 		String id = FileUtil.stripExtension(fileName);
 
-		id = id.toUpperCase();
+		id = StringUtil.toUpperCase(id);
 
 		return StringUtil.replace(id, StringPool.SPACE, StringPool.DASH);
 	}

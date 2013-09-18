@@ -110,6 +110,21 @@ public class CalendarBookingServiceImpl extends CalendarBookingServiceBaseImpl {
 	}
 
 	@Override
+	public String exportCalendarBooking(long calendarBookingId, String type)
+		throws Exception {
+
+		CalendarBooking calendarBooking =
+			calendarBookingPersistence.findByPrimaryKey(calendarBookingId);
+
+		CalendarPermission.check(
+			getPermissionChecker(), calendarBooking.getCalendar(),
+			ActionKeys.VIEW_BOOKING_DETAILS);
+
+		return calendarBookingLocalService.exportCalendarBooking(
+			calendarBookingId, type);
+	}
+
+	@Override
 	public CalendarBooking fetchCalendarBooking(long calendarBookingId)
 		throws PortalException, SystemException {
 
@@ -218,6 +233,22 @@ public class CalendarBookingServiceImpl extends CalendarBookingServiceBaseImpl {
 		}
 
 		return calendarBookings;
+	}
+
+	@Override
+	public void invokeTransition(
+			long calendarBookingId, int status, ServiceContext serviceContext)
+		throws PortalException, SystemException {
+
+		CalendarBooking calendarBooking =
+			calendarBookingPersistence.findByPrimaryKey(calendarBookingId);
+
+		CalendarPermission.check(
+			getPermissionChecker(), calendarBooking.getCalendarId(),
+			ActionKeys.MANAGE_BOOKINGS);
+
+		calendarBookingApprovalWorkflow.invokeTransition(
+			getUserId(), calendarBookingId, status, serviceContext);
 	}
 
 	@Override

@@ -14,7 +14,13 @@
 
 package com.liferay.so.activities.hook.social;
 
+import com.liferay.portal.kernel.dao.orm.DynamicQuery;
+import com.liferay.portal.kernel.dao.orm.DynamicQueryFactoryUtil;
+import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
+import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
+import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.parsers.bbcode.BBCodeTranslatorUtil;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.util.FastDateFormatFactoryUtil;
 import com.liferay.portal.kernel.util.HtmlUtil;
@@ -23,13 +29,17 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.model.Group;
 import com.liferay.portal.security.permission.ActionKeys;
 import com.liferay.portal.security.permission.PermissionChecker;
+import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portlet.asset.AssetRendererFactoryRegistryUtil;
 import com.liferay.portlet.asset.model.AssetRenderer;
 import com.liferay.portlet.asset.model.AssetRendererFactory;
+import com.liferay.portlet.messageboards.model.MBMessage;
+import com.liferay.portlet.messageboards.service.MBMessageLocalServiceUtil;
 import com.liferay.portlet.social.model.BaseSocialActivityInterpreter;
 import com.liferay.portlet.social.model.SocialActivity;
 import com.liferay.portlet.social.model.SocialActivityFeedEntry;
@@ -89,6 +99,22 @@ public abstract class SOSocialActivityInterpreter
 		}
 
 		return new SocialActivityFeedEntry(link, title, body);
+	}
+
+	protected List<Long> getActivitySetUserIds(long activitySetId)
+		throws SystemException {
+
+		DynamicQuery dynamicQuery = DynamicQueryFactoryUtil.forClass(
+			SocialActivity.class);
+
+		dynamicQuery.setProjection(
+			ProjectionFactoryUtil.distinct(
+				ProjectionFactoryUtil.property("userId")));
+
+		dynamicQuery.add(
+			RestrictionsFactoryUtil.eq("activitySetId", activitySetId));
+
+		return SocialActivityLocalServiceUtil.dynamicQuery(dynamicQuery);
 	}
 
 	protected AssetRenderer getAssetRenderer(String className, long classPK)
@@ -209,22 +235,33 @@ public abstract class SOSocialActivityInterpreter
 			SocialActivity activity, ServiceContext serviceContext)
 		throws Exception {
 
+		String className = activity.getClassName();
+
 		String title = getPageTitle(
-			activity.getClassName(), activity.getClassPK(), serviceContext);
+			className, activity.getClassPK(), serviceContext);
 
 		AssetRenderer assetRenderer = getAssetRenderer(
-			activity.getClassName(), activity.getClassPK());
+			className, activity.getClassPK());
 
-		String body = StringUtil.shorten(
-			HtmlUtil.escape(
-				assetRenderer.getSearchSummary(
-					serviceContext.getLocale())), 200);
+		String body = assetRenderer.getSummary(serviceContext.getLocale());
+
+		if (className.equals(MBMessage.class.getName())) {
+			MBMessage mbMessage = MBMessageLocalServiceUtil.getMBMessage(
+				activity.getClassPK());
+
+			if (mbMessage.isFormatBBCode()) {
+				body = HtmlUtil.extractText(
+					BBCodeTranslatorUtil.getHTML(mbMessage.getBody()));
+			}
+		}
+
+		body = StringUtil.shorten(HtmlUtil.escape(body), 200);
 
 		return new SocialActivityFeedEntry(title, body);
 	}
 
 	protected String getTitle(
-			long groupId, long userId, long displayDate,
+			long activitySetId, long groupId, long userId, long displayDate,
 			ServiceContext serviceContext)
 		throws Exception {
 
@@ -252,12 +289,34 @@ public abstract class SOSocialActivityInterpreter
 
 		String userName = getUserName(userId, serviceContext);
 
+		int otherUsersCount = 0;
+
+		if (activitySetId > 0) {
+			List<Long> userIds = getActivitySetUserIds(activitySetId);
+
+			otherUsersCount = userIds.size() - 1;
+		}
+
 		if ((groupId != serviceContext.getScopeGroupId()) && (groupId > 0)) {
 			String groupName = getGroupName(groupId, serviceContext);
 
-			Object[] userArguments = new Object[] {userName, groupName};
-
-			sb.append(serviceContext.translate("x-in-x", userArguments));
+			if (otherUsersCount > 0) {
+				sb.append(
+					serviceContext.translate(
+						"x-and-x-others-in-x",
+						new Object[] {userName, otherUsersCount, groupName}));
+			}
+			else {
+				sb.append(
+					serviceContext.translate(
+						"x-in-x", new Object[] {userName, groupName}));
+			}
+		}
+		else if (otherUsersCount > 0) {
+			sb.append(
+				serviceContext.translate(
+					"x-and-x-others",
+					new Object[] {userName, otherUsersCount}));
 		}
 		else {
 			sb.append(userName);
@@ -277,7 +336,7 @@ public abstract class SOSocialActivityInterpreter
 
 		sb.append(
 			getTitle(
-				activity.getGroupId(), activity.getUserId(),
+				0, activity.getGroupId(), activity.getUserId(),
 				activity.getCreateDate(), serviceContext));
 		sb.append("<div class=\"activity-action\">");
 
@@ -301,8 +360,9 @@ public abstract class SOSocialActivityInterpreter
 
 		sb.append(
 			getTitle(
-				activitySet.getGroupId(), activitySet.getUserId(),
-				activitySet.getModifiedDate(), serviceContext));
+				activitySet.getActivitySetId(), activitySet.getGroupId(),
+				activitySet.getUserId(), activitySet.getModifiedDate(),
+				serviceContext));
 		sb.append("<div class=\"activity-action\">");
 
 		String titlePattern = getTitlePattern(null, activitySet);
@@ -347,17 +407,32 @@ public abstract class SOSocialActivityInterpreter
 			String actionId, ServiceContext serviceContext)
 		throws Exception {
 
+		Group group = GroupLocalServiceUtil.fetchGroup(activity.getGroupId());
+
+		if ((group != null) && group.isUser()) {
+			return false;
+		}
+
 		return permissionChecker.hasPermission(
 			activity.getGroupId(), activity.getClassName(),
 			activity.getClassPK(), ActionKeys.VIEW);
 	}
 
-	protected boolean isExpired(SocialActivitySet activitySet) {
+	protected boolean isExpired(
+		SocialActivitySet activitySet, boolean comment) {
+
 		long age = System.currentTimeMillis() - activitySet.getCreateDate();
 
 		long timeWindow =
 			Time.MINUTE *
 				PortletPropsValues.SOCIAL_ACTIVITY_SETS_BUNDLING_TIME_WINDOW;
+
+		if (comment) {
+			timeWindow =
+				Time.MINUTE *
+					PortletPropsValues.
+						SOCIAL_ACTIVITY_SETS_COMMENTS_BUNDLING_TIME_WINDOW;
+		}
 
 		if (age > timeWindow) {
 			return true;
