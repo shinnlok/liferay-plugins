@@ -54,7 +54,7 @@
 			<finder-column name="defaultCalendar" />
 		</finder>
 	</entity>
-	<entity name="CalendarBooking" uuid="true" local-service="true" remote-service="true">
+	<entity name="CalendarBooking" uuid="true" local-service="true" remote-service="true" trash-enabled="true">
 
 		<!-- PK fields -->
 
@@ -120,8 +120,8 @@
 			<finder-column name="parentCalendarBookingId" />
 		</finder>
 		<finder name="C_S" return-type="Collection">
-			<finder-column name="calendarResourceId" />
-			<finder-column name="status" />
+			<finder-column name="calendarId" />
+			<finder-column name="status" arrayable-operator="OR" />
 		</finder>
 		<finder name="P_S" return-type="Collection">
 			<finder-column name="parentCalendarBookingId" />

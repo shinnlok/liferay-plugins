@@ -23,11 +23,11 @@
 
 	<aui:layout>
 		<aui:column columnWidth="50" id="controls">
-			<div class="aui-field-row">
+			<div class="field-row">
 				<aui:input cssClass="url" inlineField="true" label="url" name="preferences--url--" value="<%= url %>" />
 			</div>
 
-			<div class="aui-field-row">
+			<div class="field-row">
 				<aui:select cssClass="preset-size" inlineField="true" label="preset-frame-size" name="preferences--presetSize--">
 					<aui:option label="Custom" value="custom" />
 					<aui:option label="Standard 360 4:3" selected='<%= presetSize.equals("480x360") %>' value="480x360" />
@@ -40,64 +40,42 @@
 					<aui:option label="Full HD 1080 16:9" selected='<%= presetSize.equals("1920x1080") %>' value="1920x1080" />
 				</aui:select>
 
-				<aui:input cssClass="width invisible" inlineField="true" label="frame-width" name="preferences--width--" value="<%= width %>" />
+				<aui:input cssClass="width" inlineField="true" label="frame-width" name="preferences--width--" value="<%= width %>" wrapperCssClass="invisible" />
 
-				<aui:input cssClass="height invisible" inlineField="true" label="frame-height" name="preferences--height--" value="<%= height %>" />
+				<aui:input cssClass="height" inlineField="true" label="frame-height" name="preferences--height--" value="<%= height %>" wrapperCssClass="invisible" />
 			</div>
 
 			<liferay-ui:panel-container extended="<%= false %>" persistState="<%= true %>">
 				<liferay-ui:panel collapsible="<%= true %>" defaultState="closed" extended="<%= false %>" persistState="<%= true %>" title="advanced-options">
-					<div class="aui-field-row">
-						<aui:input cssClass="player-color" inlineField="true" label="player-color" name="preferences--playerColor--" value="<%= playerColor %>" />
-
-						<aui:input cssClass="border-color" inlineField="true" label="border-color" name="preferences--borderColor--" value="<%= borderColor %>" />
-					</div>
-
-					<aui:input cssClass="show-thicker-border" inlineField="true" label="show-thicker-border" name="preferences--showThickerBorder--" type="checkbox" value="<%= showThickerBorder %>" />
-
 					<aui:input cssClass="show-thumbnail" inlineField="true" label="show-thumbnail" name="preferences--showThumbnail--" type="checkbox" value="<%= showThumbnail %>" />
 
-					<div class="aui-field-row">
-						<aui:input cssClass="hd" inlineField="true" label="hd-video" name="preferences--hd--" type="checkbox" value="<%= hd %>" />
-
+					<div class="field-row">
 						<aui:input cssClass="autoplay" inlineField="true" label="auto-play" name="preferences--autoplay--" type="checkbox" value="<%= autoplay %>" />
 
 						<aui:input cssClass="loop" inlineField="true" label="loop" name="preferences--loop--" type="checkbox" value="<%= loop %>" />
 					</div>
 
-					<div class="aui-field-row">
-						<aui:input cssClass="enable-fullscreen" inlineField="true" label="enable-fullscreen-option" name="preferences--enableFullscreen--" type="checkbox" value="<%= enableFullscreen %>" />
-
+					<div class="field-row">
 						<aui:input checked="<%= enableKeyboardControls %>" cssClass="enable-keyboard-controls" inlineField="true" label="enable-keyboard-controls" name="preferences--enableKeyboardControls--" type="checkbox" value="<%= enableKeyboardControls %>" />
 					</div>
 
-					<div class="aui-field-row">
-						<aui:input cssClass="show-info" inlineField="true" label="show-video-info" name="preferences--showInfo--" type="checkbox" value="<%= showInfo %>" />
+					<div class="field-row">
+						<aui:input cssClass="annotations" inlineField="true" label="annotations" name="preferences--annotations--" type="checkbox" value="<%= annotations %>" />
 
-						<aui:input cssClass="enable-enhanced-genie-menu" helpMessage="enhanced-genie-menu-help" inlineField="true" label="enable-enhanced-genie-menu" name="preferences--enableEnhancedGenieMenu--" type="checkbox" value="<%= enableEnhancedGenieMenu %>" />
-
-						<aui:input cssClass="enable-search" inlineField="true" label="enable-search" name="preferences--enableSearch--" type="checkbox" value="<%= enableSearch %>" />
+						<aui:input cssClass="closedCaptioning" inlineField="true" label="closed-captioning" name="preferences--closedCaptioning--" type="checkbox" value="<%= closedCaptioning %>" />
 					</div>
 
-					<div class="aui-field-row">
+					<div class="field-row">
 						<aui:input cssClass="start-time" inlineField="true" label="start-time" name="preferences--startTime--" value="<%= startTime %>" />
-
-						<aui:select cssClass="annotations" inlineField="true" label="annotations" name="annotations" value="<%= annotations %>">
-							<aui:option label="show-by-default" selected="<%= annotations == 1 %>" value="1" />
-							<aui:option label="do-not-show-by-default" selected="<%= annotations == 3 %>" value="3" />
-						</aui:select>
-
-						<aui:select cssClass="closed-captioning" inlineField="true" label="closed-captioning" name="preferences--closedCaptioning--">
-							<aui:option label="show-by-default" selected="<%= closedCaptioning == 1 %>" value="1" />
-							<aui:option label="do-not-show-by-default" selected="<%= closedCaptioning == 0 %>" value="0" />
-						</aui:select>
 					</div>
 				</liferay-ui:panel>
 			</liferay-ui:panel-container>
 		</aui:column>
 
 		<aui:column columnWidth="50">
-			<div class="aui-field-wrapper-content" id="preview"></div>
+			<div class="field-wrapper-content preview" id="<portlet:namespace />preview">
+				<i class="icon-youtube-play preview-play"></i>
+			</div>
 		</aui:column>
 	</aui:layout>
 
@@ -106,24 +84,15 @@
 	</aui:button-row>
 </aui:form>
 
-<aui:script use="aui-color-picker,aui-datatype,aui-swf">
+<aui:script use="aui-datatype,aui-swf-deprecated">
 	var createPlayer = function() {
 		var id = urlToVideoId(urlNode.val());
 		var height = parseInt(heightNode.val(), 10) || 0;
 		var maxWidth = (formNode.get('clientWidth') || formNode.get('scrollWidth')) - (controlsNode.get('clientWidth') || controlsNode.get('scrollWidth'));
 		var playerOptions = {
-			border: showThickerBorderNode.val(),
 			cc_load_policy: closedCaptioningNode.val(),
-			color1: encodeHex(borderColorNode.val()),
-			color2: encodeHex(playerColorNode.val()),
 			disablekb: (!A.DataType.Boolean.parse(enableKeyboardControlsNode.val())).toString(),
-			egm: enableEnhancedGenieMenuNode.val(),
-			fs: enableFullscreenNode.val(),
-			hd: hdNode.val(),
 			iv_load_policy: annotationsNode.val(),
-			rel: enableEnhancedGenieMenuNode.val(),
-			showinfo: showInfoNode.val(),
-			showsearch: enableSearchNode.val(),
 			start: startTimeNode.val()
 		};
 		var width = parseInt(widthNode.val(), 10) || 0;
@@ -169,8 +138,8 @@
 
 	var presetChange = function(e) {
 		if (this.val().indexOf('x') < 0) {
-			A.one('.aui-field.height').removeClass('invisible');
-			A.one('.aui-field.width').removeClass('invisible');
+			A.one('#<portlet:namespace />height').ancestor('.control-group').removeClass('invisible');
+			A.one('#<portlet:namespace />width').ancestor('.control-group').removeClass('invisible');
 
 			return;
 		}
@@ -191,22 +160,14 @@
 
 	var formNode = A.one('#<portlet:namespace />fm');
 
-	var controlsNode = A.one('#controls');
-	var previewNode = A.one('#preview');
+	var controlsNode = A.one('#<portlet:namespace />controls');
+	var previewNode = A.one('#<portlet:namespace />preview');
 
 	var annotationsNode = A.one('#<portlet:namespace />annotations');
-	var borderColorNode = A.one('#<portlet:namespace />borderColor');
 	var closedCaptioningNode = A.one('#<portlet:namespace />closedCaptioning');
-	var enableEnhancedGenieMenuNode = A.one('#<portlet:namespace />enableEnhancedGenieMenu');
-	var enableFullscreenNode = A.one('#<portlet:namespace />enableFullscreen');
 	var enableKeyboardControlsNode = A.one('#<portlet:namespace />enableKeyboardControls');
-	var enableSearchNode = A.one('#<portlet:namespace />enableSearch');
-	var hdNode = A.one('#<portlet:namespace />hd');
 	var heightNode = A.one('#<portlet:namespace />height');
-	var playerColorNode = A.one('#<portlet:namespace />playerColor');
 	var presetSizeNode = A.one('#<portlet:namespace />presetSize');
-	var showInfoNode = A.one('#<portlet:namespace />showInfo');
-	var showThickerBorderNode = A.one('#<portlet:namespace />showThickerBorder');
 	var startTimeNode = A.one('#<portlet:namespace />startTime');
 	var urlNode = A.one('#<portlet:namespace />url');
 	var widthNode = A.one('#<portlet:namespace />width');
@@ -257,7 +218,7 @@
 
 			submitForm(document['<portlet:namespace />fm']);
 		},
-		'input.aui-button-input-submit'
+		'input.button-input-submit'
 	);
 
 	A.on(
@@ -267,39 +228,9 @@
 		}
 	);
 
-	new A.ColorPicker(
-		{
-			after: {
-				colorChange: function(e) {
-					playerColorNode.val('#' + this.get('hex'));
-
-					createPlayer();
-				}
-			},
-			constrain: true,
-			preventOverlap: true,
-			triggerParent: playerColorNode.get('parentNode')
-		}
-	).render();
-
-	new A.ColorPicker(
-		{
-			after: {
-				colorChange: function(e) {
-					borderColorNode.val('#' + this.get('hex'));
-
-					createPlayer();
-				}
-			},
-			constrain: true,
-			preventOverlap: true,
-			triggerParent: borderColorNode.get('parentNode')
-		}
-	).render();
-
 	if (presetSizeNode.val() == 'custom') {
-		A.one('.aui-field.height').removeClass('invisible');
-		A.one('.aui-field.width').removeClass('invisible');
+		A.one('#<portlet:namespace />height').ancestor('.control-group').removeClass('invisible');
+		A.one('#<portlet:namespace />width').ancestor('.control-group').removeClass('invisible');
 	}
 
 	createPlayer();

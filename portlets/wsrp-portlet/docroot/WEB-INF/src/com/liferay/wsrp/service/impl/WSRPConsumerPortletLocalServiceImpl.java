@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.portlet.PortletBag;
 import com.liferay.portal.kernel.portlet.PortletBagPool;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.Transactional;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.HttpUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -389,7 +390,7 @@ public class WSRPConsumerPortletLocalServiceImpl
 			Set<String> mimeTypePortletModes = new HashSet<String>();
 
 			for (String portletMode : markupType.getModes()) {
-				portletMode = portletMode.toLowerCase();
+				portletMode = StringUtil.toLowerCase(portletMode);
 
 				if (portletMode.startsWith("wsrp:")) {
 					portletMode = portletMode.substring(5);
@@ -404,7 +405,7 @@ public class WSRPConsumerPortletLocalServiceImpl
 			Set<String> mimeTypeWindowStates = new HashSet<String>();
 
 			for (String windowState : markupType.getWindowStates()) {
-				windowState = windowState.toLowerCase();
+				windowState = StringUtil.toLowerCase(windowState);
 
 				if (windowState.startsWith("wsrp:")) {
 					windowState = windowState.substring(5);
@@ -443,7 +444,7 @@ public class WSRPConsumerPortletLocalServiceImpl
 
 				QName[] qNames = parameterDescription.getNames();
 
-				if ((qNames == null) || (qNames.length == 0)) {
+				if (ArrayUtil.isEmpty(qNames)) {
 					continue;
 				}
 

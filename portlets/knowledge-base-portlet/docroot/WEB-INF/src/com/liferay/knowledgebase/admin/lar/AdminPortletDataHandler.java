@@ -105,8 +105,7 @@ public class AdminPortletDataHandler extends BasePortletDataHandler {
 			PortletPreferences portletPreferences)
 		throws Exception {
 
-		portletDataContext.addPermissions(
-			RESOURCE_NAME, portletDataContext.getScopeGroupId());
+		portletDataContext.addPortletPermissions(RESOURCE_NAME);
 
 		Element rootElement = addExportDataRootElement(portletDataContext);
 
@@ -126,9 +125,7 @@ public class AdminPortletDataHandler extends BasePortletDataHandler {
 			PortletPreferences portletPreferences, String data)
 		throws Exception {
 
-		portletDataContext.importPermissions(
-			RESOURCE_NAME, portletDataContext.getSourceGroupId(),
-			portletDataContext.getScopeGroupId());
+		portletDataContext.importPortletPermissions(RESOURCE_NAME);
 
 		Element rootElement = portletDataContext.getImportDataRootElement();
 
@@ -153,8 +150,7 @@ public class AdminPortletDataHandler extends BasePortletDataHandler {
 		exportKBArticleAttachments(
 			portletDataContext, kbArticleElement, kbArticle);
 
-		portletDataContext.addClassedModel(
-			kbArticleElement, path, kbArticle, NAMESPACE);
+		portletDataContext.addClassedModel(kbArticleElement, path, kbArticle);
 	}
 
 	protected void exportKBArticleAttachments(
@@ -249,8 +245,7 @@ public class AdminPortletDataHandler extends BasePortletDataHandler {
 
 		Element kbCommentElement = rootElement.addElement("kb-comment");
 
-		portletDataContext.addClassedModel(
-			kbCommentElement, path, kbComment, NAMESPACE);
+		portletDataContext.addClassedModel(kbCommentElement, path, kbComment);
 	}
 
 	protected void exportKBComments(
@@ -286,8 +281,7 @@ public class AdminPortletDataHandler extends BasePortletDataHandler {
 
 		Element kbTemplateElement = rootElement.addElement("kb-template");
 
-		portletDataContext.addClassedModel(
-			kbTemplateElement, path, kbTemplate, NAMESPACE);
+		portletDataContext.addClassedModel(kbTemplateElement, path, kbTemplate);
 	}
 
 	protected void exportKBTemplates(
@@ -377,7 +371,7 @@ public class AdminPortletDataHandler extends BasePortletDataHandler {
 			dirNames, String.valueOf(kbArticle.getResourcePrimKey()));
 
 		ServiceContext serviceContext = portletDataContext.createServiceContext(
-			kbArticleElement, kbArticle, NAMESPACE);
+			kbArticleElement, kbArticle);
 
 		KBArticle importedKBArticle = null;
 
@@ -413,8 +407,7 @@ public class AdminPortletDataHandler extends BasePortletDataHandler {
 				kbArticleElement);
 		}
 
-		portletDataContext.importClassedModel(
-			kbArticle, importedKBArticle, NAMESPACE);
+		portletDataContext.importClassedModel(kbArticle, importedKBArticle);
 
 		importKBArticleAttachments(
 			portletDataContext, CounterLocalServiceUtil.increment(), dirNames,
@@ -520,7 +513,7 @@ public class AdminPortletDataHandler extends BasePortletDataHandler {
 
 			ServiceContext serviceContext =
 				portletDataContext.createServiceContext(
-					curKBArticleElement, curKBArticle, NAMESPACE);
+					curKBArticleElement, curKBArticle);
 
 			if (importedKBArticle == null) {
 				serviceContext.setUuid(uuid);
@@ -562,7 +555,7 @@ public class AdminPortletDataHandler extends BasePortletDataHandler {
 		long classPK = MapUtil.getLong(classPKs, kbComment.getClassPK());
 
 		ServiceContext serviceContext = portletDataContext.createServiceContext(
-			kbCommentElement, kbComment, NAMESPACE);
+			kbCommentElement, kbComment);
 
 		if (portletDataContext.isDataStrategyMirror()) {
 			KBComment existingKBComment = KBCommentUtil.fetchByUUID_G(
@@ -618,7 +611,7 @@ public class AdminPortletDataHandler extends BasePortletDataHandler {
 		long userId = portletDataContext.getUserId(kbTemplate.getUserUuid());
 
 		ServiceContext serviceContext = portletDataContext.createServiceContext(
-			kbTemplateElement, kbTemplate, NAMESPACE);
+			kbTemplateElement, kbTemplate);
 
 		KBTemplate importedKBTemplate = null;
 
@@ -647,8 +640,7 @@ public class AdminPortletDataHandler extends BasePortletDataHandler {
 				serviceContext);
 		}
 
-		portletDataContext.importClassedModel(
-			kbTemplate, importedKBTemplate, NAMESPACE);
+		portletDataContext.importClassedModel(kbTemplate, importedKBTemplate);
 	}
 
 	protected void importKBTemplates(
