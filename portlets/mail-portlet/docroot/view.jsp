@@ -24,29 +24,22 @@ MailManager mailManager = MailManager.getInstance(request);
 	<c:when test="<%= mailManager != null %>">
 		<div id="accountsContainer"></div>
 
-		<aui:layout cssClass="mail-status">
-		</aui:layout>
+		<div class="mail-status"></div>
 
-		<div id="mailContainer">
-			<aui:layout>
-				<aui:column columnWidth="20">
-					<div class="aui-helper-hidden" id="controlContainer">
-						<div id="foldersContainer"></div>
-					</div>
-				</aui:column>
+		<div class="row-fluid" id="mailContainer">
+			<div class="hide span3" id="controlContainer">
+				<div id="foldersContainer"></div>
+			</div>
 
-				<aui:column columnWidth="80">
-					<div id="contentContainer">
-						<div class="aui-helper-hidden" id="manageFoldersContainer"></div>
+			<div class="span9" id="contentContainer">
+				<div class="hide" id="manageFoldersContainer"></div>
 
-						<div id="messagesContainer"></div>
+				<div id="messagesContainer"></div>
 
-						<div class="aui-helper-hidden" id="messageContainer"></div>
+				<div class="hide" id="messageContainer"></div>
 
-						<div class="aui-helper-hidden" id="composeContainer"></div>
-					</div>
-				</aui:column>
-			</aui:layout>
+				<div class="hide" id="composeContainer"></div>
+			</div>
 		</div>
 
 		<%
