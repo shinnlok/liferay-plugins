@@ -17,7 +17,6 @@ package com.liferay.marketplace.service.impl;
 import com.liferay.marketplace.AppPropertiesException;
 import com.liferay.marketplace.AppTitleException;
 import com.liferay.marketplace.AppVersionException;
-import com.liferay.marketplace.DuplicateAppException;
 import com.liferay.marketplace.model.App;
 import com.liferay.marketplace.model.Module;
 import com.liferay.marketplace.service.base.AppLocalServiceBaseImpl;
@@ -29,6 +28,7 @@ import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.plugin.PluginPackage;
+import com.liferay.portal.kernel.servlet.ServletContextPool;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.PropertiesUtil;
@@ -52,11 +52,15 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
+
+import javax.servlet.ServletContext;
 
 /**
  * @author Ryan Park
@@ -65,6 +69,7 @@ public class AppLocalServiceImpl extends AppLocalServiceBaseImpl {
 
 	@Override
 	public void clearInstalledAppsCache() {
+		_bundledApps = null;
 		_installedApps = null;
 	}
 
@@ -115,6 +120,54 @@ public class AppLocalServiceImpl extends AppLocalServiceBaseImpl {
 	@Override
 	public List<App> getApps(String category) throws SystemException {
 		return appPersistence.findByCategory(category);
+	}
+
+	@Override
+	public Map<String, String> getBundledApps() {
+		if (_bundledApps != null) {
+			return _bundledApps;
+		}
+
+		Map<String, String> bundledApps = new HashMap<String, String>();
+
+		List<PluginPackage> pluginPackages =
+			DeployManagerUtil.getInstalledPluginPackages();
+
+		for (PluginPackage pluginPackage : pluginPackages) {
+			ServletContext servletContext = ServletContextPool.get(
+				pluginPackage.getContext());
+
+			InputStream inputStream = null;
+
+			try {
+				inputStream = servletContext.getResourceAsStream(
+					"/WEB-INF/liferay-releng.changelog.md5");
+
+				if (inputStream == null) {
+					continue;
+				}
+
+				String relengHash = StringUtil.read(inputStream);
+
+				if (Validator.isNotNull(relengHash)) {
+					bundledApps.put(pluginPackage.getContext(), relengHash);
+				}
+			}
+			catch (Exception e) {
+				if (_log.isWarnEnabled()) {
+					_log.warn(
+						"Unable to read plugin package MD5 checksum for " +
+							pluginPackage.getContext());
+				}
+			}
+			finally {
+				StreamUtil.cleanUp(inputStream);
+			}
+		}
+
+		_bundledApps = bundledApps;
+
+		return _bundledApps;
 	}
 
 	@Override
@@ -381,7 +434,7 @@ public class AppLocalServiceImpl extends AppLocalServiceBaseImpl {
 		User user = userPersistence.fetchByPrimaryKey(userId);
 		Date now = new Date();
 
-		validate(remoteAppId, title, version);
+		validate(title, version);
 
 		App app = appPersistence.fetchByRemoteAppId(remoteAppId);
 
@@ -507,7 +560,7 @@ public class AppLocalServiceImpl extends AppLocalServiceBaseImpl {
 		return false;
 	}
 
-	protected void validate(long remoteAppId, String title, String version)
+	protected void validate(String title, String version)
 		throws PortalException, SystemException {
 
 		if (Validator.isNull(title)) {
@@ -517,18 +570,11 @@ public class AppLocalServiceImpl extends AppLocalServiceBaseImpl {
 		if (Validator.isNull(version)) {
 			throw new AppVersionException();
 		}
-
-		if (remoteAppId > 0) {
-			App app = appPersistence.fetchByRemoteAppId(remoteAppId);
-
-			if (app != null) {
-				throw new DuplicateAppException();
-			}
-		}
 	}
 
 	private static Log _log = LogFactoryUtil.getLog(AppLocalServiceImpl.class);
 
+	private Map<String, String> _bundledApps;
 	private List<App> _installedApps;
 
 }

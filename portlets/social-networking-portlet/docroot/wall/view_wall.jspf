@@ -35,7 +35,7 @@
 		}
 		%>
 
-		<aui:form method="post" name="fm" onSubmit='<%= renderResponse.getNamespace() + "addWallEntry(); return false;" %>'>
+		<aui:form method="post" name="fm" onSubmit='<%= "event.preventDefault();" + renderResponse.getNamespace() + "addWallEntry();" %>'>
 			<aui:input name="redirect" type="hidden" value="<%= currentURL %>" />
 			<aui:input name="wallEntryId" type="hidden" value="" />
 
@@ -74,6 +74,8 @@
 		else {
 			results = WallEntryLocalServiceUtil.getWallEntries(group.getGroupId(), searchContainer.getStart(), searchContainer.getEnd());
 		}
+
+		searchContainer.setResults(results);
 		%>
 
 		<table class="table" width="100%">

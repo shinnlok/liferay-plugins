@@ -30,6 +30,7 @@ page import="com.liferay.calendar.CalendarNameException" %><%@
 page import="com.liferay.calendar.CalendarResourceCodeException" %><%@
 page import="com.liferay.calendar.CalendarResourceNameException" %><%@
 page import="com.liferay.calendar.DuplicateCalendarResourceException" %><%@
+page import="com.liferay.calendar.NoSuchResourceException" %><%@
 page import="com.liferay.calendar.model.Calendar" %><%@
 page import="com.liferay.calendar.model.CalendarBooking" %><%@
 page import="com.liferay.calendar.model.CalendarNotificationTemplate" %><%@
@@ -45,7 +46,6 @@ page import="com.liferay.calendar.search.CalendarResourceDisplayTerms" %><%@
 page import="com.liferay.calendar.search.CalendarResourceSearch" %><%@
 page import="com.liferay.calendar.service.CalendarBookingLocalServiceUtil" %><%@
 page import="com.liferay.calendar.service.CalendarBookingServiceUtil" %><%@
-page import="com.liferay.calendar.service.CalendarLocalServiceUtil" %><%@
 page import="com.liferay.calendar.service.CalendarNotificationTemplateLocalServiceUtil" %><%@
 page import="com.liferay.calendar.service.CalendarResourceServiceUtil" %><%@
 page import="com.liferay.calendar.service.CalendarServiceUtil" %><%@
@@ -90,6 +90,7 @@ page import="com.liferay.portal.kernel.util.Validator" %><%@
 page import="com.liferay.portal.kernel.workflow.WorkflowConstants" %><%@
 page import="com.liferay.portal.model.Group" %><%@
 page import="com.liferay.portal.model.User" %><%@
+page import="com.liferay.portal.security.auth.PrincipalException" %><%@
 page import="com.liferay.portal.service.GroupServiceUtil" %><%@
 page import="com.liferay.portal.service.UserLocalServiceUtil" %><%@
 page import="com.liferay.portal.util.PortalUtil" %><%@
@@ -117,19 +118,15 @@ page import="java.util.TimeZone" %>
 String currentURL = PortalUtil.getCurrentURL(request);
 
 CalendarResource groupCalendarResource = CalendarResourceUtil.getGroupCalendarResource(liferayPortletRequest, scopeGroupId);
+CalendarResource userCalendarResource = CalendarResourceUtil.getUserCalendarResource(liferayPortletRequest, themeDisplay.getUserId());
 
-CalendarResource userCalendarResource = null;
 Calendar userDefaultCalendar = null;
 
-if (themeDisplay.isSignedIn()) {
-	userCalendarResource = CalendarResourceUtil.getUserCalendarResource(liferayPortletRequest, themeDisplay.getUserId());
+if (userCalendarResource != null) {
+	long defaultCalendarId = userCalendarResource.getDefaultCalendarId();
 
-	if (userCalendarResource != null) {
-		long defaultCalendarId = userCalendarResource.getDefaultCalendarId();
-
-		if (defaultCalendarId > 0) {
-			userDefaultCalendar = CalendarServiceUtil.getCalendar(defaultCalendarId);
-		}
+	if (defaultCalendarId > 0) {
+		userDefaultCalendar = CalendarServiceUtil.getCalendar(defaultCalendarId);
 	}
 }
 

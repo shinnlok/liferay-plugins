@@ -37,9 +37,9 @@ List<Calendar> otherCalendars = new ArrayList<Calendar>();
 long[] calendarIds = StringUtil.split(SessionClicks.get(request, "otherCalendars", StringPool.BLANK), 0L);
 
 for (long calendarId : calendarIds) {
-	Calendar calendar = CalendarLocalServiceUtil.fetchCalendar(calendarId);
+	Calendar calendar = CalendarServiceUtil.fetchCalendar(calendarId);
 
-	if ((calendar != null) && CalendarPermission.contains(permissionChecker, calendar, ActionKeys.VIEW)) {
+	if (calendar != null) {
 		CalendarResource calendarResource = calendar.getCalendarResource();
 
 		if (calendarResource.isActive()) {
@@ -70,12 +70,6 @@ boolean columnOptionsVisible = GetterUtil.getBoolean(SessionClicks.get(request, 
 <aui:container cssClass="calendar-portlet-column-parent">
 	<aui:row>
 		<aui:col cssClass='<%= "calendar-portlet-column-options " + (columnOptionsVisible ? StringPool.BLANK : "hide") %>' id="columnOptions" span="<%= 3 %>">
-			<c:if test="<%= (userDefaultCalendar != null) && CalendarPermission.contains(permissionChecker, userDefaultCalendar, ActionKeys.MANAGE_BOOKINGS) %>">
-				<aui:button-row cssClass="calendar-create-event-btn-row">
-					<aui:button onClick='<%= renderResponse.getNamespace() + \"onCreateEventClick();\" %>' primary="true" value="add-calendar-booking" />
-				</aui:button-row>
-			</c:if>
-
 			<div class="calendar-portlet-mini-calendar" id="<portlet:namespace />miniCalendarContainer"></div>
 
 			<div id="<portlet:namespace />calendarListContainer">
@@ -123,9 +117,9 @@ boolean columnOptionsVisible = GetterUtil.getBoolean(SessionClicks.get(request, 
 			<div id="<portlet:namespace />message"></div>
 		</aui:col>
 
-		<aui:col cssClass='<%= "calendar-portlet-column-grid " + (columnOptionsVisible ? StringPool.BLANK : "calendar-portlet-column-full") %>' id="columnGrid" span="<%= 9 %>">
-			<div class="calendar-portlet-column-toggler" id="<portlet:namespace/>columnToggler">
-				<i class="<%= columnOptionsVisible ? "icon-caret-left" : "icon-caret-right" %>" id="<portlet:namespace/>columnTogglerIcon"></i>
+		<aui:col cssClass="calendar-portlet-column-grid" id="columnGrid" span="<%= columnOptionsVisible ? 9 : 12 %>">
+			<div class="calendar-portlet-column-toggler" id="<portlet:namespace />columnToggler">
+				<i class="<%= columnOptionsVisible ? "icon-caret-left" : "icon-caret-right" %>" id="<portlet:namespace />columnTogglerIcon"></i>
 			</div>
 
 			<liferay-util:include page="/scheduler.jsp" servletContext="<%= application %>">
@@ -164,7 +158,7 @@ boolean columnOptionsVisible = GetterUtil.getBoolean(SessionClicks.get(request, 
 					<portlet:param name="calendarBookingId" value="{calendarBookingId}" />
 				</portlet:renderURL>
 
-				<liferay-util:param name="showNewEventBtn" value="<%= Boolean.TRUE.toString() %>" />
+				<liferay-util:param name="showAddEventBtn" value="<%= String.valueOf((userDefaultCalendar != null) && CalendarPermission.contains(permissionChecker, userDefaultCalendar, ActionKeys.MANAGE_BOOKINGS)) %>" />
 				<liferay-util:param name="viewCalendarBookingURL" value="<%= viewCalendarBookingURL %>" />
 			</liferay-util:include>
 		</aui:col>
@@ -186,11 +180,12 @@ boolean columnOptionsVisible = GetterUtil.getBoolean(SessionClicks.get(request, 
 	var syncCalendarsMap = function() {
 		var calendarLists = [];
 
+		<c:if test="<%= themeDisplay.isSignedIn() || (groupCalendarResource != null) %>">
+			calendarLists.push(window.<portlet:namespace />myCalendarList);
+		</c:if>
+
 		<c:if test="<%= themeDisplay.isSignedIn() %>">
-			calendarLists.push(
-				window.<portlet:namespace />myCalendarList,
-				window.<portlet:namespace />otherCalendarList
-			);
+			calendarLists.push(window.<portlet:namespace />otherCalendarList);
 		</c:if>
 
 		<c:if test="<%= groupCalendarResource != null %>">
@@ -200,7 +195,7 @@ boolean columnOptionsVisible = GetterUtil.getBoolean(SessionClicks.get(request, 
 		Liferay.CalendarUtil.syncCalendarsMap(calendarLists);
 	}
 
-	<c:if test="<%= themeDisplay.isSignedIn() %>">
+	<c:if test="<%= themeDisplay.isSignedIn() || (groupCalendarResource != null) %>">
 		window.<portlet:namespace />myCalendarList = new Liferay.CalendarList(
 			{
 				after: {
@@ -219,10 +214,13 @@ boolean columnOptionsVisible = GetterUtil.getBoolean(SessionClicks.get(request, 
 
 				calendars: <%= userCalendarsJSONArray %>,
 				scheduler: <portlet:namespace />scheduler,
-				simpleMenu: window.<portlet:namespace />calendarsMenu
+				simpleMenu: window.<portlet:namespace />calendarsMenu,
+				visible: <%= themeDisplay.isSignedIn() %>
 			}
 		).render();
+	</c:if>
 
+	<c:if test="<%= themeDisplay.isSignedIn() %>">
 		window.<portlet:namespace />otherCalendarList = new Liferay.CalendarList(
 			{
 				after: {
@@ -333,9 +331,11 @@ boolean columnOptionsVisible = GetterUtil.getBoolean(SessionClicks.get(request, 
 
 			Liferay.Store('calendar-portlet-column-options-visible', columnOptions.hasClass('hide'));
 
-			columnGrid.toggleClass('calendar-portlet-column-full');
-			columnTogglerIcon.toggleClass('icon-caret-left').toggleClass('icon-caret-right');
+			columnGrid.toggleClass('span9').toggleClass('span12');
+
 			columnOptions.toggleClass('hide');
+
+			columnTogglerIcon.toggleClass('icon-caret-left').toggleClass('icon-caret-right');
 		}
 	);
 </aui:script>
@@ -392,6 +392,10 @@ boolean columnOptionsVisible = GetterUtil.getBoolean(SessionClicks.get(request, 
 
 							var selected = (selectedDates.length > 0) && A.Date.isInRange(date, selectedDates[0], selectedDates[selectedDates.length - 1]);
 
+							if (A.DataType.DateMath.isToday(date)) {
+								node.addClass('lfr-current-day');
+							}
+
 							node.toggleClass('yui3-calendar-day-selected', selected);
 						},
 						rules: rulesDefinition
@@ -434,50 +438,6 @@ boolean columnOptionsVisible = GetterUtil.getBoolean(SessionClicks.get(request, 
 	<portlet:namespace />refreshMiniCalendarSelectedDates();
 
 	<portlet:namespace />scheduler.load();
-</aui:script>
-
-<aui:script>
-	<c:if test="<%= (userDefaultCalendar != null) && CalendarPermission.contains(permissionChecker, userDefaultCalendar, ActionKeys.MANAGE_BOOKINGS) %>">
-		Liferay.provide(
-			window,
-			'<portlet:namespace/>onCreateEventClick',
-			function() {
-				var A = AUI();
-
-				var activeViewName = <portlet:namespace/>scheduler.get('activeView').get('name');
-
-				var defaultUserCalendar = Liferay.CalendarUtil.getDefaultUserCalendar();
-
-				var calendarId = defaultUserCalendar.get('calendarId');
-
-				var editCalendarBookingURL = decodeURIComponent(<portlet:namespace/>eventRecorder.get('editCalendarBookingURL'));
-
-				Liferay.Util.openWindow(
-					{
-						dialog: {
-							after: {
-								destroy: function(event) {
-									<portlet:namespace/>scheduler.load();
-								}
-							},
-							destroyOnHide: true,
-							modal: true
-						},
-						title: Liferay.Language.get('new-calendar-booking'),
-						uri: A.Lang.sub(
-							editCalendarBookingURL,
-							{
-								activeView: activeViewName,
-								calendarId: calendarId,
-								titleCurrentValue: ''
-							}
-						)
-					}
-				);
-			},
-			['aui-base', 'liferay-scheduler']
-		);
-	</c:if>
 </aui:script>
 
 <%!

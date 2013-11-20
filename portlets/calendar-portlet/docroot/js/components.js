@@ -688,7 +688,7 @@
 
 							instance.items.removeClass(CSS_SIMPLE_COLOR_PICKER_ITEM_SELECTED);
 
-							var newNode = instance.items.item(pallete.indexOf(val));
+							var newNode = instance.items.item(AArray.indexOf(pallete, val));
 
 							if (newNode) {
 								newNode.addClass(CSS_SIMPLE_COLOR_PICKER_ITEM_SELECTED);
@@ -1090,9 +1090,11 @@
 							{
 								dialog:	{
 									bodyContent: content.join(''),
+									height: 200,
 									toolbars: {
 										footer: buttons
 									},
+									width: 700
 								},
 								title: titleText
 							}
