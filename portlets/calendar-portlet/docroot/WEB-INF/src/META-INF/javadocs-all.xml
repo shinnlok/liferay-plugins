@@ -494,6 +494,24 @@
 				<comment><![CDATA[]]></comment>
 			</throws>
 		</method>
+		<method>
+			<name>doRestoreStagedModel</name>
+			<param>
+				<name>portletDataContext</name>
+				<type>com.liferay.portal.kernel.lar.PortletDataContext</type>
+				<comment><![CDATA[]]></comment>
+			</param>
+			<param>
+				<name>calendarBooking</name>
+				<type>com.liferay.calendar.model.CalendarBooking</type>
+				<comment><![CDATA[]]></comment>
+			</param>
+			<throws>
+				<name>Exception</name>
+				<type>java.lang.Exception</type>
+				<comment><![CDATA[]]></comment>
+			</throws>
+		</method>
 		<field>
 			<name>CLASS_NAMES</name>
 		</field>
@@ -962,6 +980,35 @@
 		</method>
 		<field>
 			<name>CLASS_NAMES</name>
+		</field>
+	</javadoc>
+	<javadoc>
+		<name>CalendarHotDeployMessageListener</name>
+		<type>com.liferay.calendar.messaging.CalendarHotDeployMessageListener</type>
+		<author><![CDATA[Marcellus Tavares]]></author>
+		<method>
+			<name>CalendarHotDeployMessageListener</name>
+			<param>
+				<name>servletContextNames</name>
+				<type>java.lang.String</type>
+				<comment><![CDATA[]]></comment>
+			</param>
+		</method>
+		<method>
+			<name>onDeploy</name>
+			<param>
+				<name>message</name>
+				<type>com.liferay.portal.kernel.messaging.Message</type>
+				<comment><![CDATA[]]></comment>
+			</param>
+			<throws>
+				<name>Exception</name>
+				<type>java.lang.Exception</type>
+				<comment><![CDATA[]]></comment>
+			</throws>
+		</method>
+		<field>
+			<name>_log</name>
 		</field>
 	</javadoc>
 	<javadoc>
@@ -2075,6 +2122,29 @@
 			<throws>
 				<name>Exception</name>
 				<type>java.lang.Exception</type>
+				<comment><![CDATA[]]></comment>
+			</throws>
+		</method>
+		<method>
+			<name>doDispatch</name>
+			<param>
+				<name>renderRequest</name>
+				<type>javax.portlet.RenderRequest</type>
+				<comment><![CDATA[]]></comment>
+			</param>
+			<param>
+				<name>renderResponse</name>
+				<type>javax.portlet.RenderResponse</type>
+				<comment><![CDATA[]]></comment>
+			</param>
+			<throws>
+				<name>IOException</name>
+				<type>java.io.IOException</type>
+				<comment><![CDATA[]]></comment>
+			</throws>
+			<throws>
+				<name>PortletException</name>
+				<type>javax.portlet.PortletException</type>
 				<comment><![CDATA[]]></comment>
 			</throws>
 		</method>
@@ -4308,34 +4378,6 @@
 			<param>
 				<name>status</name>
 				<type>int</type>
-				<comment><![CDATA[]]></comment>
-			</param>
-			<param>
-				<name>serviceContext</name>
-				<type>com.liferay.portal.service.ServiceContext</type>
-				<comment><![CDATA[]]></comment>
-			</param>
-			<throws>
-				<name>PortalException</name>
-				<type>com.liferay.portal.kernel.exception.PortalException</type>
-				<comment><![CDATA[]]></comment>
-			</throws>
-			<throws>
-				<name>SystemException</name>
-				<type>com.liferay.portal.kernel.exception.SystemException</type>
-				<comment><![CDATA[]]></comment>
-			</throws>
-		</method>
-		<method>
-			<name>invokeTransition</name>
-			<param>
-				<name>calendarBookingId</name>
-				<type>long</type>
-				<comment><![CDATA[]]></comment>
-			</param>
-			<param>
-				<name>transitionName</name>
-				<type>java.lang.String</type>
 				<comment><![CDATA[]]></comment>
 			</param>
 			<param>
@@ -8487,6 +8529,63 @@
 			</throws>
 		</method>
 		<method>
+			<name>getCalendarResourceCalendars</name>
+			<param>
+				<name>groupId</name>
+				<type>long</type>
+				<comment><![CDATA[]]></comment>
+			</param>
+			<param>
+				<name>calendarResourceId</name>
+				<type>long</type>
+				<comment><![CDATA[]]></comment>
+			</param>
+			<return>
+				<comment><![CDATA[]]></comment>
+			</return>
+			<throws>
+				<name>PortalException</name>
+				<type>com.liferay.portal.kernel.exception.PortalException</type>
+				<comment><![CDATA[]]></comment>
+			</throws>
+			<throws>
+				<name>SystemException</name>
+				<type>com.liferay.portal.kernel.exception.SystemException</type>
+				<comment><![CDATA[]]></comment>
+			</throws>
+		</method>
+		<method>
+			<name>getCalendarResourceCalendars</name>
+			<param>
+				<name>groupId</name>
+				<type>long</type>
+				<comment><![CDATA[]]></comment>
+			</param>
+			<param>
+				<name>calendarResourceId</name>
+				<type>long</type>
+				<comment><![CDATA[]]></comment>
+			</param>
+			<param>
+				<name>defaultCalendar</name>
+				<type>boolean</type>
+				<comment><![CDATA[]]></comment>
+			</param>
+			<return>
+				<comment><![CDATA[]]></comment>
+			</return>
+			<throws>
+				<name>PortalException</name>
+				<type>com.liferay.portal.kernel.exception.PortalException</type>
+				<comment><![CDATA[]]></comment>
+			</throws>
+			<throws>
+				<name>SystemException</name>
+				<type>com.liferay.portal.kernel.exception.SystemException</type>
+				<comment><![CDATA[]]></comment>
+			</throws>
+		</method>
+		<method>
 			<name>importCalendar</name>
 			<param>
 				<name>calendarId</name>
@@ -11744,49 +11843,6 @@
 		</field>
 	</javadoc>
 	<javadoc>
-		<name>CalendarServletContextListener</name>
-		<type>com.liferay.calendar.servlet.CalendarServletContextListener</type>
-		<author><![CDATA[Marcellus Tavares]]></author>
-		<method>
-			<name>contextDestroyed</name>
-			<param>
-				<name>servletContextEvent</name>
-				<type>javax.servlet.ServletContextEvent</type>
-				<comment><![CDATA[]]></comment>
-			</param>
-		</method>
-		<method>
-			<name>contextInitialized</name>
-			<param>
-				<name>servletContextEvent</name>
-				<type>javax.servlet.ServletContextEvent</type>
-				<comment><![CDATA[]]></comment>
-			</param>
-		</method>
-		<method>
-			<name>doPortalDestroy</name>
-			<throws>
-				<name>Exception</name>
-				<type>java.lang.Exception</type>
-				<comment><![CDATA[]]></comment>
-			</throws>
-		</method>
-		<method>
-			<name>doPortalInit</name>
-			<throws>
-				<name>Exception</name>
-				<type>java.lang.Exception</type>
-				<comment><![CDATA[]]></comment>
-			</throws>
-		</method>
-		<field>
-			<name>_log</name>
-		</field>
-		<field>
-			<name>_messageListener</name>
-		</field>
-	</javadoc>
-	<javadoc>
 		<name>CalendarActivityInterpreter</name>
 		<type>com.liferay.calendar.social.CalendarActivityInterpreter</type>
 		<author><![CDATA[Marcellus Tavares]]></author>
@@ -12968,6 +13024,22 @@
 				<comment><![CDATA[]]></comment>
 			</throws>
 		</method>
+		<method>
+			<name>_isInCheckInterval</name>
+			<param>
+				<name>deltaTime</name>
+				<type>long</type>
+				<comment><![CDATA[]]></comment>
+			</param>
+			<param>
+				<name>intervalStart</name>
+				<type>long</type>
+				<comment><![CDATA[]]></comment>
+			</param>
+			<return>
+				<comment><![CDATA[]]></comment>
+			</return>
+		</method>
 		<field>
 			<name>_CHECK_INTERVAL</name>
 		</field>
@@ -13273,39 +13345,6 @@
 			</throws>
 		</method>
 		<method>
-			<name>invokeTransition</name>
-			<param>
-				<name>userId</name>
-				<type>long</type>
-				<comment><![CDATA[]]></comment>
-			</param>
-			<param>
-				<name>calendarBookingId</name>
-				<type>long</type>
-				<comment><![CDATA[]]></comment>
-			</param>
-			<param>
-				<name>transitionName</name>
-				<type>java.lang.String</type>
-				<comment><![CDATA[]]></comment>
-			</param>
-			<param>
-				<name>serviceContext</name>
-				<type>com.liferay.portal.service.ServiceContext</type>
-				<comment><![CDATA[]]></comment>
-			</param>
-			<throws>
-				<name>PortalException</name>
-				<type>com.liferay.portal.kernel.exception.PortalException</type>
-				<comment><![CDATA[]]></comment>
-			</throws>
-			<throws>
-				<name>SystemException</name>
-				<type>com.liferay.portal.kernel.exception.SystemException</type>
-				<comment><![CDATA[]]></comment>
-			</throws>
-		</method>
-		<method>
 			<name>startWorkflow</name>
 			<param>
 				<name>userId</name>
@@ -13399,39 +13438,6 @@
 			</throws>
 		</method>
 		<method>
-			<name>invokeTransition</name>
-			<param>
-				<name>userId</name>
-				<type>long</type>
-				<comment><![CDATA[]]></comment>
-			</param>
-			<param>
-				<name>calendarBookingId</name>
-				<type>long</type>
-				<comment><![CDATA[]]></comment>
-			</param>
-			<param>
-				<name>transitionName</name>
-				<type>java.lang.String</type>
-				<comment><![CDATA[]]></comment>
-			</param>
-			<param>
-				<name>serviceContext</name>
-				<type>com.liferay.portal.service.ServiceContext</type>
-				<comment><![CDATA[]]></comment>
-			</param>
-			<throws>
-				<name>PortalException</name>
-				<type>com.liferay.portal.kernel.exception.PortalException</type>
-				<comment><![CDATA[]]></comment>
-			</throws>
-			<throws>
-				<name>SystemException</name>
-				<type>com.liferay.portal.kernel.exception.SystemException</type>
-				<comment><![CDATA[]]></comment>
-			</throws>
-		</method>
-		<method>
 			<name>startWorkflow</name>
 			<param>
 				<name>userId</name>
@@ -13491,37 +13497,6 @@
 		<type>com.liferay.calendar.workflow.CalendarBookingWorkflowConstants</type>
 		<author><![CDATA[Michael C. Han]]></author>
 		<author><![CDATA[Eduardo Lundgren]]></author>
-		<method>
-			<name>getLabelStatus</name>
-			<param>
-				<name>label</name>
-				<type>java.lang.String</type>
-				<comment><![CDATA[]]></comment>
-			</param>
-			<return>
-				<comment><![CDATA[]]></comment>
-			</return>
-		</method>
-		<method>
-			<name>getStatusLabel</name>
-			<param>
-				<name>status</name>
-				<type>int</type>
-				<comment><![CDATA[]]></comment>
-			</param>
-			<return>
-				<comment><![CDATA[]]></comment>
-			</return>
-		</method>
-		<field>
-			<name>LABEL_ACCEPTED</name>
-		</field>
-		<field>
-			<name>LABEL_DECLINED</name>
-		</field>
-		<field>
-			<name>LABEL_MAYBE</name>
-		</field>
 		<field>
 			<name>STATUS_MAYBE</name>
 		</field>

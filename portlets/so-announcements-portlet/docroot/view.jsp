@@ -25,7 +25,7 @@
 
 <div id="<portlet:namespace />errorMessage"></div>
 
-<c:if test="<%= (permissionChecker.isGroupAdmin(layout.getGroupId()) || permissionChecker.isGroupOwner(layout.getGroupId())) && (!group.isUser() || permissionChecker.isOmniadmin()) %>">
+<c:if test="<%= (permissionChecker.isGroupAdmin(layout.getGroupId()) || permissionChecker.isGroupOwner(layout.getGroupId())) && (!group.isUser() || PortalPermissionUtil.contains(permissionChecker, ActionKeys.ADD_GENERAL_ANNOUNCEMENTS)) %>">
 	<div class="admin-actions">
 		<aui:button onClick='<%= renderResponse.getNamespace() + "addEntry()" %>' value="add-entry" />
 
@@ -120,11 +120,11 @@
 			<portlet:param name="redirect" value="<%= currentURL %>" />
 		</portlet:renderURL>
 
-		<portlet:namespace />openWindow('<%= addEntryURL %>', '<%= LanguageUtil.get(pageContext, "add-entry") %>', true, 800);
+		<portlet:namespace />openWindow('<%= addEntryURL %>', '<%= UnicodeLanguageUtil.get(pageContext, "add-entry") %>', true, 800);
 	}
 
 	function <portlet:namespace />editEntry(uri) {
-		<portlet:namespace />openWindow(uri, '<%= LanguageUtil.get(pageContext, "edit-entry") %>', true, 800);
+		<portlet:namespace />openWindow(uri, '<%= UnicodeLanguageUtil.get(pageContext, "edit-entry") %>', true, 800);
 	}
 
 	function <portlet:namespace />handleEntry(entryId) {
@@ -154,7 +154,7 @@
 	function <portlet:namespace />manageEntries() {
 		<portlet:renderURL var="manageEntriesURL" windowState="<%= LiferayWindowState.POP_UP.toString() %>"><portlet:param name="mvcPath" value="/manage_entries.jsp" /></portlet:renderURL>
 
-		<portlet:namespace />openWindow('<%= manageEntriesURL %>', '<%= LanguageUtil.get(pageContext, "manage-entries") %>', true, 800);
+		<portlet:namespace />openWindow('<%= manageEntriesURL %>', '<%= UnicodeLanguageUtil.get(pageContext, "manage-entries") %>', true, 800);
 	}
 
 	function <portlet:namespace />markEntry(entryId) {

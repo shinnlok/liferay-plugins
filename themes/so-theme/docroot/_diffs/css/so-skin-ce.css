@@ -680,7 +680,7 @@ input[type=button], input[type=reset], input[type=submit], .aui-button button, .
 	padding: 0 20px 0 4px;
 }
 
-/* ---------- Portal Tool Tips ---------- */
+/* ---------- Portal tool tips ---------- */
 
 .portal-tool-tip {
 	font-size: 1.2em;
@@ -760,7 +760,7 @@ input[type=button], input[type=reset], input[type=submit], .aui-button button, .
 	display: none;
 }
 
-/* ---------- Dynamic Uploader ---------- */
+/* ---------- Dynamic uploader ---------- */
 
 .lfr-upload-container .upload-error .error-message {
 	background-color: #FDD;
@@ -794,38 +794,6 @@ input[type=button], input[type=reset], input[type=submit], .aui-button button, .
 .aui-panel-hd-text {
 	font-size: 12px;
 	font-weight: bold;
-}
-
-/* ---------- Search Iterator ---------- */
-
-.taglib-search-iterator {
-	 .result-title img {
-		margin-right: .5em;
-	}
-
-	.result-data, .result-description {
-		color: #777;
-		font-size: 10px;
-	}
-
-	.result-data span {
-		margin-right: 1em;
-		white-space: nowrap;
-	}
-
-	.result-tags {
-		background: url(../images/custom/so_tag_small.png) no-repeat 0 3px;
-		color: #777;
-		font-size: 10px;
-		padding-left: 15px;
-
-		span {
-			float: left;
-			font-size: 0;
-			opacity: 0;
-			text-indent: -9999em;
-		}
-	}
 }
 
 /* ---------- Taglib ---------- */
@@ -1585,10 +1553,6 @@ input[type=button], input[type=reset], input[type=submit], .aui-button button, .
 		min-width: 200px;
 	}
 
-	.document-container table.taglib-search-iterator {
-		table-layout: auto;
-	}
-
 	.version-history .results-grid .lfr-actions .lfr-trigger strong {
 		min-width: 16px;
 	}
@@ -2073,7 +2037,7 @@ input[type=button], input[type=reset], input[type=submit], .aui-button button, .
 	}
 
 	.private-messaging-container {
-		.results-grid, .results-grid table.taglib-search-iterator, .results-grid .results-row td, .results-grid .results-row.alt td, .thread .results-row {
+		.results-grid, .results-grid .results-row td, .results-grid .results-row.alt td, .thread .results-row {
 			border-left-width: 0;
 			border-right-width: 0;
 			border-top-width: 0;
@@ -2385,7 +2349,7 @@ input[type=button], input[type=reset], input[type=submit], .aui-button button, .
 	display: none;
 }
 
-/* ---------- Internet Explorer ---------- */
+/* ---------- Internet explorer ---------- */
 
 .ie7 {
 	#so-sidebar {
@@ -2554,7 +2518,7 @@ input[type=button], input[type=reset], input[type=submit], .aui-button button, .
 	}
 }
 
-/* ---------- Fluid Layout ---------- */
+/* ---------- Fluid layout ---------- */
 
 body.so-layout-fluid, body.so-layout-fluid-ad {
 	#banner #heading, #content, #footer {

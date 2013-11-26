@@ -64,14 +64,16 @@ int end = ParamUtil.getInteger(request, "end", start + pageDelta);
 
 int total = AnnouncementsEntryLocalServiceUtil.getEntriesCount(user.getUserId(), scopes, portletName.equals(PortletKeys.ALERTS), flagValue);
 
-if ((start >= total) && (start != 0)) {
-	start -= pageDelta;
+int[] startAndEnd = SearchPaginationUtil.calculateStartAndEnd(start, end, total);
 
-	end = start + pageDelta;
-}
-
-List<AnnouncementsEntry> results = AnnouncementsEntryLocalServiceUtil.getEntries(user.getUserId(), scopes, portletName.equals(PortletKeys.ALERTS), flagValue, start, end);
+List<AnnouncementsEntry> results = AnnouncementsEntryLocalServiceUtil.getEntries(user.getUserId(), scopes, portletName.equals(PortletKeys.ALERTS), flagValue, startAndEnd[0], startAndEnd[1]);
 %>
+
+<c:if test="<%= results.isEmpty() && !readEntries %>">
+	<div class="no-announcements">
+		<liferay-ui:message key="there-are-no-new-announcements" />
+	</div>
+</c:if>
 
 <div class="entries <%= readEntries ? "read-entries" : "unread-entries" %>" data-start="<%= start %>">
 	<c:choose>

@@ -188,7 +188,9 @@ public class CalendarPortlet extends MVCPortlet {
 			getCalendarResource(renderRequest);
 		}
 		catch (Exception e) {
-			if (e instanceof NoSuchResourceException) {
+			if (e instanceof NoSuchResourceException ||
+				e instanceof PrincipalException) {
+
 				SessionErrors.add(renderRequest, e.getClass());
 			}
 			else {
@@ -518,6 +520,23 @@ public class CalendarPortlet extends MVCPortlet {
 		MBMessageServiceUtil.deleteDiscussionMessage(
 			groupId, className, classPK, permissionClassName, permissionClassPK,
 			permissionOwnerId, messageId);
+	}
+
+	@Override
+	protected void doDispatch(
+			RenderRequest renderRequest, RenderResponse renderResponse)
+		throws IOException, PortletException {
+
+		if (SessionErrors.contains(
+				renderRequest, NoSuchResourceException.class.getName()) ||
+			SessionErrors.contains(
+				renderRequest, PrincipalException.class.getName())) {
+
+			include("/error.jsp", renderRequest, renderResponse);
+		}
+		else {
+			super.doDispatch(renderRequest, renderResponse);
+		}
 	}
 
 	protected void getCalendar(PortletRequest portletRequest) throws Exception {
@@ -990,15 +1009,28 @@ public class CalendarPortlet extends MVCPortlet {
 		JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
 
 		if (Validator.isNotNull(data)) {
-			CalendarDataHandler calendarDataHandler =
-				CalendarDataHandlerFactory.getCalendarDataHandler(
-					CalendarDataFormat.ICAL);
+			try {
+				CalendarDataHandler calendarDataHandler =
+					CalendarDataHandlerFactory.getCalendarDataHandler(
+						CalendarDataFormat.ICAL);
 
-			calendarDataHandler.importCalendar(calendarId, data);
+				calendarDataHandler.importCalendar(calendarId, data);
+
+				jsonObject.put("success", true);
+			}
+			catch (Exception e) {
+				String message = themeDisplay.translate(
+						"an-unexpected-error-occurred-while-importing-your-" +
+						"file");
+
+				jsonObject.put("error", message);
+			}
 		}
 		else {
-			jsonObject.put(
-				"error", themeDisplay.translate("failed-to-import-empty-file"));
+			String message = themeDisplay.translate(
+				"failed-to-import-empty-file");
+
+			jsonObject.put("error", message);
 		}
 
 		writeJSON(resourceRequest, resourceResponse, jsonObject);

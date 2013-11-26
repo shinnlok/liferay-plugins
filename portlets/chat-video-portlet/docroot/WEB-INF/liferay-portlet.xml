@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE liferay-portlet-app PUBLIC "-//Liferay//DTD Portlet Application 6.2.0//EN" "http://www.liferay.com/dtd/liferay-portlet-app_6_2_0.dtd">
+
+<liferay-portlet-app>
+	<portlet>
+		<portlet-name>1</portlet-name>
+		<scheduler-entry>
+			<scheduler-event-listener-class>com.liferay.chat.video.messaging.WebRTCPresenceMessageListener</scheduler-event-listener-class>
+			<trigger>
+				<simple>
+					<simple-trigger-value>10</simple-trigger-value>
+					<time-unit>second</time-unit>
+				</simple>
+			</trigger>
+		</scheduler-entry>
+		<scheduler-entry>
+			<scheduler-event-listener-class>com.liferay.chat.video.messaging.WebRTCConnectionStateMessageListener</scheduler-event-listener-class>
+			<trigger>
+				<simple>
+					<simple-trigger-value>5</simple-trigger-value>
+					<time-unit>second</time-unit>
+				</simple>
+			</trigger>
+		</scheduler-entry>
+		<poller-processor-class>com.liferay.chat.video.poller.ChatVideoPollerProcessor</poller-processor-class>
+		<use-default-template>false</use-default-template>
+		<css-class-wrapper>chat-video-portlet</css-class-wrapper>
+		<system>true</system>
+	</portlet>
+</liferay-portlet-app>

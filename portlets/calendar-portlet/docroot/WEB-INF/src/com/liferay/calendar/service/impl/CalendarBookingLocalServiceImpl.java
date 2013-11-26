@@ -46,6 +46,8 @@ import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.sanitizer.Sanitizer;
+import com.liferay.portal.kernel.sanitizer.SanitizerUtil;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.ContentTypes;
@@ -56,6 +58,7 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.model.Company;
 import com.liferay.portal.model.ResourceConstants;
 import com.liferay.portal.model.SystemEventConstants;
 import com.liferay.portal.model.User;
@@ -94,6 +97,18 @@ public class CalendarBookingLocalServiceImpl
 		User user = userPersistence.findByPrimaryKey(userId);
 		Calendar calendar = calendarPersistence.findByPrimaryKey(calendarId);
 
+		long calendarBookingId = counterLocalService.increment();
+
+		for (Locale locale : descriptionMap.keySet()) {
+			String sanitizedDescription = SanitizerUtil.sanitize(
+				calendar.getCompanyId(), calendar.getGroupId(), userId,
+				CalendarBooking.class.getName(), calendarBookingId,
+				ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
+				descriptionMap.get(locale), null);
+
+			descriptionMap.put(locale, sanitizedDescription);
+		}
+
 		java.util.Calendar startTimeJCalendar = JCalendarUtil.getJCalendar(
 			startTime);
 		java.util.Calendar endTimeJCalendar = JCalendarUtil.getJCalendar(
@@ -116,8 +131,6 @@ public class CalendarBookingLocalServiceImpl
 		Date now = new Date();
 
 		validate(titleMap, startTimeJCalendar, endTimeJCalendar);
-
-		long calendarBookingId = counterLocalService.increment();
 
 		CalendarBooking calendarBooking = calendarBookingPersistence.create(
 			calendarBookingId);
@@ -210,8 +223,13 @@ public class CalendarBookingLocalServiceImpl
 
 		for (CalendarBooking calendarBooking : calendarBookings) {
 			try {
-				NotificationUtil.notifyCalendarBookingReminders(
-					calendarBooking, now.getTime());
+				Company company = companyPersistence.findByPrimaryKey(
+					calendarBooking.getCompanyId());
+
+				if (company.isActive()) {
+					NotificationUtil.notifyCalendarBookingReminders(
+						calendarBooking, now.getTime());
+				}
 			}
 			catch (PortalException pe) {
 				throw pe;
@@ -662,6 +680,16 @@ public class CalendarBookingLocalServiceImpl
 		Calendar calendar = calendarPersistence.findByPrimaryKey(calendarId);
 		CalendarBooking calendarBooking =
 			calendarBookingPersistence.findByPrimaryKey(calendarBookingId);
+
+		for (Locale locale : descriptionMap.keySet()) {
+			String sanitizedDescription = SanitizerUtil.sanitize(
+				calendar.getCompanyId(), calendar.getGroupId(), userId,
+				CalendarBooking.class.getName(), calendarBookingId,
+				ContentTypes.TEXT_HTML, Sanitizer.MODE_ALL,
+				descriptionMap.get(locale), null);
+
+			descriptionMap.put(locale, sanitizedDescription);
+		}
 
 		java.util.Calendar startTimeJCalendar = JCalendarUtil.getJCalendar(
 			startTime);

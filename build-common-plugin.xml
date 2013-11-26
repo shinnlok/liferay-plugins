@@ -285,12 +285,6 @@
 			<arg value="service.orm.file=${basedir}/docroot/WEB-INF/src/META-INF/portlet-orm.xml" />
 			<arg value="service.model.hints.file=${basedir}/docroot/WEB-INF/src/META-INF/portlet-model-hints.xml" />
 			<arg value="service.spring.file=${basedir}/docroot/WEB-INF/src/META-INF/portlet-spring.xml" />
-			<arg value="service.spring.base.file=${basedir}/docroot/WEB-INF/src/META-INF/base-spring.xml" />
-			<arg value="service.spring.cluster.file=${basedir}/docroot/WEB-INF/src/META-INF/cluster-spring.xml" />
-			<arg value="service.spring.dynamic.data.source.file=${basedir}/docroot/WEB-INF/src/META-INF/dynamic-data-source-spring.xml" />
-			<arg value="service.spring.hibernate.file=${basedir}/docroot/WEB-INF/src/META-INF/hibernate-spring.xml" />
-			<arg value="service.spring.infrastructure.file=${basedir}/docroot/WEB-INF/src/META-INF/infrastructure-spring.xml" />
-			<arg value="service.spring.shard.data.source.file=${basedir}/docroot/WEB-INF/src/META-INF/shard-data-source-spring.xml" />
 			<arg value="service.api.dir=${basedir}/docroot/WEB-INF/service" />
 			<arg value="service.impl.dir=${basedir}/docroot/WEB-INF/src" />
 			<arg value="service.json.file=${basedir}/docroot/js/service.js" />
@@ -542,40 +536,45 @@
 
 	<target name="clean-portal-dependencies">
 		<if>
-			<available file="docroot/WEB-INF/lib" />
+			<equals arg1="${plugins.war.clean.portal.dependencies}" arg2="true" />
 			<then>
-				<delete>
-					<fileset dir="docroot/WEB-INF/lib" includes="${required.portal.jars}" />
-					<fileset dir="docroot/WEB-INF/lib" includes="${plugin.jars}" />
-				</delete>
-			</then>
-		</if>
+				<if>
+					<available file="docroot/WEB-INF/lib" />
+					<then>
+						<delete>
+							<fileset dir="docroot/WEB-INF/lib" includes="${required.portal.jars}" />
+							<fileset dir="docroot/WEB-INF/lib" includes="${plugin.jars}" />
+						</delete>
+					</then>
+				</if>
 
-		<if>
-			<available file="docroot/WEB-INF/tld" />
-			<then>
-				<delete>
-					<fileset dir="docroot/WEB-INF/tld" includes="${plugin.tlds}" />
-				</delete>
-			</then>
-		</if>
+				<if>
+					<available file="docroot/WEB-INF/tld" />
+					<then>
+						<delete>
+							<fileset dir="docroot/WEB-INF/tld" includes="${plugin.tlds}" />
+						</delete>
+					</then>
+				</if>
 
-		<if>
-			<available file="tmp/WEB-INF/lib" />
-			<then>
-				<delete>
-					<fileset dir="tmp/WEB-INF/lib" includes="${required.portal.jars}" />
-					<fileset dir="tmp/WEB-INF/lib" includes="${plugin.jars}" />
-				</delete>
-			</then>
-		</if>
+				<if>
+					<available file="tmp/WEB-INF/lib" />
+					<then>
+						<delete>
+							<fileset dir="tmp/WEB-INF/lib" includes="${required.portal.jars}" />
+							<fileset dir="tmp/WEB-INF/lib" includes="${plugin.jars}" />
+						</delete>
+					</then>
+				</if>
 
-		<if>
-			<available file="tmp/WEB-INF/tld" />
-			<then>
-				<delete>
-					<fileset dir="tmp/WEB-INF/tld" includes="${plugin.tlds}" />
-				</delete>
+				<if>
+					<available file="tmp/WEB-INF/tld" />
+					<then>
+						<delete>
+							<fileset dir="tmp/WEB-INF/tld" includes="${plugin.tlds}" />
+						</delete>
+					</then>
+				</if>
 			</then>
 		</if>
 	</target>
@@ -1177,7 +1176,7 @@ Please find a solution that does not require portal-impl.jar.
 
 	<target name="publish-remote-m2-release" depends="jar-javadoc,jar-source,war">
 		<antcall target="build-common-ivy.publish">
-			<param name="ivy.publish.resolver" value="sonatype-m2-staging" />
+			<param name="ivy.publish.resolver" value="sonatype-m2-release" />
 		</antcall>
 	</target>
 
