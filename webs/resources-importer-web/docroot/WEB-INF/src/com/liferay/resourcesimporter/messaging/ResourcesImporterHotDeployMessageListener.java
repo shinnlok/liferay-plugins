@@ -35,6 +35,7 @@ import com.liferay.resourcesimporter.util.Importer;
 import com.liferay.resourcesimporter.util.ImporterException;
 import com.liferay.resourcesimporter.util.LARImporter;
 import com.liferay.resourcesimporter.util.ResourceImporter;
+import com.liferay.resourcesimporter.util.TemplateImporter;
 
 import java.io.IOException;
 
@@ -99,17 +100,15 @@ public class ResourcesImporterHotDeployMessageListener
 		return new ResourceImporter();
 	}
 
+	protected TemplateImporter getTemplateImporter() {
+		return new TemplateImporter();
+	}
+
 	protected void initialize(Message message) throws Exception {
 		String servletContextName = message.getString("servletContextName");
 
 		ServletContext servletContext = ServletContextPool.get(
 			servletContextName);
-
-		URL url = servletContext.getResource(_RESOURCES_DIR);
-
-		if (url == null) {
-			return;
-		}
 
 		Properties pluginPackageProperties = getPluginPackageProperties(
 			servletContext);
@@ -120,6 +119,9 @@ public class ResourcesImporterHotDeployMessageListener
 
 		Set<String> resourcePaths = servletContext.getResourcePaths(
 			_RESOURCES_DIR);
+
+		Set<String> templatePaths = servletContext.getResourcePaths(
+			_RESOURCES_DIR.concat("template/"));
 
 		URL privateLARURL = null;
 		URL publicLARURL = servletContext.getResource(
@@ -166,6 +168,11 @@ public class ResourcesImporterHotDeployMessageListener
 
 					importer = larImporter;
 				}
+				else if ((templatePaths != null) && !templatePaths.isEmpty()) {
+					importer = getTemplateImporter();
+
+					importer.setResourcesDir(_RESOURCES_DIR);
+				}
 				else if ((resourcePaths != null) && !resourcePaths.isEmpty()) {
 					importer = getResourceImporter();
 
@@ -207,7 +214,9 @@ public class ResourcesImporterHotDeployMessageListener
 					pluginPackageProperties.getProperty(
 						"resources-importer-developer-mode-enabled"));
 
-				if (!developerModeEnabled && importer.isExisting()) {
+				if (!developerModeEnabled && importer.isExisting() &&
+					!importer.isGlobalGroup()) {
+
 					if (_log.isInfoEnabled()) {
 						_log.info(
 							"Group or layout set prototype already exists " +
