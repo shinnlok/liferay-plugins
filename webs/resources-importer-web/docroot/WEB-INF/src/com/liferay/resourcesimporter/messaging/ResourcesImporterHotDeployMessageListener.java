@@ -110,12 +110,6 @@ public class ResourcesImporterHotDeployMessageListener
 		ServletContext servletContext = ServletContextPool.get(
 			servletContextName);
 
-		URL url = servletContext.getResource(_RESOURCES_DIR);
-
-		if (url == null) {
-			return;
-		}
-
 		Properties pluginPackageProperties = getPluginPackageProperties(
 			servletContext);
 
