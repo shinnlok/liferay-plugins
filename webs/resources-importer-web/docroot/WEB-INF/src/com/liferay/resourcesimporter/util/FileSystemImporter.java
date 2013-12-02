@@ -1225,7 +1225,7 @@ public class FileSystemImporter extends BaseImporter {
 	protected ServiceContext serviceContext;
 
 	private static final String _APPLICATION_DISPLAY_TEMPLATE_DIR_NAME =
-		"/template/application_display";
+		"/templates/application_display";
 
 	private static final Object[][] _APPLICATION_DISPLAY_TEMPLATE_TYPES =
 		new Object[][] {
@@ -1237,13 +1237,13 @@ public class FileSystemImporter extends BaseImporter {
 		};
 
 	private static final String _DDL_STRUCTURE_DIR_NAME =
-		"/template/dynamic_data_list/structure";
+		"/templates/dynamic_data_list/structure";
 
 	private static final String _DDL_STRUCTURE_DISPLAY_TEMPLATE_DIR_NAME =
-		"/template/dynamic_data_list/display_template";
+		"/templates/dynamic_data_list/display_template";
 
 	private static final String _DDL_STRUCTURE_FORM_TEMPLATE_DIR_NAME =
-		"/template/dynamic_data_list/form_template";
+		"/templates/dynamic_data_list/form_template";
 
 	private static final String _DL_DOCUMENTS_DIR_NAME =
 		"/document_library/documents/";
@@ -1257,7 +1257,7 @@ public class FileSystemImporter extends BaseImporter {
 	private static final String _JOURNAL_DDM_TEMPLATES_DIR_NAME =
 		"/journal/templates/";
 
-	private static final String _PAGE_TEMPLATE_DIR_NAME = "/template/page";
+	private static final String _PAGE_TEMPLATE_DIR_NAME = "/templates/page";
 
 	private Map<String, JSONObject> _assetJSONObjectMap =
 		new HashMap<String, JSONObject>();
