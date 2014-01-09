@@ -48,6 +48,8 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.sanitizer.Sanitizer;
 import com.liferay.portal.kernel.sanitizer.SanitizerUtil;
+import com.liferay.portal.kernel.search.Indexable;
+import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.HtmlUtil;
@@ -165,15 +167,8 @@ public class CalendarBookingLocalServiceImpl
 		calendarBooking.setSecondReminder(secondReminder);
 		calendarBooking.setSecondReminderType(secondReminderType);
 		calendarBooking.setExpandoBridgeAttributes(serviceContext);
-
-		int status = CalendarBookingWorkflowConstants.STATUS_PENDING;
-
-		if (parentCalendarBookingId == 0) {
-			status = CalendarBookingWorkflowConstants.STATUS_APPROVED;
-		}
-
-		calendarBooking.setStatus(status);
-
+		calendarBooking.setStatus(
+			CalendarBookingWorkflowConstants.STATUS_PENDING);
 		calendarBooking.setStatusDate(serviceContext.getModifiedDate(now));
 
 		calendarBookingPersistence.update(calendarBooking);
@@ -203,7 +198,7 @@ public class CalendarBookingLocalServiceImpl
 		// Workflow
 
 		calendarBookingApprovalWorkflow.startWorkflow(
-			userId, calendarBookingId, serviceContext);
+			userId, calendarBooking, serviceContext);
 
 		return calendarBooking;
 	}
@@ -244,6 +239,7 @@ public class CalendarBookingLocalServiceImpl
 		}
 	}
 
+	@Indexable(type = IndexableType.DELETE)
 	@Override
 	@SystemEvent(
 		action = SystemEventConstants.ACTION_SKIP, send = false,
@@ -496,16 +492,16 @@ public class CalendarBookingLocalServiceImpl
 	}
 
 	@Override
-	public void moveCalendarBookingToTrash(
+	public CalendarBooking moveCalendarBookingToTrash(
 			long userId, CalendarBooking calendarBooking)
 		throws PortalException, SystemException {
 
 		if (!calendarBooking.isMasterBooking()) {
-			return;
+			return calendarBooking;
 		}
 
-		updateStatus(
-			userId, calendarBooking.getCalendarBookingId(),
+		calendarBookingLocalService.updateStatus(
+			userId, calendarBooking,
 			CalendarBookingWorkflowConstants.STATUS_IN_TRASH,
 			new ServiceContext());
 
@@ -519,33 +515,36 @@ public class CalendarBookingLocalServiceImpl
 			calendarBooking.getCalendarBookingId(),
 			SocialActivityConstants.TYPE_MOVE_TO_TRASH,
 			getExtraDataJSON(calendarBooking), 0);
+
+		return calendarBooking;
 	}
 
 	@Override
-	public void moveCalendarBookingToTrash(long userId, long calendarBookingId)
+	public CalendarBooking moveCalendarBookingToTrash(
+			long userId, long calendarBookingId)
 		throws PortalException, SystemException {
 
 		CalendarBooking calendarBooking =
 			calendarBookingPersistence.findByPrimaryKey(calendarBookingId);
 
-		moveCalendarBookingToTrash(userId, calendarBooking);
+		return moveCalendarBookingToTrash(userId, calendarBooking);
 	}
 
 	@Override
-	public void restoreCalendarBookingFromTrash(
+	public CalendarBooking restoreCalendarBookingFromTrash(
 			long userId, long calendarBookingId)
 		throws PortalException, SystemException {
 
 		CalendarBooking calendarBooking = getCalendarBooking(calendarBookingId);
 
 		if (!calendarBooking.isMasterBooking()) {
-			return;
+			return calendarBooking;
 		}
 
 		TrashEntry trashEntry = trashEntryLocalService.getEntry(
 			CalendarBooking.class.getName(), calendarBookingId);
 
-		updateStatus(
+		calendarBookingLocalService.updateStatus(
 			userId, calendarBookingId, trashEntry.getStatus(),
 			new ServiceContext());
 
@@ -557,6 +556,8 @@ public class CalendarBookingLocalServiceImpl
 			CalendarBooking.class.getName(), calendarBookingId,
 			SocialActivityConstants.TYPE_RESTORE_FROM_TRASH,
 			getExtraDataJSON(calendarBooking), 0);
+
+		return calendarBooking;
 	}
 
 	@Override
@@ -755,7 +756,7 @@ public class CalendarBookingLocalServiceImpl
 		// Workflow
 
 		calendarBookingApprovalWorkflow.invokeTransition(
-			userId, calendarBookingId, status, serviceContext);
+			userId, calendarBooking, status, serviceContext);
 
 		return calendarBooking;
 	}
@@ -846,9 +847,10 @@ public class CalendarBookingLocalServiceImpl
 			secondReminderType, status, serviceContext);
 	}
 
+	@Indexable(type = IndexableType.REINDEX)
 	@Override
 	public CalendarBooking updateStatus(
-			long userId, long calendarBookingId, int status,
+			long userId, CalendarBooking calendarBooking, int status,
 			ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
@@ -856,9 +858,6 @@ public class CalendarBookingLocalServiceImpl
 
 		User user = userPersistence.findByPrimaryKey(userId);
 		Date now = new Date();
-
-		CalendarBooking calendarBooking =
-			calendarBookingPersistence.findByPrimaryKey(calendarBookingId);
 
 		int oldStatus = calendarBooking.getStatus();
 
@@ -882,7 +881,7 @@ public class CalendarBookingLocalServiceImpl
 				}
 
 				updateStatus(
-					userId, childCalendarBooking.getCalendarBookingId(),
+					userId, childCalendarBooking,
 					CalendarBookingWorkflowConstants.STATUS_IN_TRASH,
 					serviceContext);
 
@@ -916,7 +915,7 @@ public class CalendarBookingLocalServiceImpl
 				}
 
 				updateStatus(
-					userId, childCalendarBooking.getCalendarBookingId(),
+					userId, childCalendarBooking,
 					CalendarBookingWorkflowConstants.STATUS_PENDING,
 					serviceContext);
 
@@ -979,6 +978,19 @@ public class CalendarBookingLocalServiceImpl
 		}
 
 		return calendarBooking;
+	}
+
+	@Override
+	public CalendarBooking updateStatus(
+			long userId, long calendarBookingId, int status,
+			ServiceContext serviceContext)
+		throws PortalException, SystemException {
+
+		CalendarBooking calendarBooking =
+			calendarBookingPersistence.findByPrimaryKey(calendarBookingId);
+
+		return calendarBookingLocalService.updateStatus(
+			userId, calendarBooking, status, serviceContext);
 	}
 
 	protected void addChildCalendarBookings(

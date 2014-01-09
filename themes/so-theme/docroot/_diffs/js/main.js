@@ -53,5 +53,13 @@ AUI().ready(
 				}
 			);
 		}
+
+		var siteNavigationNavbar = A.one('#_145_navSiteNavigationNavbarCollapse ul');
+
+		var navigation = A.one('#navigation ul');
+
+		if (siteNavigationNavbar && navigation) {
+			siteNavigationNavbar.setHTML(navigation.getHTML());
+		}
 	}
 );
