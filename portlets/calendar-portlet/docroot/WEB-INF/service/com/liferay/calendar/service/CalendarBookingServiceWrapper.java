@@ -182,17 +182,19 @@ public class CalendarBookingServiceWrapper implements CalendarBookingService,
 	}
 
 	@Override
-	public void moveCalendarBookingToTrash(long calendarBookingId)
+	public com.liferay.calendar.model.CalendarBooking moveCalendarBookingToTrash(
+		long calendarBookingId)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
-		_calendarBookingService.moveCalendarBookingToTrash(calendarBookingId);
+		return _calendarBookingService.moveCalendarBookingToTrash(calendarBookingId);
 	}
 
 	@Override
-	public void restoreCalendarBookingFromTrash(long calendarBookingId)
+	public com.liferay.calendar.model.CalendarBooking restoreCalendarBookingFromTrash(
+		long calendarBookingId)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
-		_calendarBookingService.restoreCalendarBookingFromTrash(calendarBookingId);
+		return _calendarBookingService.restoreCalendarBookingFromTrash(calendarBookingId);
 	}
 
 	@Override
@@ -329,6 +331,7 @@ public class CalendarBookingServiceWrapper implements CalendarBookingService,
 	/**
 	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedService}
 	 */
+	@Deprecated
 	public CalendarBookingService getWrappedCalendarBookingService() {
 		return _calendarBookingService;
 	}
@@ -336,6 +339,7 @@ public class CalendarBookingServiceWrapper implements CalendarBookingService,
 	/**
 	 * @deprecated As of 6.1.0, replaced by {@link #setWrappedService}
 	 */
+	@Deprecated
 	public void setWrappedCalendarBookingService(
 		CalendarBookingService calendarBookingService) {
 		_calendarBookingService = calendarBookingService;

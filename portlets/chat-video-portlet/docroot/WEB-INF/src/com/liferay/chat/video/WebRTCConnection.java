@@ -18,4 +18,46 @@ package com.liferay.chat.video;
  * @author Philippe Proulx
  */
 public class WebRTCConnection {
+
+	public WebRTCConnection(WebRTCClient sourceWebRTCClient) {
+		_sourceWebRTCClient = sourceWebRTCClient;
+	}
+
+	public long getInitiatedDurationTime() {
+		if (_initiatedTime == 0) {
+			return 0;
+		}
+
+		return System.currentTimeMillis() - _initiatedTime;
+	}
+
+	public WebRTCClient getSourceWebRTCClient() {
+		return _sourceWebRTCClient;
+	}
+
+	public State getState() {
+		return _state;
+	}
+
+	public void setState(State state) {
+		_state = state;
+
+		if (state == State.INITIATED) {
+			_initiatedTime = System.currentTimeMillis();
+		}
+		else {
+			_initiatedTime = 0;
+		}
+	}
+
+	public enum State {
+
+		CONNECTED, INITIATED, DISCONNECTED
+
+	}
+
+	private long _initiatedTime = 0;
+	private WebRTCClient _sourceWebRTCClient;
+	private State _state = State.DISCONNECTED;
+
 }

@@ -454,25 +454,26 @@ public class CalendarBookingLocalServiceUtil {
 				   .getChildCalendarBookings(parentCalendarBookingId, status);
 	}
 
-	public static void moveCalendarBookingToTrash(long userId,
-		com.liferay.calendar.model.CalendarBooking calendarBooking)
+	public static com.liferay.calendar.model.CalendarBooking moveCalendarBookingToTrash(
+		long userId, com.liferay.calendar.model.CalendarBooking calendarBooking)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
-		getService().moveCalendarBookingToTrash(userId, calendarBooking);
+		return getService().moveCalendarBookingToTrash(userId, calendarBooking);
 	}
 
-	public static void moveCalendarBookingToTrash(long userId,
-		long calendarBookingId)
+	public static com.liferay.calendar.model.CalendarBooking moveCalendarBookingToTrash(
+		long userId, long calendarBookingId)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
-		getService().moveCalendarBookingToTrash(userId, calendarBookingId);
+		return getService().moveCalendarBookingToTrash(userId, calendarBookingId);
 	}
 
-	public static void restoreCalendarBookingFromTrash(long userId,
-		long calendarBookingId)
+	public static com.liferay.calendar.model.CalendarBooking restoreCalendarBookingFromTrash(
+		long userId, long calendarBookingId)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
-		getService().restoreCalendarBookingFromTrash(userId, calendarBookingId);
+		return getService()
+				   .restoreCalendarBookingFromTrash(userId, calendarBookingId);
 	}
 
 	public static java.util.List<com.liferay.calendar.model.CalendarBooking> search(
@@ -615,6 +616,16 @@ public class CalendarBookingLocalServiceUtil {
 	}
 
 	public static com.liferay.calendar.model.CalendarBooking updateStatus(
+		long userId,
+		com.liferay.calendar.model.CalendarBooking calendarBooking, int status,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return getService()
+				   .updateStatus(userId, calendarBooking, status, serviceContext);
+	}
+
+	public static com.liferay.calendar.model.CalendarBooking updateStatus(
 		long userId, long calendarBookingId, int status,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException,
@@ -650,6 +661,7 @@ public class CalendarBookingLocalServiceUtil {
 	/**
 	 * @deprecated As of 6.2.0
 	 */
+	@Deprecated
 	public void setService(CalendarBookingLocalService service) {
 	}
 
