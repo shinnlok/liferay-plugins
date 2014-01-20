@@ -85,7 +85,13 @@
 <h3>Servlet Request</h3>
 
 <p>
-	<a href="<%= PortalUtil.getPathContext(request) %>/servlet_request/remote_user.jsp">Remote User</a>
+	<a href="<%= PortalUtil.getPathContext(request) %>/servlet_request/remote_user.jsp">Remote User</a><br/>
+</p>
+
+<h3>Servlet Session</h3>
+
+<p>
+	<a href="<%= PortalUtil.getPathContext(request) %>/servlet_session/access.jsp">Access</a>
 </p>
 
 <h3>Upload</h3>
