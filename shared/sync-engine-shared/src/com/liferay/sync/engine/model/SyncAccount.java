@@ -49,6 +49,10 @@ public class SyncAccount extends StateAwareModel {
 		return password;
 	}
 
+	public boolean getSsoEnabled() {
+		return ssoEnabled;
+	}
+
 	public long getSyncAccountId() {
 		return syncAccountId;
 	}
@@ -73,6 +77,10 @@ public class SyncAccount extends StateAwareModel {
 		this.password = password;
 	}
 
+	public void setSsoEnabled(boolean ssoEnabled) {
+		this.ssoEnabled = ssoEnabled;
+	}
+
 	public void setSyncAccountId(long syncAccountId) {
 		this.syncAccountId = syncAccountId;
 	}
@@ -92,6 +100,9 @@ public class SyncAccount extends StateAwareModel {
 
 	@DatabaseField(useGetSet = true, width = 16777216)
 	protected String password;
+
+	@DatabaseField(useGetSet = true)
+	protected boolean ssoEnabled;
 
 	@DatabaseField(generatedId = true, useGetSet = true)
 	protected long syncAccountId;
