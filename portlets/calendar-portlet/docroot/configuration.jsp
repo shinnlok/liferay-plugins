@@ -18,21 +18,18 @@
 
 <%
 String tabs2 = ParamUtil.getString(request, "tabs2", "user-settings");
-
-String redirect = ParamUtil.getString(request, "redirect");
 %>
 
-<liferay-portlet:renderURL portletConfiguration="true" var="portletURL">
+<liferay-portlet:actionURL portletConfiguration="true" var="configurationActionURL" />
+
+<liferay-portlet:renderURL portletConfiguration="true" var="configurationRenderURL">
 	<portlet:param name="tabs2" value="<%= tabs2 %>" />
-	<portlet:param name="redirect" value="<%= redirect %>" />
 </liferay-portlet:renderURL>
 
-<liferay-portlet:actionURL portletConfiguration="true" var="actionURL" />
-
-<aui:form action="<%= actionURL %>" method="post" name="fm" onSubmit='<%= "event.preventDefault(); " + renderResponse.getNamespace() + "saveConfiguration();" %>'>
+<aui:form action="<%= configurationActionURL %>" method="post" name="fm" onSubmit='<%= "event.preventDefault(); " + renderResponse.getNamespace() + "saveConfiguration();" %>'>
 	<aui:input name="<%= Constants.CMD %>" type="hidden" value="<%= Constants.UPDATE %>" />
 	<aui:input name="tabs2" type="hidden" value="<%= tabs2 %>" />
-	<aui:input name="redirect" type="hidden" value="<%= redirect %>" />
+	<aui:input name="redirect" type="hidden" value="<%= configurationRenderURL %>" />
 
 	<%
 	String tabs2Names = "user-settings";
@@ -45,7 +42,7 @@ String redirect = ParamUtil.getString(request, "redirect");
 	<liferay-ui:tabs
 		names="<%= tabs2Names %>"
 		param="tabs2"
-		url="<%= portletURL %>"
+		url="<%= configurationRenderURL %>"
 	/>
 
 	<c:choose>
@@ -56,23 +53,23 @@ String redirect = ParamUtil.getString(request, "redirect");
 					<aui:option label="24-hour" selected="<%= isoTimeFormat %>" value="<%= true %>" />
 				</aui:select>
 
-				<aui:select label="default-duration" name="defaultDuration">
-					<aui:option label='<%= LanguageUtil.format(pageContext, "x-minutes", "15", false) %>' selected="<%= defaultDuration == 15 %>" value="15" />
-					<aui:option label='<%= LanguageUtil.format(pageContext, "x-minutes", "30", false) %>' selected="<%= defaultDuration == 30 %>" value="30" />
-					<aui:option label='<%= LanguageUtil.format(pageContext, "x-minutes", "60", false) %>' selected="<%= defaultDuration == 60 %>" value="60" />
-					<aui:option label='<%= LanguageUtil.format(pageContext, "x-minutes", "120", false) %>' selected="<%= defaultDuration == 120 %>" value="120" />
+				<aui:select label="default-duration" name="defaultDuration" value="<%= defaultDuration %>">
+					<aui:option label='<%= LanguageUtil.format(pageContext, "x-minutes", "15", false) %>' value="15" />
+					<aui:option label='<%= LanguageUtil.format(pageContext, "x-minutes", "30", false) %>' value="30" />
+					<aui:option label='<%= LanguageUtil.format(pageContext, "x-minutes", "60", false) %>' value="60" />
+					<aui:option label='<%= LanguageUtil.format(pageContext, "x-minutes", "120", false) %>' value="120" />
 				</aui:select>
 
-				<aui:select label="default-view" name="defaultView">
-					<aui:option label="day" selected='<%= defaultView.equals("day") %>' value="day" />
-					<aui:option label="month" selected='<%= defaultView.equals("month") %>' value="month" />
-					<aui:option label="week" selected='<%= defaultView.equals("week") %>' value="week" />
+				<aui:select label="default-view" name="defaultView" value="<%= defaultView %>">
+					<aui:option label="day" value="day" />
+					<aui:option label="month" value="month" />
+					<aui:option label="week" value="week" />
 				</aui:select>
 
-				<aui:select label="week-starts-on" name="weekStartsOn">
-					<aui:option label="weekday.SU" selected="<%= weekStartsOn == 0 %>" value="0" />
-					<aui:option label="weekday.MO" selected="<%= weekStartsOn == 1 %>" value="1" />
-					<aui:option label="weekday.SA" selected="<%= weekStartsOn == 6 %>" value="6" />
+				<aui:select label="week-starts-on" name="weekStartsOn" value="<%= weekStartsOn %>">
+					<aui:option label="weekday.SU" value="0" />
+					<aui:option label="weekday.MO" value="1" />
+					<aui:option label="weekday.SA" value="6" />
 				</aui:select>
 
 				<aui:input cssClass="calendar-portlet-time-zone-field" disabled="<%= usePortalTimeZone %>" label="time-zone" name="timeZoneId" type="timeZone" value="<%= timeZoneId %>" />
@@ -89,10 +86,10 @@ String redirect = ParamUtil.getString(request, "redirect");
 			/>
 
 			<aui:fieldset cssClass="rss-time-interval" id="rssTimeIntervalContainer">
-				<aui:select label="time-interval" name="preferences--rssTimeInterval--">
-					<aui:option label="week" selected="<%= rssTimeInterval == Time.WEEK %>" value="<%= Time.WEEK %>" />
-					<aui:option label="month" selected="<%= rssTimeInterval == Time.MONTH %>" value="<%= Time.MONTH %>" />
-					<aui:option label="year" selected="<%= rssTimeInterval == Time.YEAR %>" value="<%= Time.YEAR %>" />
+				<aui:select label="time-interval" name="preferences--rssTimeInterval--" value="<%= rssTimeInterval %>">
+					<aui:option label="week" value="<%= Time.WEEK %>" />
+					<aui:option label="month" value="<%= Time.MONTH %>" />
+					<aui:option label="year" value="<%= Time.YEAR %>" />
 				</aui:select>
 			</aui:fieldset>
 		</c:when>

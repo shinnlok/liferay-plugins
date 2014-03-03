@@ -19,17 +19,17 @@
 
 <%@ include file="/init.jsp" %>
 
-<liferay-portlet:actionURL portletConfiguration="true" var="configurationURL" />
+<liferay-portlet:actionURL portletConfiguration="true" var="configurationActionURL" />
 
 <div class="contacts-portlet">
-	<aui:form action="<%= configurationURL %>" method="post" name="fm">
+	<aui:form action="<%= configurationActionURL %>" method="post" name="fm">
 		<aui:input name="<%= Constants.CMD %>" type="hidden" value="<%= Constants.UPDATE %>" />
 
 		<liferay-ui:panel collapsible="<%= true %>" extended="<%= true %>" persistState="<%= true %>" title="user-profile">
-			<aui:select label="display-style" name="preferences--displayStyle--">
-				<aui:option label="<%= ContactsConstants.DISPLAY_STYLE_FULL_LABEL %>" selected="<%= displayStyle == ContactsConstants.DISPLAY_STYLE_FULL %>" value="<%= ContactsConstants.DISPLAY_STYLE_FULL %>" />
-				<aui:option label="<%= ContactsConstants.DISPLAY_STYLE_BASIC_LABEL %>" selected="<%= displayStyle == ContactsConstants.DISPLAY_STYLE_BASIC %>" value="<%= ContactsConstants.DISPLAY_STYLE_BASIC %>" />
-				<aui:option label="<%= ContactsConstants.DISPLAY_STYLE_DETAIL_LABEL %>" selected="<%= displayStyle == ContactsConstants.DISPLAY_STYLE_DETAIL %>" value="<%= ContactsConstants.DISPLAY_STYLE_DETAIL %>" />
+			<aui:select label="display-style" name="preferences--displayStyle--" value="<%= displayStyle %>">
+				<aui:option label="<%= ContactsConstants.DISPLAY_STYLE_FULL_LABEL %>" value="<%= ContactsConstants.DISPLAY_STYLE_FULL %>" />
+				<aui:option label="<%= ContactsConstants.DISPLAY_STYLE_BASIC_LABEL %>" value="<%= ContactsConstants.DISPLAY_STYLE_BASIC %>" />
+				<aui:option label="<%= ContactsConstants.DISPLAY_STYLE_DETAIL_LABEL %>" value="<%= ContactsConstants.DISPLAY_STYLE_DETAIL %>" />
 			</aui:select>
 
 			<aui:field-wrapper cssClass="lfr-user-profile-preferences">

@@ -343,10 +343,16 @@ public class CalendarBookingLocalServiceImpl
 			recurrenceObj.addExceptionDate(startTimeJCalendar);
 		}
 
-		calendarBooking.setRecurrence(
-			RecurrenceSerializer.serialize(recurrenceObj));
+		String recurrence = RecurrenceSerializer.serialize(recurrenceObj);
 
-		calendarBookingPersistence.update(calendarBooking);
+		List<CalendarBooking> childCalendarBookings = getChildCalendarBookings(
+			calendarBooking.getCalendarBookingId());
+
+		for (CalendarBooking childCalendarBooking : childCalendarBookings) {
+			childCalendarBooking.setRecurrence(recurrence);
+
+			calendarBookingPersistence.update(childCalendarBooking);
+		}
 	}
 
 	@Override
@@ -795,6 +801,17 @@ public class CalendarBookingLocalServiceImpl
 		CalendarBooking calendarBooking =
 			calendarBookingPersistence.findByPrimaryKey(calendarBookingId);
 
+		int index = RecurrenceUtil.getIndexOfInstance(
+			recurrence, calendarBooking.getStartTime(), startTime);
+
+		if (index == 0) {
+			return updateCalendarBooking(
+				userId, calendarBookingId, calendarId, childCalendarIds,
+				titleMap, descriptionMap, location, startTime, endTime, allDay,
+				recurrence, firstReminder, firstReminderType, secondReminder,
+				secondReminderType, status, serviceContext);
+		}
+
 		String oldRecurrence = calendarBooking.getRecurrence();
 
 		deleteCalendarBookingInstance(calendarBooking, startTime, allFollowing);
@@ -805,9 +822,6 @@ public class CalendarBookingLocalServiceImpl
 
 			if (oldRecurrence.equals(recurrence) &&
 				(recurrenceObj.getCount() > 0)) {
-
-				int index = RecurrenceUtil.getIndexOfInstance(
-					recurrence, calendarBooking.getStartTime(), startTime);
 
 				recurrenceObj.setCount(recurrenceObj.getCount() - index);
 
@@ -893,8 +907,7 @@ public class CalendarBookingLocalServiceImpl
 
 					NotificationUtil.notifyCalendarBookingRecipients(
 						childCalendarBooking, notificationType,
-						NotificationTemplateType.MOVED_TO_TRASH,
-						serviceContext);
+						NotificationTemplateType.MOVED_TO_TRASH);
 				}
 				catch (Exception e) {
 					if (_log.isWarnEnabled()) {
@@ -927,7 +940,7 @@ public class CalendarBookingLocalServiceImpl
 
 					NotificationUtil.notifyCalendarBookingRecipients(
 						childCalendarBooking, notificationType,
-						NotificationTemplateType.INVITE, serviceContext);
+						NotificationTemplateType.INVITE);
 				}
 				catch (Exception e) {
 					if (_log.isWarnEnabled()) {
@@ -1058,7 +1071,7 @@ public class CalendarBookingLocalServiceImpl
 
 				NotificationUtil.notifyCalendarBookingRecipients(
 					childCalendarBooking, notificationType,
-					notificationTemplateType, serviceContext);
+					notificationTemplateType);
 			}
 			catch (Exception e) {
 				if (_log.isWarnEnabled()) {

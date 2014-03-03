@@ -35,6 +35,10 @@ public class WebRTCClient {
 		_webRTCConnections.put(webRTCClient, webRTCConnection);
 	}
 
+	public WebRTCMailbox getOutgoingWebRTCMailbox() {
+		return _outgoingWebRTCMailbox;
+	}
+
 	public long getPresenceTime() {
 		return _presenceTime;
 	}
@@ -49,6 +53,10 @@ public class WebRTCClient {
 
 	public WebRTCConnection getWebRTCConnection(WebRTCClient webRTCClient) {
 		return _webRTCConnections.get(webRTCClient);
+	}
+
+	public boolean hasWebRTCConnection(WebRTCClient webRTCClient) {
+		return _webRTCConnections.containsKey(webRTCClient);
 	}
 
 	public boolean isAvailable() {
@@ -88,6 +96,7 @@ public class WebRTCClient {
 	}
 
 	private boolean _available;
+	private WebRTCMailbox _outgoingWebRTCMailbox = new WebRTCMailbox();
 	private long _presenceTime;
 	private long _userId;
 	private Map<WebRTCClient, WebRTCConnection> _webRTCConnections =

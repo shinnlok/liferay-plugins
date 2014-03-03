@@ -27,14 +27,17 @@ import org.junit.Test;
 public class SyncAccountServiceTest extends BaseTestCase {
 
 	@After
-	public void tearDown() {
+	@Override
+	public void tearDown() throws Exception {
+		super.tearDown();
+
 		SyncAccountService.deleteSyncAccount(_syncAccount.getSyncAccountId());
 	}
 
 	@Test
 	public void testAddAccount() throws Exception {
 		SyncAccount syncAccount = SyncAccountService.addSyncAccount(
-			filePathName, "test@liferay.com", "test",
+			filePathName, 10, "test@liferay.com", "test",
 			"http://localhost:8080/api/jsonws");
 
 		_syncAccount = SyncAccountService.fetchSyncAccount(

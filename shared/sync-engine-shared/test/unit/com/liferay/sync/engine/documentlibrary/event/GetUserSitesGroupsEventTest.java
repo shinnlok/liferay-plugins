@@ -35,7 +35,10 @@ import org.powermock.modules.junit4.PowerMockRunner;
 public class GetUserSitesGroupsEventTest extends BaseTestCase {
 
 	@After
+	@Override
 	public void tearDown() throws Exception {
+		super.tearDown();
+
 		SyncAccountService.deleteSyncAccount(syncAccount.getSyncAccountId());
 
 		for (SyncSite syncSite : _syncSites) {
@@ -45,7 +48,7 @@ public class GetUserSitesGroupsEventTest extends BaseTestCase {
 
 	@Test
 	public void testRun() throws Exception {
-		setMockPostResponse("dependencies/get_user_sites_groups.json");
+		setPostResponse("dependencies/get_user_sites_groups.json");
 
 		GetUserSitesGroupsEvent getUserSitesGroupsEvent =
 			new GetUserSitesGroupsEvent(syncAccount.getSyncAccountId(), null);

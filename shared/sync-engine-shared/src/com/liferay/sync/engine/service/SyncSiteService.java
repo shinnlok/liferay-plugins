@@ -14,9 +14,14 @@
 
 package com.liferay.sync.engine.service;
 
+import com.liferay.sync.engine.model.ModelListener;
 import com.liferay.sync.engine.model.SyncFile;
 import com.liferay.sync.engine.model.SyncSite;
 import com.liferay.sync.engine.service.persistence.SyncSitePersistence;
+import com.liferay.sync.engine.util.FileUtil;
+
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import java.sql.SQLException;
 
@@ -32,20 +37,29 @@ import org.slf4j.LoggerFactory;
 public class SyncSiteService {
 
 	public static SyncSite addSyncSite(
-			String filePathName, long groupId, long syncAccountId)
+			long companyId, String filePathName, long groupId,
+			long syncAccountId)
 		throws Exception {
+
+		// Sync site
 
 		SyncSite syncSite = new SyncSite();
 
+		syncSite.setCompanyId(companyId);
 		syncSite.setFilePathName(filePathName);
 		syncSite.setGroupId(groupId);
 		syncSite.setSyncAccountId(syncAccountId);
 
 		_syncSitePersistence.create(syncSite);
 
+		// Sync file
+
+		Files.createDirectories(Paths.get(filePathName));
+
 		SyncFileService.addSyncFile(
-			filePathName, filePathName, 0, groupId, syncAccountId,
-			SyncFile.TYPE_FOLDER);
+			null, null, filePathName, FileUtil.getFileKey(filePathName),
+			filePathName, null, filePathName, 0, groupId,
+			syncSite.getSyncAccountId(), SyncFile.TYPE_FOLDER);
 
 		return syncSite;
 	}
@@ -64,6 +78,21 @@ public class SyncSiteService {
 	public static SyncSite fetchSyncSite(long groupId, long syncAccountId) {
 		try {
 			return _syncSitePersistence.fetchByG_S(groupId, syncAccountId);
+		}
+		catch (SQLException sqle) {
+			if (_logger.isDebugEnabled()) {
+				_logger.debug(sqle.getMessage(), sqle);
+			}
+
+			return null;
+		}
+	}
+
+	public static SyncSite fetchSyncSite(
+		String filePathName, long syncAccountId) {
+
+		try {
+			return _syncSitePersistence.fetchByF_S(filePathName, syncAccountId);
 		}
 		catch (SQLException sqle) {
 			if (_logger.isDebugEnabled()) {
@@ -102,6 +131,12 @@ public class SyncSiteService {
 		}
 
 		return _syncSitePersistence;
+	}
+
+	public static void registerModelListener(
+		ModelListener<SyncSite> modelListener) {
+
+		_syncSitePersistence.registerModelListener(modelListener);
 	}
 
 	public static SyncSite update(SyncSite syncSite) {

@@ -23,10 +23,22 @@ import com.liferay.sync.engine.service.persistence.BasePersistenceImpl;
  * @author Shinn Lok
  */
 @DatabaseTable(daoClass = BasePersistenceImpl.class, tableName = "SyncAccount")
-public class SyncAccount {
+public class SyncAccount extends StateAwareModel {
+
+	public static final int STATE_CONNECTED = 1;
+
+	public static final int STATE_DISCONNECTED = 0;
+
+	public static final int UI_EVENT_AUTHENTICATION_EXCEPTION = 1;
+
+	public static final int UI_EVENT_CONNECTION_EXCEPTION = 2;
 
 	public String getFilePathName() {
 		return filePathName;
+	}
+
+	public int getInterval() {
+		return interval;
 	}
 
 	public String getLogin() {
@@ -35,6 +47,10 @@ public class SyncAccount {
 
 	public String getPassword() {
 		return password;
+	}
+
+	public boolean getSsoEnabled() {
+		return ssoEnabled;
 	}
 
 	public long getSyncAccountId() {
@@ -49,12 +65,20 @@ public class SyncAccount {
 		this.filePathName = filePathName;
 	}
 
+	public void setInterval(int interval) {
+		this.interval = interval;
+	}
+
 	public void setLogin(String login) {
 		this.login = login;
 	}
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public void setSsoEnabled(boolean ssoEnabled) {
+		this.ssoEnabled = ssoEnabled;
 	}
 
 	public void setSyncAccountId(long syncAccountId) {
@@ -68,11 +92,17 @@ public class SyncAccount {
 	@DatabaseField(useGetSet = true, width = 16777216)
 	protected String filePathName;
 
+	@DatabaseField(useGetSet = true)
+	protected int interval;
+
 	@DatabaseField(useGetSet = true, width = 16777216)
 	protected String login;
 
 	@DatabaseField(useGetSet = true, width = 16777216)
 	protected String password;
+
+	@DatabaseField(useGetSet = true)
+	protected boolean ssoEnabled;
 
 	@DatabaseField(generatedId = true, useGetSet = true)
 	protected long syncAccountId;

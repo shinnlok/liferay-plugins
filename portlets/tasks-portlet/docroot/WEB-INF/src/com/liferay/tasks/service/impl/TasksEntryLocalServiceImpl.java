@@ -402,11 +402,11 @@ public class TasksEntryLocalServiceImpl extends TasksEntryLocalServiceBaseImpl {
 
 		int activity = TasksActivityKeys.UPDATE_ENTRY;
 
-		if (status == TasksEntryConstants.STATUS_RESOLVED) {
-			activity = TasksActivityKeys.RESOLVE_ENTRY;
-		}
-		else if (status == TasksEntryConstants.STATUS_REOPENED) {
+		if (status == TasksEntryConstants.STATUS_REOPENED) {
 			activity = TasksActivityKeys.REOPEN_ENTRY;
+		}
+		else if (status == TasksEntryConstants.STATUS_RESOLVED) {
+			activity = TasksActivityKeys.RESOLVE_ENTRY;
 		}
 
 		JSONObject extraDataJSONObject = JSONFactoryUtil.createJSONObject();
@@ -423,15 +423,6 @@ public class TasksEntryLocalServiceImpl extends TasksEntryLocalServiceBaseImpl {
 			TasksEntry tasksEntry, int oldStatus, long oldAssigneeUserId,
 			ServiceContext serviceContext)
 		throws PortalException, SystemException {
-
-		int status = tasksEntry.getStatus();
-
-		if ((status != TasksEntryConstants.STATUS_OPEN) &&
-			(status != TasksEntryConstants.STATUS_RESOLVED) &&
-			(status != TasksEntryConstants.STATUS_REOPENED)) {
-
-			return;
-		}
 
 		HashSet<Long> receiverUserIds = new HashSet<Long>(3);
 
@@ -471,7 +462,17 @@ public class TasksEntryLocalServiceImpl extends TasksEntryLocalServiceBaseImpl {
 					title = "x-assigned-you-a-task";
 				}
 			}
-			else if (status != oldStatus) {
+			else if (tasksEntry.getStatus() != oldStatus) {
+				if ((tasksEntry.getStatus() !=
+						TasksEntryConstants.STATUS_OPEN) &&
+					(tasksEntry.getStatus() !=
+						TasksEntryConstants.STATUS_REOPENED) &&
+					(tasksEntry.getStatus() !=
+						TasksEntryConstants.STATUS_RESOLVED)) {
+
+					return;
+				}
+
 				String statusLabel = TasksEntryConstants.getStatusLabel(
 					tasksEntry.getStatus());
 

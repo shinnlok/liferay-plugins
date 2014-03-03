@@ -2,6 +2,7 @@ AUI().use(
 	'anim-color',
 	'anim-easing',
 	'aui-base',
+	'aui-datatype',
 	'aui-live-search-deprecated',
 	'liferay-poller',
 	'stylesheet',
@@ -76,27 +77,13 @@ AUI().use(
 
 				time = new Date(time);
 
-				var meridian = 'am';
-				var hour = time.getHours();
-				var minute = time.getMinutes();
-
-				if (hour >= 12) {
-					meridian = 'pm';
-				}
-
-				if (hour > 12) {
-					hour -= 12;
-				}
-
-				if (hour === 0) {
-					hour += 12;
-				}
-
-				if (minute < 10) {
-					minute = '0' + minute;
-				}
-
-				return hour + ':' + minute + ' ' + meridian;
+				return A.DataType.Date.format(
+					time,
+					{
+						format: '%X',
+						locale: themeDisplay.getLanguageId()
+					}
+				);
 			},
 
 			getCurrentTimestamp: function() {
@@ -912,7 +899,7 @@ AUI().use(
 				user = A.one(user);
 
 				if (user) {
-					userId = user.getAttribute('userId');
+					userId = user.getAttribute('data-userId');
 				}
 
 				if (!isNaN(Number(userId))) {
@@ -1316,7 +1303,7 @@ AUI().use(
 					var userImagePath = Liferay.Chat.Util.getUserImagePath(buddy.portraitId);
 
 					buffer.push(
-						'<li class="user active" userId="' + buddy.userId + '">' +
+						'<li class="user active" data-userId="' + buddy.userId + '" data-groupId="' + buddy.groupId + '">' +
 							'<img alt="" src="' + userImagePath + '" />' +
 							'<div class="name">' + Liferay.Util.escapeHTML(buddy.fullName) + '</div>' +
 							'<div class="buddy-services">');

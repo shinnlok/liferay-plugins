@@ -16,13 +16,15 @@ package com.liferay.sync.engine;
 
 import com.liferay.sync.engine.model.SyncAccount;
 import com.liferay.sync.engine.service.SyncAccountService;
-import com.liferay.sync.engine.upgrade.UpgradeProcessSuite;
+import com.liferay.sync.engine.upgrade.util.UpgradeUtil;
 import com.liferay.sync.engine.util.FilePathNameUtil;
 import com.liferay.sync.engine.util.HttpUtil;
 import com.liferay.sync.engine.util.LoggerUtil;
 import com.liferay.sync.engine.util.PropsKeys;
 import com.liferay.sync.engine.util.PropsUtil;
+import com.liferay.sync.engine.util.StreamUtil;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import java.nio.file.Path;
@@ -40,6 +42,9 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author Shinn Lok
  */
@@ -55,16 +60,16 @@ public abstract class BaseTestCase {
 
 		LoggerUtil.initLogger();
 
-		UpgradeProcessSuite upgradeProcessSuite = new UpgradeProcessSuite();
-
-		upgradeProcessSuite.upgrade();
+		UpgradeUtil.upgrade();
 
 		filePathName = FilePathNameUtil.fixFilePathName(
 			System.getProperty("user.home") + "/liferay-sync-test");
 
 		syncAccount = SyncAccountService.addSyncAccount(
-			filePathName, "test@liferay.com", "test",
+			filePathName, 10, "test@liferay.com", "test",
 			"http://localhost:8080/api/jsonws");
+
+		PowerMockito.mockStatic(HttpUtil.class);
 	}
 
 	@After
@@ -76,16 +81,38 @@ public abstract class BaseTestCase {
 		SyncAccountService.deleteSyncAccount(syncAccount.getSyncAccountId());
 	}
 
-	protected void setMockPostResponse(String fileName) throws Exception {
-		PowerMockito.mockStatic(HttpUtil.class);
+	protected String readResponse(String fileName) {
+		InputStream inputStream = null;
 
-		Class<?> clazz = getClass();
+		try {
+			Class<?> clazz = getClass();
 
-		InputStream inputStream = clazz.getResourceAsStream(fileName);
+			inputStream = clazz.getResourceAsStream(fileName);
 
-		String response = IOUtils.toString(inputStream);
+			return IOUtils.toString(inputStream);
+		}
+		catch (IOException ioe) {
+			_logger.error(ioe.getMessage(), ioe);
 
-		inputStream.close();
+			return null;
+		}
+		finally {
+			StreamUtil.cleanUp(inputStream);
+		}
+	}
+
+	protected void setGetResponse(String fileName) throws Exception {
+		String response = readResponse(fileName);
+
+		Mockito.when(
+			HttpUtil.executeGet(Mockito.anyLong(), Mockito.anyString())
+		).thenReturn(
+			response
+		);
+	}
+
+	protected void setPostResponse(String fileName) throws Exception {
+		String response = readResponse(fileName);
 
 		Mockito.when(
 			HttpUtil.executePost(
@@ -97,5 +124,7 @@ public abstract class BaseTestCase {
 
 	protected String filePathName;
 	protected SyncAccount syncAccount;
+
+	private static Logger _logger = LoggerFactory.getLogger(BaseTestCase.class);
 
 }

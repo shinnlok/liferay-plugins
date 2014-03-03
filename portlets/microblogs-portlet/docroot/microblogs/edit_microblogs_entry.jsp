@@ -204,10 +204,10 @@ if (comment) {
 			}
 			%>
 
-			<aui:select inlineLabel="true" label="viewable-by" name="socialRelationType">
-				<aui:option label="everyone" selected="<%= socialRelationType == MicroblogsEntryConstants.TYPE_EVERYONE %>" value="<%= MicroblogsEntryConstants.TYPE_EVERYONE %>" />
-				<aui:option label="connections" selected="<%= socialRelationType == SocialRelationConstants.TYPE_BI_CONNECTION %>" value="<%= SocialRelationConstants.TYPE_BI_CONNECTION %>" />
-				<aui:option label="followers" selected="<%= socialRelationType == SocialRelationConstants.TYPE_UNI_FOLLOWER %>" value="<%= SocialRelationConstants.TYPE_UNI_FOLLOWER %>" />
+			<aui:select inlineLabel="true" label="viewable-by" name="socialRelationType" value="<%= socialRelationType %>">
+				<aui:option label="everyone" value="<%= MicroblogsEntryConstants.TYPE_EVERYONE %>" />
+				<aui:option label="connections" value="<%= SocialRelationConstants.TYPE_BI_CONNECTION %>" />
+				<aui:option label="followers" value="<%= SocialRelationConstants.TYPE_UNI_FOLLOWER %>" />
 			</aui:select>
 		</c:if>
 	</div>
@@ -225,7 +225,7 @@ if (comment) {
 
 	var MAP_USERS = {};
 
-	var REGEX_USER_NAME = /@[^\s]+$/;
+	var REGEX_USER_NAME = /@(.*[^\s]+)$/;
 
 	var TPL_SEARCH_RESULTS = '<div class="microblogs-autocomplete">' +
 		'<div class="thumbnail">' +
@@ -391,9 +391,11 @@ if (comment) {
 
 			var contentInputHeight = contentInput.height();
 
-			autocomplete.height(contentInputHeight);
+			if (contentInputHeight > 45) {
+				autocomplete.height(contentInputHeight);
 
-			highlighterContent.height(contentInputHeight);
+				highlighterContent.height(contentInputHeight);
+			}
 		};
 
 		var updateContentTextbox = function(event) {
@@ -453,6 +455,9 @@ if (comment) {
 							highlighterContent.removeClass('textbox');
 
 							createTextarea('#<portlet:namespace />autocompleteContent');
+						}
+						else {
+							contentInput.focus();
 						}
 					}
 				);

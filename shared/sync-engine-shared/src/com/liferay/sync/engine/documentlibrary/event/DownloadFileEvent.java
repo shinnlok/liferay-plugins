@@ -14,10 +14,13 @@
 
 package com.liferay.sync.engine.documentlibrary.event;
 
+import com.liferay.sync.engine.documentlibrary.handler.BaseHandler;
 import com.liferay.sync.engine.model.SyncAccount;
 import com.liferay.sync.engine.model.SyncFile;
 import com.liferay.sync.engine.service.SyncAccountService;
-import com.liferay.sync.engine.util.HttpUtil;
+import com.liferay.sync.engine.service.SyncFileService;
+import com.liferay.sync.engine.util.FileUtil;
+import com.liferay.sync.engine.util.StreamUtil;
 
 import java.io.OutputStream;
 
@@ -54,7 +57,7 @@ public class DownloadFileEvent extends BaseEvent {
 		sb.append("/");
 		sb.append(getParameterValue("patch"));
 
-		return HttpUtil.executeGet(getSyncAccountId(), sb.toString());
+		return getSession().executeGet(sb.toString(), new BaseHandler());
 	}
 
 	@Override
@@ -69,11 +72,13 @@ public class DownloadFileEvent extends BaseEvent {
 			outputStream = Files.newOutputStream(filePath);
 
 			outputStream.write(response.getBytes());
+
+			syncFile.setFileKey(FileUtil.getFileKey(filePath));
+
+			SyncFileService.update(syncFile);
 		}
 		finally {
-			if (outputStream != null) {
-				outputStream.close();
-			}
+			StreamUtil.cleanUp(outputStream);
 		}
 	}
 
