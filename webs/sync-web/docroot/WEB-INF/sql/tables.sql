@@ -1,5 +1,15 @@
+create table SyncDLFileVersionDiff (
+	syncDLFileVersionDiffId LONG not null primary key,
+	fileEntryId LONG,
+	sourceFileVersionId LONG,
+	destinationFileVersionId LONG,
+	dataFileEntryId LONG,
+	size_ LONG,
+	expirationDate DATE null
+);
+
 create table SyncDLObject (
-	objectId LONG not null primary key,
+	syncDLObjectId LONG not null primary key,
 	companyId LONG,
 	createTime LONG,
 	modifiedTime LONG,

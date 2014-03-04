@@ -14,7 +14,6 @@
 
 package com.liferay.sync.service.impl;
 
-import com.liferay.portal.kernel.bean.BeanLocatorException;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.deploy.DeployManagerUtil;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -24,20 +23,15 @@ import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.Folder;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
-import com.liferay.portal.kernel.util.ReflectionUtil;
 import com.liferay.portal.kernel.util.ReleaseInfo;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
-import com.liferay.portal.license.util.LicenseManager;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portlet.documentlibrary.DuplicateFileException;
 import com.liferay.portlet.documentlibrary.DuplicateFolderNameException;
 import com.liferay.portlet.documentlibrary.model.DLSyncConstants;
 import com.liferay.portlet.documentlibrary.service.DLFileEntryLocalServiceUtil;
-import com.liferay.so.service.SocialOfficeServiceUtil;
 import com.liferay.sync.SyncDLObjectChecksumException;
 import com.liferay.sync.model.SyncContext;
 import com.liferay.sync.model.SyncDLObject;
@@ -46,8 +40,6 @@ import com.liferay.sync.service.base.SyncDLObjectServiceBaseImpl;
 import com.liferay.sync.util.SyncUtil;
 
 import java.io.File;
-
-import java.lang.reflect.Method;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -272,9 +264,7 @@ public class SyncDLObjectServiceImpl extends SyncDLObjectServiceBaseImpl {
 	}
 
 	@Override
-	public long getLatestModifiedTime()
-		throws PortalException, SystemException {
-
+	public long getLatestModifiedTime() throws SystemException {
 		return syncDLObjectLocalService.getLatestModifiedTime();
 	}
 
@@ -284,39 +274,20 @@ public class SyncDLObjectServiceImpl extends SyncDLObjectServiceBaseImpl {
 
 		SyncContext syncContext = new SyncContext();
 
-		PluginPackage pluginPackage =
+		PluginPackage syncWebPluginPackage =
 			DeployManagerUtil.getInstalledPluginPackage("sync-web");
 
-		syncContext.setPluginVersion(pluginPackage.getVersion());
+		syncContext.setPluginVersion(syncWebPluginPackage.getVersion());
 
 		syncContext.setPortalBuildNumber(ReleaseInfo.getBuildNumber());
 
-		try {
-			String digest = getLicenseDigest(
-				"Portal", uuid, LicenseManager.STATE_GOOD);
+		PluginPackage soPortletPluginPackage =
+			DeployManagerUtil.getInstalledPluginPackage("so-portlet");
 
-			syncContext.setPortalEELicenseDigest(digest);
-		}
-		catch (Exception e) {
-			syncContext.setPortalEELicenseDigest(StringPool.BLANK);
-		}
-
-		try {
-			SocialOfficeServiceUtil.getService();
-
+		if (soPortletPluginPackage != null) {
 			syncContext.setSocialOfficeInstalled(true);
-
-			try {
-				String digest = getLicenseDigest(
-					"Social Office EE", uuid, LicenseManager.STATE_GOOD);
-
-				syncContext.setSocialOfficeEELicenseDigest(digest);
-			}
-			catch (Exception e) {
-				syncContext.setSocialOfficeEELicenseDigest(StringPool.BLANK);
-			}
 		}
-		catch (BeanLocatorException ble) {
+		else {
 			syncContext.setSocialOfficeInstalled(false);
 		}
 
@@ -369,8 +340,7 @@ public class SyncDLObjectServiceImpl extends SyncDLObjectServiceBaseImpl {
 
 		FileEntry fileEntry = dlAppService.moveFileEntryToTrash(fileEntryId);
 
-		return SyncUtil.toSyncDLObject(
-			fileEntry, DLSyncConstants.EVENT_MOVE_TO_TRASH);
+		return SyncUtil.toSyncDLObject(fileEntry, DLSyncConstants.EVENT_TRASH);
 	}
 
 	@Override
@@ -390,8 +360,7 @@ public class SyncDLObjectServiceImpl extends SyncDLObjectServiceBaseImpl {
 
 		Folder folder = dlAppService.moveFolderToTrash(folderId);
 
-		return SyncUtil.toSyncDLObject(
-			folder, DLSyncConstants.EVENT_MOVE_TO_TRASH);
+		return SyncUtil.toSyncDLObject(folder, DLSyncConstants.EVENT_TRASH);
 	}
 
 	@Override
@@ -430,7 +399,7 @@ public class SyncDLObjectServiceImpl extends SyncDLObjectServiceBaseImpl {
 		FileEntry fileEntry = dlAppLocalService.getFileEntry(fileEntryId);
 
 		return SyncUtil.toSyncDLObject(
-			fileEntry, DLSyncConstants.EVENT_RESTORE_FROM_TRASH);
+			fileEntry, DLSyncConstants.EVENT_RESTORE);
 	}
 
 	@Override
@@ -441,8 +410,7 @@ public class SyncDLObjectServiceImpl extends SyncDLObjectServiceBaseImpl {
 
 		Folder folder = dlAppLocalService.getFolder(folderId);
 
-		return SyncUtil.toSyncDLObject(
-			folder, DLSyncConstants.EVENT_RESTORE_FROM_TRASH);
+		return SyncUtil.toSyncDLObject(folder, DLSyncConstants.EVENT_RESTORE);
 	}
 
 	@Override
@@ -508,25 +476,6 @@ public class SyncDLObjectServiceImpl extends SyncDLObjectServiceBaseImpl {
 					repositoryId, folder.getFolderId(), syncDLObjects);
 			}
 		}
-	}
-
-	protected String getLicenseDigest(
-			String productId, String uuid, int licenseState)
-		throws Exception {
-
-		ClassLoader portalClassLoader = PortalClassLoaderUtil.getClassLoader();
-
-		Class<LicenseManager> licenseManagerClass =
-			(Class<LicenseManager>)portalClassLoader.loadClass(
-				LicenseManager.class.getName());
-
-		Method method = ReflectionUtil.getDeclaredMethod(
-			licenseManagerClass, "_digest", String.class, String.class,
-			int.class);
-
-		method.setAccessible(true);
-
-		return (String)method.invoke(null, productId, uuid, licenseState);
 	}
 
 	protected void validateChecksum(File file, String checksum)

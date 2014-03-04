@@ -14,6 +14,11 @@
 
 package com.liferay.sync.engine.service.persistence;
 
+import com.j256.ormlite.dao.GenericRawResults;
+import com.j256.ormlite.dao.RawRowMapper;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
+
 import com.liferay.sync.engine.model.SyncSite;
 
 import java.sql.SQLException;
@@ -29,6 +34,23 @@ public class SyncSitePersistence extends BasePersistenceImpl<SyncSite, Long> {
 
 	public SyncSitePersistence() throws SQLException {
 		super(SyncSite.class);
+	}
+
+	public SyncSite fetchByF_S(String filePathName, long syncAccountId)
+		throws SQLException {
+
+		Map<String, Object> fieldValues = new HashMap<String, Object>();
+
+		fieldValues.put("filePathName", filePathName);
+		fieldValues.put("syncAccountId", syncAccountId);
+
+		List<SyncSite> syncSites = queryForFieldValues(fieldValues);
+
+		if ((syncSites == null) || syncSites.isEmpty()) {
+			return null;
+		}
+
+		return syncSites.get(0);
 	}
 
 	public SyncSite fetchByG_S(long groupId, long syncAccountId)
@@ -52,6 +74,37 @@ public class SyncSitePersistence extends BasePersistenceImpl<SyncSite, Long> {
 		throws SQLException {
 
 		return queryForEq("syncAccountId", syncAccountId);
+	}
+
+	public List<Long> findByA_S(boolean active, long syncAccountId)
+		throws SQLException {
+
+		QueryBuilder<SyncSite, Long> queryBuilder = queryBuilder();
+
+		queryBuilder = queryBuilder.selectColumns("syncSiteId");
+
+		Where<SyncSite, Long> where = queryBuilder.where();
+
+		where.eq("active", active);
+
+		where.and();
+
+		where.eq("syncAccountId", syncAccountId);
+
+		GenericRawResults<Long> genericRawResults = queryRaw(
+			queryBuilder.prepareStatementString(),
+			new RawRowMapper<Long>() {
+
+				@Override
+				public Long mapRow(
+					String[] columnNames, String[] resultColumns) {
+
+					return Long.valueOf(resultColumns[0]);
+				}
+
+			});
+
+		return genericRawResults.getResults();
 	}
 
 }

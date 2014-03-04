@@ -25,7 +25,16 @@ public class PropsValues {
 	public static String SYNC_DATABASE_NAME = PropsUtil.get(
 		PropsKeys.SYNC_DATABASE_NAME);
 
+	public static String[] SYNC_IGNORE_FILE_NAMES = PropsUtil.getArray(
+		PropsKeys.SYNC_IGNORE_FILE_NAMES);
+
+	public static boolean SYNC_IGNORE_HIDDEN_FILES = Boolean.valueOf(
+		PropsUtil.get(PropsKeys.SYNC_IGNORE_HIDDEN_FILES));
+
 	public static String SYNC_LOGGER_CONFIGURATION_FILE = PropsUtil.get(
 		PropsKeys.SYNC_LOGGER_CONFIGURATION_FILE);
+
+	public static String SYNC_PRODUCT_NAME = PropsUtil.get(
+		PropsKeys.SYNC_PRODUCT_NAME);
 
 }

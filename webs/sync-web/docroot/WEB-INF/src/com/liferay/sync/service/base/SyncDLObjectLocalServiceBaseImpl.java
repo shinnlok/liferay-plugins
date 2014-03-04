@@ -39,6 +39,7 @@ import com.liferay.portal.util.PortalUtil;
 
 import com.liferay.sync.model.SyncDLObject;
 import com.liferay.sync.service.SyncDLObjectLocalService;
+import com.liferay.sync.service.persistence.SyncDLFileVersionDiffPersistence;
 import com.liferay.sync.service.persistence.SyncDLObjectFinder;
 import com.liferay.sync.service.persistence.SyncDLObjectPersistence;
 
@@ -88,27 +89,27 @@ public abstract class SyncDLObjectLocalServiceBaseImpl
 	/**
 	 * Creates a new sync d l object with the primary key. Does not add the sync d l object to the database.
 	 *
-	 * @param objectId the primary key for the new sync d l object
+	 * @param syncDLObjectId the primary key for the new sync d l object
 	 * @return the new sync d l object
 	 */
 	@Override
-	public SyncDLObject createSyncDLObject(long objectId) {
-		return syncDLObjectPersistence.create(objectId);
+	public SyncDLObject createSyncDLObject(long syncDLObjectId) {
+		return syncDLObjectPersistence.create(syncDLObjectId);
 	}
 
 	/**
 	 * Deletes the sync d l object with the primary key from the database. Also notifies the appropriate model listeners.
 	 *
-	 * @param objectId the primary key of the sync d l object
+	 * @param syncDLObjectId the primary key of the sync d l object
 	 * @return the sync d l object that was removed
 	 * @throws PortalException if a sync d l object with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
 	@Indexable(type = IndexableType.DELETE)
 	@Override
-	public SyncDLObject deleteSyncDLObject(long objectId)
+	public SyncDLObject deleteSyncDLObject(long syncDLObjectId)
 		throws PortalException, SystemException {
-		return syncDLObjectPersistence.remove(objectId);
+		return syncDLObjectPersistence.remove(syncDLObjectId);
 	}
 
 	/**
@@ -219,23 +220,23 @@ public abstract class SyncDLObjectLocalServiceBaseImpl
 	}
 
 	@Override
-	public SyncDLObject fetchSyncDLObject(long objectId)
+	public SyncDLObject fetchSyncDLObject(long syncDLObjectId)
 		throws SystemException {
-		return syncDLObjectPersistence.fetchByPrimaryKey(objectId);
+		return syncDLObjectPersistence.fetchByPrimaryKey(syncDLObjectId);
 	}
 
 	/**
 	 * Returns the sync d l object with the primary key.
 	 *
-	 * @param objectId the primary key of the sync d l object
+	 * @param syncDLObjectId the primary key of the sync d l object
 	 * @return the sync d l object
 	 * @throws PortalException if a sync d l object with the primary key could not be found
 	 * @throws SystemException if a system exception occurred
 	 */
 	@Override
-	public SyncDLObject getSyncDLObject(long objectId)
+	public SyncDLObject getSyncDLObject(long syncDLObjectId)
 		throws PortalException, SystemException {
-		return syncDLObjectPersistence.findByPrimaryKey(objectId);
+		return syncDLObjectPersistence.findByPrimaryKey(syncDLObjectId);
 	}
 
 	@Override
@@ -285,6 +286,44 @@ public abstract class SyncDLObjectLocalServiceBaseImpl
 	public SyncDLObject updateSyncDLObject(SyncDLObject syncDLObject)
 		throws SystemException {
 		return syncDLObjectPersistence.update(syncDLObject);
+	}
+
+	/**
+	 * Returns the sync d l file version diff local service.
+	 *
+	 * @return the sync d l file version diff local service
+	 */
+	public com.liferay.sync.service.SyncDLFileVersionDiffLocalService getSyncDLFileVersionDiffLocalService() {
+		return syncDLFileVersionDiffLocalService;
+	}
+
+	/**
+	 * Sets the sync d l file version diff local service.
+	 *
+	 * @param syncDLFileVersionDiffLocalService the sync d l file version diff local service
+	 */
+	public void setSyncDLFileVersionDiffLocalService(
+		com.liferay.sync.service.SyncDLFileVersionDiffLocalService syncDLFileVersionDiffLocalService) {
+		this.syncDLFileVersionDiffLocalService = syncDLFileVersionDiffLocalService;
+	}
+
+	/**
+	 * Returns the sync d l file version diff persistence.
+	 *
+	 * @return the sync d l file version diff persistence
+	 */
+	public SyncDLFileVersionDiffPersistence getSyncDLFileVersionDiffPersistence() {
+		return syncDLFileVersionDiffPersistence;
+	}
+
+	/**
+	 * Sets the sync d l file version diff persistence.
+	 *
+	 * @param syncDLFileVersionDiffPersistence the sync d l file version diff persistence
+	 */
+	public void setSyncDLFileVersionDiffPersistence(
+		SyncDLFileVersionDiffPersistence syncDLFileVersionDiffPersistence) {
+		this.syncDLFileVersionDiffPersistence = syncDLFileVersionDiffPersistence;
 	}
 
 	/**
@@ -751,6 +790,10 @@ public abstract class SyncDLObjectLocalServiceBaseImpl
 		}
 	}
 
+	@BeanReference(type = com.liferay.sync.service.SyncDLFileVersionDiffLocalService.class)
+	protected com.liferay.sync.service.SyncDLFileVersionDiffLocalService syncDLFileVersionDiffLocalService;
+	@BeanReference(type = SyncDLFileVersionDiffPersistence.class)
+	protected SyncDLFileVersionDiffPersistence syncDLFileVersionDiffPersistence;
 	@BeanReference(type = com.liferay.sync.service.SyncDLObjectLocalService.class)
 	protected com.liferay.sync.service.SyncDLObjectLocalService syncDLObjectLocalService;
 	@BeanReference(type = com.liferay.sync.service.SyncDLObjectService.class)

@@ -26,7 +26,15 @@ import com.liferay.sync.engine.service.persistence.BasePersistenceImpl;
  */
 @DatabaseTable(daoClass = BasePersistenceImpl.class, tableName = "SyncSite")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SyncSite {
+public class SyncSite extends StateAwareModel {
+
+	public static final int STATE_CONNECTED = 1;
+
+	public static final int STATE_DISCONNECTED = 0;
+
+	public boolean getActive() {
+		return active;
+	}
 
 	public long getCompanyId() {
 		return companyId;
@@ -34,10 +42,6 @@ public class SyncSite {
 
 	public String getDescription() {
 		return description;
-	}
-
-	public boolean getEnabled() {
-		return enabled;
 	}
 
 	public String getFilePathName() {
@@ -80,16 +84,24 @@ public class SyncSite {
 		return typeSettings;
 	}
 
+	public boolean isActive() {
+		return getActive();
+	}
+
+	public boolean isSite() {
+		return getSite();
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
 	public void setCompanyId(long companyId) {
 		this.companyId = companyId;
 	}
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
 	}
 
 	public void setFilePathName(String filePathName) {
@@ -133,13 +145,13 @@ public class SyncSite {
 	}
 
 	@DatabaseField(useGetSet = true)
+	protected boolean active;
+
+	@DatabaseField(useGetSet = true)
 	protected long companyId;
 
 	@DatabaseField(useGetSet = true, width = 16777216)
 	protected String description;
-
-	@DatabaseField(useGetSet = true)
-	protected boolean enabled;
 
 	@DatabaseField(useGetSet = true, width = 16777216)
 	protected String filePathName;

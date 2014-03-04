@@ -173,6 +173,22 @@ public class CalendarBookingServiceWrapper implements CalendarBookingService,
 	}
 
 	@Override
+	public com.liferay.calendar.model.CalendarBooking getNewStartTimeAndDurationCalendarBooking(
+		long calendarBookingId, long offset, long duration)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return _calendarBookingService.getNewStartTimeAndDurationCalendarBooking(calendarBookingId,
+			offset, duration);
+	}
+
+	@Override
+	public boolean hasChildCalendarBookings(long parentCalendarBookingId)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return _calendarBookingService.hasChildCalendarBookings(parentCalendarBookingId);
+	}
+
+	@Override
 	public void invokeTransition(long calendarBookingId, int status,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException,
