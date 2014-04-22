@@ -845,8 +845,17 @@ Please find a solution that does not require portal-impl.jar.
 
 					<path id="plugin-test-type.classpath">
 						<pathelement location="@{module.dir}/test-classes/@{test.type}" />
-						<ivy:resources file="@{module.dir}/ivy.xml" transitive="true" conf="test"/>
 					</path>
+
+					<if>
+						<available file="@{module.dir}/ivy.xml" />
+						<then>
+							<path id="plugin-test-type.classpath">
+								<pathelement location="@{module.dir}/test-classes/@{test.type}" />
+								<ivy:resources file="@{module.dir}/ivy.xml" transitive="true" conf="test"/>
+							</path>
+						</then>
+					</if>
 
 					<compile-java
 						javac.classpathref="test.classpath"
@@ -1900,8 +1909,17 @@ Please find a solution that does not require portal-impl.jar.
 
 					<path id="plugin-test-type.classpath">
 						<pathelement location="@{module.dir}/test-classes/@{test.type}" />
-						<ivy:resources file="@{module.dir}/ivy.xml" transitive="true" conf="test"/>
 					</path>
+
+					<if>
+						<available file="@{module.dir}/ivy.xml" />
+						<then>
+							<path id="plugin-test-type.classpath">
+								<pathelement location="@{module.dir}/test-classes/@{test.type}" />
+								<ivy:resources file="@{module.dir}/ivy.xml" transitive="true" conf="test"/>
+							</path>
+						</then>
+					</if>
 
 					<if>
 						<available file="@{module.dir}/test/@{test.type}" type="dir" />
