@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE project>
 
-<project name="build-common" xmlns:antelope="antlib:ise.antelope.tasks">
+<project name="build-common" xmlns:antelope="antlib:ise.antelope.tasks" xmlns:ivy="antlib:org.apache.ivy.ant">
 	<dirname file="${ant.file.build-common}" property="sdk.dir" />
 
 	<property environment="env" />
@@ -161,10 +161,6 @@ Error-Prone was automatically installed. Please rerun your task.
 		<attribute name="module.dir" />
 
 		<sequential>
-			<pathconvert property="module.dir.unix" targetos="unix">
-				<path location="@{module.dir}" />
-			</pathconvert>
-
 			<java
 				classname="com.liferay.portal.tools.SassToCssBuilder"
 				classpathref="portal.classpath"
@@ -177,8 +173,6 @@ Error-Prone was automatically installed. Please rerun your task.
 				<arg value="sass.docroot.dir=${module.dir.unix}/docroot" />
 				<arg value="sass.portal.common.dir=${app.server.portal.dir}/html/css/common" />
 			</java>
-
-			<var name="module.dir.unix" unset="true" />
 		</sequential>
 	</macrodef>
 
@@ -189,7 +183,7 @@ Error-Prone was automatically installed. Please rerun your task.
 		<sequential>
 			<if>
 				<resourcecontains
-					resource="@{module.dir}/build.xml"
+					resource="${module.dir.unix}/build.xml"
 					substring="&lt;target name=&quot;@{macrodef.name}&quot;&gt;"
 				/>
 				<then>
@@ -345,7 +339,7 @@ Error-Prone was automatically installed. Please rerun your task.
 				<then>
 					<if>
 						<resourcecontains
-							resource="@{module.dir}/docroot/WEB-INF/.gitignore"
+							resource="${module.dir.unix}/docroot/WEB-INF/.gitignore"
 							substring="/lib"
 						/>
 						<then>
@@ -777,7 +771,7 @@ Please find a solution that does not require portal-impl.jar.
 				<then>
 					<if>
 						<resourcecontains
-							resource="@{module.dir}/docroot/WEB-INF/liferay-hook.xml"
+							resource="${module.dir.unix}/docroot/WEB-INF/liferay-hook.xml"
 							substring="&lt;language-properties&gt;content/Language*.properties&lt;/language-properties&gt;"
 						/>
 						<then>
@@ -852,6 +846,16 @@ Please find a solution that does not require portal-impl.jar.
 					<path id="plugin-test-type.classpath">
 						<pathelement location="@{module.dir}/test-classes/@{test.type}" />
 					</path>
+
+					<if>
+						<available file="@{module.dir}/ivy.xml" />
+						<then>
+							<path id="plugin-test-type.classpath">
+								<pathelement location="@{module.dir}/test-classes/@{test.type}" />
+								<ivy:resources file="@{module.dir}/ivy.xml" transitive="true" conf="test"/>
+							</path>
+						</then>
+					</if>
 
 					<compile-java
 						javac.classpathref="test.classpath"
@@ -1094,7 +1098,7 @@ Please find a solution that does not require portal-impl.jar.
 
 					<if>
 						<resourcecontains
-							resource="@{module.dir}/build.xml"
+							resource="${module.dir.unix}/build.xml"
 							substring="import file=&quot;../../build-common-osgi-plugin.xml&quot;"
 						/>
 						<then>
@@ -1373,7 +1377,7 @@ Please find a solution that does not require portal-impl.jar.
 
 			<if>
 				<resourcecontains
-					resource="@{module.dir}/build.xml"
+					resource="${module.dir.unix}/build.xml"
 					substring="import file=&quot;../../build-common-osgi-plugin.xml&quot;"
 				/>
 				<then>
@@ -1456,37 +1460,6 @@ Please find a solution that does not require portal-impl.jar.
 				basedir="src"
 				jarfile="${plugin.sources.file}"
 			/>
-		</sequential>
-	</macrodef>
-
-	<macrodef name="loop-modules">
-		<attribute name="loop.modules.cmd" />
-		<attribute name="loop.modules.dir" />
-
-		<sequential>
-			<if>
-				<not>
-					<equals arg1="${plugins.includes}" arg2="" />
-				</not>
-				<then>
-					<path id="module.dirs.path">
-						<dirset dir="@{loop.modules.dir}" excludes="${plugins.excludes}" includes="${plugins.includes}" />
-					</path>
-
-					<pathconvert pathsep="," property="module.dirs" refid="module.dirs.path" targetos="unix" />
-
-					<for list="${module.dirs}" param="module.dir">
-						<sequential>
-							<call-macrodef-or-target
-								macrodef.name="@{loop.modules.cmd}"
-								module.dir="@{module.dir}"
-							/>
-						</sequential>
-					</for>
-
-					<var name="module.dirs" unset="true" />
-				</then>
-			</if>
 		</sequential>
 	</macrodef>
 
@@ -1621,6 +1594,12 @@ Please find a solution that does not require portal-impl.jar.
 		<attribute name="module.dir" />
 
 		<sequential>
+			<var name="module.dir.unix" unset="true" />
+
+			<pathconvert property="module.dir.unix" targetos="unix">
+				<path location="@{module.dir}" />
+			</pathconvert>
+
 			<var name="plugin.jars" unset="true" />
 			<var name="plugin.required.contexts" unset="true" />
 			<var name="plugin.tlds" unset="true" />
@@ -1666,10 +1645,10 @@ Please find a solution that does not require portal-impl.jar.
 				</then>
 				<else>
 					<antelope:grep
-						group="2"
+						group="1"
 						in="@{module.dir}"
 						property="plugin.name"
-						regex="(.*/)(.*)"
+						regex="(?:.*[/\\])(.*)"
 					/>
 				</else>
 			</if>
@@ -1786,7 +1765,7 @@ Please find a solution that does not require portal-impl.jar.
 
 			<if>
 				<resourcecontains
-					resource="@{module.dir}/build.xml"
+					resource="${module.dir.unix}/build.xml"
 					substring="import file=&quot;../../build-common-osgi-plugin.xml&quot;"
 				/>
 				<then>
@@ -1933,9 +1912,19 @@ Please find a solution that does not require portal-impl.jar.
 					</path>
 
 					<if>
+						<available file="@{module.dir}/ivy.xml" />
+						<then>
+							<path id="plugin-test-type.classpath">
+								<pathelement location="@{module.dir}/test-classes/@{test.type}" />
+								<ivy:resources file="@{module.dir}/ivy.xml" transitive="true" conf="test"/>
+							</path>
+						</then>
+					</if>
+
+					<if>
 						<available file="@{module.dir}/test/@{test.type}" type="dir" />
 						<then>
-							<junit dir="${sdk.dir}" fork="on" forkmode="@{junit.forkmode}" outputtoformatters="false" printsummary="on" showoutput="true">
+							<junit dir="@{module.dir}" fork="on" forkmode="@{junit.forkmode}" outputtoformatters="false" printsummary="on" showoutput="true">
 								<sysproperty key="app.server.tomcat.dir" value="${app.server.tomcat.dir}" />
 								<sysproperty key="net.sourceforge.cobertura.datafile" file="@{module.dir}/test-coverage/cobertura.ser" />
 								<jvmarg line="${junit.debug.jpda}" />
@@ -2168,6 +2157,28 @@ Please find a solution that does not require portal-impl.jar.
 		</sequential>
 	</macrodef>
 
+	<target name="clean">
+		<for list="${plugins.includes.path}" param="module.dir">
+			<sequential>
+				<call-macrodef-or-target
+					macrodef.name="clean"
+					module.dir="@{module.dir}"
+				/>
+			</sequential>
+		</for>
+	</target>
+
+	<target name="compile">
+		<for list="${plugins.includes.path}" param="module.dir">
+			<sequential>
+				<call-macrodef-or-target
+					macrodef.name="compile"
+					module.dir="@{module.dir}"
+				/>
+			</sequential>
+		</for>
+	</target>
+
 	<target name="create">
 		<if>
 			<or>
@@ -2199,6 +2210,28 @@ Please find a solution that does not require portal-impl.jar.
 		</if>
 	</target>
 
+	<target name="deploy">
+		<for list="${plugins.includes.path}" param="module.dir">
+			<sequential>
+				<call-macrodef-or-target
+					macrodef.name="deploy"
+					module.dir="@{module.dir}"
+				/>
+			</sequential>
+		</for>
+	</target>
+
+	<target name="direct-deploy">
+		<for list="${plugins.includes.path}" param="module.dir">
+			<sequential>
+				<call-macrodef-or-target
+					macrodef.name="direct-deploy"
+					module.dir="@{module.dir}"
+				/>
+			</sequential>
+		</for>
+	</target>
+
 	<target name="format-javadoc">
 		<java
 			classname="com.liferay.portal.tools.JavadocFormatter"
@@ -2227,6 +2260,17 @@ Please find a solution that does not require portal-impl.jar.
 		</java>
 
 		<delete file="ServiceBuilder.temp" />
+	</target>
+
+	<target name="jar">
+		<for list="${plugins.includes.path}" param="module.dir">
+			<sequential>
+				<call-macrodef-or-target
+					macrodef.name="jar"
+					module.dir="@{module.dir}"
+				/>
+			</sequential>
+		</for>
 	</target>
 
 	<target name="print-current-time">
@@ -2290,5 +2334,49 @@ Please find a solution that does not require portal-impl.jar.
 			<jvmarg value="-Xss2048k" />
 			<arg value="sort.xml.file.name=${sort.xml.file.name}" />
 		</java>
+	</target>
+
+	<target name="test">
+		<for list="${plugins.includes.path}" param="module.dir">
+			<sequential>
+				<call-macrodef-or-target
+					macrodef.name="test"
+					module.dir="@{module.dir}"
+				/>
+			</sequential>
+		</for>
+	</target>
+
+	<target name="test-integration">
+		<for list="${plugins.includes.path}" param="module.dir">
+			<sequential>
+				<call-macrodef-or-target
+					macrodef.name="test-integration"
+					module.dir="@{module.dir}"
+				/>
+			</sequential>
+		</for>
+	</target>
+
+	<target name="test-unit">
+		<for list="${plugins.includes.path}" param="module.dir">
+			<sequential>
+				<call-macrodef-or-target
+					macrodef.name="test-unit"
+					module.dir="@{module.dir}"
+				/>
+			</sequential>
+		</for>
+	</target>
+
+	<target name="war">
+		<for list="${plugins.includes.path}" param="module.dir">
+			<sequential>
+				<call-macrodef-or-target
+					macrodef.name="war"
+					module.dir="@{module.dir}"
+				/>
+			</sequential>
+		</for>
 	</target>
 </project>

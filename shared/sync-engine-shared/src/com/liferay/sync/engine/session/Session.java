@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -53,6 +54,7 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.SystemDefaultRoutePlanner;
 import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,8 +69,6 @@ public class Session {
 
 	public Session(
 		URL url, String login, String password, boolean trustSelfSigned) {
-
-		_url = url;
 
 		HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
 
@@ -110,6 +110,32 @@ public class Session {
 			url.getHost(), url.getPort(), url.getProtocol());
 	}
 
+	public HttpResponse execute(HttpRequest httpRequest) throws Exception {
+		return execute(httpRequest, _getBasicHttpContext());
+	}
+
+	public <T> T execute(HttpRequest httpRequest, Handler<? extends T> handler)
+		throws Exception {
+
+		return execute(httpRequest, handler, _getBasicHttpContext());
+	}
+
+	public <T> T execute(
+			HttpRequest httpRequest, Handler<? extends T> handler,
+			HttpContext httpContext)
+		throws Exception {
+
+		return _httpClient.execute(
+			_httpHost, httpRequest, handler, httpContext);
+	}
+
+	public HttpResponse execute(
+			HttpRequest httpRequest, HttpContext httpContext)
+		throws Exception {
+
+		return _httpClient.execute(_httpHost, httpRequest, httpContext);
+	}
+
 	public HttpResponse executeGet(String urlPath) throws Exception {
 		HttpGet httpGet = new HttpGet(urlPath);
 
@@ -129,7 +155,7 @@ public class Session {
 			String urlPath, Map<String, Object> parameters)
 		throws Exception {
 
-		HttpPost httpPost = new HttpPost(_url.toString() + urlPath);
+		HttpPost httpPost = new HttpPost(urlPath);
 
 		_buildHttpPostBody(httpPost, parameters);
 
@@ -141,7 +167,7 @@ public class Session {
 			Handler<? extends T> handler)
 		throws Exception {
 
-		HttpPost httpPost = new HttpPost(_url.toString() + urlPath);
+		HttpPost httpPost = new HttpPost(urlPath);
 
 		_buildHttpPostBody(httpPost, parameters);
 
@@ -255,6 +281,5 @@ public class Session {
 	private HttpHost _httpHost;
 	private Set<String> _ignoredParameterKeys = new HashSet<String>(
 		Arrays.asList("filePath", "syncFile", "syncSite"));
-	private URL _url;
 
 }

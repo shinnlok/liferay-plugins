@@ -14,12 +14,8 @@
 
 package com.liferay.pushnotifications.sender.apple;
 
-import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.pushnotifications.sender.PushNotificationsSender;
-import com.liferay.pushnotifications.service.PushNotificationsDeviceLocalServiceUtil;
 import com.liferay.pushnotifications.util.PortletPropsValues;
 
 import com.notnoop.apns.APNS;
@@ -50,43 +46,25 @@ public class ApplePushNotificationsSender implements PushNotificationsSender {
 	}
 
 	@Override
-	public void send(JSONObject jsonObject) {
-		String payload = null;
+	public void send(List<String> tokens, JSONObject jsonObject)
+		throws Exception {
 
-		try {
-			long userId = jsonObject.getLong("userId");
+		String payload = buildPayload(jsonObject);
 
-			List<String> tokens =
-				PushNotificationsDeviceLocalServiceUtil.getTokens(
-					userId, "ios", QueryUtil.ALL_POS, QueryUtil.ALL_POS);
-
-			if (tokens.isEmpty()) {
-				return;
-			}
-
-			payload = buildPayload(jsonObject);
-
-			_apnsService.push(tokens, payload);
-		}
-		catch (Exception e) {
-			_log.error("Could not send notification " + payload, e);
-		}
+		_apnsService.push(tokens, payload);
 	}
 
 	protected String buildPayload(JSONObject jsonObject) {
-		PayloadBuilder payload = PayloadBuilder.newPayload();
+		PayloadBuilder builder = PayloadBuilder.newPayload();
 
-		String body = jsonObject.getString("entryTitle");
+		String entryTitle = jsonObject.getString("entryTitle");
 
-		if (body != null) {
-			payload.alertBody(body);
+		if (entryTitle != null) {
+			builder.alertBody(entryTitle);
 		}
 
-		return payload.build();
+		return builder.build();
 	}
-
-	private static Log _log = LogFactoryUtil.getLog(
-		ApplePushNotificationsSender.class);
 
 	private ApnsService _apnsService;
 

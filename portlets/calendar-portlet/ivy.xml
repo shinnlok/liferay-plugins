@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
+	<info module="calendar-portlet" organisation="com.liferay" />
+
+	<configurations>
+		<conf name="default" visibility="public" />
+		<conf name="test" visibility="private" />
+	</configurations>
+
+	<dependencies>
+		<dependency org="com.liferay.plugins.test" name="arquillian-liferay-plugin-test-support" rev="1.0-SNAPSHOT" force="true" conf="test->*" />
+		<dependency org="org.jboss.arquillian.container" name="arquillian-tomcat-remote-7" rev="1.0.0.CR6" force="true" conf="test->*" />
+	</dependencies>
+</ivy-module>
+
