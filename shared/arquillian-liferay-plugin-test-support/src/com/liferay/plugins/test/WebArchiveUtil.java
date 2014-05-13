@@ -14,6 +14,7 @@
 
 package com.liferay.plugins.test;
 
+import com.liferay.plugins.test.util.AntLogger;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -108,6 +109,14 @@ public class WebArchiveUtil {
 		project.setUserProperty(
 			LiferayPluginsBuildConstants.PROPERTY_ANT_FILE,
 			buildFile.getAbsolutePath());
+
+		AntLogger antLogger = new AntLogger();
+		antLogger.setErrorPrintStream(System.err);
+		antLogger.setOutputPrintStream(System.out);
+		antLogger.setMessageOutputLevel(Project.MSG_INFO);
+
+		project.addBuildListener(antLogger);
+
 
 		project.init();
 
