@@ -109,13 +109,7 @@ public class WebArchiveUtil {
 			LiferayPluginsBuildConstants.PROPERTY_ANT_FILE,
 			buildFile.getAbsolutePath());
 
-		AntLogger antLogger = new AntLogger();
-
-		antLogger.setErrorPrintStream(System.err);
-		antLogger.setOutputPrintStream(System.out);
-		antLogger.setMessageOutputLevel(Project.MSG_INFO);
-
-		project.addBuildListener(antLogger);
+		project.addBuildListener(configureAntLogger());
 
 		project.init();
 
@@ -128,6 +122,16 @@ public class WebArchiveUtil {
 		projectHelper.parse(project, buildFile);
 
 		return project;
+	}
+
+	protected static AntLogger configureAntLogger() {
+		AntLogger antLogger = new AntLogger();
+
+		antLogger.setErrorPrintStream(System.err);
+		antLogger.setOutputPrintStream(System.out);
+		antLogger.setMessageOutputLevel(Project.MSG_INFO);
+
+		return antLogger;
 	}
 
 	protected static Project configureAntProjectForJar() {
