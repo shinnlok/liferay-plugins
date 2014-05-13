@@ -43,19 +43,21 @@ public class WebArchiveUtil {
 			antProject.executeTarget(
 				LiferayPluginsBuildConstants.TARGET_DEPLOY);
 
-			String pluginName =
-				antProject.getProperty(
-					LiferayPluginsBuildConstants.PROPERTY_PLUGIN_NAME);
-
 			String pluginFullVersion =
 				antProject.getProperty(
 					LiferayPluginsBuildConstants.PROPERTY_PLUGIN_FULL_VERSION);
 
-			pluginName += "-" + pluginFullVersion +
-				LiferayPluginsBuildConstants.EXTENSION_JAR;
+			StringBuilder sb = new StringBuilder(4);
+
+			sb.append(
+				antProject.getProperty(
+					LiferayPluginsBuildConstants.PROPERTY_PLUGIN_NAME));
+			sb.append("-");
+			sb.append(pluginFullVersion);
+			sb.append(LiferayPluginsBuildConstants.EXTENSION_JAR);
 
 			File jarFile = new File(
-				_temporaryFolderRoot.getAbsolutePath(), pluginName);
+				_temporaryFolderRoot.getAbsolutePath(), sb.toString());
 
 			WebArchive webArchive = ShrinkWrap.createFromZipFile(
 				WebArchive.class, jarFile);
