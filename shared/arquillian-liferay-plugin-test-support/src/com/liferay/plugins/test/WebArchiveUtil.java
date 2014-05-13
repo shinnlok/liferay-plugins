@@ -51,9 +51,8 @@ public class WebArchiveUtil {
 				antProject.getProperty(
 					LiferayPluginsBuildConstants.PROPERTY_PLUGIN_FULL_VERSION);
 
-			pluginName +=
-				"-" + pluginFullVersion +
-					LiferayPluginsBuildConstants.EXTENSION_JAR;
+			pluginName += "-" + pluginFullVersion +
+				LiferayPluginsBuildConstants.EXTENSION_JAR;
 
 			File jarFile = new File(
 				_temporaryFolderRoot.getAbsolutePath(), pluginName);
@@ -111,12 +110,12 @@ public class WebArchiveUtil {
 			buildFile.getAbsolutePath());
 
 		AntLogger antLogger = new AntLogger();
+
 		antLogger.setErrorPrintStream(System.err);
 		antLogger.setOutputPrintStream(System.out);
 		antLogger.setMessageOutputLevel(Project.MSG_INFO);
 
 		project.addBuildListener(antLogger);
-
 
 		project.init();
 
