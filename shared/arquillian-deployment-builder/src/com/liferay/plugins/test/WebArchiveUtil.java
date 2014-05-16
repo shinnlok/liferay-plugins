@@ -15,10 +15,13 @@
 package com.liferay.plugins.test;
 
 import com.liferay.plugins.test.util.AntLogger;
+
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
+
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
