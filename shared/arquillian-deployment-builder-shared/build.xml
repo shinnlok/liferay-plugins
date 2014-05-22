@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE project>
 
-<project name="arquillian-deployment-builder" basedir="." default="deploy">
+<project name="arquillian-deployment-builder-shared" basedir="." default="deploy">
 	<property name="plugin.version" value="1" />
 	<property name="ivy.resolve.transitive.dependencies" value="true" />
 
