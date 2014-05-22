@@ -1,8 +1,9 @@
 <?xml version="1.0"?>
 <!DOCTYPE project>
 
-<project name="amazon-tools-shared" basedir="." default="deploy">
+<project name="arquillian-deployment-builder" basedir="." default="deploy">
 	<property name="plugin.version" value="1" />
+	<property name="ivy.resolve.transitive.dependencies" value="true" />
 
 	<import file="../build-common-shared.xml" />
 </project>
