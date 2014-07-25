@@ -81,18 +81,15 @@
 									/>
 
 									<if>
-										<or>
-											<equals arg1="@{ivy.xml.dir}" arg2="${sdk.dir}" />
-											<contains string="@{ivy.xml.dir}" substring="${sdk.dependencies.dir}" />
-											<antelope:endswith string="${ant.project.name}" with="-shared" />
-											<available file="@{ivy.xml.dir}/bnd.bnd" />
-										</or>
+										<not>
+											<available file="@{ivy.xml.dir}/docroot" />
+										</not>
 										<then>
 											<ivy:retrieve
 												conf="default"
 												overwriteMode="always"
 												pattern="@{ivy.xml.dir}/lib/[artifact].[ext]"
-												type="bundle,jar,orbit"
+												type="bundle,eclipse-plugin,jar,orbit"
 											/>
 
 											<ivy:retrieve
@@ -107,7 +104,7 @@
 												conf="default"
 												overwriteMode="always"
 												pattern="@{ivy.xml.dir}/docroot/WEB-INF/lib/[artifact].[ext]"
-												type="bundle,jar,orbit"
+												type="bundle,eclipse-plugin,jar,orbit"
 											/>
 
 											<ivy:retrieve

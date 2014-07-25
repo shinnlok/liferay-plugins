@@ -166,17 +166,6 @@ public interface FooLocalService extends BaseLocalService, InvokableLocalService
 	public com.liferay.sampleservicebuilder.model.Foo fetchFoo(long fooId);
 
 	/**
-	* Returns the foo with the matching UUID and company.
-	*
-	* @param uuid the foo's UUID
-	* @param companyId the primary key of the company
-	* @return the matching foo, or <code>null</code> if a matching foo could not be found
-	*/
-	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public com.liferay.sampleservicebuilder.model.Foo fetchFooByUuidAndCompanyId(
-		java.lang.String uuid, long companyId);
-
-	/**
 	* Returns the foo matching the UUID and group.
 	*
 	* @param uuid the foo's UUID
@@ -213,19 +202,6 @@ public interface FooLocalService extends BaseLocalService, InvokableLocalService
 		throws com.liferay.portal.kernel.exception.PortalException;
 
 	/**
-	* Returns the foo with the matching UUID and company.
-	*
-	* @param uuid the foo's UUID
-	* @param companyId the primary key of the company
-	* @return the matching foo
-	* @throws PortalException if a matching foo could not be found
-	*/
-	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public com.liferay.sampleservicebuilder.model.Foo getFooByUuidAndCompanyId(
-		java.lang.String uuid, long companyId)
-		throws com.liferay.portal.kernel.exception.PortalException;
-
-	/**
 	* Returns the foo matching the UUID and group.
 	*
 	* @param uuid the foo's UUID
@@ -240,7 +216,7 @@ public interface FooLocalService extends BaseLocalService, InvokableLocalService
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public java.util.List<com.liferay.sampleservicebuilder.model.Foo> getFoos(
-		com.liferay.portal.kernel.util.OrderByComparator obc);
+		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.sampleservicebuilder.model.Foo> obc);
 
 	/**
 	* Returns a range of all the foos.
@@ -259,7 +235,17 @@ public interface FooLocalService extends BaseLocalService, InvokableLocalService
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public java.util.List<com.liferay.sampleservicebuilder.model.Foo> getFoos(
-		int start, int end, com.liferay.portal.kernel.util.OrderByComparator obc);
+		int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.sampleservicebuilder.model.Foo> obc);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public java.util.List<com.liferay.sampleservicebuilder.model.Foo> getFoosByUuidAndCompanyId(
+		java.lang.String uuid, long companyId);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public java.util.List<com.liferay.sampleservicebuilder.model.Foo> getFoosByUuidAndCompanyId(
+		java.lang.String uuid, long companyId, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.sampleservicebuilder.model.Foo> orderByComparator);
 
 	/**
 	* Returns the number of foos.

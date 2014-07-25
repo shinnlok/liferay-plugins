@@ -42,9 +42,13 @@ public class SyncFile extends StateAwareModel {
 
 	public static final String EVENT_UPDATE = "update";
 
-	public static final int STATE_ERROR = 2;
+	public static final int STATE_ERROR = 4;
 
 	public static final int STATE_IN_PROGRESS = 1;
+
+	public static final int STATE_IN_PROGRESS_DOWNLOADING = 3;
+
+	public static final int STATE_IN_PROGRESS_UPLOADING = 2;
 
 	public static final int STATE_SYNCED = 0;
 
@@ -360,22 +364,22 @@ public class SyncFile extends StateAwareModel {
 	@DatabaseField(useGetSet = true)
 	protected long parentFolderId;
 
-	@DatabaseField(useGetSet = true)
+	@DatabaseField(uniqueIndexName = "r_s_t_t", useGetSet = true)
 	protected long repositoryId;
 
 	@DatabaseField(useGetSet = true)
 	protected long size;
 
-	@DatabaseField(useGetSet = true)
+	@DatabaseField(uniqueIndexName = "r_s_t_t", useGetSet = true)
 	protected long syncAccountId;
 
 	@DatabaseField(generatedId = true, useGetSet = true)
 	protected long syncFileId;
 
-	@DatabaseField(useGetSet = true)
+	@DatabaseField(uniqueIndexName = "r_s_t_t", useGetSet = true)
 	protected String type;
 
-	@DatabaseField(useGetSet = true)
+	@DatabaseField(uniqueIndexName = "r_s_t_t", useGetSet = true)
 	protected long typePK;
 
 	@DatabaseField(useGetSet = true)
