@@ -31,11 +31,13 @@ public class BaseSyncDLObjectHandler extends BaseJSONHandler {
 		super(event);
 	}
 
-	protected void processFilePathChange(
+	protected boolean processFilePathChange(
 			SyncFile sourceSyncFile, SyncFile targetSyncFile)
 		throws Exception {
 
 		String targetSyncFileName = targetSyncFile.getName();
+
+		Path sourceFilePath = Paths.get(sourceSyncFile.getFilePathName());
 
 		if (sourceSyncFile.getParentFolderId() !=
 				targetSyncFile.getParentFolderId()) {
@@ -50,11 +52,15 @@ public class BaseSyncDLObjectHandler extends BaseJSONHandler {
 			Path targetFilePath = targetParentFilePath.resolve(
 				targetSyncFileName);
 
-			Files.move(
-				Paths.get(sourceSyncFile.getFilePathName()), targetFilePath);
+			SyncFileService.updateSyncFile(
+				targetFilePath, targetSyncFile.getParentFolderId(),
+				sourceSyncFile);
 
-			sourceSyncFile.setFilePathName(targetFilePath.toString());
-			sourceSyncFile.setName(targetSyncFileName);
+			if (Files.exists(sourceFilePath)) {
+				Files.move(sourceFilePath, targetFilePath);
+			}
+
+			return true;
 		}
 		else if (!targetSyncFileName.equals(sourceSyncFile.getName())) {
 			Path sourceSyncFilePath = Paths.get(
@@ -63,12 +69,18 @@ public class BaseSyncDLObjectHandler extends BaseJSONHandler {
 			Path targetFilePath = sourceSyncFilePath.resolveSibling(
 				targetSyncFileName);
 
-			Files.move(
-				Paths.get(sourceSyncFile.getFilePathName()), targetFilePath);
+			SyncFileService.updateSyncFile(
+				targetFilePath, sourceSyncFile.getParentFolderId(),
+				sourceSyncFile);
 
-			sourceSyncFile.setFilePathName(targetFilePath.toString());
-			sourceSyncFile.setName(targetSyncFileName);
+			if (Files.exists(sourceFilePath)) {
+				Files.move(sourceFilePath, targetFilePath);
+			}
+
+			return true;
 		}
+
+		return false;
 	}
 
 }

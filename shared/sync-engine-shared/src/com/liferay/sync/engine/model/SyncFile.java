@@ -72,25 +72,47 @@ public class SyncFile extends StateAwareModel {
 
 	public static final int UI_EVENT_EXCEEDED_SIZE_LIMIT = 9;
 
-	public static final int UI_EVENT_INVALID_FILE_NAME = 10;
+	public static final int UI_EVENT_FILE_NAME_TOO_LONG = 10;
 
-	public static final int UI_EVENT_INVALID_PERMISSIONS = 11;
+	public static final int UI_EVENT_INVALID_FILE_NAME = 11;
 
-	public static final int UI_EVENT_MOVED_LOCAL = 12;
+	public static final int UI_EVENT_INVALID_PERMISSIONS = 12;
 
-	public static final int UI_EVENT_MOVED_REMOTE = 13;
+	public static final int UI_EVENT_MOVED_LOCAL = 13;
 
-	public static final int UI_EVENT_TRASHED_LOCAL = 14;
+	public static final int UI_EVENT_MOVED_REMOTE = 14;
 
-	public static final int UI_EVENT_TRASHED_REMOTE = 15;
+	public static final int UI_EVENT_TRASHED_LOCAL = 15;
 
-	public static final int UI_EVENT_UPDATED_LOCAL = 16;
+	public static final int UI_EVENT_TRASHED_REMOTE = 16;
 
-	public static final int UI_EVENT_UPDATED_REMOTE = 17;
+	public static final int UI_EVENT_UPDATED_LOCAL = 17;
 
-	public static final int UI_EVENT_UPLOADED = 18;
+	public static final int UI_EVENT_UPDATED_REMOTE = 18;
 
-	public static final int UI_EVENT_UPLOADING = 19;
+	public static final int UI_EVENT_UPLOADED = 19;
+
+	public static final int UI_EVENT_UPLOADING = 20;
+
+	@Override
+	public boolean equals(Object object) {
+		if (object == this) {
+			return true;
+		}
+
+		if (!(object instanceof SyncFile)) {
+			return false;
+		}
+
+		SyncFile syncFile = (SyncFile)object;
+
+		if (syncFile.getSyncFileId() == syncFileId) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 
 	public String getChangeLog() {
 		return changeLog;
@@ -194,6 +216,11 @@ public class SyncFile extends StateAwareModel {
 
 	public String getVersion() {
 		return version;
+	}
+
+	@Override
+	public int hashCode() {
+		return (int)(syncFileId ^ (syncFileId >>> 32));
 	}
 
 	public boolean isFile() {

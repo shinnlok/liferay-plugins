@@ -14,7 +14,6 @@
 
 package com.liferay.sync.engine.service.persistence;
 
-import com.j256.ormlite.dao.ReferenceObjectCache;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.SelectArg;
 import com.j256.ormlite.stmt.Where;
@@ -27,6 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * @author Shinn Lok
  */
@@ -34,8 +35,6 @@ public class SyncFilePersistence extends BasePersistenceImpl<SyncFile, Long> {
 
 	public SyncFilePersistence() throws SQLException {
 		super(SyncFile.class);
-
-		setObjectCache(ReferenceObjectCache.makeSoftCache());
 	}
 
 	public long countByUIEvent(int uiEvent) throws SQLException {
@@ -129,6 +128,8 @@ public class SyncFilePersistence extends BasePersistenceImpl<SyncFile, Long> {
 		QueryBuilder<SyncFile, Long> queryBuilder = queryBuilder();
 
 		Where<SyncFile, Long> where = queryBuilder.where();
+
+		filePathName = StringUtils.replace(filePathName, "\\", "\\\\");
 
 		where.like("filePathName", new SelectArg(filePathName + "%"));
 

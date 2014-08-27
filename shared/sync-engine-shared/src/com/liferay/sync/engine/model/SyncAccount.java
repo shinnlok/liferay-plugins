@@ -43,6 +43,26 @@ public class SyncAccount extends StateAwareModel {
 
 	public static final int UI_EVENT_SYNC_WEB_OUT_OF_DATE = 5;
 
+	@Override
+	public boolean equals(Object object) {
+		if (object == this) {
+			return true;
+		}
+
+		if (!(object instanceof SyncAccount)) {
+			return false;
+		}
+
+		SyncAccount syncAccount = (SyncAccount)object;
+
+		if (syncAccount.getSyncAccountId() == syncAccountId) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
 	public boolean getActive() {
 		return active;
 	}
@@ -89,6 +109,11 @@ public class SyncAccount extends StateAwareModel {
 
 	public long getUserId() {
 		return userId;
+	}
+
+	@Override
+	public int hashCode() {
+		return (int)(syncAccountId ^ (syncAccountId >>> 32));
 	}
 
 	public boolean isActive() {

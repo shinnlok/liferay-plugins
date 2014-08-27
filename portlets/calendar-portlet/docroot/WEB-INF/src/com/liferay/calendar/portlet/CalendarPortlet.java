@@ -30,6 +30,7 @@ import com.liferay.calendar.notification.NotificationTemplateContextFactory;
 import com.liferay.calendar.notification.NotificationTemplateType;
 import com.liferay.calendar.notification.NotificationType;
 import com.liferay.calendar.recurrence.Frequency;
+import com.liferay.calendar.recurrence.PositionalWeekday;
 import com.liferay.calendar.recurrence.Recurrence;
 import com.liferay.calendar.recurrence.RecurrenceSerializer;
 import com.liferay.calendar.recurrence.Weekday;
@@ -738,7 +739,8 @@ public class CalendarPortlet extends MVCPortlet {
 
 		recurrence.setUntilJCalendar(untilJCalendar);
 
-		List<Weekday> weekdays = new ArrayList<Weekday>();
+		List<PositionalWeekday> positionalWeekdays =
+			new ArrayList<PositionalWeekday>();
 
 		if (frequency == Frequency.WEEKLY) {
 			for (Weekday weekday : Weekday.values()) {
@@ -746,12 +748,12 @@ public class CalendarPortlet extends MVCPortlet {
 					actionRequest, weekday.getValue());
 
 				if (checked) {
-					weekdays.add(weekday);
+					positionalWeekdays.add(new PositionalWeekday(weekday, 0));
 				}
 			}
 		}
 
-		recurrence.setWeekdays(weekdays);
+		recurrence.setPositionalWeekdays(positionalWeekdays);
 
 		String[] exceptionDates = StringUtil.split(
 			ParamUtil.getString(actionRequest, "exceptionDates"));
@@ -952,7 +954,7 @@ public class CalendarPortlet extends MVCPortlet {
 		if (calendarIds.length > 0) {
 			JSONObject jsonObject = CalendarUtil.getCalendarRenderingRules(
 				themeDisplay, calendarIds, statuses, startTime, endTime,
-				ruleName);
+				ruleName, getTimeZone(resourceRequest));
 
 			writeJSON(resourceRequest, resourceResponse, jsonObject);
 		}

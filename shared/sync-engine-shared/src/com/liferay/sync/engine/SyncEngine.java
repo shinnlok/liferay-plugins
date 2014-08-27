@@ -237,8 +237,7 @@ public class SyncEngine {
 
 				@Override
 				public FileVisitResult preVisitDirectory(
-						Path filePath, BasicFileAttributes basicFileAttributes)
-					throws IOException {
+					Path filePath, BasicFileAttributes basicFileAttributes) {
 
 					SyncFile syncFile = SyncFileService.fetchSyncFile(
 						filePath.toString(), syncAccountId);
@@ -275,6 +274,12 @@ public class SyncEngine {
 			filePath.toString(), startTime, syncAccountId);
 
 		for (SyncFile deletedSyncFile : deletedSyncFiles) {
+			if (deletedSyncFile.getUiEvent() ==
+					SyncFile.UI_EVENT_FILE_NAME_TOO_LONG) {
+
+				continue;
+			}
+
 			watchEventListener.watchEvent(
 				SyncWatchEvent.EVENT_TYPE_DELETE,
 				Paths.get(deletedSyncFile.getFilePathName()));

@@ -21,6 +21,7 @@ import com.liferay.sync.engine.model.SyncWatchEvent;
 import com.liferay.sync.engine.service.SyncAccountService;
 import com.liferay.sync.engine.service.SyncFileService;
 import com.liferay.sync.engine.service.SyncSiteService;
+import com.liferay.sync.engine.util.BidirectionalMap;
 import com.liferay.sync.engine.util.FileUtil;
 
 import java.io.IOException;
@@ -33,9 +34,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
 import java.util.ConcurrentModificationException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import name.pachler.nio.file.FileSystem;
 import name.pachler.nio.file.FileSystems;
@@ -67,10 +66,14 @@ public class Watcher implements Runnable {
 
 		_watchService = fileSystem.newWatchService();
 
-		register(filePath, recursive);
+		registerFilePath(filePath, recursive);
+
+		WatcherRegistry.register(_watchEventListener.getSyncAccountId(), this);
 	}
 
 	public void close() {
+		WatcherRegistry.unregister(_watchEventListener.getSyncAccountId());
+
 		try {
 			_watchService.close();
 		}
@@ -91,11 +94,10 @@ public class Watcher implements Runnable {
 			try {
 				watchKey = _watchService.take();
 			}
+			catch (ConcurrentModificationException cme) {
+				continue;
+			}
 			catch (Exception e) {
-				if (e instanceof ConcurrentModificationException) {
-					continue;
-				}
-
 				break;
 			}
 
@@ -117,12 +119,18 @@ public class Watcher implements Runnable {
 					continue;
 				}
 
+				WatchEvent.Kind<?> kind = watchEvent.kind();
+
 				Path childFilePath = parentFilePath.resolve(
 					pathImpl.toString());
 
-				fireWatchEventListener(childFilePath, watchEvent);
+				if ((kind == StandardWatchEventKind.ENTRY_CREATE) &&
+					isIgnoredFilePath(childFilePath)) {
 
-				WatchEvent.Kind<?> kind = watchEvent.kind();
+					continue;
+				}
+
+				fireWatchEventListener(childFilePath, watchEvent);
 
 				if (_recursive &&
 					(kind == StandardWatchEventKind.ENTRY_CREATE)) {
@@ -131,7 +139,7 @@ public class Watcher implements Runnable {
 						if (Files.isDirectory(
 								childFilePath, LinkOption.NOFOLLOW_LINKS)) {
 
-							register(childFilePath, true);
+							registerFilePath(childFilePath, true);
 						}
 					}
 					catch (IOException ioe) {
@@ -155,8 +163,24 @@ public class Watcher implements Runnable {
 		}
 	}
 
+	public void unregisterFilePath(Path filePath) {
+		WatchKey watchKey = _filePaths.getKey(filePath);
+
+		_filePaths.removeValue(filePath);
+
+		watchKey.cancel();
+
+		if (_logger.isTraceEnabled()) {
+			_logger.trace("Unregistered file path {}", filePath);
+		}
+	}
+
 	protected void doRegister(Path filePath, boolean recursive)
 		throws IOException {
+
+		if (isIgnoredFilePath(filePath)) {
+			return;
+		}
 
 		if (recursive) {
 			Files.walkFileTree(
@@ -180,7 +204,9 @@ public class Watcher implements Runnable {
 							BasicFileAttributes basicFileAttributes)
 						throws IOException {
 
-						if (Files.notExists(filePath)) {
+						if (Files.notExists(filePath) ||
+							isIgnoredFilePath(filePath)) {
+
 							return FileVisitResult.CONTINUE;
 						}
 
@@ -241,6 +267,29 @@ public class Watcher implements Runnable {
 		_watchEventListener.watchEvent(eventType, filePath);
 	}
 
+	protected boolean isIgnoredFilePath(Path filePath) {
+		try {
+			if (FileUtil.isIgnoredFilePath(filePath) ||
+				!FileUtil.isValidFileName(filePath)) {
+
+				if (_logger.isDebugEnabled()) {
+					_logger.debug("Ignored file path {}", filePath);
+				}
+
+				return true;
+			}
+
+			return false;
+		}
+		catch (Exception e) {
+			if (_logger.isDebugEnabled()) {
+				_logger.debug(e.getMessage(), e);
+			}
+
+			return false;
+		}
+	}
+
 	protected void processMissingFilePath(Path filePath) {
 		SyncAccount syncAccount = SyncAccountService.fetchSyncAccount(
 			_watchEventListener.getSyncAccountId());
@@ -258,20 +307,20 @@ public class Watcher implements Runnable {
 			SyncSite syncSite = SyncSiteService.fetchSyncSite(
 				syncAccount.getFilePathName(), syncAccount.getSyncAccountId());
 
-			if (syncSite != null) {
+			if (syncSite == null) {
+				fireWatchEventListener(
+					SyncWatchEvent.EVENT_TYPE_DELETE, filePath);
+			}
+			else {
 				syncSite.setActive(false);
 				syncSite.setUiEvent(SyncSite.UI_EVENT_SYNC_SITE_FOLDER_MISSING);
 
 				SyncSiteService.update(syncSite);
 			}
-			else {
-				fireWatchEventListener(
-					SyncWatchEvent.EVENT_TYPE_DELETE, filePath);
-			}
 		}
 	}
 
-	protected void register(Path filePath, boolean recursive)
+	protected void registerFilePath(Path filePath, boolean recursive)
 		throws IOException {
 
 		if (Files.notExists(filePath)) {
@@ -285,7 +334,8 @@ public class Watcher implements Runnable {
 
 	private static Logger _logger = LoggerFactory.getLogger(Watcher.class);
 
-	private Map<WatchKey, Path> _filePaths = new HashMap<WatchKey, Path>();
+	private BidirectionalMap<WatchKey, Path> _filePaths =
+		new BidirectionalMap<WatchKey, Path>();
 	private boolean _recursive;
 	private WatchEventListener _watchEventListener;
 	private WatchService _watchService;
