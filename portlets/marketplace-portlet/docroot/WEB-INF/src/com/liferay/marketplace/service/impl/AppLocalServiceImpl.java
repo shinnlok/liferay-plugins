@@ -20,6 +20,7 @@ import com.liferay.marketplace.AppVersionException;
 import com.liferay.marketplace.model.App;
 import com.liferay.marketplace.model.Module;
 import com.liferay.marketplace.service.base.AppLocalServiceBaseImpl;
+import com.liferay.marketplace.util.BundleUtil;
 import com.liferay.marketplace.util.comparator.AppTitleComparator;
 import com.liferay.portal.kernel.deploy.DeployManagerUtil;
 import com.liferay.portal.kernel.deploy.auto.context.AutoDeploymentContext;
@@ -29,6 +30,7 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.plugin.PluginPackage;
 import com.liferay.portal.kernel.servlet.ServletContextPool;
 import com.liferay.portal.kernel.util.FileUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.PropertiesUtil;
 import com.liferay.portal.kernel.util.ReleaseInfo;
@@ -55,6 +57,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -63,6 +67,7 @@ import javax.servlet.ServletContext;
 
 /**
  * @author Ryan Park
+ * @author Joan Kim
  */
 public class AppLocalServiceImpl extends AppLocalServiceBaseImpl {
 
@@ -185,7 +190,7 @@ public class AppLocalServiceImpl extends AppLocalServiceBaseImpl {
 		coreApp.setDescription("Plugins bundled with Liferay Portal.");
 		coreApp.setVersion(ReleaseInfo.getVersion());
 
-		coreApp.addContextName(PortalUtil.getPathContext());
+		coreApp.addContextName(PortalUtil.getServletContextName());
 
 		installedApps.add(coreApp);
 
@@ -280,22 +285,16 @@ public class AppLocalServiceImpl extends AppLocalServiceBaseImpl {
 			while (enu.hasMoreElements()) {
 				ZipEntry zipEntry = enu.nextElement();
 
-				AutoDeploymentContext autoDeploymentContext =
-					new AutoDeploymentContext();
-
 				String fileName = zipEntry.getName();
 
-				if (!fileName.endsWith(".war") &&
+				if (!fileName.endsWith(".jar") &&
+					!fileName.endsWith(".war") &&
 					!fileName.endsWith(".xml") &&
 					!fileName.endsWith(".zip") &&
 					!fileName.equals("liferay-marketplace.properties")) {
 
 					continue;
 				}
-
-				String contextName = getContextName(fileName);
-
-				autoDeploymentContext.setContext(contextName);
 
 				if (_log.isInfoEnabled()) {
 					_log.info(
@@ -323,12 +322,44 @@ public class AppLocalServiceImpl extends AppLocalServiceBaseImpl {
 
 						FileUtil.write(pluginPackageFile, zipInputStream);
 
+						String bundleSymbolicName = StringPool.BLANK;
+						String bundleVersion = StringPool.BLANK;
+						String contextName = StringPool.BLANK;
+
+						AutoDeploymentContext autoDeploymentContext =
+							new AutoDeploymentContext();
+
+						if (fileName.endsWith(".jar")) {
+							Manifest manifest = BundleUtil.getManifest(
+								pluginPackageFile);
+
+							Attributes attributes =
+								manifest.getMainAttributes();
+
+							bundleSymbolicName = GetterUtil.getString(
+								attributes.getValue("Bundle-SymbolicName"));
+							bundleVersion = GetterUtil.getString(
+								attributes.getValue("Bundle-Version"));
+							contextName = GetterUtil.getString(
+								attributes.getValue("Web-ContextPath"));
+						}
+						else {
+							contextName = getContextName(fileName);
+
+							autoDeploymentContext.setContext(contextName);
+						}
+
 						autoDeploymentContext.setFile(pluginPackageFile);
 
 						DeployManagerUtil.deploy(autoDeploymentContext);
 
-						moduleLocalService.addModule(
-							app.getUserId(), app.getAppId(), contextName);
+						if (Validator.isNotNull(bundleSymbolicName) ||
+							Validator.isNotNull(contextName)) {
+
+							moduleLocalService.addModule(
+								app.getUserId(), app.getAppId(),
+								bundleSymbolicName, bundleVersion, contextName);
+						}
 					}
 				}
 				finally {
@@ -394,6 +425,15 @@ public class AppLocalServiceImpl extends AppLocalServiceBaseImpl {
 
 		for (Module module : modules) {
 			moduleLocalService.deleteModule(module.getModuleId());
+
+			if (Validator.isNotNull(module.getBundleSymbolicName()) &&
+				Validator.isNotNull(module.getBundleVersion())) {
+
+				BundleUtil.uninstallBundle(
+					module.getBundleSymbolicName(), module.getBundleVersion());
+
+				continue;
+			}
 
 			if (hasDependentApp(module)) {
 				continue;

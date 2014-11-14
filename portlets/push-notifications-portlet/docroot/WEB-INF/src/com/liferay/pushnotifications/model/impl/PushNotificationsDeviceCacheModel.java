@@ -14,6 +14,8 @@
 
 package com.liferay.pushnotifications.model.impl;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CacheModel;
@@ -30,10 +32,11 @@ import java.util.Date;
 /**
  * The cache model class for representing PushNotificationsDevice in entity cache.
  *
- * @author Silvio Santos
+ * @author Bruno Farache
  * @see PushNotificationsDevice
  * @generated
  */
+@ProviderType
 public class PushNotificationsDeviceCacheModel implements CacheModel<PushNotificationsDevice>,
 	Externalizable {
 	@Override

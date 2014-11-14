@@ -14,12 +14,15 @@
 
 package com.liferay.microblogs.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.service.InvokableService;
 
 /**
  * @author Brian Wing Shun Chan
  * @generated
  */
+@ProviderType
 public class MicroblogsEntryServiceClp implements MicroblogsEntryService {
 	public MicroblogsEntryServiceClp(InvokableService invokableService) {
 		_invokableService = invokableService;
@@ -27,7 +30,7 @@ public class MicroblogsEntryServiceClp implements MicroblogsEntryService {
 		_methodName0 = "addMicroblogsEntry";
 
 		_methodParameterTypes0 = new String[] {
-				"long", "java.lang.String", "int", "long", "long", "int",
+				"long", "java.lang.String", "int", "long", "int",
 				"com.liferay.portal.service.ServiceContext"
 			};
 
@@ -89,8 +92,8 @@ public class MicroblogsEntryServiceClp implements MicroblogsEntryService {
 
 	@Override
 	public com.liferay.microblogs.model.MicroblogsEntry addMicroblogsEntry(
-		long userId, java.lang.String content, int type, long receiverUserId,
-		long receiverMicroblogsEntryId, int socialRelationType,
+		long userId, java.lang.String content, int type,
+		long parentMicroblogsEntryId, int socialRelationType,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		Object returnObj = null;
@@ -105,9 +108,7 @@ public class MicroblogsEntryServiceClp implements MicroblogsEntryService {
 						
 					type,
 						
-					receiverUserId,
-						
-					receiverMicroblogsEntryId,
+					parentMicroblogsEntryId,
 						
 					socialRelationType,
 						

@@ -14,6 +14,8 @@
 
 package com.liferay.calendar.service.http;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.calendar.service.CalendarServiceUtil;
 
 import com.liferay.portal.kernel.log.Log;
@@ -65,14 +67,16 @@ import java.util.Map;
  * @see com.liferay.calendar.service.CalendarServiceUtil
  * @generated
  */
+@ProviderType
 public class CalendarServiceSoap {
 	public static com.liferay.calendar.model.CalendarSoap addCalendar(
 		long groupId, long calendarResourceId,
 		java.lang.String[] nameMapLanguageIds,
 		java.lang.String[] nameMapValues,
 		java.lang.String[] descriptionMapLanguageIds,
-		java.lang.String[] descriptionMapValues, int color,
-		boolean defaultCalendar, boolean enableComments, boolean enableRatings,
+		java.lang.String[] descriptionMapValues, java.lang.String timeZoneId,
+		int color, boolean defaultCalendar, boolean enableComments,
+		boolean enableRatings,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws RemoteException {
 		try {
@@ -82,8 +86,8 @@ public class CalendarServiceSoap {
 					descriptionMapValues);
 
 			com.liferay.calendar.model.Calendar returnValue = CalendarServiceUtil.addCalendar(groupId,
-					calendarResourceId, nameMap, descriptionMap, color,
-					defaultCalendar, enableComments, enableRatings,
+					calendarResourceId, nameMap, descriptionMap, timeZoneId,
+					color, defaultCalendar, enableComments, enableRatings,
 					serviceContext);
 
 			return com.liferay.calendar.model.CalendarSoap.toSoapModel(returnValue);
@@ -348,7 +352,6 @@ public class CalendarServiceSoap {
 		java.lang.String[] nameMapValues,
 		java.lang.String[] descriptionMapLanguageIds,
 		java.lang.String[] descriptionMapValues, int color,
-		boolean defaultCalendar, boolean enableComments, boolean enableRatings,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws RemoteException {
 		try {
@@ -358,8 +361,7 @@ public class CalendarServiceSoap {
 					descriptionMapValues);
 
 			com.liferay.calendar.model.Calendar returnValue = CalendarServiceUtil.updateCalendar(calendarId,
-					nameMap, descriptionMap, color, defaultCalendar,
-					enableComments, enableRatings, serviceContext);
+					nameMap, descriptionMap, color, serviceContext);
 
 			return com.liferay.calendar.model.CalendarSoap.toSoapModel(returnValue);
 		}
@@ -374,7 +376,9 @@ public class CalendarServiceSoap {
 		long calendarId, java.lang.String[] nameMapLanguageIds,
 		java.lang.String[] nameMapValues,
 		java.lang.String[] descriptionMapLanguageIds,
-		java.lang.String[] descriptionMapValues, int color,
+		java.lang.String[] descriptionMapValues, java.lang.String timeZoneId,
+		int color, boolean defaultCalendar, boolean enableComments,
+		boolean enableRatings,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws RemoteException {
 		try {
@@ -384,7 +388,9 @@ public class CalendarServiceSoap {
 					descriptionMapValues);
 
 			com.liferay.calendar.model.Calendar returnValue = CalendarServiceUtil.updateCalendar(calendarId,
-					nameMap, descriptionMap, color, serviceContext);
+					nameMap, descriptionMap, timeZoneId, color,
+					defaultCalendar, enableComments, enableRatings,
+					serviceContext);
 
 			return com.liferay.calendar.model.CalendarSoap.toSoapModel(returnValue);
 		}

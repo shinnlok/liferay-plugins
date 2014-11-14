@@ -14,6 +14,8 @@
 
 package com.liferay.calendar.service.http;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.calendar.service.CalendarBookingServiceUtil;
 
 import com.liferay.portal.kernel.log.Log;
@@ -65,6 +67,7 @@ import java.util.Map;
  * @see com.liferay.calendar.service.CalendarBookingServiceUtil
  * @generated
  */
+@ProviderType
 public class CalendarBookingServiceSoap {
 	public static com.liferay.calendar.model.CalendarBookingSoap addCalendarBooking(
 		long calendarId, long[] childCalendarIds, long parentCalendarBookingId,
@@ -215,6 +218,21 @@ public class CalendarBookingServiceSoap {
 		try {
 			com.liferay.calendar.model.CalendarBooking returnValue = CalendarBookingServiceUtil.getCalendarBooking(calendarId,
 					parentCalendarBookingId);
+
+			return com.liferay.calendar.model.CalendarBookingSoap.toSoapModel(returnValue);
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
+	public static com.liferay.calendar.model.CalendarBookingSoap getCalendarBookingInstance(
+		long calendarBookingId, int instanceIndex) throws RemoteException {
+		try {
+			com.liferay.calendar.model.CalendarBooking returnValue = CalendarBookingServiceUtil.getCalendarBookingInstance(calendarBookingId,
+					instanceIndex);
 
 			return com.liferay.calendar.model.CalendarBookingSoap.toSoapModel(returnValue);
 		}

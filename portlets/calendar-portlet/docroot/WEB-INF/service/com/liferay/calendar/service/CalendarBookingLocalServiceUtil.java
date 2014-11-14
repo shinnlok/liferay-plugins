@@ -14,6 +14,8 @@
 
 package com.liferay.calendar.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.bean.PortletBeanLocatorUtil;
 import com.liferay.portal.kernel.util.ReferenceRegistry;
 import com.liferay.portal.service.InvokableLocalService;
@@ -32,6 +34,7 @@ import com.liferay.portal.service.InvokableLocalService;
  * @see com.liferay.calendar.service.impl.CalendarBookingLocalServiceImpl
  * @generated
  */
+@ProviderType
 public class CalendarBookingLocalServiceUtil {
 	/*
 	 * NOTE FOR DEVELOPERS:
@@ -302,6 +305,13 @@ public class CalendarBookingLocalServiceUtil {
 		java.lang.String uuid, long groupId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return getService().getCalendarBookingByUuidAndGroupId(uuid, groupId);
+	}
+
+	public static com.liferay.calendar.model.CalendarBooking getCalendarBookingInstance(
+		long calendarBookingId, int instanceIndex)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService()
+				   .getCalendarBookingInstance(calendarBookingId, instanceIndex);
 	}
 
 	public static java.util.List<com.liferay.calendar.model.CalendarBooking> getCalendarBookings(

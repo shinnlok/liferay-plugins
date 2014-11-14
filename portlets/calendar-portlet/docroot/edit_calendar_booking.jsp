@@ -83,7 +83,9 @@ JSONArray declinedCalendarsJSONArray = JSONFactoryUtil.createJSONArray();
 JSONArray maybeCalendarsJSONArray = JSONFactoryUtil.createJSONArray();
 JSONArray pendingCalendarsJSONArray = JSONFactoryUtil.createJSONArray();
 
+boolean hasChildCalendarBookings = false;
 boolean invitable = true;
+boolean masterBooking = true;
 Recurrence recurrence = null;
 boolean recurring = false;
 
@@ -95,8 +97,16 @@ if (calendarBooking != null) {
 	maybeCalendarsJSONArray = CalendarUtil.toCalendarBookingsJSONArray(themeDisplay, CalendarBookingServiceUtil.getChildCalendarBookings(calendarBooking.getParentCalendarBookingId(), CalendarBookingWorkflowConstants.STATUS_MAYBE));
 	pendingCalendarsJSONArray = CalendarUtil.toCalendarBookingsJSONArray(themeDisplay, CalendarBookingServiceUtil.getChildCalendarBookings(calendarBooking.getParentCalendarBookingId(), CalendarBookingWorkflowConstants.STATUS_PENDING));
 
-	if (!calendarBooking.isMasterBooking()) {
+	if (calendarBooking.isMasterBooking()) {
+		List<CalendarBooking> childCalendarBookings = CalendarBookingServiceUtil.getChildCalendarBookings(calendarBooking.getParentCalendarBookingId());
+
+		if (childCalendarBookings.size() > 1) {
+			hasChildCalendarBookings = true;
+		}
+	}
+	else {
 		invitable = false;
+		masterBooking = false;
 	}
 
 	if (calendarBooking.isRecurring()) {
@@ -320,6 +330,19 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 		return document.<portlet:namespace />fm.<portlet:namespace />title.value + ' ' + window.<portlet:namespace />description.getHTML();
 	}
 
+	function <portlet:namespace />resolver(data) {
+		var A = AUI();
+
+		var answers = data.answers;
+
+		if (!answers.cancel) {
+			A.one('#<portlet:namespace />allFollowing').val(!!answers.allFollowing);
+			A.one('#<portlet:namespace />updateCalendarBookingInstance').val(!!answers.updateInstance);
+
+			submitForm(document.<portlet:namespace />fm);
+		}
+	}
+
 	Liferay.provide(
 		window,
 		'<portlet:namespace />updateCalendarBooking',
@@ -335,60 +358,15 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 				A.one('#<portlet:namespace />childCalendarIds').val(childCalendarIds.join(','));
 			</c:if>
 
-			<c:if test="<%= calendarBooking == null %>">
-				submitForm(document.<portlet:namespace />fm);
-			</c:if>
-
-			<c:if test="<%= (calendarBooking != null) && (calendar != null) %>">
-				<c:choose>
-					<c:when test="<%= recurring %>">
-						Liferay.RecurrenceUtil.openConfirmationPanel(
-							'update',
-							function() {
-								A.one('#<portlet:namespace />updateCalendarBookingInstance').val('true');
-
-								submitForm(document.<portlet:namespace />fm);
-							},
-							function() {
-								A.one('#<portlet:namespace />allFollowing').val('true');
-								A.one('#<portlet:namespace />updateCalendarBookingInstance').val('true');
-
-								submitForm(document.<portlet:namespace />fm);
-							},
-							function() {
-								submitForm(document.<portlet:namespace />fm);
-							}
-						);
-					</c:when>
-					<c:when test="<%= calendarBooking.isMasterBooking() %>">
-						submitForm(document.<portlet:namespace />fm);
-					</c:when>
-					<c:otherwise>
-						var content = [
-							'<p class="calendar-portlet-confirmation-text">',
-							A.Lang.sub(
-								Liferay.Language.get('you-are-about-to-make-changes-that-will-only-effect-your-calendar-x'),
-								['<%= HtmlUtil.escapeJS(calendar.getName(locale)) %>']
-							),
-							'</p>'
-						].join('');
-
-						Liferay.CalendarMessageUtil.confirm(
-							content,
-							'<liferay-ui:message key="save-changes" unicode="<%= true %>" />',
-							'<liferay-ui:message key="do-not-change-the-event" unicode="<%= true %>" />',
-							function() {
-								submitForm(document.<portlet:namespace />fm);
-
-								this.hide();
-							},
-							function() {
-								this.hide();
-							}
-						);
-					</c:otherwise>
-				</c:choose>
-			</c:if>
+			Liferay.CalendarMessageUtil.promptSchedulerEventUpdate(
+				{
+					calendarName: '<%= HtmlUtil.escapeJS(calendar.getName(locale)) %>',
+					hasChild: <%= hasChildCalendarBookings %>,
+					masterBooking: <%= masterBooking %>,
+					recurring: <%= recurring %>,
+					resolver: <portlet:namespace />resolver
+				}
+			);
 		},
 		['liferay-calendar-message-util', 'json']
 	);
@@ -409,14 +387,6 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 	var defaultCalendarId = <%= calendarId %>;
 
 	var scheduler = window.<portlet:namespace />scheduler;
-
-	var removeCalendarResource = function(calendarList, calendar, menu) {
-		calendarList.remove(calendar);
-
-		if (menu) {
-			menu.hide();
-		}
-	}
 
 	var syncCalendarsMap = function() {
 		Liferay.CalendarUtil.syncCalendarsMap(
@@ -440,85 +410,15 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 		);
 	}
 
-	window.<portlet:namespace />toggler = new A.Toggler(
+	var calendarsMenu = Liferay.CalendarUtil.getCalendarsMenu(
 		{
-			after: {
-				expandedChange: function(event) {
-					if (event.newVal) {
-						var activeView = scheduler.get('activeView');
-
-						activeView._fillHeight();
-					}
-				}
-			},
-			animated: true,
 			content: '#<portlet:namespace />schedulerContainer',
-			expanded: false,
-			header: '#<portlet:namespace />checkAvailability'
+			defaultCalendarId: defaultCalendarId,
+			header: '#<portlet:namespace />checkAvailability',
+			invitable: <%= invitable %>,
+			scheduler: scheduler
 		}
 	);
-
-	var calendarsMenu = {
-		items: [
-			{
-				caption: '<%= UnicodeLanguageUtil.get(request, "check-availability") %>',
-				fn: function(event) {
-					var instance = this;
-
-					A.each(
-						Liferay.CalendarUtil.availableCalendars,
-						function(item, index) {
-							item.set('visible', false);
-						}
-					);
-
-					var calendarList = instance.get('host');
-
-					calendarList.activeItem.set('visible', true);
-
-					<portlet:namespace />toggler.expand();
-
-					instance.hide();
-
-					return false;
-				},
-				id: 'check-availability'
-			}
-			<c:if test="<%= invitable %>">
-				,{
-					caption: '<%= UnicodeLanguageUtil.get(request, "remove") %>',
-					fn: function(event) {
-						var instance = this;
-
-						var calendarList = instance.get('host');
-
-						removeCalendarResource(calendarList, calendarList.activeItem, instance);
-					},
-					id: 'remove'
-				}
-			</c:if>
-		],
-		<c:if test="<%= invitable %>">
-			on: {
-				visibleChange: function(event) {
-					var instance = this;
-
-					if (event.newVal) {
-						var calendarList = instance.get('host');
-						var calendar = calendarList.activeItem;
-
-						var hiddenItems = [];
-
-						if (calendar.get('calendarId') === defaultCalendarId) {
-							hiddenItems.push('remove');
-						}
-
-						instance.set('hiddenItems', hiddenItems);
-					}
-				}
-			}
-		</c:if>
-	}
 
 	window.<portlet:namespace />calendarListPending = new Liferay.CalendarList(
 		{
@@ -666,21 +566,31 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 	);
 
 	<c:if test="<%= invitable %>">
+		var manageableCalendars = {};
+
+		A.Array.each(
+			<%= CalendarUtil.toCalendarsJSONArray(themeDisplay, manageableCalendars) %>,
+			function(item, index) {
+				manageableCalendars[item.calendarId] = item;
+			}
+		);
+
 		A.one('#<portlet:namespace />calendarId').on(
 			'valueChange',
 			function(event) {
 				var calendarId = parseInt(event.target.val(), 10);
-				var calendarJSON = Liferay.CalendarUtil.manageableCalendars[calendarId];
+
+				var calendar = manageableCalendars[calendarId];
 
 				A.Array.each(
 					[
 						<portlet:namespace />calendarListAccepted,
 
-						 <c:if test="<%= calendarBooking != null %>">
+						<c:if test="<%= calendarBooking != null %>">
 							<portlet:namespace />calendarListDeclined, <portlet:namespace />calendarListMaybe,
-						 </c:if>
+						</c:if>
 
-						 <portlet:namespace />calendarListPending
+						<portlet:namespace />calendarListPending
 					],
 					function(calendarList) {
 						calendarList.remove(calendarList.getCalendar(calendarId));
@@ -688,7 +598,7 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 					}
 				);
 
-				<portlet:namespace />calendarListPending.add(calendarJSON);
+				<portlet:namespace />calendarListPending.add(calendar);
 
 				defaultCalendarId = calendarId;
 			}

@@ -16,10 +16,12 @@ package com.liferay.marketplace.model.impl;
 
 import com.liferay.marketplace.model.Module;
 import com.liferay.marketplace.service.ModuleLocalServiceUtil;
+import com.liferay.marketplace.util.BundleUtil;
 import com.liferay.portal.kernel.deploy.DeployManagerUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.CompanyConstants;
 import com.liferay.portlet.documentlibrary.store.DLStoreUtil;
 import com.liferay.portlet.documentlibrary.store.Store;
@@ -28,6 +30,7 @@ import java.util.List;
 
 /**
  * @author Ryan Park
+ * @author Joan Kim
  */
 public class AppImpl extends AppBaseImpl {
 
@@ -91,15 +94,25 @@ public class AppImpl extends AppBaseImpl {
 
 	@Override
 	public boolean isInstalled() {
-		String[] contextNames = getContextNames();
+		List<Module> modules = ModuleLocalServiceUtil.getModules(getAppId());
 
-		if (contextNames.length == 0) {
+		if (modules.isEmpty()) {
 			return false;
 		}
 
-		for (String contextName : contextNames) {
-			if (!DeployManagerUtil.isDeployed(contextName)) {
-				return false;
+		for (Module module : modules) {
+			if (Validator.isNotNull(module.getBundleSymbolicName())) {
+				if (!BundleUtil.isActive(
+						module.getBundleSymbolicName(),
+						module.getBundleVersion())) {
+
+					return false;
+				}
+			}
+			else if (Validator.isNotNull(module.getContextName())) {
+				if (!DeployManagerUtil.isDeployed(module.getContextName())) {
+					return false;
+				}
 			}
 		}
 

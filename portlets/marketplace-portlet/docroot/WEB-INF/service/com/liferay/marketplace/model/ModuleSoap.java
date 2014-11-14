@@ -14,6 +14,8 @@
 
 package com.liferay.marketplace.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import java.io.Serializable;
 
 import java.util.ArrayList;
@@ -25,6 +27,7 @@ import java.util.List;
  * @author Ryan Park
  * @generated
  */
+@ProviderType
 public class ModuleSoap implements Serializable {
 	public static ModuleSoap toSoapModel(Module model) {
 		ModuleSoap soapModel = new ModuleSoap();
@@ -32,6 +35,8 @@ public class ModuleSoap implements Serializable {
 		soapModel.setUuid(model.getUuid());
 		soapModel.setModuleId(model.getModuleId());
 		soapModel.setAppId(model.getAppId());
+		soapModel.setBundleSymbolicName(model.getBundleSymbolicName());
+		soapModel.setBundleVersion(model.getBundleVersion());
 		soapModel.setContextName(model.getContextName());
 
 		return soapModel;
@@ -109,6 +114,22 @@ public class ModuleSoap implements Serializable {
 		_appId = appId;
 	}
 
+	public String getBundleSymbolicName() {
+		return _bundleSymbolicName;
+	}
+
+	public void setBundleSymbolicName(String bundleSymbolicName) {
+		_bundleSymbolicName = bundleSymbolicName;
+	}
+
+	public String getBundleVersion() {
+		return _bundleVersion;
+	}
+
+	public void setBundleVersion(String bundleVersion) {
+		_bundleVersion = bundleVersion;
+	}
+
 	public String getContextName() {
 		return _contextName;
 	}
@@ -120,5 +141,7 @@ public class ModuleSoap implements Serializable {
 	private String _uuid;
 	private long _moduleId;
 	private long _appId;
+	private String _bundleSymbolicName;
+	private String _bundleVersion;
 	private String _contextName;
 }

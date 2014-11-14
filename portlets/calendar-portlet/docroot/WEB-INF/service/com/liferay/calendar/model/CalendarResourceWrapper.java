@@ -14,6 +14,8 @@
 
 package com.liferay.calendar.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.lar.StagedModelType;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.ModelWrapper;
@@ -31,6 +33,7 @@ import java.util.Map;
  * @see CalendarResource
  * @generated
  */
+@ProviderType
 public class CalendarResourceWrapper implements CalendarResource,
 	ModelWrapper<CalendarResource> {
 	public CalendarResourceWrapper(CalendarResource calendarResource) {
@@ -499,6 +502,18 @@ public class CalendarResourceWrapper implements CalendarResource,
 	@Override
 	public long getResourceBlockId() {
 		return _calendarResource.getResourceBlockId();
+	}
+
+	@Override
+	public java.util.TimeZone getTimeZone()
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _calendarResource.getTimeZone();
+	}
+
+	@Override
+	public java.lang.String getTimeZoneId()
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _calendarResource.getTimeZoneId();
 	}
 
 	/**
@@ -1002,5 +1017,5 @@ public class CalendarResourceWrapper implements CalendarResource,
 		_calendarResource.resetOriginalValues();
 	}
 
-	private CalendarResource _calendarResource;
+	private final CalendarResource _calendarResource;
 }

@@ -118,7 +118,7 @@ public class CalendarResourceLocalServiceImpl
 
 			calendarLocalService.addCalendar(
 				userId, calendarResource.getGroupId(), calendarResourceId,
-				nameMap, descriptionMap,
+				nameMap, descriptionMap, calendarResource.getTimeZoneId(),
 				PortletPropsValues.CALENDAR_COLOR_DEFAULT, true, false, false,
 				serviceContext);
 		}

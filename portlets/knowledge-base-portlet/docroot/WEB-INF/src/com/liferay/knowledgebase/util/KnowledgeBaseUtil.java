@@ -17,7 +17,11 @@ package com.liferay.knowledgebase.util;
 import com.liferay.knowledgebase.model.KBArticle;
 import com.liferay.knowledgebase.model.KBComment;
 import com.liferay.knowledgebase.model.KBCommentConstants;
+import com.liferay.knowledgebase.model.KBFolder;
+import com.liferay.knowledgebase.model.KBFolderConstants;
 import com.liferay.knowledgebase.model.KBTemplate;
+import com.liferay.knowledgebase.service.KBArticleServiceUtil;
+import com.liferay.knowledgebase.service.KBFolderServiceUtil;
 import com.liferay.knowledgebase.util.comparator.KBArticleCreateDateComparator;
 import com.liferay.knowledgebase.util.comparator.KBArticleModifiedDateComparator;
 import com.liferay.knowledgebase.util.comparator.KBArticlePriorityComparator;
@@ -32,6 +36,8 @@ import com.liferay.knowledgebase.util.comparator.KBTemplateCreateDateComparator;
 import com.liferay.knowledgebase.util.comparator.KBTemplateModifiedDateComparator;
 import com.liferay.knowledgebase.util.comparator.KBTemplateTitleComparator;
 import com.liferay.knowledgebase.util.comparator.KBTemplateUserNameComparator;
+import com.liferay.portal.kernel.dao.orm.QueryUtil;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayInputStream;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.Sort;
@@ -40,6 +46,7 @@ import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.FriendlyURLNormalizerUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.MimeTypesUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.PropsKeys;
@@ -51,16 +58,29 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.model.ModelHintsUtil;
+import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
+import com.liferay.portlet.PortalPreferences;
+import com.liferay.portlet.PortletPreferencesFactoryUtil;
 
 import java.io.InputStream;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletURL;
+import javax.portlet.RenderResponse;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Peter Shin
@@ -68,7 +88,75 @@ import java.util.regex.Pattern;
  */
 public class KnowledgeBaseUtil {
 
-	public static OrderByComparator<KBArticle> getKBArticleOrderByComparator(
+	public static void addPortletBreadcrumbEntries(
+			long oldParentResourceClassNameId, long oldParentResourcePrimKey,
+			long parentResourceClassNameId, long parentResourcePrimKey,
+			String mvcPath, HttpServletRequest request,
+			RenderResponse renderResponse)
+		throws PortalException {
+
+		Map<String, Object> parameters = new HashMap<String, Object>();
+
+		parameters.put(
+			"oldParentResourceClassNameId", oldParentResourceClassNameId);
+		parameters.put("oldParentResourcePrimKey", oldParentResourcePrimKey);
+		parameters.put("parentResourceClassNameId", parentResourceClassNameId);
+		parameters.put("parentResourcePrimKey", parentResourcePrimKey);
+		parameters.put("mvcPath", mvcPath);
+
+		addPortletBreadcrumbEntries(parameters, request, renderResponse);
+	}
+
+	public static void addPortletBreadcrumbEntries(
+			long parentResourceClassNameId, long parentResourcePrimKey,
+			String mvcPath, HttpServletRequest request,
+			RenderResponse renderResponse)
+		throws PortalException {
+
+		Map<String, Object> parameters = new HashMap<String, Object>();
+
+		parameters.put("parentResourceClassNameId", parentResourceClassNameId);
+		parameters.put("parentResourcePrimKey", parentResourcePrimKey);
+		parameters.put("mvcPath", mvcPath);
+
+		addPortletBreadcrumbEntries(parameters, request, renderResponse);
+	}
+
+	public static List<KBFolder> getAlternateRootKBFolders(
+			long groupId, long kbFolderId)
+		throws PortalException {
+
+		List<KBFolder> kbFolders = KBFolderServiceUtil.getKBFolders(
+			groupId, kbFolderId, QueryUtil.ALL_POS, QueryUtil.ALL_POS);
+
+		kbFolders = new ArrayList<KBFolder>(kbFolders);
+
+		Iterator<KBFolder> itr = kbFolders.iterator();
+
+		while (itr.hasNext()) {
+			KBFolder kbFolder = itr.next();
+
+			if (kbFolder.isEmpty()) {
+				itr.remove();
+			}
+		}
+
+		return ListUtil.sort(
+			kbFolders,
+			new Comparator<KBFolder>() {
+
+				@Override
+				public int compare(KBFolder kbFolder1, KBFolder kbFolder2) {
+					String name1 = kbFolder1.getName();
+					String name2 = kbFolder2.getName();
+
+					return name1.compareTo(name2) * -1;
+				}
+
+			});
+	}
+
+	public static OrderByComparator getKBArticleOrderByComparator(
 		String orderByCol, String orderByType) {
 
 		if (Validator.isNull(orderByCol) || Validator.isNull(orderByType)) {
@@ -223,6 +311,23 @@ public class KnowledgeBaseUtil {
 		return null;
 	}
 
+	public static long getKBFolderId(
+			long parentResourceClassNameId, long parentResourcePrimKey)
+		throws PortalException {
+
+		long kbFolderClassNameId = PortalUtil.getClassNameId(
+			KBFolderConstants.getClassName());
+
+		if (parentResourceClassNameId == kbFolderClassNameId) {
+			return parentResourcePrimKey;
+		}
+
+		KBArticle kbArticle = KBArticleServiceUtil.getLatestKBArticle(
+			parentResourcePrimKey, WorkflowConstants.STATUS_ANY);
+
+		return kbArticle.getKbFolderId();
+	}
+
 	public static OrderByComparator<KBTemplate> getKBTemplateOrderByComparator(
 		String orderByCol, String orderByType) {
 
@@ -302,6 +407,22 @@ public class KnowledgeBaseUtil {
 		}
 	}
 
+	public static long getRootResourcePrimKey(
+			PortletRequest portletRequest, long groupId,
+			long resourceClassNameId, long resourcePrimKey)
+		throws PortalException {
+
+		long kbFolderClassNameId = PortalUtil.getClassNameId(
+			KBFolderConstants.getClassName());
+
+		if (resourceClassNameId == kbFolderClassNameId) {
+			return getCurrentRootKBFolder(
+				portletRequest, groupId, resourcePrimKey);
+		}
+
+		return getKBFolderId(resourceClassNameId, resourcePrimKey);
+	}
+
 	public static final String getStatusLabel(int status) {
 		if (status == KBCommentConstants.STATUS_COMPLETED) {
 			return "resolved";
@@ -348,11 +469,17 @@ public class KnowledgeBaseUtil {
 		}
 		else {
 			title = FriendlyURLNormalizerUtil.normalize(
-				title, _friendlyURLPattern);
+				title, _normalizationFriendlyUrlPattern);
 		}
 
 		return ModelHintsUtil.trimString(
 			KBArticle.class.getName(), "urlTitle", title);
+	}
+
+	public static boolean isValidUrlTitle(String urlTitle) {
+		Matcher matcher = _validFriendlyUrlPattern.matcher(urlTitle);
+
+		return matcher.matches();
 	}
 
 	public static List<KBArticle> sort(
@@ -421,9 +548,104 @@ public class KnowledgeBaseUtil {
 		return s.substring(x, s.length());
 	}
 
+	protected static void addPortletBreadcrumbEntries(
+			Map<String, Object> parameters, HttpServletRequest request,
+			RenderResponse renderResponse)
+		throws PortalException {
+
+		PortletURL portletURL = renderResponse.createRenderURL();
+
+		for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+			Object value = entry.getValue();
+
+			portletURL.setParameter(entry.getKey(), value.toString());
+		}
+
+		long kbFolderClassNameId = PortalUtil.getClassNameId(
+			KBFolderConstants.getClassName());
+
+		long parentResourceClassNameId = (Long)parameters.get(
+			"parentResourceClassNameId");
+		long parentResourcePrimKey = (Long)parameters.get(
+			"parentResourcePrimKey");
+
+		String mvcPath = (String)parameters.get("mvcPath");
+
+		if (parentResourcePrimKey ==
+				KBFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
+
+			ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
+				WebKeys.THEME_DISPLAY);
+
+			PortalUtil.addPortletBreadcrumbEntry(
+				request, themeDisplay.translate("home"), portletURL.toString());
+		}
+		else if (parentResourceClassNameId == kbFolderClassNameId) {
+			KBFolder kbFolder = KBFolderServiceUtil.getKBFolder(
+				parentResourcePrimKey);
+
+			addPortletBreadcrumbEntries(
+				kbFolder.getClassNameId(), kbFolder.getParentKBFolderId(),
+				mvcPath, request, renderResponse);
+
+			PortalUtil.addPortletBreadcrumbEntry(
+				request, kbFolder.getName(), portletURL.toString());
+		}
+		else {
+			KBArticle kbArticle = KBArticleServiceUtil.getLatestKBArticle(
+				parentResourcePrimKey, WorkflowConstants.STATUS_ANY);
+
+			addPortletBreadcrumbEntries(
+				kbArticle.getParentResourceClassNameId(),
+				kbArticle.getParentResourcePrimKey(), mvcPath, request,
+				renderResponse);
+
+			PortalUtil.addPortletBreadcrumbEntry(
+				request, kbArticle.getTitle(), portletURL.toString());
+		}
+	}
+
+	private static long getCurrentRootKBFolder(
+			PortletRequest portletRequest, long groupId, long kbFolderId)
+		throws PortalException {
+
+		PortalPreferences portalPreferences =
+			PortletPreferencesFactoryUtil.getPortalPreferences(portletRequest);
+
+		String kbFolderUrlTitle = portalPreferences.getValue(
+			PortletKeys.KNOWLEDGE_BASE_DISPLAY, "preferredKBFolderUrlTitle",
+			null);
+
+		long childKbFolderId = KBFolderConstants.DEFAULT_PARENT_FOLDER_ID;
+
+		if (kbFolderUrlTitle == null) {
+			List<KBFolder> kbFolders = getAlternateRootKBFolders(
+				groupId, kbFolderId);
+
+			if (!kbFolders.isEmpty()) {
+				KBFolder kbFolder = kbFolders.get(0);
+
+				childKbFolderId = kbFolder.getKbFolderId();
+			}
+		}
+		else {
+			KBFolder kbFolder = KBFolderServiceUtil.fetchKBFolderByUrlTitle(
+				groupId, kbFolderId, kbFolderUrlTitle);
+
+			if (kbFolder != null) {
+				childKbFolderId = kbFolder.getKbFolderId();
+			}
+		}
+
+		return childKbFolderId;
+	}
+
 	private static final int _SQL_DATA_MAX_PARAMETERS = GetterUtil.getInteger(
 		PropsUtil.get(PropsKeys.SQL_DATA_MAX_PARAMETERS));
 
-	private static Pattern _friendlyURLPattern = Pattern.compile("[^a-z0-9_-]");
+	private static Pattern _normalizationFriendlyUrlPattern = Pattern.compile(
+		"[^a-z0-9_-]");
+	private static Pattern _validFriendlyUrlPattern = Pattern.compile(
+		"/[a-z0-9_-]+");
 
 }

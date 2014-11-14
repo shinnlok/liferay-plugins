@@ -14,6 +14,8 @@
 
 package com.liferay.knowledgebase.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.search.IndexableType;
@@ -37,6 +39,7 @@ import com.liferay.portal.service.PersistedModelLocalService;
  * @see com.liferay.knowledgebase.service.impl.KBArticleLocalServiceImpl
  * @generated
  */
+@ProviderType
 @Transactional(isolation = Isolation.PORTAL, rollbackFor =  {
 	PortalException.class, SystemException.class})
 public interface KBArticleLocalService extends BaseLocalService,
@@ -58,9 +61,10 @@ public interface KBArticleLocalService extends BaseLocalService,
 		com.liferay.knowledgebase.model.KBArticle kbArticle);
 
 	public com.liferay.knowledgebase.model.KBArticle addKBArticle(long userId,
-		long parentResourcePrimKey, java.lang.String title,
-		java.lang.String urlTitle, java.lang.String content,
-		java.lang.String description, java.lang.String[] sections,
+		long parentResourceClassNameId, long parentResourcePrimKey,
+		java.lang.String title, java.lang.String urlTitle,
+		java.lang.String content, java.lang.String description,
+		java.lang.String sourceURL, java.lang.String[] sections,
 		java.lang.String[] selectedFileNames,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException;
@@ -84,7 +88,8 @@ public interface KBArticleLocalService extends BaseLocalService,
 		throws com.liferay.portal.kernel.exception.PortalException;
 
 	public void addKBArticlesMarkdown(long userId, long groupId,
-		java.lang.String fileName, java.io.InputStream inputStream,
+		long parentKbFolderId, java.lang.String fileName,
+		java.io.InputStream inputStream,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException;
 
@@ -128,6 +133,9 @@ public interface KBArticleLocalService extends BaseLocalService,
 	@com.liferay.portal.kernel.search.Indexable(type = IndexableType.DELETE)
 	public com.liferay.knowledgebase.model.KBArticle deleteKBArticle(
 		long kbArticleId)
+		throws com.liferay.portal.kernel.exception.PortalException;
+
+	public void deleteKBArticles(long groupId, long parentResourcePrimKey)
 		throws com.liferay.portal.kernel.exception.PortalException;
 
 	public void deleteKBArticles(long[] resourcePrimKeys)
@@ -216,7 +224,13 @@ public interface KBArticleLocalService extends BaseLocalService,
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public com.liferay.knowledgebase.model.KBArticle fetchKBArticleByUrlTitle(
-		long groupId, java.lang.String urlTitle);
+		long groupId, long kbFolderId, java.lang.String urlTitle);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public com.liferay.knowledgebase.model.KBArticle fetchKBArticleByUrlTitle(
+		long groupId, java.lang.String kbFolderUrlTitle,
+		java.lang.String urlTitle)
+		throws com.liferay.portal.kernel.exception.PortalException;
 
 	/**
 	* Returns the k b article matching the UUID and group.
@@ -235,7 +249,7 @@ public interface KBArticleLocalService extends BaseLocalService,
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public com.liferay.knowledgebase.model.KBArticle fetchLatestKBArticleByUrlTitle(
-		long groupId, java.lang.String urlTitle, int status);
+		long groupId, long kbFolderId, java.lang.String urlTitle, int status);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery getActionableDynamicQuery();
@@ -306,7 +320,13 @@ public interface KBArticleLocalService extends BaseLocalService,
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public com.liferay.knowledgebase.model.KBArticle getKBArticleByUrlTitle(
-		long groupId, java.lang.String urlTitle)
+		long groupId, long kbFolderId, java.lang.String urlTitle)
+		throws com.liferay.portal.kernel.exception.PortalException;
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public com.liferay.knowledgebase.model.KBArticle getKBArticleByUrlTitle(
+		long groupId, java.lang.String kbFolderUrlTitle,
+		java.lang.String urlTitle)
 		throws com.liferay.portal.kernel.exception.PortalException;
 
 	/**
@@ -384,7 +404,7 @@ public interface KBArticleLocalService extends BaseLocalService,
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public com.liferay.knowledgebase.model.KBArticle getLatestKBArticleByUrlTitle(
-		long groupId, java.lang.String urlTitle, int status)
+		long groupId, long kbFolderId, java.lang.String urlTitle, int status)
 		throws com.liferay.portal.kernel.exception.PortalException;
 
 	@Override
@@ -438,7 +458,8 @@ public interface KBArticleLocalService extends BaseLocalService,
 		throws java.lang.Throwable;
 
 	public void moveKBArticle(long userId, long resourcePrimKey,
-		long parentResourcePrimKey, double priority)
+		long parentResourceClassNameId, long parentResourcePrimKey,
+		double priority)
 		throws com.liferay.portal.kernel.exception.PortalException;
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
@@ -481,8 +502,8 @@ public interface KBArticleLocalService extends BaseLocalService,
 	public com.liferay.knowledgebase.model.KBArticle updateKBArticle(
 		long userId, long resourcePrimKey, java.lang.String title,
 		java.lang.String content, java.lang.String description,
-		java.lang.String[] sections, java.lang.String[] selectedFileNames,
-		long[] removeFileEntryIds,
+		java.lang.String sourceURL, java.lang.String[] sections,
+		java.lang.String[] selectedFileNames, long[] removeFileEntryIds,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException;
 

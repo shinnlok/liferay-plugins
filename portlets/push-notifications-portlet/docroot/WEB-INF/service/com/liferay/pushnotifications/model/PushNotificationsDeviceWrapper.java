@@ -14,6 +14,8 @@
 
 package com.liferay.pushnotifications.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.ModelWrapper;
 
@@ -26,10 +28,11 @@ import java.util.Map;
  * This class is a wrapper for {@link PushNotificationsDevice}.
  * </p>
  *
- * @author Silvio Santos
+ * @author Bruno Farache
  * @see PushNotificationsDevice
  * @generated
  */
+@ProviderType
 public class PushNotificationsDeviceWrapper implements PushNotificationsDevice,
 	ModelWrapper<PushNotificationsDevice> {
 	public PushNotificationsDeviceWrapper(
@@ -387,5 +390,5 @@ public class PushNotificationsDeviceWrapper implements PushNotificationsDevice,
 		_pushNotificationsDevice.resetOriginalValues();
 	}
 
-	private PushNotificationsDevice _pushNotificationsDevice;
+	private final PushNotificationsDevice _pushNotificationsDevice;
 }

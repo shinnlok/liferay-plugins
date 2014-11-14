@@ -14,6 +14,8 @@
 
 package com.liferay.microblogs.model.impl;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.microblogs.model.MicroblogsEntry;
 import com.liferay.microblogs.model.MicroblogsEntryModel;
 import com.liferay.microblogs.model.MicroblogsEntrySoap;
@@ -59,6 +61,7 @@ import java.util.Map;
  * @generated
  */
 @JSON(strict = true)
+@ProviderType
 public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 	implements MicroblogsEntryModel {
 	/*
@@ -74,13 +77,14 @@ public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 			{ "userName", Types.VARCHAR },
 			{ "createDate", Types.TIMESTAMP },
 			{ "modifiedDate", Types.TIMESTAMP },
+			{ "creatorClassNameId", Types.BIGINT },
+			{ "creatorClassPK", Types.BIGINT },
 			{ "content", Types.VARCHAR },
 			{ "type_", Types.INTEGER },
-			{ "receiverUserId", Types.BIGINT },
-			{ "receiverMicroblogsEntryId", Types.BIGINT },
+			{ "parentMicroblogsEntryId", Types.BIGINT },
 			{ "socialRelationType", Types.INTEGER }
 		};
-	public static final String TABLE_SQL_CREATE = "create table MicroblogsEntry (microblogsEntryId LONG not null primary key,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,content STRING null,type_ INTEGER,receiverUserId LONG,receiverMicroblogsEntryId LONG,socialRelationType INTEGER)";
+	public static final String TABLE_SQL_CREATE = "create table MicroblogsEntry (microblogsEntryId LONG not null primary key,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,creatorClassNameId LONG,creatorClassPK LONG,content STRING null,type_ INTEGER,parentMicroblogsEntryId LONG,socialRelationType INTEGER)";
 	public static final String TABLE_SQL_DROP = "drop table MicroblogsEntry";
 	public static final String ORDER_BY_JPQL = " ORDER BY microblogsEntry.createDate DESC";
 	public static final String ORDER_BY_SQL = " ORDER BY MicroblogsEntry.createDate DESC";
@@ -96,13 +100,14 @@ public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 	public static final boolean COLUMN_BITMASK_ENABLED = GetterUtil.getBoolean(com.liferay.util.service.ServiceProps.get(
 				"value.object.column.bitmask.enabled.com.liferay.microblogs.model.MicroblogsEntry"),
 			true);
-	public static long COMPANYID_COLUMN_BITMASK = 1L;
-	public static long CREATEDATE_COLUMN_BITMASK = 2L;
-	public static long RECEIVERMICROBLOGSENTRYID_COLUMN_BITMASK = 4L;
-	public static long RECEIVERUSERID_COLUMN_BITMASK = 8L;
-	public static long SOCIALRELATIONTYPE_COLUMN_BITMASK = 16L;
-	public static long TYPE_COLUMN_BITMASK = 32L;
-	public static long USERID_COLUMN_BITMASK = 64L;
+	public static final long COMPANYID_COLUMN_BITMASK = 1L;
+	public static final long CREATEDATE_COLUMN_BITMASK = 2L;
+	public static final long CREATORCLASSNAMEID_COLUMN_BITMASK = 4L;
+	public static final long CREATORCLASSPK_COLUMN_BITMASK = 8L;
+	public static final long PARENTMICROBLOGSENTRYID_COLUMN_BITMASK = 16L;
+	public static final long SOCIALRELATIONTYPE_COLUMN_BITMASK = 32L;
+	public static final long TYPE_COLUMN_BITMASK = 64L;
+	public static final long USERID_COLUMN_BITMASK = 128L;
 
 	/**
 	 * Converts the soap model instance into a normal model instance.
@@ -123,10 +128,11 @@ public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 		model.setUserName(soapModel.getUserName());
 		model.setCreateDate(soapModel.getCreateDate());
 		model.setModifiedDate(soapModel.getModifiedDate());
+		model.setCreatorClassNameId(soapModel.getCreatorClassNameId());
+		model.setCreatorClassPK(soapModel.getCreatorClassPK());
 		model.setContent(soapModel.getContent());
 		model.setType(soapModel.getType());
-		model.setReceiverUserId(soapModel.getReceiverUserId());
-		model.setReceiverMicroblogsEntryId(soapModel.getReceiverMicroblogsEntryId());
+		model.setParentMicroblogsEntryId(soapModel.getParentMicroblogsEntryId());
 		model.setSocialRelationType(soapModel.getSocialRelationType());
 
 		return model;
@@ -199,11 +205,11 @@ public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 		attributes.put("userName", getUserName());
 		attributes.put("createDate", getCreateDate());
 		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("creatorClassNameId", getCreatorClassNameId());
+		attributes.put("creatorClassPK", getCreatorClassPK());
 		attributes.put("content", getContent());
 		attributes.put("type", getType());
-		attributes.put("receiverUserId", getReceiverUserId());
-		attributes.put("receiverMicroblogsEntryId",
-			getReceiverMicroblogsEntryId());
+		attributes.put("parentMicroblogsEntryId", getParentMicroblogsEntryId());
 		attributes.put("socialRelationType", getSocialRelationType());
 
 		attributes.put("entityCacheEnabled", isEntityCacheEnabled());
@@ -250,6 +256,18 @@ public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 			setModifiedDate(modifiedDate);
 		}
 
+		Long creatorClassNameId = (Long)attributes.get("creatorClassNameId");
+
+		if (creatorClassNameId != null) {
+			setCreatorClassNameId(creatorClassNameId);
+		}
+
+		Long creatorClassPK = (Long)attributes.get("creatorClassPK");
+
+		if (creatorClassPK != null) {
+			setCreatorClassPK(creatorClassPK);
+		}
+
 		String content = (String)attributes.get("content");
 
 		if (content != null) {
@@ -262,17 +280,11 @@ public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 			setType(type);
 		}
 
-		Long receiverUserId = (Long)attributes.get("receiverUserId");
+		Long parentMicroblogsEntryId = (Long)attributes.get(
+				"parentMicroblogsEntryId");
 
-		if (receiverUserId != null) {
-			setReceiverUserId(receiverUserId);
-		}
-
-		Long receiverMicroblogsEntryId = (Long)attributes.get(
-				"receiverMicroblogsEntryId");
-
-		if (receiverMicroblogsEntryId != null) {
-			setReceiverMicroblogsEntryId(receiverMicroblogsEntryId);
+		if (parentMicroblogsEntryId != null) {
+			setParentMicroblogsEntryId(parentMicroblogsEntryId);
 		}
 
 		Integer socialRelationType = (Integer)attributes.get(
@@ -406,6 +418,52 @@ public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 
 	@JSON
 	@Override
+	public long getCreatorClassNameId() {
+		return _creatorClassNameId;
+	}
+
+	@Override
+	public void setCreatorClassNameId(long creatorClassNameId) {
+		_columnBitmask |= CREATORCLASSNAMEID_COLUMN_BITMASK;
+
+		if (!_setOriginalCreatorClassNameId) {
+			_setOriginalCreatorClassNameId = true;
+
+			_originalCreatorClassNameId = _creatorClassNameId;
+		}
+
+		_creatorClassNameId = creatorClassNameId;
+	}
+
+	public long getOriginalCreatorClassNameId() {
+		return _originalCreatorClassNameId;
+	}
+
+	@JSON
+	@Override
+	public long getCreatorClassPK() {
+		return _creatorClassPK;
+	}
+
+	@Override
+	public void setCreatorClassPK(long creatorClassPK) {
+		_columnBitmask |= CREATORCLASSPK_COLUMN_BITMASK;
+
+		if (!_setOriginalCreatorClassPK) {
+			_setOriginalCreatorClassPK = true;
+
+			_originalCreatorClassPK = _creatorClassPK;
+		}
+
+		_creatorClassPK = creatorClassPK;
+	}
+
+	public long getOriginalCreatorClassPK() {
+		return _originalCreatorClassPK;
+	}
+
+	@JSON
+	@Override
 	public String getContent() {
 		if (_content == null) {
 			return StringPool.BLANK;
@@ -445,64 +503,25 @@ public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 
 	@JSON
 	@Override
-	public long getReceiverUserId() {
-		return _receiverUserId;
+	public long getParentMicroblogsEntryId() {
+		return _parentMicroblogsEntryId;
 	}
 
 	@Override
-	public void setReceiverUserId(long receiverUserId) {
-		_columnBitmask |= RECEIVERUSERID_COLUMN_BITMASK;
+	public void setParentMicroblogsEntryId(long parentMicroblogsEntryId) {
+		_columnBitmask |= PARENTMICROBLOGSENTRYID_COLUMN_BITMASK;
 
-		if (!_setOriginalReceiverUserId) {
-			_setOriginalReceiverUserId = true;
+		if (!_setOriginalParentMicroblogsEntryId) {
+			_setOriginalParentMicroblogsEntryId = true;
 
-			_originalReceiverUserId = _receiverUserId;
+			_originalParentMicroblogsEntryId = _parentMicroblogsEntryId;
 		}
 
-		_receiverUserId = receiverUserId;
+		_parentMicroblogsEntryId = parentMicroblogsEntryId;
 	}
 
-	@Override
-	public String getReceiverUserUuid() {
-		try {
-			User user = UserLocalServiceUtil.getUserById(getReceiverUserId());
-
-			return user.getUuid();
-		}
-		catch (PortalException pe) {
-			return StringPool.BLANK;
-		}
-	}
-
-	@Override
-	public void setReceiverUserUuid(String receiverUserUuid) {
-	}
-
-	public long getOriginalReceiverUserId() {
-		return _originalReceiverUserId;
-	}
-
-	@JSON
-	@Override
-	public long getReceiverMicroblogsEntryId() {
-		return _receiverMicroblogsEntryId;
-	}
-
-	@Override
-	public void setReceiverMicroblogsEntryId(long receiverMicroblogsEntryId) {
-		_columnBitmask |= RECEIVERMICROBLOGSENTRYID_COLUMN_BITMASK;
-
-		if (!_setOriginalReceiverMicroblogsEntryId) {
-			_setOriginalReceiverMicroblogsEntryId = true;
-
-			_originalReceiverMicroblogsEntryId = _receiverMicroblogsEntryId;
-		}
-
-		_receiverMicroblogsEntryId = receiverMicroblogsEntryId;
-	}
-
-	public long getOriginalReceiverMicroblogsEntryId() {
-		return _originalReceiverMicroblogsEntryId;
+	public long getOriginalParentMicroblogsEntryId() {
+		return _originalParentMicroblogsEntryId;
 	}
 
 	@JSON
@@ -565,10 +584,11 @@ public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 		microblogsEntryImpl.setUserName(getUserName());
 		microblogsEntryImpl.setCreateDate(getCreateDate());
 		microblogsEntryImpl.setModifiedDate(getModifiedDate());
+		microblogsEntryImpl.setCreatorClassNameId(getCreatorClassNameId());
+		microblogsEntryImpl.setCreatorClassPK(getCreatorClassPK());
 		microblogsEntryImpl.setContent(getContent());
 		microblogsEntryImpl.setType(getType());
-		microblogsEntryImpl.setReceiverUserId(getReceiverUserId());
-		microblogsEntryImpl.setReceiverMicroblogsEntryId(getReceiverMicroblogsEntryId());
+		microblogsEntryImpl.setParentMicroblogsEntryId(getParentMicroblogsEntryId());
 		microblogsEntryImpl.setSocialRelationType(getSocialRelationType());
 
 		microblogsEntryImpl.resetOriginalValues();
@@ -643,17 +663,21 @@ public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 
 		microblogsEntryModelImpl._originalCreateDate = microblogsEntryModelImpl._createDate;
 
+		microblogsEntryModelImpl._originalCreatorClassNameId = microblogsEntryModelImpl._creatorClassNameId;
+
+		microblogsEntryModelImpl._setOriginalCreatorClassNameId = false;
+
+		microblogsEntryModelImpl._originalCreatorClassPK = microblogsEntryModelImpl._creatorClassPK;
+
+		microblogsEntryModelImpl._setOriginalCreatorClassPK = false;
+
 		microblogsEntryModelImpl._originalType = microblogsEntryModelImpl._type;
 
 		microblogsEntryModelImpl._setOriginalType = false;
 
-		microblogsEntryModelImpl._originalReceiverUserId = microblogsEntryModelImpl._receiverUserId;
+		microblogsEntryModelImpl._originalParentMicroblogsEntryId = microblogsEntryModelImpl._parentMicroblogsEntryId;
 
-		microblogsEntryModelImpl._setOriginalReceiverUserId = false;
-
-		microblogsEntryModelImpl._originalReceiverMicroblogsEntryId = microblogsEntryModelImpl._receiverMicroblogsEntryId;
-
-		microblogsEntryModelImpl._setOriginalReceiverMicroblogsEntryId = false;
+		microblogsEntryModelImpl._setOriginalParentMicroblogsEntryId = false;
 
 		microblogsEntryModelImpl._originalSocialRelationType = microblogsEntryModelImpl._socialRelationType;
 
@@ -698,6 +722,10 @@ public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 			microblogsEntryCacheModel.modifiedDate = Long.MIN_VALUE;
 		}
 
+		microblogsEntryCacheModel.creatorClassNameId = getCreatorClassNameId();
+
+		microblogsEntryCacheModel.creatorClassPK = getCreatorClassPK();
+
 		microblogsEntryCacheModel.content = getContent();
 
 		String content = microblogsEntryCacheModel.content;
@@ -708,9 +736,7 @@ public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 
 		microblogsEntryCacheModel.type = getType();
 
-		microblogsEntryCacheModel.receiverUserId = getReceiverUserId();
-
-		microblogsEntryCacheModel.receiverMicroblogsEntryId = getReceiverMicroblogsEntryId();
+		microblogsEntryCacheModel.parentMicroblogsEntryId = getParentMicroblogsEntryId();
 
 		microblogsEntryCacheModel.socialRelationType = getSocialRelationType();
 
@@ -719,7 +745,7 @@ public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(23);
+		StringBundler sb = new StringBundler(25);
 
 		sb.append("{microblogsEntryId=");
 		sb.append(getMicroblogsEntryId());
@@ -733,14 +759,16 @@ public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 		sb.append(getCreateDate());
 		sb.append(", modifiedDate=");
 		sb.append(getModifiedDate());
+		sb.append(", creatorClassNameId=");
+		sb.append(getCreatorClassNameId());
+		sb.append(", creatorClassPK=");
+		sb.append(getCreatorClassPK());
 		sb.append(", content=");
 		sb.append(getContent());
 		sb.append(", type=");
 		sb.append(getType());
-		sb.append(", receiverUserId=");
-		sb.append(getReceiverUserId());
-		sb.append(", receiverMicroblogsEntryId=");
-		sb.append(getReceiverMicroblogsEntryId());
+		sb.append(", parentMicroblogsEntryId=");
+		sb.append(getParentMicroblogsEntryId());
 		sb.append(", socialRelationType=");
 		sb.append(getSocialRelationType());
 		sb.append("}");
@@ -750,7 +778,7 @@ public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 
 	@Override
 	public String toXmlString() {
-		StringBundler sb = new StringBundler(37);
+		StringBundler sb = new StringBundler(40);
 
 		sb.append("<model><model-name>");
 		sb.append("com.liferay.microblogs.model.MicroblogsEntry");
@@ -781,6 +809,14 @@ public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 		sb.append(getModifiedDate());
 		sb.append("]]></column-value></column>");
 		sb.append(
+			"<column><column-name>creatorClassNameId</column-name><column-value><![CDATA[");
+		sb.append(getCreatorClassNameId());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>creatorClassPK</column-name><column-value><![CDATA[");
+		sb.append(getCreatorClassPK());
+		sb.append("]]></column-value></column>");
+		sb.append(
 			"<column><column-name>content</column-name><column-value><![CDATA[");
 		sb.append(getContent());
 		sb.append("]]></column-value></column>");
@@ -789,12 +825,8 @@ public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 		sb.append(getType());
 		sb.append("]]></column-value></column>");
 		sb.append(
-			"<column><column-name>receiverUserId</column-name><column-value><![CDATA[");
-		sb.append(getReceiverUserId());
-		sb.append("]]></column-value></column>");
-		sb.append(
-			"<column><column-name>receiverMicroblogsEntryId</column-name><column-value><![CDATA[");
-		sb.append(getReceiverMicroblogsEntryId());
+			"<column><column-name>parentMicroblogsEntryId</column-name><column-value><![CDATA[");
+		sb.append(getParentMicroblogsEntryId());
 		sb.append("]]></column-value></column>");
 		sb.append(
 			"<column><column-name>socialRelationType</column-name><column-value><![CDATA[");
@@ -806,8 +838,8 @@ public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 		return sb.toString();
 	}
 
-	private static ClassLoader _classLoader = MicroblogsEntry.class.getClassLoader();
-	private static Class<?>[] _escapedModelInterfaces = new Class[] {
+	private static final ClassLoader _classLoader = MicroblogsEntry.class.getClassLoader();
+	private static final Class<?>[] _escapedModelInterfaces = new Class[] {
 			MicroblogsEntry.class
 		};
 	private long _microblogsEntryId;
@@ -821,16 +853,19 @@ public class MicroblogsEntryModelImpl extends BaseModelImpl<MicroblogsEntry>
 	private Date _createDate;
 	private Date _originalCreateDate;
 	private Date _modifiedDate;
+	private long _creatorClassNameId;
+	private long _originalCreatorClassNameId;
+	private boolean _setOriginalCreatorClassNameId;
+	private long _creatorClassPK;
+	private long _originalCreatorClassPK;
+	private boolean _setOriginalCreatorClassPK;
 	private String _content;
 	private int _type;
 	private int _originalType;
 	private boolean _setOriginalType;
-	private long _receiverUserId;
-	private long _originalReceiverUserId;
-	private boolean _setOriginalReceiverUserId;
-	private long _receiverMicroblogsEntryId;
-	private long _originalReceiverMicroblogsEntryId;
-	private boolean _setOriginalReceiverMicroblogsEntryId;
+	private long _parentMicroblogsEntryId;
+	private long _originalParentMicroblogsEntryId;
+	private boolean _setOriginalParentMicroblogsEntryId;
 	private int _socialRelationType;
 	private int _originalSocialRelationType;
 	private boolean _setOriginalSocialRelationType;

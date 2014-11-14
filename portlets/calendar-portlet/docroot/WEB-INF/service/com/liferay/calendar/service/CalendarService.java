@@ -14,6 +14,8 @@
 
 package com.liferay.calendar.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.jsonwebservice.JSONWebService;
@@ -37,6 +39,7 @@ import com.liferay.portal.service.InvokableService;
  */
 @AccessControlled
 @JSONWebService
+@ProviderType
 @Transactional(isolation = Isolation.PORTAL, rollbackFor =  {
 	PortalException.class, SystemException.class})
 public interface CalendarService extends BaseService, InvokableService {
@@ -49,8 +52,8 @@ public interface CalendarService extends BaseService, InvokableService {
 		long calendarResourceId,
 		java.util.Map<java.util.Locale, java.lang.String> nameMap,
 		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
-		int color, boolean defaultCalendar, boolean enableComments,
-		boolean enableRatings,
+		java.lang.String timeZoneId, int color, boolean defaultCalendar,
+		boolean enableComments, boolean enableRatings,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException;
 
@@ -160,15 +163,15 @@ public interface CalendarService extends BaseService, InvokableService {
 	public com.liferay.calendar.model.Calendar updateCalendar(long calendarId,
 		java.util.Map<java.util.Locale, java.lang.String> nameMap,
 		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
-		int color, boolean defaultCalendar, boolean enableComments,
-		boolean enableRatings,
-		com.liferay.portal.service.ServiceContext serviceContext)
+		int color, com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException;
 
 	public com.liferay.calendar.model.Calendar updateCalendar(long calendarId,
 		java.util.Map<java.util.Locale, java.lang.String> nameMap,
 		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
-		int color, com.liferay.portal.service.ServiceContext serviceContext)
+		java.lang.String timeZoneId, int color, boolean defaultCalendar,
+		boolean enableComments, boolean enableRatings,
+		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException;
 
 	public com.liferay.calendar.model.Calendar updateColor(long calendarId,

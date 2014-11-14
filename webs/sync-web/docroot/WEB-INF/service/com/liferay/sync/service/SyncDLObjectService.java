@@ -14,6 +14,8 @@
 
 package com.liferay.sync.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.jsonwebservice.JSONWebService;
@@ -37,6 +39,7 @@ import com.liferay.portal.service.InvokableService;
  */
 @AccessControlled
 @JSONWebService
+@ProviderType
 @Transactional(isolation = Isolation.PORTAL, rollbackFor =  {
 	PortalException.class, SystemException.class})
 public interface SyncDLObjectService extends BaseService, InvokableService {
@@ -75,6 +78,11 @@ public interface SyncDLObjectService extends BaseService, InvokableService {
 	public com.liferay.sync.model.SyncDLObject checkOutFileEntry(
 		long fileEntryId,
 		com.liferay.portal.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException;
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public java.util.List<com.liferay.sync.model.SyncDLObject> getAllFolderSyncDLObjects(
+		long companyId, long repositoryId)
 		throws com.liferay.portal.kernel.exception.PortalException;
 
 	/**
@@ -129,6 +137,7 @@ public interface SyncDLObjectService extends BaseService, InvokableService {
 	public javax.portlet.PortletPreferences getPortletPreferences()
 		throws com.liferay.portal.kernel.exception.PortalException;
 
+	@com.liferay.portal.security.ac.AccessControlled(guestAccessEnabled = true)
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public com.liferay.sync.model.SyncContext getSyncContext(
 		java.lang.String uuid)
@@ -137,6 +146,12 @@ public interface SyncDLObjectService extends BaseService, InvokableService {
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public com.liferay.sync.model.SyncDLObjectUpdate getSyncDLObjectUpdate(
 		long companyId, long repositoryId, long lastAccessTime)
+		throws com.liferay.portal.kernel.exception.PortalException;
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public com.liferay.sync.model.SyncDLObjectUpdate getSyncDLObjectUpdate(
+		long companyId, long repositoryId, long parentFolderId,
+		long lastAccessTime)
 		throws com.liferay.portal.kernel.exception.PortalException;
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)

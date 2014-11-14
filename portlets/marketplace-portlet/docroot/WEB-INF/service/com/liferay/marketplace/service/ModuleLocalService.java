@@ -14,6 +14,8 @@
 
 package com.liferay.marketplace.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.search.IndexableType;
@@ -36,6 +38,7 @@ import com.liferay.portal.service.PersistedModelLocalService;
  * @see com.liferay.marketplace.service.impl.ModuleLocalServiceImpl
  * @generated
  */
+@ProviderType
 @Transactional(isolation = Isolation.PORTAL, rollbackFor =  {
 	PortalException.class, SystemException.class})
 public interface ModuleLocalService extends BaseLocalService,
@@ -57,7 +60,9 @@ public interface ModuleLocalService extends BaseLocalService,
 		com.liferay.marketplace.model.Module module);
 
 	public com.liferay.marketplace.model.Module addModule(long userId,
-		long appId, java.lang.String contextName);
+		long appId, java.lang.String bundleSymbolicName,
+		java.lang.String bundleVersion, java.lang.String contextName)
+		throws com.liferay.portal.kernel.exception.PortalException;
 
 	/**
 	* Creates a new module with the primary key. Does not add the module to the database.
@@ -163,6 +168,7 @@ public interface ModuleLocalService extends BaseLocalService,
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public com.liferay.marketplace.model.Module fetchModule(long appId,
+		java.lang.String bundleSymbolicName, java.lang.String bundleVersion,
 		java.lang.String contextName);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)

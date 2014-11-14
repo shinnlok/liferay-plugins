@@ -5,9 +5,10 @@ create table MicroblogsEntry (
 	userName VARCHAR(75) null,
 	createDate DATE null,
 	modifiedDate DATE null,
+	creatorClassNameId LONG,
+	creatorClassPK LONG,
 	content STRING null,
 	type_ INTEGER,
-	receiverUserId LONG,
-	receiverMicroblogsEntryId LONG,
+	parentMicroblogsEntryId LONG,
 	socialRelationType INTEGER
 );

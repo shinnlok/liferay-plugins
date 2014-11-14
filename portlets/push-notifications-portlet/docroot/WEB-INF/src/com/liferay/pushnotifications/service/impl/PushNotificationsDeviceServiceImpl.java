@@ -14,10 +14,7 @@
 
 package com.liferay.pushnotifications.service.impl;
 
-import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.json.JSONFactoryUtil;
-import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.security.ac.AccessControlled;
@@ -98,17 +95,9 @@ public class PushNotificationsDeviceServiceImpl
 	}
 
 	@Override
-	public void sendPushNotification(String message) throws PortalException {
-		JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
-
-		jsonObject.put("message", message);
-
-		if (_log.isDebugEnabled()) {
-			_log.debug("Sending message " + jsonObject + " to all devices");
-		}
-
-		pushNotificationsDeviceLocalService.sendPushNotification(
-			jsonObject, QueryUtil.ALL_POS, QueryUtil.ALL_POS);
+	public boolean hasPermission(String actionId) throws PortalException {
+		return PushNotificationsPermission.contains(
+			getPermissionChecker(), actionId);
 	}
 
 	private static Log _log = LogFactoryUtil.getLog(

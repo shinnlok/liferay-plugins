@@ -22,6 +22,7 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.FileVersion;
 import com.liferay.portal.kernel.repository.model.Folder;
+import com.liferay.portal.kernel.repository.model.RepositoryModelOperation;
 import com.liferay.portal.kernel.util.MimeTypesUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
@@ -29,6 +30,7 @@ import com.liferay.portal.model.Lock;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.persistence.LockUtil;
 import com.liferay.portlet.documentlibrary.NoSuchFileVersionException;
+import com.liferay.portlet.documentlibrary.model.DLFileEntryConstants;
 import com.liferay.portlet.documentlibrary.util.DLUtil;
 import com.liferay.repository.external.ExtRepositoryAdapter;
 import com.liferay.repository.external.ExtRepositoryFileEntry;
@@ -58,6 +60,13 @@ public class ExtRepositoryFileEntryAdapter
 	}
 
 	@Override
+	public void execute(RepositoryModelOperation repositoryModelOperation)
+		throws PortalException {
+
+		repositoryModelOperation.execute(this);
+	}
+
+	@Override
 	public InputStream getContentStream() throws PortalException {
 		ExtRepositoryAdapter extRepositoryAdapter = getRepository();
 
@@ -82,6 +91,11 @@ public class ExtRepositoryFileEntryAdapter
 	@Override
 	public long getFileEntryId() {
 		return getPrimaryKey();
+	}
+
+	@Override
+	public String getFileName() {
+		return DLUtil.getSanitizedFileName(getTitle(), getExtension());
 	}
 
 	@Override
@@ -268,7 +282,7 @@ public class ExtRepositoryFileEntryAdapter
 
 	@Override
 	public StagedModelType getStagedModelType() {
-		return new StagedModelType(FileEntry.class);
+		return new StagedModelType(DLFileEntryConstants.getClassName());
 	}
 
 	@Override
@@ -303,7 +317,6 @@ public class ExtRepositoryFileEntryAdapter
 	}
 
 	@Override
-	@SuppressWarnings("unused")
 	public String getVersionUserUuid() {
 		return getUserUuid();
 	}

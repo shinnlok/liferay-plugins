@@ -14,6 +14,8 @@
 
 package com.liferay.calendar.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.LocaleException;
 import com.liferay.portal.kernel.bean.AutoEscape;
 import com.liferay.portal.model.AttachedModel;
@@ -44,6 +46,7 @@ import java.util.Map;
  * @see com.liferay.calendar.model.impl.CalendarResourceModelImpl
  * @generated
  */
+@ProviderType
 public interface CalendarResourceModel extends AttachedModel,
 	BaseModel<CalendarResource>, LocalizedModel, StagedGroupedModel {
 	/*
@@ -567,19 +570,20 @@ public interface CalendarResourceModel extends AttachedModel,
 	public Object clone();
 
 	@Override
-	public int compareTo(CalendarResource calendarResource);
+	public int compareTo(
+		com.liferay.calendar.model.CalendarResource calendarResource);
 
 	@Override
 	public int hashCode();
 
 	@Override
-	public CacheModel<CalendarResource> toCacheModel();
+	public CacheModel<com.liferay.calendar.model.CalendarResource> toCacheModel();
 
 	@Override
-	public CalendarResource toEscapedModel();
+	public com.liferay.calendar.model.CalendarResource toEscapedModel();
 
 	@Override
-	public CalendarResource toUnescapedModel();
+	public com.liferay.calendar.model.CalendarResource toUnescapedModel();
 
 	@Override
 	public String toString();

@@ -85,13 +85,13 @@ public class CalendarBookingIterator implements Iterator<CalendarBooking> {
 
 	private Calendar _getStartTimeJCalendar(DateValue dateValue) {
 		Calendar jCalendar = JCalendarUtil.getJCalendar(
-			_calendarBooking.getStartTime());
+			_calendarBooking.getStartTime(), _getTimeZone(_calendarBooking));
 
 		Calendar startTimeJCalendar = JCalendarUtil.getJCalendar(
 			dateValue.year(), dateValue.month() - 1, dateValue.day(),
 			jCalendar.get(Calendar.HOUR_OF_DAY), jCalendar.get(Calendar.MINUTE),
 			jCalendar.get(Calendar.SECOND), jCalendar.get(Calendar.MILLISECOND),
-			TimeZone.getTimeZone(StringPool.UTC));
+			_getTimeZone(_calendarBooking));
 
 		TimeZone timeZone = _getTimeZone(_calendarBooking);
 
@@ -105,6 +105,10 @@ public class CalendarBookingIterator implements Iterator<CalendarBooking> {
 
 	private TimeZone _getTimeZone(CalendarBooking calendarBooking) {
 		try {
+			if (calendarBooking.isAllDay()) {
+				return TimeZone.getTimeZone(StringPool.UTC);
+			}
+
 			return calendarBooking.getTimeZone();
 		}
 		catch (Exception e) {
@@ -117,7 +121,8 @@ public class CalendarBookingIterator implements Iterator<CalendarBooking> {
 	}
 
 	private DateValue _toDateValue(long time) {
-		Calendar jCalendar = JCalendarUtil.getJCalendar(time);
+		Calendar jCalendar = JCalendarUtil.getJCalendar(
+			time, _getTimeZone(_calendarBooking));
 
 		return new DateValueImpl(
 			jCalendar.get(Calendar.YEAR), jCalendar.get(Calendar.MONTH) + 1,

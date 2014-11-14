@@ -134,7 +134,10 @@ public class AsgardAMIDeployer extends BaseAMITool {
 
 		String[] elasticIpAddresses = elasticIpAddressesString.split(",");
 
-		for (int i = 0; i < elasticIpAddresses.length; i++) {
+		for (int i = 0;
+				(i < elasticIpAddresses.length) && (i < instanceIds.size());
+					i++) {
+
 			System.out.println(
 				"Associating IP address " + elasticIpAddresses[i] +
 					" with instance " + instanceIds.get(i));
@@ -483,9 +486,8 @@ public class AsgardAMIDeployer extends BaseAMITool {
 	protected boolean isInService(
 		JSONObject loadBalancerJSONObject, String autoScalingGroupName) {
 
-		List<JSONObject> instanceStateJSONObjects =
-			getInstanceStateJSONObjects(
-				loadBalancerJSONObject, autoScalingGroupName);
+		List<JSONObject> instanceStateJSONObjects = getInstanceStateJSONObjects(
+			loadBalancerJSONObject, autoScalingGroupName);
 
 		if (instanceStateJSONObjects.isEmpty()) {
 			return false;

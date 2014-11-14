@@ -14,6 +14,8 @@
 
 package com.liferay.pushnotifications.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.bean.PortletBeanLocatorUtil;
 import com.liferay.portal.kernel.util.ReferenceRegistry;
 import com.liferay.portal.service.InvokableService;
@@ -26,12 +28,13 @@ import com.liferay.portal.service.InvokableService;
  * checks based on the propagated JAAS credentials because this service can be
  * accessed remotely.
  *
- * @author Silvio Santos
+ * @author Bruno Farache
  * @see PushNotificationsDeviceService
  * @see com.liferay.pushnotifications.service.base.PushNotificationsDeviceServiceBaseImpl
  * @see com.liferay.pushnotifications.service.impl.PushNotificationsDeviceServiceImpl
  * @generated
  */
+@ProviderType
 public class PushNotificationsDeviceServiceUtil {
 	/*
 	 * NOTE FOR DEVELOPERS:
@@ -59,15 +62,15 @@ public class PushNotificationsDeviceServiceUtil {
 		return getService().getBeanIdentifier();
 	}
 
+	public static boolean hasPermission(java.lang.String actionId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService().hasPermission(actionId);
+	}
+
 	public static java.lang.Object invokeMethod(java.lang.String name,
 		java.lang.String[] parameterTypes, java.lang.Object[] arguments)
 		throws java.lang.Throwable {
 		return getService().invokeMethod(name, parameterTypes, arguments);
-	}
-
-	public static void sendPushNotification(java.lang.String message)
-		throws com.liferay.portal.kernel.exception.PortalException {
-		getService().sendPushNotification(message);
 	}
 
 	/**

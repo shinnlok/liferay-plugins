@@ -51,6 +51,23 @@ KBArticle kbArticle = (KBArticle)row.getObject();
 		/>
 	</c:if>
 
+	<c:if test="<%= (AdminPermission.contains(permissionChecker, scopeGroupId, ActionKeys.ADD_KB_ARTICLE) && rootPortletId.equals(PortletKeys.KNOWLEDGE_BASE_ADMIN)) || (DisplayPermission.contains(permissionChecker, scopeGroupId, ActionKeys.ADD_KB_ARTICLE) && DisplayPermission.contains(permissionChecker, scopeGroupId, ActionKeys.ADMINISTRATOR) && rootPortletId.equals(PortletKeys.KNOWLEDGE_BASE_DISPLAY)) %>">
+		<liferay-portlet:renderURL var="addKBArticleURL">
+			<portlet:param name="mvcPath" value='<%= templatePath + "edit_article.jsp" %>' />
+			<portlet:param name="redirect" value="<%= redirect %>" />
+			<portlet:param name="parentResourceClassNameId" value="<%= String.valueOf(kbArticle.getClassNameId()) %>" />
+			<portlet:param name="parentResourcePrimKey" value="<%= String.valueOf(kbArticle.getResourcePrimKey()) %>" />
+		</liferay-portlet:renderURL>
+
+		<liferay-ui:icon
+			image="add_article"
+			label="<%= true %>"
+			message="add-child-article"
+			method="get"
+			url="<%= addKBArticleURL %>"
+		/>
+	</c:if>
+
 	<c:if test="<%= kbArticle.isRoot() && KBArticlePermission.contains(permissionChecker, kbArticle, ActionKeys.PERMISSIONS) %>">
 		<liferay-security:permissionsURL
 			modelResource="<%= KBArticle.class.getName() %>"
@@ -99,9 +116,12 @@ KBArticle kbArticle = (KBArticle)row.getObject();
 
 	<c:if test="<%= KBArticlePermission.contains(permissionChecker, kbArticle, ActionKeys.MOVE_KB_ARTICLE) %>">
 		<liferay-portlet:renderURL var="moveKBArticleURL">
-			<portlet:param name="mvcPath" value='<%= templatePath + "move_article.jsp" %>' />
+			<portlet:param name="mvcPath" value='<%= templatePath + "move_object.jsp" %>' />
 			<portlet:param name="redirect" value="<%= redirect %>" />
+			<portlet:param name="resourceClassNameId" value="<%= String.valueOf(kbArticle.getClassNameId()) %>" />
 			<portlet:param name="resourcePrimKey" value="<%= String.valueOf(kbArticle.getResourcePrimKey()) %>" />
+			<portlet:param name="parentResourceClassNameId" value="<%= String.valueOf(kbArticle.getParentResourceClassNameId()) %>" />
+			<portlet:param name="parentResourcePrimKey" value="<%= String.valueOf(kbArticle.getParentResourcePrimKey()) %>" />
 		</liferay-portlet:renderURL>
 
 		<liferay-ui:icon

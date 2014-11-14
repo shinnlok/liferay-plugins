@@ -14,12 +14,15 @@
 
 package com.liferay.pushnotifications.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.service.InvokableService;
 
 /**
- * @author Silvio Santos
+ * @author Bruno Farache
  * @generated
  */
+@ProviderType
 public class PushNotificationsDeviceServiceClp
 	implements PushNotificationsDeviceService {
 	public PushNotificationsDeviceServiceClp(InvokableService invokableService) {
@@ -39,9 +42,9 @@ public class PushNotificationsDeviceServiceClp
 
 		_methodParameterTypes2 = new String[] {  };
 
-		_methodName4 = "sendPushNotification";
+		_methodName3 = "hasPermission";
 
-		_methodParameterTypes4 = new String[] { "java.lang.String" };
+		_methodParameterTypes3 = new String[] { "java.lang.String" };
 
 		_methodName5 = "setBeanIdentifier";
 
@@ -136,19 +139,14 @@ public class PushNotificationsDeviceServiceClp
 	}
 
 	@Override
-	public java.lang.Object invokeMethod(java.lang.String name,
-		java.lang.String[] parameterTypes, java.lang.Object[] arguments)
-		throws java.lang.Throwable {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void sendPushNotification(java.lang.String message)
+	public boolean hasPermission(java.lang.String actionId)
 		throws com.liferay.portal.kernel.exception.PortalException {
+		Object returnObj = null;
+
 		try {
-			_invokableService.invokeMethod(_methodName4,
-				_methodParameterTypes4,
-				new Object[] { ClpSerializer.translateInput(message) });
+			returnObj = _invokableService.invokeMethod(_methodName3,
+					_methodParameterTypes3,
+					new Object[] { ClpSerializer.translateInput(actionId) });
 		}
 		catch (Throwable t) {
 			t = ClpSerializer.translateThrowable(t);
@@ -165,6 +163,15 @@ public class PushNotificationsDeviceServiceClp
 					" is not a valid exception");
 			}
 		}
+
+		return ((Boolean)returnObj).booleanValue();
+	}
+
+	@Override
+	public java.lang.Object invokeMethod(java.lang.String name,
+		java.lang.String[] parameterTypes, java.lang.Object[] arguments)
+		throws java.lang.Throwable {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -194,8 +201,8 @@ public class PushNotificationsDeviceServiceClp
 	private String[] _methodParameterTypes1;
 	private String _methodName2;
 	private String[] _methodParameterTypes2;
-	private String _methodName4;
-	private String[] _methodParameterTypes4;
+	private String _methodName3;
+	private String[] _methodParameterTypes3;
 	private String _methodName5;
 	private String[] _methodParameterTypes5;
 }

@@ -14,6 +14,8 @@
 
 package com.liferay.calendar.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.model.PermissionedModel;
 
 /**
@@ -25,6 +27,7 @@ import com.liferay.portal.model.PermissionedModel;
  * @see com.liferay.calendar.model.impl.CalendarResourceModelImpl
  * @generated
  */
+@ProviderType
 public interface CalendarResource extends CalendarResourceModel,
 	PermissionedModel {
 	/*
@@ -37,6 +40,12 @@ public interface CalendarResource extends CalendarResourceModel,
 	public com.liferay.calendar.model.Calendar getDefaultCalendar();
 
 	public long getDefaultCalendarId();
+
+	public java.util.TimeZone getTimeZone()
+		throws com.liferay.portal.kernel.exception.PortalException;
+
+	public java.lang.String getTimeZoneId()
+		throws com.liferay.portal.kernel.exception.PortalException;
 
 	public boolean isGroup();
 

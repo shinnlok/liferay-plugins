@@ -14,6 +14,8 @@
 
 package com.liferay.sync.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.service.ServiceWrapper;
 
 /**
@@ -23,6 +25,7 @@ import com.liferay.portal.service.ServiceWrapper;
  * @see SyncDLObjectService
  * @generated
  */
+@ProviderType
 public class SyncDLObjectServiceWrapper implements SyncDLObjectService,
 	ServiceWrapper<SyncDLObjectService> {
 	public SyncDLObjectServiceWrapper(SyncDLObjectService syncDLObjectService) {
@@ -83,6 +86,14 @@ public class SyncDLObjectServiceWrapper implements SyncDLObjectService,
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _syncDLObjectService.checkOutFileEntry(fileEntryId,
 			serviceContext);
+	}
+
+	@Override
+	public java.util.List<com.liferay.sync.model.SyncDLObject> getAllFolderSyncDLObjects(
+		long companyId, long repositoryId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _syncDLObjectService.getAllFolderSyncDLObjects(companyId,
+			repositoryId);
 	}
 
 	/**
@@ -175,6 +186,15 @@ public class SyncDLObjectServiceWrapper implements SyncDLObjectService,
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _syncDLObjectService.getSyncDLObjectUpdate(companyId,
 			repositoryId, lastAccessTime);
+	}
+
+	@Override
+	public com.liferay.sync.model.SyncDLObjectUpdate getSyncDLObjectUpdate(
+		long companyId, long repositoryId, long parentFolderId,
+		long lastAccessTime)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _syncDLObjectService.getSyncDLObjectUpdate(companyId,
+			repositoryId, parentFolderId, lastAccessTime);
 	}
 
 	@Override

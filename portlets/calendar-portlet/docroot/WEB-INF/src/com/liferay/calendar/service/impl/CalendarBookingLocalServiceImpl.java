@@ -70,6 +70,7 @@ import com.liferay.portlet.asset.model.AssetLinkConstants;
 import com.liferay.portlet.social.model.SocialActivityConstants;
 import com.liferay.portlet.trash.model.TrashEntry;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -361,15 +362,7 @@ public class CalendarBookingLocalServiceImpl
 
 		String recurrence = RecurrenceSerializer.serialize(recurrenceObj);
 
-		List<CalendarBooking> childCalendarBookings = getChildCalendarBookings(
-			calendarBooking.getCalendarBookingId());
-
-		for (CalendarBooking childCalendarBooking : childCalendarBookings) {
-			childCalendarBooking.setModifiedDate(now);
-			childCalendarBooking.setRecurrence(recurrence);
-
-			calendarBookingPersistence.update(childCalendarBooking);
-		}
+		updateChildCalendarBookings(calendarBooking, now, recurrence);
 	}
 
 	@Override
@@ -425,6 +418,17 @@ public class CalendarBookingLocalServiceImpl
 
 		return calendarBookingPersistence.findByC_P(
 			calendarId, parentCalendarBookingId);
+	}
+
+	@Override
+	public CalendarBooking getCalendarBookingInstance(
+			long calendarBookingId, int instanceIndex)
+		throws PortalException {
+
+		CalendarBooking calendarBooking = getCalendarBooking(calendarBookingId);
+
+		return RecurrenceUtil.getCalendarBookingInstance(
+			calendarBooking, instanceIndex);
 	}
 
 	@Override
@@ -502,6 +506,7 @@ public class CalendarBookingLocalServiceImpl
 			parentCalendarBookingId, status);
 	}
 
+	@Override
 	public long[] getChildCalendarIds(long calendarBookingId, long calendarId)
 		throws PortalException {
 
@@ -1106,6 +1111,28 @@ public class CalendarBookingLocalServiceImpl
 			if (_log.isWarnEnabled()) {
 				_log.warn(e, e);
 			}
+		}
+	}
+
+	protected void updateChildCalendarBookings(
+		CalendarBooking calendarBooking, Date modifiedDate, String recurrence) {
+
+		List<CalendarBooking> childCalendarBookings =
+			new ArrayList<CalendarBooking>();
+
+		if (calendarBooking.isMasterBooking()) {
+			childCalendarBookings = getChildCalendarBookings(
+				calendarBooking.getCalendarBookingId());
+		}
+		else {
+			childCalendarBookings.add(calendarBooking);
+		}
+
+		for (CalendarBooking childCalendarBooking : childCalendarBookings) {
+			childCalendarBooking.setModifiedDate(modifiedDate);
+			childCalendarBooking.setRecurrence(recurrence);
+
+			calendarBookingPersistence.update(childCalendarBooking);
 		}
 	}
 

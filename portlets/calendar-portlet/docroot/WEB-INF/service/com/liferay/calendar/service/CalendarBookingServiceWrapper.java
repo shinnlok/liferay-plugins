@@ -14,6 +14,8 @@
 
 package com.liferay.calendar.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.service.ServiceWrapper;
 
 /**
@@ -23,6 +25,7 @@ import com.liferay.portal.service.ServiceWrapper;
  * @see CalendarBookingService
  * @generated
  */
+@ProviderType
 public class CalendarBookingServiceWrapper implements CalendarBookingService,
 	ServiceWrapper<CalendarBookingService> {
 	public CalendarBookingServiceWrapper(
@@ -126,6 +129,14 @@ public class CalendarBookingServiceWrapper implements CalendarBookingService,
 	}
 
 	@Override
+	public com.liferay.calendar.model.CalendarBooking getCalendarBookingInstance(
+		long calendarBookingId, int instanceIndex)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _calendarBookingService.getCalendarBookingInstance(calendarBookingId,
+			instanceIndex);
+	}
+
+	@Override
 	public java.util.List<com.liferay.calendar.model.CalendarBooking> getCalendarBookings(
 		long calendarId, long startTime, long endTime)
 		throws com.liferay.portal.kernel.exception.PortalException {
@@ -175,8 +186,7 @@ public class CalendarBookingServiceWrapper implements CalendarBookingService,
 	}
 
 	@Override
-	public boolean hasChildCalendarBookings(long parentCalendarBookingId)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public boolean hasChildCalendarBookings(long parentCalendarBookingId) {
 		return _calendarBookingService.hasChildCalendarBookings(parentCalendarBookingId);
 	}
 

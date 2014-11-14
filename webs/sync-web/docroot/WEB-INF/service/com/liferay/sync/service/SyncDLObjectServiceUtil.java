@@ -14,6 +14,8 @@
 
 package com.liferay.sync.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.bean.PortletBeanLocatorUtil;
 import com.liferay.portal.kernel.util.ReferenceRegistry;
 import com.liferay.portal.service.InvokableService;
@@ -32,6 +34,7 @@ import com.liferay.portal.service.InvokableService;
  * @see com.liferay.sync.service.impl.SyncDLObjectServiceImpl
  * @generated
  */
+@ProviderType
 public class SyncDLObjectServiceUtil {
 	/*
 	 * NOTE FOR DEVELOPERS:
@@ -90,6 +93,12 @@ public class SyncDLObjectServiceUtil {
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return getService().checkOutFileEntry(fileEntryId, serviceContext);
+	}
+
+	public static java.util.List<com.liferay.sync.model.SyncDLObject> getAllFolderSyncDLObjects(
+		long companyId, long repositoryId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService().getAllFolderSyncDLObjects(companyId, repositoryId);
 	}
 
 	/**
@@ -168,6 +177,15 @@ public class SyncDLObjectServiceUtil {
 		return getService()
 				   .getSyncDLObjectUpdate(companyId, repositoryId,
 			lastAccessTime);
+	}
+
+	public static com.liferay.sync.model.SyncDLObjectUpdate getSyncDLObjectUpdate(
+		long companyId, long repositoryId, long parentFolderId,
+		long lastAccessTime)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService()
+				   .getSyncDLObjectUpdate(companyId, repositoryId,
+			parentFolderId, lastAccessTime);
 	}
 
 	public static java.util.List<com.liferay.portal.model.Group> getUserSitesGroups()

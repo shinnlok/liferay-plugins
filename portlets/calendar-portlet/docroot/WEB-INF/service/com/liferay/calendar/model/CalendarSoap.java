@@ -14,6 +14,8 @@
 
 package com.liferay.calendar.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import java.io.Serializable;
 
 import java.util.ArrayList;
@@ -27,6 +29,7 @@ import java.util.List;
  * @see com.liferay.calendar.service.http.CalendarServiceSoap
  * @generated
  */
+@ProviderType
 public class CalendarSoap implements Serializable {
 	public static CalendarSoap toSoapModel(Calendar model) {
 		CalendarSoap soapModel = new CalendarSoap();
@@ -43,6 +46,7 @@ public class CalendarSoap implements Serializable {
 		soapModel.setCalendarResourceId(model.getCalendarResourceId());
 		soapModel.setName(model.getName());
 		soapModel.setDescription(model.getDescription());
+		soapModel.setTimeZoneId(model.getTimeZoneId());
 		soapModel.setColor(model.getColor());
 		soapModel.setDefaultCalendar(model.getDefaultCalendar());
 		soapModel.setEnableComments(model.getEnableComments());
@@ -195,6 +199,14 @@ public class CalendarSoap implements Serializable {
 		_description = description;
 	}
 
+	public String getTimeZoneId() {
+		return _timeZoneId;
+	}
+
+	public void setTimeZoneId(String timeZoneId) {
+		_timeZoneId = timeZoneId;
+	}
+
 	public int getColor() {
 		return _color;
 	}
@@ -251,6 +263,7 @@ public class CalendarSoap implements Serializable {
 	private long _calendarResourceId;
 	private String _name;
 	private String _description;
+	private String _timeZoneId;
 	private int _color;
 	private boolean _defaultCalendar;
 	private boolean _enableComments;

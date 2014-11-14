@@ -18,6 +18,7 @@
 	<classpathentry kind="lib" path="/portal-master/lib/development/servlet-api.jar" />
 	<classpathentry kind="lib" path="/portal-master/lib/global/portlet.jar" />
 	<classpathentry kind="lib" path="/portal-master/lib/portal/backport-concurrent.jar" />
+	<classpathentry kind="lib" path="/portal-master/lib/portal/bnd.jar" />
 	<classpathentry kind="lib" path="/portal-master/lib/portal/commons-codec.jar" />
 	<classpathentry kind="lib" path="/portal-master/lib/portal/commons-io.jar" />
 	<classpathentry kind="lib" path="/portal-master/lib/portal/commons-lang.jar" />
@@ -33,6 +34,9 @@
 	<classpathentry kind="lib" path="/portal-master/util-java/util-java.jar" />
 	<classpathentry kind="lib" path="/portal-master/util-taglib/util-taglib.jar" />
 	<classpathentry kind="lib" path="docroot/WEB-INF/lib/com.google.ical.jar" />
+	<classpathentry kind="lib" path="docroot/WEB-INF/lib/joda-time.jar" />
 	<classpathentry kind="lib" path="docroot/WEB-INF/lib/portal-compat-shared.jar" />
+	<classpathentry kind="lib" path="../../.ivy/cache/org.jboss.arquillian.junit/arquillian-junit-core/jars/arquillian-junit-core-1.1.3.Final.jar" />
+	<classpathentry kind="lib" path="../../.ivy/cache/org.jboss.arquillian.test/arquillian-test-api/jars/arquillian-test-api-1.1.3.Final.jar" />
 	<classpathentry kind="output" path="bin" />
 </classpath>

@@ -130,13 +130,18 @@ public class PortletPropsValues {
 		PortletProps.get(
 			PortletPropsKeys.KNOWLEDGE_BASE_SOCIAL_BOOKMARKS_DISPLAY_STYLE);
 
+	public static final String KNOWLEDGE_BASE_SOURCE_URL_EDIT_MESSAGE_KEY =
+		PortletProps.get(
+			PortletPropsKeys.KNOWLEDGE_BASE_SOURCE_URL_EDIT_MESSAGE_KEY);
+
+	public static final boolean KNOWLEDGE_BASE_SOURCE_URL_ENABLED =
+		GetterUtil.getBoolean(
+			PortletProps.get(
+				PortletPropsKeys.KNOWLEDGE_BASE_SOURCE_URL_ENABLED));
+
 	public static final String[] MARKDOWN_IMPORTER_ARTICLE_EXTENSIONS =
 		PortletProps.getArray(
 			PortletPropsKeys.MARKDOWN_IMPORTER_ARTICLE_EXTENSIONS);
-
-	public static final String MARKDOWN_IMPORTER_ARTICLE_HOME =
-		GetterUtil.getString(
-			PortletProps.get(PortletPropsKeys.MARKDOWN_IMPORTER_ARTICLE_HOME));
 
 	public static final String MARKDOWN_IMPORTER_ARTICLE_INTRO =
 		GetterUtil.getString(

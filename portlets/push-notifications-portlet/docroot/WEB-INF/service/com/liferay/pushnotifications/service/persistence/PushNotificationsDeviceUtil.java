@@ -14,6 +14,8 @@
 
 package com.liferay.pushnotifications.service.persistence;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.bean.PortletBeanLocatorUtil;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.util.OrderByComparator;
@@ -31,11 +33,12 @@ import java.util.List;
  * Caching information and settings can be found in <code>portal.properties</code>
  * </p>
  *
- * @author Silvio Santos
+ * @author Bruno Farache
  * @see PushNotificationsDevicePersistence
  * @see PushNotificationsDevicePersistenceImpl
  * @generated
  */
+@ProviderType
 public class PushNotificationsDeviceUtil {
 	/*
 	 * NOTE FOR DEVELOPERS:

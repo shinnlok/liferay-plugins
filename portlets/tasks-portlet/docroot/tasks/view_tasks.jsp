@@ -118,7 +118,7 @@ taskListURL.setParameter("tabs2", tabs2);
 			<div class="result-title">
 				<c:choose>
 					<c:when test="<%= Validator.isNotNull(rowHREF) %>">
-						<a class="<%= cssClass %>" href="javascript:;" onClick="Liferay.Tasks.openTask('<%= rowHREF %>');">
+						<a class="<%= cssClass %>" href="javascript:;" onClick="Liferay.Tasks.openTask('<%= rowHREF %>', <%= tasksEntry.getTasksEntryId() %>);">
 							<i class="icon-circle"></i>
 
 							<%= tasksEntry.getTitle() %>
@@ -167,7 +167,6 @@ taskListURL.setParameter("tabs2", tabs2);
 		<liferay-ui:search-container-column-text
 			name="due"
 		>
-
 			<c:choose>
 				<c:when test="<%= (TasksEntryPermission.contains(permissionChecker, tasksEntry, ActionKeys.UPDATE)) %>">
 

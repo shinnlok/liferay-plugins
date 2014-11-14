@@ -12,7 +12,9 @@
 		<field name="createDate" type="Date" />
 		<field name="modifiedDate" type="Date" />
 		<field name="rootResourcePrimKey" type="long" />
+		<field name="parentResourceClassNameId" type="long" />
 		<field name="parentResourcePrimKey" type="long" />
+		<field name="kbFolderId" type="long" />
 		<field name="version" type="int" />
 		<field name="title" type="String">
 			<hint name="max-length">4000</hint>
@@ -31,6 +33,9 @@
 		<field name="viewCount" type="int" />
 		<field name="latest" type="boolean" />
 		<field name="main" type="boolean" />
+		<field name="sourceURL" type="String">
+			<hint name="max-length">4000</hint>
+		</field>
 		<field name="status" type="int" />
 		<field name="statusByUserId" type="long" />
 		<field name="statusByUserName" type="String" />
@@ -54,6 +59,24 @@
 			<hint name="default-value">true</hint>
 		</field>
 		<field name="status" type="int" />
+	</model>
+	<model name="com.liferay.knowledgebase.model.KBFolder">
+		<field name="uuid" type="String" />
+		<field name="kbFolderId" type="long" />
+		<field name="groupId" type="long" />
+		<field name="companyId" type="long" />
+		<field name="userId" type="long" />
+		<field name="userName" type="String" />
+		<field name="createDate" type="Date" />
+		<field name="modifiedDate" type="Date" />
+		<field name="parentKBFolderId" type="long" />
+		<field name="name" type="String">
+			<validator name="required" />
+		</field>
+		<field name="urlTitle" type="String" />
+		<field name="description" type="String">
+			<hint-collection name="TEXTAREA" />
+		</field>
 	</model>
 	<model name="com.liferay.knowledgebase.model.KBTemplate">
 		<field name="uuid" type="String" />

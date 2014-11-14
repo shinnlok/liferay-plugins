@@ -18,6 +18,7 @@ import com.liferay.calendar.model.CalendarBooking;
 import com.liferay.calendar.model.CalendarResource;
 import com.liferay.calendar.notification.NotificationType;
 import com.liferay.calendar.recurrence.Frequency;
+import com.liferay.calendar.recurrence.PositionalWeekday;
 import com.liferay.calendar.recurrence.Recurrence;
 import com.liferay.calendar.recurrence.RecurrenceSerializer;
 import com.liferay.calendar.recurrence.Weekday;
@@ -27,6 +28,8 @@ import com.liferay.portal.kernel.cal.DayAndPosition;
 import com.liferay.portal.kernel.cal.TZSRecurrence;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
@@ -45,7 +48,7 @@ import com.liferay.portlet.asset.model.AssetLink;
 import com.liferay.portlet.asset.model.AssetTag;
 import com.liferay.portlet.asset.model.AssetVocabulary;
 import com.liferay.portlet.calendar.model.CalEvent;
-import com.liferay.portlet.calendar.service.persistence.CalEventActionableDynamicQuery;
+import com.liferay.portlet.calendar.service.CalEventLocalServiceUtil;
 import com.liferay.portlet.messageboards.model.MBDiscussion;
 import com.liferay.portlet.messageboards.model.MBMessage;
 import com.liferay.portlet.messageboards.model.MBMessageConstants;
@@ -72,7 +75,11 @@ public class CalendarImporterLocalServiceImpl
 
 		// Calendar event
 
-		if (isImported(calEvent)) {
+		CalendarBooking calendarBooking = fetchCalendarBooking(calEvent);
+
+		if (calendarBooking != null) {
+			verifyCalendarBooking(calendarBooking, calEvent);
+
 			return;
 		}
 
@@ -139,16 +146,21 @@ public class CalendarImporterLocalServiceImpl
 	@Override
 	public void importCalEvents() throws PortalException {
 		ActionableDynamicQuery actionableDynamicQuery =
-			new CalEventActionableDynamicQuery() {
+			CalEventLocalServiceUtil.getActionableDynamicQuery();
 
-			@Override
-			protected void performAction(Object object) throws PortalException {
-				CalEvent calEvent = (CalEvent)object;
+		actionableDynamicQuery.setPerformActionMethod(
+			new ActionableDynamicQuery.PerformActionMethod() {
 
-				importCalEvent(calEvent);
-			}
+				@Override
+				public void performAction(Object object)
+					throws PortalException {
 
-		};
+					CalEvent calEvent = (CalEvent)object;
+
+					importCalEvent(calEvent);
+				}
+
+			});
 
 		actionableDynamicQuery.performActions();
 	}
@@ -435,6 +447,16 @@ public class CalendarImporterLocalServiceImpl
 		subscriptionPersistence.update(subscription);
 	}
 
+	protected CalendarBooking fetchCalendarBooking(CalEvent calEvent)
+		throws PortalException {
+
+		CalendarResource calendarResource = getCalendarResource(
+			calEvent.getCompanyId(), calEvent.getGroupId());
+
+		return calendarBookingPersistence.fetchByUUID_G(
+			calEvent.getUuid(), calendarResource.getGroupId());
+	}
+
 	protected long getActionId(
 		ResourceAction oldResourceAction, String newClassName) {
 
@@ -534,33 +556,51 @@ public class CalendarImporterLocalServiceImpl
 
 		int interval = tzsRecurrence.getInterval();
 
-		List<Weekday> weekdays = new ArrayList<Weekday>();
+		List<PositionalWeekday> positionalWeekdays =
+			new ArrayList<PositionalWeekday>();
 
 		if ((frequency == Frequency.DAILY) && (interval == 0)) {
 			frequency = Frequency.WEEKLY;
 
 			interval = 1;
 
-			weekdays.add(Weekday.MONDAY);
-			weekdays.add(Weekday.TUESDAY);
-			weekdays.add(Weekday.WEDNESDAY);
-			weekdays.add(Weekday.THURSDAY);
-			weekdays.add(Weekday.FRIDAY);
+			positionalWeekdays.add(new PositionalWeekday(Weekday.MONDAY, 0));
+			positionalWeekdays.add(new PositionalWeekday(Weekday.TUESDAY, 0));
+			positionalWeekdays.add(new PositionalWeekday(Weekday.WEDNESDAY, 0));
+			positionalWeekdays.add(new PositionalWeekday(Weekday.THURSDAY, 0));
+			positionalWeekdays.add(new PositionalWeekday(Weekday.FRIDAY, 0));
 		}
-		else if (frequency == Frequency.WEEKLY) {
+		else {
 			DayAndPosition[] dayAndPositions = tzsRecurrence.getByDay();
 
-			for (DayAndPosition dayAndPosition : dayAndPositions) {
-				Weekday weekday = _weekdayMap.get(
-					dayAndPosition.getDayOfWeek());
+			if (dayAndPositions != null) {
+				for (DayAndPosition dayAndPosition : dayAndPositions) {
+					Weekday weekday = _weekdayMap.get(
+						dayAndPosition.getDayOfWeek());
 
-				weekdays.add(weekday);
+					PositionalWeekday positionalWeekday = new PositionalWeekday(
+						weekday, dayAndPosition.getDayPosition());
+
+					positionalWeekdays.add(positionalWeekday);
+				}
+			}
+
+			int[] months = tzsRecurrence.getByMonth();
+
+			if (ArrayUtil.isNotEmpty(months)) {
+				List<Integer> monthsList = new ArrayList<Integer>();
+
+				for (int month : months) {
+					monthsList.add(month + 1);
+				}
+
+				recurrence.setMonths(monthsList);
 			}
 		}
 
 		recurrence.setInterval(interval);
 		recurrence.setFrequency(frequency);
-		recurrence.setWeekdays(weekdays);
+		recurrence.setPositionalWeekdays(positionalWeekdays);
 
 		Calendar untilJCalendar = tzsRecurrence.getUntil();
 
@@ -574,6 +614,16 @@ public class CalendarImporterLocalServiceImpl
 		}
 
 		return RecurrenceSerializer.serialize(recurrence);
+	}
+
+	protected boolean hasDayAndPosition(TZSRecurrence tzsRecurrence) {
+		if ((tzsRecurrence == null) ||
+			ArrayUtil.isEmpty(tzsRecurrence.getByDay())) {
+
+			return false;
+		}
+
+		return true;
 	}
 
 	protected void importAssetLink(
@@ -927,19 +977,14 @@ public class CalendarImporterLocalServiceImpl
 		}
 	}
 
-	protected boolean isImported(CalEvent calEvent) throws PortalException {
-		CalendarResource calendarResource = getCalendarResource(
-			calEvent.getCompanyId(), calEvent.getGroupId());
+	protected void updateCalendarBookingRecurrence(
+		CalendarBooking calendarBooking, TZSRecurrence tzsRecurrence) {
 
-		CalendarBooking calendarBooking =
-			calendarBookingPersistence.fetchByUUID_G(
-				calEvent.getUuid(), calendarResource.getGroupId());
+		String recurrence = getRecurrence(tzsRecurrence);
 
-		if (calendarBooking != null) {
-			return true;
-		}
+		calendarBooking.setRecurrence(recurrence);
 
-		return false;
+		calendarBookingPersistence.update(calendarBooking);
 	}
 
 	protected void updateMBThreadRootMessageId(
@@ -951,6 +996,27 @@ public class CalendarImporterLocalServiceImpl
 		mbThread.setRootMessageId(rootMessageId);
 
 		mbThreadPersistence.update(mbThread);
+	}
+
+	protected void verifyCalendarBooking(
+		CalendarBooking calendarBooking, CalEvent calEvent) {
+
+		if (!hasDayAndPosition(calEvent.getRecurrenceObj())) {
+			return;
+		}
+
+		TZSRecurrence tzsRecurrence =
+			(TZSRecurrence)JSONFactoryUtil.deserialize(
+				calEvent.getRecurrence());
+
+		tzsRecurrence.setByDay(null);
+
+		String oldRecurrence = getRecurrence(tzsRecurrence);
+
+		if (oldRecurrence.equals(calendarBooking.getRecurrence())) {
+			updateCalendarBookingRecurrence(
+				calendarBooking, calEvent.getRecurrenceObj());
+		}
 	}
 
 	private static final String _ASSET_VOCABULARY_NAME = "Calendar Event Types";

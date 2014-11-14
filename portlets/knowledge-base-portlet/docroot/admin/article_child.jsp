@@ -17,9 +17,9 @@
 <%@ include file="/admin/init.jsp" %>
 
 <%
-int status = (Integer)request.getAttribute(WebKeys.KNOWLEDGE_BASE_STATUS);
-
 KBArticle kbArticle = (KBArticle)request.getAttribute(WebKeys.KNOWLEDGE_BASE_KB_ARTICLE);
+
+int status = (Integer)request.getAttribute(WebKeys.KNOWLEDGE_BASE_STATUS);
 
 List<KBArticle> childKBArticles = KBArticleServiceUtil.getKBArticles(scopeGroupId, kbArticle.getResourcePrimKey(), status, QueryUtil.ALL_POS, QueryUtil.ALL_POS, new KBArticlePriorityComparator(true));
 %>
@@ -38,6 +38,15 @@ List<KBArticle> childKBArticles = KBArticleServiceUtil.getKBArticles(scopeGroupI
 							<c:choose>
 								<c:when test="<%= Validator.isNotNull(childrenKBArticle.getUrlTitle()) %>">
 									<portlet:param name="urlTitle" value="<%= childrenKBArticle.getUrlTitle() %>" />
+
+									<c:if test="<%= childrenKBArticle.getKbFolderId() != KBFolderConstants.DEFAULT_PARENT_FOLDER_ID %>">
+
+										<%
+										KBFolder kbFolder = KBFolderServiceUtil.getKBFolder(childrenKBArticle.getKbFolderId());
+										%>
+
+										<portlet:param name="kbFolderUrlTitle" value="<%= kbFolder.getUrlTitle() %>" />
+									</c:if>
 								</c:when>
 								<c:otherwise>
 									<portlet:param name="resourcePrimKey" value="<%= String.valueOf(childrenKBArticle.getResourcePrimKey()) %>" />
@@ -54,7 +63,7 @@ List<KBArticle> childKBArticles = KBArticleServiceUtil.getKBArticles(scopeGroupI
 								<%= childrenKBArticle.getDescription() %>
 							</c:when>
 							<c:otherwise>
-								<%= StringUtil.shorten(HtmlUtil.extractText(childrenKBArticle.getContent()), 200) %>
+								<p><%= StringUtil.shorten(HtmlUtil.extractText(childrenKBArticle.getContent()), 200) %></p>
 
 								<aui:a href="<%= viewKBArticleURL %>"><liferay-ui:message key="read-more" /></aui:a>
 							</c:otherwise>

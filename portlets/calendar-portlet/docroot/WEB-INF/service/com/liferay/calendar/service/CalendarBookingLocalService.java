@@ -14,6 +14,8 @@
 
 package com.liferay.calendar.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.search.IndexableType;
@@ -37,6 +39,7 @@ import com.liferay.portal.service.PermissionedModelLocalService;
  * @see com.liferay.calendar.service.impl.CalendarBookingLocalServiceImpl
  * @generated
  */
+@ProviderType
 @Transactional(isolation = Isolation.PORTAL, rollbackFor =  {
 	PortalException.class, SystemException.class})
 public interface CalendarBookingLocalService extends BaseLocalService,
@@ -256,6 +259,11 @@ public interface CalendarBookingLocalService extends BaseLocalService,
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public com.liferay.calendar.model.CalendarBooking getCalendarBookingByUuidAndGroupId(
 		java.lang.String uuid, long groupId)
+		throws com.liferay.portal.kernel.exception.PortalException;
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public com.liferay.calendar.model.CalendarBooking getCalendarBookingInstance(
+		long calendarBookingId, int instanceIndex)
 		throws com.liferay.portal.kernel.exception.PortalException;
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)

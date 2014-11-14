@@ -14,6 +14,8 @@
 
 package com.liferay.knowledgebase.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.model.PersistedModel;
 
 /**
@@ -25,6 +27,7 @@ import com.liferay.portal.model.PersistedModel;
  * @see com.liferay.knowledgebase.model.impl.KBArticleModelImpl
  * @generated
  */
+@ProviderType
 public interface KBArticle extends KBArticleModel, PersistedModel {
 	/*
 	 * NOTE FOR DEVELOPERS:
@@ -40,9 +43,14 @@ public interface KBArticle extends KBArticleModel, PersistedModel {
 	public long getAttachmentsFolderId()
 		throws com.liferay.portal.kernel.exception.PortalException;
 
+	public long getClassNameId();
+
 	public long getClassPK();
 
 	public com.liferay.knowledgebase.model.KBArticle getParentKBArticle()
+		throws com.liferay.portal.kernel.exception.PortalException;
+
+	public java.lang.String getParentTitle(java.util.Locale locale, int status)
 		throws com.liferay.portal.kernel.exception.PortalException;
 
 	public boolean isFirstVersion();

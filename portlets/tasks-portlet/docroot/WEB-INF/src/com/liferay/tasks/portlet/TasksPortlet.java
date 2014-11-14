@@ -20,6 +20,7 @@ package com.liferay.tasks.portlet;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.portlet.LiferayWindowState;
+import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.servlet.ServletResponseUtil;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.util.Constants;
@@ -33,13 +34,13 @@ import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.PortletURLFactoryUtil;
 import com.liferay.portlet.asset.AssetTagException;
+import com.liferay.portlet.asset.service.AssetEntryLocalServiceUtil;
 import com.liferay.portlet.messageboards.model.MBMessage;
 import com.liferay.portlet.messageboards.service.MBMessageServiceUtil;
 import com.liferay.tasks.model.TasksEntry;
 import com.liferay.tasks.service.TasksEntryLocalServiceUtil;
 import com.liferay.tasks.service.TasksEntryServiceUtil;
 import com.liferay.tasks.util.PortletKeys;
-import com.liferay.util.bridges.mvc.MVCPortlet;
 
 import java.io.IOException;
 
@@ -248,6 +249,23 @@ public class TasksPortlet extends MVCPortlet {
 		portletURL.setWindowState(LiferayWindowState.POP_UP);
 
 		actionResponse.sendRedirect(portletURL.toString());
+	}
+
+	public void updateTasksEntryViewCount(
+			ActionRequest actionRequest, ActionResponse actionResponse)
+		throws Exception {
+
+		long tasksEntryId = ParamUtil.getLong(actionRequest, "tasksEntryId");
+
+		TasksEntry tasksEntry = TasksEntryLocalServiceUtil.fetchTasksEntry(
+			tasksEntryId);
+
+		if (tasksEntry == null) {
+			return;
+		}
+
+		AssetEntryLocalServiceUtil.incrementViewCounter(
+			0, TasksEntry.class.getName(), tasksEntryId);
 	}
 
 }

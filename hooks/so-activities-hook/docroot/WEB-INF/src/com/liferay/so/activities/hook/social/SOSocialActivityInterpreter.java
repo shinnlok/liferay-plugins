@@ -35,6 +35,7 @@ import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portlet.asset.AssetRendererFactoryRegistryUtil;
+import com.liferay.portlet.asset.model.AssetEntry;
 import com.liferay.portlet.asset.model.AssetRenderer;
 import com.liferay.portlet.asset.model.AssetRendererFactory;
 import com.liferay.portlet.messageboards.model.MBMessage;
@@ -48,13 +49,12 @@ import com.liferay.portlet.social.service.SocialActivitySetLocalServiceUtil;
 import com.liferay.portlet.trash.util.TrashUtil;
 import com.liferay.so.activities.util.PortletPropsValues;
 
+import java.text.DateFormat;
 import java.text.Format;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
 
 /**
  * @author Brian Wing Shun Chan
@@ -186,11 +186,6 @@ public abstract class SOSocialActivityInterpreter
 		return activity.getCreateDate();
 	}
 
-	protected Format getFormatDateTime(Locale locale, TimeZone timezone) {
-		return FastDateFormatFactoryUtil.getSimpleDateFormat(
-			"EEEE, MMMMM dd, yyyy 'at' h:mm a", locale, timezone);
-	}
-
 	protected String getLink(
 			SocialActivitySet activitySet, ServiceContext serviceContext)
 		throws Exception {
@@ -313,8 +308,9 @@ public abstract class SOSocialActivityInterpreter
 
 		sb.append("</div><div class=\"activity-time\" title=\"");
 
-		Format dateFormatDate = getFormatDateTime(
-			serviceContext.getLocale(), serviceContext.getTimeZone());
+		Format dateFormatDate = FastDateFormatFactoryUtil.getDateTime(
+			DateFormat.FULL, DateFormat.SHORT, serviceContext.getLocale(),
+			serviceContext.getTimeZone());
 
 		Date activityDate = new Date(displayDate);
 
@@ -322,9 +318,13 @@ public abstract class SOSocialActivityInterpreter
 
 		sb.append("\">");
 
+		Format dateFormat = FastDateFormatFactoryUtil.getDate(
+			DateFormat.FULL, serviceContext.getLocale(),
+			serviceContext.getTimeZone());
+
 		String relativeTimeDescription = Time.getRelativeTimeDescription(
 			displayDate, serviceContext.getLocale(),
-			serviceContext.getTimeZone());
+			serviceContext.getTimeZone(), dateFormat);
 
 		sb.append(relativeTimeDescription);
 
@@ -464,9 +464,11 @@ public abstract class SOSocialActivityInterpreter
 			String actionId, ServiceContext serviceContext)
 		throws Exception {
 
-		return permissionChecker.hasPermission(
-			activity.getGroupId(), activity.getClassName(),
-			activity.getClassPK(), ActionKeys.VIEW);
+		AssetEntry assetEntry = activity.getAssetEntry();
+
+		AssetRenderer assetRenderer = assetEntry.getAssetRenderer();
+
+		return assetRenderer.hasViewPermission(permissionChecker);
 	}
 
 	protected boolean hasPermissions(

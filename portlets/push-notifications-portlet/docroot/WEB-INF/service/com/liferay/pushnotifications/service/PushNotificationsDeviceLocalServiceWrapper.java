@@ -14,15 +14,18 @@
 
 package com.liferay.pushnotifications.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.service.ServiceWrapper;
 
 /**
  * Provides a wrapper for {@link PushNotificationsDeviceLocalService}.
  *
- * @author Silvio Santos
+ * @author Bruno Farache
  * @see PushNotificationsDeviceLocalService
  * @generated
  */
+@ProviderType
 public class PushNotificationsDeviceLocalServiceWrapper
 	implements PushNotificationsDeviceLocalService,
 		ServiceWrapper<PushNotificationsDeviceLocalService> {
@@ -251,6 +254,13 @@ public class PushNotificationsDeviceLocalServiceWrapper
 			end);
 	}
 
+	@Override
+	public java.util.List<com.liferay.pushnotifications.model.PushNotificationsDevice> getPushNotificationsDevices(
+		long toUserId, java.lang.String platform, int start, int end) {
+		return _pushNotificationsDeviceLocalService.getPushNotificationsDevices(toUserId,
+			platform, start, end);
+	}
+
 	/**
 	* Returns the number of push notifications devices.
 	*
@@ -267,22 +277,6 @@ public class PushNotificationsDeviceLocalServiceWrapper
 		throws java.lang.Throwable {
 		return _pushNotificationsDeviceLocalService.invokeMethod(name,
 			parameterTypes, arguments);
-	}
-
-	@Override
-	public void sendPushNotification(
-		com.liferay.portal.kernel.json.JSONObject jsonObject, int start, int end)
-		throws com.liferay.portal.kernel.exception.PortalException {
-		_pushNotificationsDeviceLocalService.sendPushNotification(jsonObject,
-			start, end);
-	}
-
-	@Override
-	public void sendPushNotification(long userId,
-		com.liferay.portal.kernel.json.JSONObject jsonObject, int start, int end)
-		throws com.liferay.portal.kernel.exception.PortalException {
-		_pushNotificationsDeviceLocalService.sendPushNotification(userId,
-			jsonObject, start, end);
 	}
 
 	/**

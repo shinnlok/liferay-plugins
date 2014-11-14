@@ -79,7 +79,7 @@ AUI().use(
 					instance._increasedPollingMaxCountMs = 30000;
 
 					Liferay.Poller.addListener(instance._portletId, instance._onPollerUpdate, instance);
-					Liferay.bind(
+					Liferay.on(
 						'sessionExpired',
 						function(event) {
 							instance._stopFastPolling();
@@ -108,7 +108,7 @@ AUI().use(
 											chat = instance._chatManager._createChatSession(
 												{
 													fullName: buddy.fullName,
-													portraitId: buddy.portraitId,
+													portraitURL: buddy.portraitURL,
 													statusMessage: buddy.statusMessage,
 													userId: buddy.userId
 												}

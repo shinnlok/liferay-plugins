@@ -14,6 +14,8 @@
 
 package com.liferay.microblogs.service.base;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.microblogs.service.MicroblogsEntryServiceUtil;
 
 import java.util.Arrays;
@@ -22,6 +24,7 @@ import java.util.Arrays;
  * @author Brian Wing Shun Chan
  * @generated
  */
+@ProviderType
 public class MicroblogsEntryServiceClpInvoker {
 	public MicroblogsEntryServiceClpInvoker() {
 		_methodName26 = "getBeanIdentifier";
@@ -35,7 +38,7 @@ public class MicroblogsEntryServiceClpInvoker {
 		_methodName32 = "addMicroblogsEntry";
 
 		_methodParameterTypes32 = new String[] {
-				"long", "java.lang.String", "int", "long", "long", "int",
+				"long", "java.lang.String", "int", "long", "int",
 				"com.liferay.portal.service.ServiceContext"
 			};
 
@@ -107,9 +110,8 @@ public class MicroblogsEntryServiceClpInvoker {
 				(java.lang.String)arguments[1],
 				((Integer)arguments[2]).intValue(),
 				((Long)arguments[3]).longValue(),
-				((Long)arguments[4]).longValue(),
-				((Integer)arguments[5]).intValue(),
-				(com.liferay.portal.service.ServiceContext)arguments[6]);
+				((Integer)arguments[4]).intValue(),
+				(com.liferay.portal.service.ServiceContext)arguments[5]);
 		}
 
 		if (_methodName33.equals(name) &&

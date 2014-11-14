@@ -14,12 +14,15 @@
 
 package com.liferay.calendar.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.service.InvokableService;
 
 /**
  * @author Eduardo Lundgren
  * @generated
  */
+@ProviderType
 public class CalendarServiceClp implements CalendarService {
 	public CalendarServiceClp(InvokableService invokableService) {
 		_invokableService = invokableService;
@@ -27,8 +30,8 @@ public class CalendarServiceClp implements CalendarService {
 		_methodName0 = "addCalendar";
 
 		_methodParameterTypes0 = new String[] {
-				"long", "long", "java.util.Map", "java.util.Map", "int",
-				"boolean", "boolean", "boolean",
+				"long", "long", "java.util.Map", "java.util.Map",
+				"java.lang.String", "int", "boolean", "boolean", "boolean",
 				"com.liferay.portal.service.ServiceContext"
 			};
 
@@ -132,15 +135,15 @@ public class CalendarServiceClp implements CalendarService {
 		_methodName19 = "updateCalendar";
 
 		_methodParameterTypes19 = new String[] {
-				"long", "java.util.Map", "java.util.Map", "int", "boolean",
-				"boolean", "boolean",
+				"long", "java.util.Map", "java.util.Map", "int",
 				"com.liferay.portal.service.ServiceContext"
 			};
 
 		_methodName20 = "updateCalendar";
 
 		_methodParameterTypes20 = new String[] {
-				"long", "java.util.Map", "java.util.Map", "int",
+				"long", "java.util.Map", "java.util.Map", "java.lang.String",
+				"int", "boolean", "boolean", "boolean",
 				"com.liferay.portal.service.ServiceContext"
 			};
 
@@ -156,8 +159,8 @@ public class CalendarServiceClp implements CalendarService {
 		long calendarResourceId,
 		java.util.Map<java.util.Locale, java.lang.String> nameMap,
 		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
-		int color, boolean defaultCalendar, boolean enableComments,
-		boolean enableRatings,
+		java.lang.String timeZoneId, int color, boolean defaultCalendar,
+		boolean enableComments, boolean enableRatings,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		Object returnObj = null;
@@ -173,6 +176,8 @@ public class CalendarServiceClp implements CalendarService {
 					ClpSerializer.translateInput(nameMap),
 						
 					ClpSerializer.translateInput(descriptionMap),
+						
+					ClpSerializer.translateInput(timeZoneId),
 						
 					color,
 						
@@ -840,9 +845,7 @@ public class CalendarServiceClp implements CalendarService {
 	public com.liferay.calendar.model.Calendar updateCalendar(long calendarId,
 		java.util.Map<java.util.Locale, java.lang.String> nameMap,
 		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
-		int color, boolean defaultCalendar, boolean enableComments,
-		boolean enableRatings,
-		com.liferay.portal.service.ServiceContext serviceContext)
+		int color, com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		Object returnObj = null;
 
@@ -857,12 +860,6 @@ public class CalendarServiceClp implements CalendarService {
 					ClpSerializer.translateInput(descriptionMap),
 						
 					color,
-						
-					defaultCalendar,
-						
-					enableComments,
-						
-					enableRatings,
 						
 					ClpSerializer.translateInput(serviceContext)
 					});
@@ -890,7 +887,9 @@ public class CalendarServiceClp implements CalendarService {
 	public com.liferay.calendar.model.Calendar updateCalendar(long calendarId,
 		java.util.Map<java.util.Locale, java.lang.String> nameMap,
 		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
-		int color, com.liferay.portal.service.ServiceContext serviceContext)
+		java.lang.String timeZoneId, int color, boolean defaultCalendar,
+		boolean enableComments, boolean enableRatings,
+		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		Object returnObj = null;
 
@@ -904,7 +903,15 @@ public class CalendarServiceClp implements CalendarService {
 						
 					ClpSerializer.translateInput(descriptionMap),
 						
+					ClpSerializer.translateInput(timeZoneId),
+						
 					color,
+						
+					defaultCalendar,
+						
+					enableComments,
+						
+					enableRatings,
 						
 					ClpSerializer.translateInput(serviceContext)
 					});

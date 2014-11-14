@@ -14,6 +14,8 @@
 
 package com.liferay.knowledgebase.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.bean.AutoEscape;
 import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.CacheModel;
@@ -41,6 +43,7 @@ import java.util.Date;
  * @see com.liferay.knowledgebase.model.impl.KBArticleModelImpl
  * @generated
  */
+@ProviderType
 public interface KBArticleModel extends BaseModel<KBArticle>, ResourcedModel,
 	StagedGroupedModel, WorkflowedModel {
 	/*
@@ -241,6 +244,20 @@ public interface KBArticleModel extends BaseModel<KBArticle>, ResourcedModel,
 	public void setRootResourcePrimKey(long rootResourcePrimKey);
 
 	/**
+	 * Returns the parent resource class name ID of this k b article.
+	 *
+	 * @return the parent resource class name ID of this k b article
+	 */
+	public long getParentResourceClassNameId();
+
+	/**
+	 * Sets the parent resource class name ID of this k b article.
+	 *
+	 * @param parentResourceClassNameId the parent resource class name ID of this k b article
+	 */
+	public void setParentResourceClassNameId(long parentResourceClassNameId);
+
+	/**
 	 * Returns the parent resource prim key of this k b article.
 	 *
 	 * @return the parent resource prim key of this k b article
@@ -253,6 +270,20 @@ public interface KBArticleModel extends BaseModel<KBArticle>, ResourcedModel,
 	 * @param parentResourcePrimKey the parent resource prim key of this k b article
 	 */
 	public void setParentResourcePrimKey(long parentResourcePrimKey);
+
+	/**
+	 * Returns the kb folder ID of this k b article.
+	 *
+	 * @return the kb folder ID of this k b article
+	 */
+	public long getKbFolderId();
+
+	/**
+	 * Sets the kb folder ID of this k b article.
+	 *
+	 * @param kbFolderId the kb folder ID of this k b article
+	 */
+	public void setKbFolderId(long kbFolderId);
 
 	/**
 	 * Returns the version of this k b article.
@@ -412,6 +443,21 @@ public interface KBArticleModel extends BaseModel<KBArticle>, ResourcedModel,
 	 * @param main the main of this k b article
 	 */
 	public void setMain(boolean main);
+
+	/**
+	 * Returns the source u r l of this k b article.
+	 *
+	 * @return the source u r l of this k b article
+	 */
+	@AutoEscape
+	public String getSourceURL();
+
+	/**
+	 * Sets the source u r l of this k b article.
+	 *
+	 * @param sourceURL the source u r l of this k b article
+	 */
+	public void setSourceURL(String sourceURL);
 
 	/**
 	 * Returns the status of this k b article.

@@ -14,6 +14,8 @@
 
 package com.liferay.calendar.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.LocaleException;
 import com.liferay.portal.kernel.bean.AutoEscape;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -48,6 +50,7 @@ import java.util.Map;
  * @see com.liferay.calendar.model.impl.CalendarBookingModelImpl
  * @generated
  */
+@ProviderType
 public interface CalendarBookingModel extends BaseModel<CalendarBooking>,
 	LocalizedModel, StagedGroupedModel, TrashedModel, WorkflowedModel {
 	/*
@@ -855,19 +858,20 @@ public interface CalendarBookingModel extends BaseModel<CalendarBooking>,
 	public Object clone();
 
 	@Override
-	public int compareTo(CalendarBooking calendarBooking);
+	public int compareTo(
+		com.liferay.calendar.model.CalendarBooking calendarBooking);
 
 	@Override
 	public int hashCode();
 
 	@Override
-	public CacheModel<CalendarBooking> toCacheModel();
+	public CacheModel<com.liferay.calendar.model.CalendarBooking> toCacheModel();
 
 	@Override
-	public CalendarBooking toEscapedModel();
+	public com.liferay.calendar.model.CalendarBooking toEscapedModel();
 
 	@Override
-	public CalendarBooking toUnescapedModel();
+	public com.liferay.calendar.model.CalendarBooking toUnescapedModel();
 
 	@Override
 	public String toString();

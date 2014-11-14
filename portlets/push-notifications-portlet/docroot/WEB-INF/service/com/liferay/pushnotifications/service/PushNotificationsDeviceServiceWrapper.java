@@ -14,15 +14,18 @@
 
 package com.liferay.pushnotifications.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.service.ServiceWrapper;
 
 /**
  * Provides a wrapper for {@link PushNotificationsDeviceService}.
  *
- * @author Silvio Santos
+ * @author Bruno Farache
  * @see PushNotificationsDeviceService
  * @generated
  */
+@ProviderType
 public class PushNotificationsDeviceServiceWrapper
 	implements PushNotificationsDeviceService,
 		ServiceWrapper<PushNotificationsDeviceService> {
@@ -57,17 +60,17 @@ public class PushNotificationsDeviceServiceWrapper
 	}
 
 	@Override
+	public boolean hasPermission(java.lang.String actionId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _pushNotificationsDeviceService.hasPermission(actionId);
+	}
+
+	@Override
 	public java.lang.Object invokeMethod(java.lang.String name,
 		java.lang.String[] parameterTypes, java.lang.Object[] arguments)
 		throws java.lang.Throwable {
 		return _pushNotificationsDeviceService.invokeMethod(name,
 			parameterTypes, arguments);
-	}
-
-	@Override
-	public void sendPushNotification(java.lang.String message)
-		throws com.liferay.portal.kernel.exception.PortalException {
-		_pushNotificationsDeviceService.sendPushNotification(message);
 	}
 
 	/**

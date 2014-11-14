@@ -14,6 +14,8 @@
 
 package com.liferay.calendar.recurrence;
 
+import java.util.Calendar;
+
 /**
  * @author Marcellus Tavares
  */
@@ -21,6 +23,36 @@ public enum Weekday {
 
 	SUNDAY("SU"), MONDAY("MO"), TUESDAY("TU"), WEDNESDAY("WE"), THURSDAY("TH"),
 	FRIDAY("FR"), SATURDAY("SA");
+
+	public static Weekday getWeekday(Calendar jCalendar) {
+		return getWeekday(jCalendar.get(Calendar.DAY_OF_WEEK));
+	}
+
+	public static Weekday getWeekday(int dayOfTheWeek) {
+		if (dayOfTheWeek == Calendar.SUNDAY) {
+			return SUNDAY;
+		}
+		else if (dayOfTheWeek == Calendar.MONDAY) {
+			return MONDAY;
+		}
+		else if (dayOfTheWeek == Calendar.TUESDAY) {
+			return TUESDAY;
+		}
+		else if (dayOfTheWeek == Calendar.WEDNESDAY) {
+			return WEDNESDAY;
+		}
+		else if (dayOfTheWeek == Calendar.THURSDAY) {
+			return THURSDAY;
+		}
+		else if (dayOfTheWeek == Calendar.FRIDAY) {
+			return FRIDAY;
+		}
+		else if (dayOfTheWeek == Calendar.SATURDAY) {
+			return SATURDAY;
+		}
+
+		throw new IllegalArgumentException("Invalid value " + dayOfTheWeek);
+	}
 
 	public static Weekday parse(String value) {
 		if (SUNDAY.getValue().equals(value)) {
@@ -48,20 +80,8 @@ public enum Weekday {
 		throw new IllegalArgumentException("Invalid value " + value);
 	}
 
-	public int getPosition() {
-		return _position;
-	}
-
 	public String getValue() {
 		return _value;
-	}
-
-	public void setPosition(int position) {
-		if ((position < -53) || (position > 53)) {
-			throw new IllegalArgumentException();
-		}
-
-		_position = position;
 	}
 
 	@Override
@@ -73,7 +93,6 @@ public enum Weekday {
 		_value = value;
 	}
 
-	private int _position;
 	private String _value;
 
 }

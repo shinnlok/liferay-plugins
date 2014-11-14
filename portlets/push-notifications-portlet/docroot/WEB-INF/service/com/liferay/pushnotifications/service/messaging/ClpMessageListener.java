@@ -14,16 +14,21 @@
 
 package com.liferay.pushnotifications.service.messaging;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.messaging.BaseMessageListener;
 import com.liferay.portal.kernel.messaging.Message;
 
 import com.liferay.pushnotifications.service.ClpSerializer;
 import com.liferay.pushnotifications.service.PushNotificationsDeviceLocalServiceUtil;
 import com.liferay.pushnotifications.service.PushNotificationsDeviceServiceUtil;
+import com.liferay.pushnotifications.service.PushNotificationsEntryLocalServiceUtil;
+import com.liferay.pushnotifications.service.PushNotificationsEntryServiceUtil;
 
 /**
- * @author Silvio Santos
+ * @author Bruno Farache
  */
+@ProviderType
 public class ClpMessageListener extends BaseMessageListener {
 	public static String getServletContextName() {
 		return ClpSerializer.getServletContextName();
@@ -39,6 +44,9 @@ public class ClpMessageListener extends BaseMessageListener {
 			PushNotificationsDeviceLocalServiceUtil.clearService();
 
 			PushNotificationsDeviceServiceUtil.clearService();
+			PushNotificationsEntryLocalServiceUtil.clearService();
+
+			PushNotificationsEntryServiceUtil.clearService();
 		}
 	}
 }

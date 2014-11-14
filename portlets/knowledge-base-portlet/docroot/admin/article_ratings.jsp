@@ -94,8 +94,31 @@ boolean hasUpdatePermission = KBArticlePermission.contains(permissionChecker, kb
 		<a name="kbFeedback"></a>
 
 		<div class="hide kb-article-feedback" id="<portlet:namespace />feedbackContainer">
-			<liferay-portlet:actionURL name="updateKBComment" var="updateKBCommentURL">
+			<liferay-portlet:renderURL var="viewKBArticle">
 				<portlet:param name="expanded" value="true" />
+
+				<c:choose>
+					<c:when test="<%= Validator.isNotNull(kbArticle.getUrlTitle()) %>">
+						<portlet:param name="urlTitle" value="<%= kbArticle.getUrlTitle() %>" />
+
+						<c:if test="<%= kbArticle.getKbFolderId() != KBFolderConstants.DEFAULT_PARENT_FOLDER_ID %>">
+
+							<%
+							KBFolder kbFolder = KBFolderServiceUtil.getKBFolder(kbArticle.getKbFolderId());
+							%>
+
+							<portlet:param name="kbFolderUrlTitle" value="<%= kbFolder.getUrlTitle() %>" />
+						</c:if>
+					</c:when>
+					<c:otherwise>
+						<portlet:param name="resourceClassNameId" value="<%= String.valueOf(kbArticle.getClassNameId()) %>" />
+						<portlet:param name="resourcePrimKey" value="<%= String.valueOf(kbArticle.getResourcePrimKey()) %>" />
+					</c:otherwise>
+				</c:choose>
+			</liferay-portlet:renderURL>
+
+			<liferay-portlet:actionURL name="updateKBComment" var="updateKBCommentURL">
+				<portlet:param name="redirect" value="<%= viewKBArticle %>" />
 			</liferay-portlet:actionURL>
 
 			<aui:form action='<%= updateKBCommentURL + "#kbFeedback" %>' method="post" name="feedbackFm">
@@ -152,7 +175,7 @@ boolean hasUpdatePermission = KBArticlePermission.contains(permissionChecker, kb
 
 				KBFeedbackListDisplayContext kbFeedbackListDisplayContext = new KBFeedbackListDisplayContext(kbArticle, navItem);
 
-				request.setAttribute(WebKeys.KB_FEEDBACK_LIST_DISPLAY_CONTEXT, kbFeedbackListDisplayContext);
+				request.setAttribute(WebKeys.KNOWLEDGE_BASE_KB_FEEDBACK_LIST_DISPLAY_CONTEXT, kbFeedbackListDisplayContext);
 				%>
 
 				<div class='kb-article-previous-comments <%= expanded ? StringPool.BLANK : "hide" %>' id="<portlet:namespace />previousCommentsContainer">
@@ -207,7 +230,7 @@ boolean hasUpdatePermission = KBArticlePermission.contains(permissionChecker, kb
 										dateSearchEntry.setDate(kbComment.getModifiedDate());
 										%>
 
-										<%= dateSearchEntry.getName(pageContext) %>
+										<%= dateSearchEntry.getName(request) %>
 
 										<aui:model-context bean="<%= kbComment %>" model="<%= KBComment.class %>" />
 
@@ -248,7 +271,7 @@ boolean hasUpdatePermission = KBArticlePermission.contains(permissionChecker, kb
 
 					showNode.toggleView();
 
-					var content = showNode.one('#content');
+					var content = showNode.one('#<portlet:namespace />content');
 
 					if (content) {
 						content.focus();
@@ -260,19 +283,15 @@ boolean hasUpdatePermission = KBArticlePermission.contains(permissionChecker, kb
 			A.one('#<portlet:namespace />cancelFeedback').on(
 				'click',
 				function(event) {
-					this.each(
-						function(node) {
-							var container = node.ancestor('#<portlet:namespace />feedbackContainer');
+					var container = this.ancestor('#<portlet:namespace />feedbackContainer');
 
-							container.hide();
+					container.hide();
 
-							var content = container.one('#content');
+					var content = container.one('#<portlet:namespace />content');
 
-							if (content) {
-								content.val('');
-							}
-						}
-					);
+					if (content) {
+						content.val('');
+					}
 				}
 			);
 		</aui:script>

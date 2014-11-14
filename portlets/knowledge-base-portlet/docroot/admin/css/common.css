@@ -84,8 +84,8 @@
 		@include respond-to(desktop) {
 			.kb-elements .kb-element {
 				display: inline-table;
-				padding: 0 2%;
 				margin: 1% 2%;
+				padding: 0 2%;
 				width: 41%;
 			}
 		}
@@ -110,6 +110,16 @@
 		border-top: 1px dotted;
 		margin: 20px;
 		padding: 10px;
+
+		.lfr-table {
+			vertical-align: top;
+			width: 100%;
+
+			.kb-article-comment-user {
+				text-align: center;
+				width: 30%;
+			}
+		}
 	}
 
 	.kb-article-previous-comments {
@@ -127,10 +137,11 @@
 
 	.kb-article-feedback {
 		clear: both;
-		margin-left: 25px;
 
 		textarea {
-			width: 500px;
+			min-width: 98%;
+			padding: 1%;
+			width: 98%;
 		}
 
 		div.control-group {
@@ -138,15 +149,25 @@
 		}
 	}
 
+	@include respond-to(desktop) {
+		.kb-article-feedback {
+			margin-left: 25px;
+
+			textarea {
+				max-width: 500px;
+			}
+		}
+	}
+
 	.kb-article-feedback-actions {
 		clear: both;
 		display: block;
-		margin: 10px 0 10px 5px;
+		padding: 10px 0 10px 5px;
 	}
 
 	.kb-article-siblings {
-		padding: 1em 0;
 		overflow: auto;
+		padding: 1em 0;
 		width: 100%;
 
 		.kb-article-next, .kb-article-previous {
@@ -199,6 +220,11 @@
 
 	.kb-article-comment-helpful {
 		margin-top: 10px;
+	}
+
+	.kb-article-tools {
+		float: right;
+		margin: 5px 0 5px;
 	}
 
 	.kb-attachments {
@@ -257,6 +283,7 @@
 			}
 
 			.kb-title {
+				display: inline;
 				margin: 5px 0 0;
 
 				a {
@@ -314,20 +341,20 @@
 		margin: 5px 0 5px 0;
 		padding: 0 5px 3px;
 
-		.kb-title {
-			float: left;
-		}
-
-		.kb-tools {
-			float: right;
+		.kb-article-source-url {
+			margin-right: 10px;
 		}
 	}
 
 	.kb-field-wrapper {
-		margin: 10px 0;
+		margin: 15px 15px 0 15px;
 
 		.field-wrapper-content {
 			margin: 0;
+		}
+
+		label {
+			display: inherit;
 		}
 	}
 

@@ -14,6 +14,8 @@
 
 package com.liferay.marketplace.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.ModelWrapper;
 
@@ -29,6 +31,7 @@ import java.util.Map;
  * @see Module
  * @generated
  */
+@ProviderType
 public class ModuleWrapper implements Module, ModelWrapper<Module> {
 	public ModuleWrapper(Module module) {
 		_module = module;
@@ -51,6 +54,8 @@ public class ModuleWrapper implements Module, ModelWrapper<Module> {
 		attributes.put("uuid", getUuid());
 		attributes.put("moduleId", getModuleId());
 		attributes.put("appId", getAppId());
+		attributes.put("bundleSymbolicName", getBundleSymbolicName());
+		attributes.put("bundleVersion", getBundleVersion());
 		attributes.put("contextName", getContextName());
 
 		return attributes;
@@ -74,6 +79,18 @@ public class ModuleWrapper implements Module, ModelWrapper<Module> {
 
 		if (appId != null) {
 			setAppId(appId);
+		}
+
+		String bundleSymbolicName = (String)attributes.get("bundleSymbolicName");
+
+		if (bundleSymbolicName != null) {
+			setBundleSymbolicName(bundleSymbolicName);
+		}
+
+		String bundleVersion = (String)attributes.get("bundleVersion");
+
+		if (bundleVersion != null) {
+			setBundleVersion(bundleVersion);
 		}
 
 		String contextName = (String)attributes.get("contextName");
@@ -101,6 +118,26 @@ public class ModuleWrapper implements Module, ModelWrapper<Module> {
 	@Override
 	public long getAppId() {
 		return _module.getAppId();
+	}
+
+	/**
+	* Returns the bundle symbolic name of this module.
+	*
+	* @return the bundle symbolic name of this module
+	*/
+	@Override
+	public java.lang.String getBundleSymbolicName() {
+		return _module.getBundleSymbolicName();
+	}
+
+	/**
+	* Returns the bundle version of this module.
+	*
+	* @return the bundle version of this module
+	*/
+	@Override
+	public java.lang.String getBundleVersion() {
+		return _module.getBundleVersion();
 	}
 
 	/**
@@ -186,6 +223,26 @@ public class ModuleWrapper implements Module, ModelWrapper<Module> {
 	@Override
 	public void setAppId(long appId) {
 		_module.setAppId(appId);
+	}
+
+	/**
+	* Sets the bundle symbolic name of this module.
+	*
+	* @param bundleSymbolicName the bundle symbolic name of this module
+	*/
+	@Override
+	public void setBundleSymbolicName(java.lang.String bundleSymbolicName) {
+		_module.setBundleSymbolicName(bundleSymbolicName);
+	}
+
+	/**
+	* Sets the bundle version of this module.
+	*
+	* @param bundleVersion the bundle version of this module
+	*/
+	@Override
+	public void setBundleVersion(java.lang.String bundleVersion) {
+		_module.setBundleVersion(bundleVersion);
 	}
 
 	@Override
@@ -333,5 +390,5 @@ public class ModuleWrapper implements Module, ModelWrapper<Module> {
 		_module.resetOriginalValues();
 	}
 
-	private Module _module;
+	private final Module _module;
 }

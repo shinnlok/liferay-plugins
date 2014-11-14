@@ -14,6 +14,8 @@
 
 package com.liferay.microblogs.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.search.IndexableType;
@@ -36,6 +38,7 @@ import com.liferay.portal.service.PersistedModelLocalService;
  * @see com.liferay.microblogs.service.impl.MicroblogsEntryLocalServiceImpl
  * @generated
  */
+@ProviderType
 @Transactional(isolation = Isolation.PORTAL, rollbackFor =  {
 	PortalException.class, SystemException.class})
 public interface MicroblogsEntryLocalService extends BaseLocalService,
@@ -57,8 +60,15 @@ public interface MicroblogsEntryLocalService extends BaseLocalService,
 		com.liferay.microblogs.model.MicroblogsEntry microblogsEntry);
 
 	public com.liferay.microblogs.model.MicroblogsEntry addMicroblogsEntry(
-		long userId, java.lang.String content, int type, long receiverUserId,
-		long receiverMicroblogsEntryId, int socialRelationType,
+		long userId, java.lang.String content, int type,
+		long parentMicroblogsEntryId, int socialRelationType,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException;
+
+	public com.liferay.microblogs.model.MicroblogsEntry addMicroblogsEntry(
+		long userId, long creatorClassNameId, long creatorClassPK,
+		java.lang.String content, int type, long parentMicroblogsEntryId,
+		int socialRelationType,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException;
 
@@ -70,6 +80,10 @@ public interface MicroblogsEntryLocalService extends BaseLocalService,
 	*/
 	public com.liferay.microblogs.model.MicroblogsEntry createMicroblogsEntry(
 		long microblogsEntryId);
+
+	public void deleteMicroblogsEntries(long creatorClassNameId,
+		long creatorClassPK)
+		throws com.liferay.portal.kernel.exception.PortalException;
 
 	/**
 	* Deletes the microblogs entry from the database. Also notifies the appropriate model listeners.
@@ -192,6 +206,30 @@ public interface MicroblogsEntryLocalService extends BaseLocalService,
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public int getCompanyMicroblogsEntriesCount(long companyId);
 
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public java.util.List<com.liferay.microblogs.model.MicroblogsEntry> getMicroblogsEntries(
+		long creatorClassNameId, java.lang.String assetTagName, int start,
+		int end);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public java.util.List<com.liferay.microblogs.model.MicroblogsEntry> getMicroblogsEntries(
+		long creatorClassNameId, long creatorClassPK,
+		java.lang.String assetTagName, int start, int end);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public java.util.List<com.liferay.microblogs.model.MicroblogsEntry> getMicroblogsEntries(
+		long creatorClassNameId, long creatorClassPK, int start, int end);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public java.util.List<com.liferay.microblogs.model.MicroblogsEntry> getMicroblogsEntries(
+		long creatorClassNameId, long creatorClassPK, int type, int start,
+		int end);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public java.util.List<com.liferay.microblogs.model.MicroblogsEntry> getMicroblogsEntries(
+		long creatorClassNameId, int type, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator obc);
+
 	/**
 	* Returns a range of all the microblogs entries.
 	*
@@ -215,6 +253,22 @@ public interface MicroblogsEntryLocalService extends BaseLocalService,
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public int getMicroblogsEntriesCount();
 
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public int getMicroblogsEntriesCount(long creatorClassNameId,
+		java.lang.String assetTagName);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public int getMicroblogsEntriesCount(long creatorClassNameId,
+		long creatorClassPK);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public int getMicroblogsEntriesCount(long creatorClassNameId,
+		long creatorClassPK, java.lang.String assetTagName);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public int getMicroblogsEntriesCount(long creatorClassNameId,
+		long creatorClassPK, int type);
+
 	/**
 	* Returns the microblogs entry with the primary key.
 	*
@@ -227,32 +281,24 @@ public interface MicroblogsEntryLocalService extends BaseLocalService,
 		long microblogsEntryId)
 		throws com.liferay.portal.kernel.exception.PortalException;
 
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public java.util.List<com.liferay.microblogs.model.MicroblogsEntry> getParentMicroblogsEntryMicroblogsEntries(
+		int type, long parentMicroblogsEntryId, int start, int end);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public java.util.List<com.liferay.microblogs.model.MicroblogsEntry> getParentMicroblogsEntryMicroblogsEntries(
+		int type, long parentMicroblogsEntryId, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.microblogs.model.MicroblogsEntry> orderByComparator);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public int getParentMicroblogsEntryMicroblogsEntriesCount(int type,
+		long parentMicroblogsEntryId);
+
 	@Override
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public com.liferay.portal.model.PersistedModel getPersistedModel(
 		java.io.Serializable primaryKeyObj)
 		throws com.liferay.portal.kernel.exception.PortalException;
-
-	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public java.util.List<com.liferay.microblogs.model.MicroblogsEntry> getReceiverMicroblogsEntryMicroblogsEntries(
-		int type, long receiverMicroblogsEntryId, int start, int end);
-
-	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public java.util.List<com.liferay.microblogs.model.MicroblogsEntry> getReceiverMicroblogsEntryMicroblogsEntries(
-		int type, long receiverMicroblogsEntryId, int start, int end,
-		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.microblogs.model.MicroblogsEntry> orderByComparator);
-
-	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public int getReceiverMicroblogsEntryMicroblogsEntriesCount(int type,
-		long receiverMicroblogsEntryId);
-
-	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public java.util.List<com.liferay.microblogs.model.MicroblogsEntry> getReceiverUserMicroblogsEntries(
-		int type, long receiverUserId, int start, int end);
-
-	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public int getReceiverUserMicroblogsEntriesCount(int type,
-		long receiverUserId);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public java.util.List<com.liferay.microblogs.model.MicroblogsEntry> getUserMicroblogsEntries(

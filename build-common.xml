@@ -54,6 +54,7 @@
 		<path refid="plugin-lib.classpath" />
 		<fileset dir="${app.server.lib.global.dir}" includes="*.jar" />
 		<fileset dir="${app.server.lib.portal.dir}" includes="annotations.jar,commons-logging.jar,log4j.jar,util-bridges.jar,util-java.jar,util-taglib.jar" />
+		<fileset dir="${sdk.dir}/dependencies/aQute.bnd/lib" includes="*.jar" />
 		<fileset dir="${sdk.dir}/lib" includes="activation.jar,javax.servlet-api.jar,jsp-api.jar,mail.jar" />
 	</path>
 
@@ -471,6 +472,7 @@ Error-Prone was automatically installed. Please rerun your task.
 								javac.classpathref="plugin.classpath"
 								javac.destdir="@{module.dir}/classes"
 								javac.srcdir="@{module.dir}/src"
+								module.dir="@{module.dir}"
 							/>
 						</else>
 					</if>
@@ -574,6 +576,10 @@ Error-Prone was automatically installed. Please rerun your task.
 
 			<var name="compile-import-shared.import.compat.shared" unset="true" />
 			<var name="compile-import-shared.import.shared" unset="true" />
+
+			<set-module-properties
+				module.dir="@{module.dir}"
+			/>
 		</sequential>
 	</macrodef>
 
@@ -656,11 +662,68 @@ Error-Prone was automatically installed. Please rerun your task.
 		<attribute name="javac.classpathref" />
 		<attribute name="javac.destdir" />
 		<attribute name="javac.srcdir" />
+		<attribute default="" name="module.dir" />
 
 		<sequential>
 			<copy todir="@{javac.destdir}">
 				<fileset dir="@{javac.srcdir}" excludes="**/*.java" />
 			</copy>
+
+			<if>
+				<and>
+					<not>
+						<equals arg1="@{module.dir}" arg2="" />
+					</not>
+					<available file="@{module.dir}" />
+				</and>
+				<then>
+					<set-build-xml-var
+						build.xml.var.name="javac.source"
+						module.dir="@{module.dir}"
+					/>
+
+					<if>
+						<isset property="set-build-xml-var.return" />
+						<then>
+							<var name="javac.source" value="${set-build-xml-var.return}" />
+
+							<echo>Custom javac source ${javac.source}</echo>
+						</then>
+					</if>
+
+					<set-build-xml-var
+						build.xml.var.name="javac.target"
+						module.dir="@{module.dir}"
+					/>
+
+					<if>
+						<isset property="set-build-xml-var.return" />
+						<then>
+							<var name="javac.target" value="${set-build-xml-var.return}" />
+
+							<echo>Custom javac target ${javac.target}</echo>
+						</then>
+					</if>
+				</then>
+			</if>
+
+			<if>
+				<not>
+					<isset property="javac.source" />
+				</not>
+				<then>
+					<var name="javac.source" value="${ant.build.javac.source}" />
+				</then>
+			</if>
+
+			<if>
+				<not>
+					<isset property="javac.target" />
+				</not>
+				<then>
+					<var name="javac.target" value="${ant.build.javac.target}" />
+				</then>
+			</if>
 
 			<javac
 				classpathref="@{javac.classpathref}"
@@ -671,8 +734,13 @@ Error-Prone was automatically installed. Please rerun your task.
 				encoding="${javac.encoding}"
 				includeAntRuntime="false"
 				nowarn="${javac.nowarn}"
+				source="${javac.source}"
 				srcdir="@{javac.srcdir}"
+				target="${javac.target}"
 			/>
+
+			<var name="javac.source" unset="true" />
+			<var name="javac.target" unset="true" />
 		</sequential>
 	</macrodef>
 
@@ -785,6 +853,7 @@ Please find a solution that does not require portal-impl.jar.
 						javac.classpathref="plugin.classpath"
 						javac.destdir="@{module.dir}/docroot/WEB-INF/classes"
 						javac.srcdir="@{module.dir}/docroot/WEB-INF/src"
+						module.dir="@{module.dir}"
 					/>
 				</then>
 			</if>
@@ -823,6 +892,8 @@ Please find a solution that does not require portal-impl.jar.
 									</tokenfilter>
 								</filterchain>
 							</copy>
+
+							<var name="language.properties.elements" unset="true" />
 						</then>
 					</if>
 				</then>
@@ -843,12 +914,14 @@ Please find a solution that does not require portal-impl.jar.
 				module.dir="@{module.dir}"
 			/>
 
-			<compile-test-integration
+			<compile-test-cmd
 				module.dir="@{module.dir}"
+				test.type="integration"
 			/>
 
-			<compile-test-unit
+			<compile-test-cmd
 				module.dir="@{module.dir}"
+				test.type="unit"
 			/>
 		</sequential>
 	</macrodef>
@@ -906,31 +979,10 @@ Please find a solution that does not require portal-impl.jar.
 						javac.classpathref="test.classpath"
 						javac.destdir="@{module.dir}/test-classes/@{test.type}"
 						javac.srcdir="@{module.dir}/test/@{test.type}"
+						module.dir="@{module.dir}"
 					/>
 				</then>
 			</if>
-		</sequential>
-	</macrodef>
-
-	<macrodef name="compile-test-integration">
-		<attribute name="module.dir" />
-
-		<sequential>
-			<compile-test-cmd
-				module.dir="@{module.dir}"
-				test.type="integration"
-			/>
-		</sequential>
-	</macrodef>
-
-	<macrodef name="compile-test-unit">
-		<attribute name="module.dir" />
-
-		<sequential>
-			<compile-test-cmd
-				module.dir="@{module.dir}"
-				test.type="unit"
-			/>
 		</sequential>
 	</macrodef>
 
@@ -1671,7 +1723,11 @@ Please find a solution that does not require portal-impl.jar.
 									<if>
 										<available file="${temp.deployed.plugin.dir}" />
 										<then>
-											<jar destfile="${sdk.dir}/dist/${plugin.name}-${plugin.full.version}.war" update="true">
+											<jar destfile="${sdk.dir}/dist/${plugin.name}-${plugin.full.version}.war" duplicate="preserve" update="true">
+												<fileset
+													dir="${app.server.portal.dir}"
+													includes="WEB-INF/tld/c.tld"
+												/>
 												<fileset
 													dir="${temp.deployed.plugin.dir}"
 													includes="WEB-INF/web.xml"
@@ -1773,8 +1829,7 @@ Please find a solution that does not require portal-impl.jar.
 							<uptodate srcfile="@{module.dir}/${merge.original.war.file}" targetfile="@{module.dir}/tmp" />
 						</not>
 						<then>
-							<delete dir="@{module.dir}/tmp" />
-							<mkdir dir="@{module.dir}/tmp" />
+							<remake-dir dir="@{module.dir}/tmp" />
 
 							<mkdir dir="@{module.dir}/tmp/WEB-INF/classes" />
 							<mkdir dir="@{module.dir}/tmp/WEB-INF/lib" />
@@ -1817,6 +1872,16 @@ Please find a solution that does not require portal-impl.jar.
 			/>
 
 			<var name="merge-unzip.original.war.file" unset="true" />
+		</sequential>
+	</macrodef>
+
+	<macrodef name="remake-dir">
+		<attribute name="dir" />
+
+		<sequential>
+			<delete dir="@{dir}" />
+
+			<mkdir dir="@{dir}" />
 		</sequential>
 	</macrodef>
 
@@ -2089,6 +2154,7 @@ Please find a solution that does not require portal-impl.jar.
 								<jvmarg value="-Dexternal-properties=${test.properties}" />
 								<jvmarg value="-Dfile.encoding=UTF-8" />
 								<jvmarg value="-Djava.net.preferIPv4Stack=true" />
+								<jvmarg value="-Dsdk.dir=${sdk.dir}" />
 								<jvmarg value="-Duser.timezone=GMT" />
 								<classpath location="@{module.dir}/test-coverage" />
 								<classpath refid="test.classpath" />
@@ -2249,34 +2315,6 @@ for (String path : paths) {
 						module.dirs="@{module.dir}"
 						target.name="jar"
 					/>
-
-					<if>
-						<available file="@{module.dir}/docroot/WEB-INF/portlet.xml" />
-						<then>
-							<tstamp>
-								<format property="tstamp.value" pattern="yyyyMMddkkmmssSSS" />
-							</tstamp>
-
-							<move file="${plugin.file}" tofile="${sdk.dir}/dist/${plugin.name}-${plugin.full.version}.war" />
-
-							<direct-deploy-portlet-cmd
-								direct.deploy.dir="${tstamp.value}"
-								module.dir="@{module.dir}"
-							/>
-
-							<zip destfile="${sdk.dir}/dist/${plugin.name}-${plugin.full.version}.war" update="true">
-								<zipfileset
-									dir="${tstamp.value}/${plugin.name}"
-									fullpath="WEB-INF/web.xml"
-									includes="WEB-INF/web.xml"
-								/>
-							</zip>
-
-							<move file="${sdk.dir}/dist/${plugin.name}-${plugin.full.version}.war" tofile="${plugin.file}" />
-
-							<delete dir="${tstamp.value}" />
-						</then>
-					</if>
 				</then>
 				<else>
 					<if>

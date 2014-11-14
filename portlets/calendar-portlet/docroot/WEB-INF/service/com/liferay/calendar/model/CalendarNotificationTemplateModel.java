@@ -14,6 +14,8 @@
 
 package com.liferay.calendar.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.bean.AutoEscape;
 import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.CacheModel;
@@ -39,6 +41,7 @@ import java.util.Date;
  * @see com.liferay.calendar.model.impl.CalendarNotificationTemplateModelImpl
  * @generated
  */
+@ProviderType
 public interface CalendarNotificationTemplateModel extends BaseModel<CalendarNotificationTemplate>,
 	StagedGroupedModel {
 	/*
@@ -333,19 +336,19 @@ public interface CalendarNotificationTemplateModel extends BaseModel<CalendarNot
 
 	@Override
 	public int compareTo(
-		CalendarNotificationTemplate calendarNotificationTemplate);
+		com.liferay.calendar.model.CalendarNotificationTemplate calendarNotificationTemplate);
 
 	@Override
 	public int hashCode();
 
 	@Override
-	public CacheModel<CalendarNotificationTemplate> toCacheModel();
+	public CacheModel<com.liferay.calendar.model.CalendarNotificationTemplate> toCacheModel();
 
 	@Override
-	public CalendarNotificationTemplate toEscapedModel();
+	public com.liferay.calendar.model.CalendarNotificationTemplate toEscapedModel();
 
 	@Override
-	public CalendarNotificationTemplate toUnescapedModel();
+	public com.liferay.calendar.model.CalendarNotificationTemplate toUnescapedModel();
 
 	@Override
 	public String toString();

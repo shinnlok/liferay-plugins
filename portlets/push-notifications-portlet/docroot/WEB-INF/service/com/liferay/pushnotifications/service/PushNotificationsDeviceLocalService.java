@@ -14,6 +14,8 @@
 
 package com.liferay.pushnotifications.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.search.IndexableType;
@@ -30,12 +32,13 @@ import com.liferay.portal.service.PersistedModelLocalService;
  * credentials because this service can only be accessed from within the same
  * VM.
  *
- * @author Silvio Santos
+ * @author Bruno Farache
  * @see PushNotificationsDeviceLocalServiceUtil
  * @see com.liferay.pushnotifications.service.base.PushNotificationsDeviceLocalServiceBaseImpl
  * @see com.liferay.pushnotifications.service.impl.PushNotificationsDeviceLocalServiceImpl
  * @generated
  */
+@ProviderType
 @Transactional(isolation = Isolation.PORTAL, rollbackFor =  {
 	PortalException.class, SystemException.class})
 public interface PushNotificationsDeviceLocalService extends BaseLocalService,
@@ -214,6 +217,10 @@ public interface PushNotificationsDeviceLocalService extends BaseLocalService,
 	public java.util.List<com.liferay.pushnotifications.model.PushNotificationsDevice> getPushNotificationsDevices(
 		int start, int end);
 
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public java.util.List<com.liferay.pushnotifications.model.PushNotificationsDevice> getPushNotificationsDevices(
+		long toUserId, java.lang.String platform, int start, int end);
+
 	/**
 	* Returns the number of push notifications devices.
 	*
@@ -226,14 +233,6 @@ public interface PushNotificationsDeviceLocalService extends BaseLocalService,
 	public java.lang.Object invokeMethod(java.lang.String name,
 		java.lang.String[] parameterTypes, java.lang.Object[] arguments)
 		throws java.lang.Throwable;
-
-	public void sendPushNotification(
-		com.liferay.portal.kernel.json.JSONObject jsonObject, int start, int end)
-		throws com.liferay.portal.kernel.exception.PortalException;
-
-	public void sendPushNotification(long userId,
-		com.liferay.portal.kernel.json.JSONObject jsonObject, int start, int end)
-		throws com.liferay.portal.kernel.exception.PortalException;
 
 	/**
 	* Sets the Spring bean ID for this bean.

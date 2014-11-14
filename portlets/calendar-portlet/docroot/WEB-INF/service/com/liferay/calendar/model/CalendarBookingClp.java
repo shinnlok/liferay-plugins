@@ -14,6 +14,8 @@
 
 package com.liferay.calendar.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.calendar.service.CalendarBookingLocalServiceUtil;
 import com.liferay.calendar.service.ClpSerializer;
 
@@ -58,6 +60,7 @@ import java.util.TreeSet;
 /**
  * @author Eduardo Lundgren
  */
+@ProviderType
 public class CalendarBookingClp extends BaseModelImpl<CalendarBooking>
 	implements CalendarBooking {
 	public CalendarBookingClp() {
@@ -1168,44 +1171,6 @@ public class CalendarBookingClp extends BaseModelImpl<CalendarBooking>
 	}
 
 	@Override
-	public java.util.TimeZone getTimeZone() {
-		try {
-			String methodName = "getTimeZone";
-
-			Class<?>[] parameterTypes = new Class<?>[] {  };
-
-			Object[] parameterValues = new Object[] {  };
-
-			java.util.TimeZone returnObj = (java.util.TimeZone)invokeOnRemoteModel(methodName,
-					parameterTypes, parameterValues);
-
-			return returnObj;
-		}
-		catch (Exception e) {
-			throw new UnsupportedOperationException(e);
-		}
-	}
-
-	@Override
-	public boolean isRecurring() {
-		try {
-			String methodName = "isRecurring";
-
-			Class<?>[] parameterTypes = new Class<?>[] {  };
-
-			Object[] parameterValues = new Object[] {  };
-
-			Boolean returnObj = (Boolean)invokeOnRemoteModel(methodName,
-					parameterTypes, parameterValues);
-
-			return returnObj;
-		}
-		catch (Exception e) {
-			throw new UnsupportedOperationException(e);
-		}
-	}
-
-	@Override
 	public void setInstanceIndex(int instanceIndex) {
 		try {
 			String methodName = "setInstanceIndex";
@@ -1222,9 +1187,28 @@ public class CalendarBookingClp extends BaseModelImpl<CalendarBooking>
 	}
 
 	@Override
-	public com.liferay.calendar.notification.NotificationType getSecondReminderNotificationType() {
+	public com.liferay.calendar.recurrence.Recurrence getRecurrenceObj() {
 		try {
-			String methodName = "getSecondReminderNotificationType";
+			String methodName = "getRecurrenceObj";
+
+			Class<?>[] parameterTypes = new Class<?>[] {  };
+
+			Object[] parameterValues = new Object[] {  };
+
+			com.liferay.calendar.recurrence.Recurrence returnObj = (com.liferay.calendar.recurrence.Recurrence)invokeOnRemoteModel(methodName,
+					parameterTypes, parameterValues);
+
+			return returnObj;
+		}
+		catch (Exception e) {
+			throw new UnsupportedOperationException(e);
+		}
+	}
+
+	@Override
+	public com.liferay.calendar.notification.NotificationType getFirstReminderNotificationType() {
+		try {
+			String methodName = "getFirstReminderNotificationType";
 
 			Class<?>[] parameterTypes = new Class<?>[] {  };
 
@@ -1260,6 +1244,44 @@ public class CalendarBookingClp extends BaseModelImpl<CalendarBooking>
 	}
 
 	@Override
+	public com.liferay.calendar.model.CalendarResource getCalendarResource() {
+		try {
+			String methodName = "getCalendarResource";
+
+			Class<?>[] parameterTypes = new Class<?>[] {  };
+
+			Object[] parameterValues = new Object[] {  };
+
+			com.liferay.calendar.model.CalendarResource returnObj = (com.liferay.calendar.model.CalendarResource)invokeOnRemoteModel(methodName,
+					parameterTypes, parameterValues);
+
+			return returnObj;
+		}
+		catch (Exception e) {
+			throw new UnsupportedOperationException(e);
+		}
+	}
+
+	@Override
+	public com.liferay.calendar.notification.NotificationType getSecondReminderNotificationType() {
+		try {
+			String methodName = "getSecondReminderNotificationType";
+
+			Class<?>[] parameterTypes = new Class<?>[] {  };
+
+			Object[] parameterValues = new Object[] {  };
+
+			com.liferay.calendar.notification.NotificationType returnObj = (com.liferay.calendar.notification.NotificationType)invokeOnRemoteModel(methodName,
+					parameterTypes, parameterValues);
+
+			return returnObj;
+		}
+		catch (Exception e) {
+			throw new UnsupportedOperationException(e);
+		}
+	}
+
+	@Override
 	public java.util.List<com.liferay.calendar.model.CalendarBooking> getChildCalendarBookings() {
 		try {
 			String methodName = "getChildCalendarBookings";
@@ -1270,6 +1292,25 @@ public class CalendarBookingClp extends BaseModelImpl<CalendarBooking>
 
 			java.util.List<com.liferay.calendar.model.CalendarBooking> returnObj =
 				(java.util.List<com.liferay.calendar.model.CalendarBooking>)invokeOnRemoteModel(methodName,
+					parameterTypes, parameterValues);
+
+			return returnObj;
+		}
+		catch (Exception e) {
+			throw new UnsupportedOperationException(e);
+		}
+	}
+
+	@Override
+	public long getDuration() {
+		try {
+			String methodName = "getDuration";
+
+			Class<?>[] parameterTypes = new Class<?>[] {  };
+
+			Object[] parameterValues = new Object[] {  };
+
+			Long returnObj = (Long)invokeOnRemoteModel(methodName,
 					parameterTypes, parameterValues);
 
 			return returnObj;
@@ -1337,15 +1378,15 @@ public class CalendarBookingClp extends BaseModelImpl<CalendarBooking>
 	}
 
 	@Override
-	public com.liferay.calendar.model.CalendarResource getCalendarResource() {
+	public boolean isRecurring() {
 		try {
-			String methodName = "getCalendarResource";
+			String methodName = "isRecurring";
 
 			Class<?>[] parameterTypes = new Class<?>[] {  };
 
 			Object[] parameterValues = new Object[] {  };
 
-			com.liferay.calendar.model.CalendarResource returnObj = (com.liferay.calendar.model.CalendarResource)invokeOnRemoteModel(methodName,
+			Boolean returnObj = (Boolean)invokeOnRemoteModel(methodName,
 					parameterTypes, parameterValues);
 
 			return returnObj;
@@ -1356,53 +1397,15 @@ public class CalendarBookingClp extends BaseModelImpl<CalendarBooking>
 	}
 
 	@Override
-	public long getDuration() {
+	public java.util.TimeZone getTimeZone() {
 		try {
-			String methodName = "getDuration";
+			String methodName = "getTimeZone";
 
 			Class<?>[] parameterTypes = new Class<?>[] {  };
 
 			Object[] parameterValues = new Object[] {  };
 
-			Long returnObj = (Long)invokeOnRemoteModel(methodName,
-					parameterTypes, parameterValues);
-
-			return returnObj;
-		}
-		catch (Exception e) {
-			throw new UnsupportedOperationException(e);
-		}
-	}
-
-	@Override
-	public com.liferay.calendar.recurrence.Recurrence getRecurrenceObj() {
-		try {
-			String methodName = "getRecurrenceObj";
-
-			Class<?>[] parameterTypes = new Class<?>[] {  };
-
-			Object[] parameterValues = new Object[] {  };
-
-			com.liferay.calendar.recurrence.Recurrence returnObj = (com.liferay.calendar.recurrence.Recurrence)invokeOnRemoteModel(methodName,
-					parameterTypes, parameterValues);
-
-			return returnObj;
-		}
-		catch (Exception e) {
-			throw new UnsupportedOperationException(e);
-		}
-	}
-
-	@Override
-	public com.liferay.calendar.notification.NotificationType getFirstReminderNotificationType() {
-		try {
-			String methodName = "getFirstReminderNotificationType";
-
-			Class<?>[] parameterTypes = new Class<?>[] {  };
-
-			Object[] parameterValues = new Object[] {  };
-
-			com.liferay.calendar.notification.NotificationType returnObj = (com.liferay.calendar.notification.NotificationType)invokeOnRemoteModel(methodName,
+			java.util.TimeZone returnObj = (java.util.TimeZone)invokeOnRemoteModel(methodName,
 					parameterTypes, parameterValues);
 
 			return returnObj;

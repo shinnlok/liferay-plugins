@@ -14,61 +14,40 @@
 
 package com.liferay.knowledgebase.display.portlet;
 
-import com.liferay.knowledgebase.KBArticleContentException;
-import com.liferay.knowledgebase.KBArticlePriorityException;
-import com.liferay.knowledgebase.KBArticleTitleException;
-import com.liferay.knowledgebase.KBCommentContentException;
 import com.liferay.knowledgebase.NoSuchArticleException;
 import com.liferay.knowledgebase.NoSuchCommentException;
-import com.liferay.knowledgebase.admin.portlet.AdminPortlet;
 import com.liferay.knowledgebase.model.KBArticle;
 import com.liferay.knowledgebase.model.KBArticleConstants;
-import com.liferay.knowledgebase.model.KBComment;
+import com.liferay.knowledgebase.model.KBFolder;
+import com.liferay.knowledgebase.model.KBFolderConstants;
+import com.liferay.knowledgebase.portlet.BaseKBPortlet;
 import com.liferay.knowledgebase.service.KBArticleLocalServiceUtil;
 import com.liferay.knowledgebase.service.KBArticleServiceUtil;
-import com.liferay.knowledgebase.service.KBCommentLocalServiceUtil;
-import com.liferay.knowledgebase.service.KBCommentServiceUtil;
+import com.liferay.knowledgebase.service.KBFolderLocalServiceUtil;
+import com.liferay.knowledgebase.service.KBFolderServiceUtil;
 import com.liferay.knowledgebase.service.permission.KBArticlePermission;
+import com.liferay.knowledgebase.service.permission.KBFolderPermission;
 import com.liferay.knowledgebase.util.ActionKeys;
+import com.liferay.knowledgebase.util.KnowledgeBaseUtil;
 import com.liferay.knowledgebase.util.PortletKeys;
 import com.liferay.knowledgebase.util.WebKeys;
 import com.liferay.knowledgebase.util.comparator.KBArticlePriorityComparator;
 import com.liferay.portal.NoSuchSubscriptionException;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.json.JSONFactoryUtil;
-import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.portlet.PortletResponseUtil;
-import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.servlet.SessionMessages;
-import com.liferay.portal.kernel.upload.UploadException;
-import com.liferay.portal.kernel.upload.UploadPortletRequest;
-import com.liferay.portal.kernel.util.Constants;
-import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.portal.kernel.util.HttpUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.kernel.util.StreamUtil;
-import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.Tuple;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
-import com.liferay.portal.portletfilerepository.PortletFileRepositoryUtil;
 import com.liferay.portal.security.auth.PrincipalException;
-import com.liferay.portal.security.permission.PermissionChecker;
-import com.liferay.portal.service.ServiceContext;
-import com.liferay.portal.service.ServiceContextFactory;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
-import com.liferay.portlet.asset.AssetCategoryException;
-import com.liferay.portlet.asset.AssetTagException;
-import com.liferay.portlet.documentlibrary.DuplicateFileException;
-import com.liferay.portlet.documentlibrary.FileNameException;
-import com.liferay.portlet.documentlibrary.FileSizeException;
-import com.liferay.portlet.documentlibrary.NoSuchFileException;
-import com.liferay.util.bridges.mvc.MVCPortlet;
+import com.liferay.portlet.PortalPreferences;
+import com.liferay.portlet.PortletPreferencesFactoryUtil;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import java.util.List;
 
@@ -78,121 +57,13 @@ import javax.portlet.PortletException;
 import javax.portlet.PortletPreferences;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.portlet.ResourceRequest;
-import javax.portlet.ResourceResponse;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Peter Shin
  * @author Brian Wing Shun Chan
  * @author Sergio González
  */
-public class DisplayPortlet extends MVCPortlet {
-
-	public void addTempAttachment(
-			ActionRequest actionRequest, ActionResponse actionResponse)
-		throws Exception {
-
-		UploadPortletRequest uploadPortletRequest =
-			PortalUtil.getUploadPortletRequest(actionRequest);
-
-		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
-		long resourcePrimKey = ParamUtil.getLong(
-			actionRequest, "resourcePrimKey");
-		String sourceFileName = uploadPortletRequest.getFileName("file");
-
-		InputStream inputStream = null;
-
-		try {
-			inputStream = uploadPortletRequest.getFileAsStream("file");
-
-			String mimeType = uploadPortletRequest.getContentType("file");
-
-			KBArticleServiceUtil.addTempAttachment(
-				themeDisplay.getScopeGroupId(), resourcePrimKey, sourceFileName,
-				_TEMP_FOLDER_NAME, inputStream, mimeType);
-		}
-		finally {
-			StreamUtil.cleanUp(inputStream);
-		}
-	}
-
-	public void deleteKBArticle(
-			ActionRequest actionRequest, ActionResponse actionResponse)
-		throws Exception {
-
-		long resourcePrimKey = ParamUtil.getLong(
-			actionRequest, "resourcePrimKey");
-
-		KBArticleServiceUtil.deleteKBArticle(resourcePrimKey);
-	}
-
-	public void deleteKBComment(
-			ActionRequest actionRequest, ActionResponse actionResponse)
-		throws Exception {
-
-		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
-		if (!themeDisplay.isSignedIn()) {
-			return;
-		}
-
-		long kbCommentId = ParamUtil.getLong(actionRequest, "kbCommentId");
-
-		KBCommentServiceUtil.deleteKBComment(kbCommentId);
-
-		SessionMessages.add(actionRequest, "feedbackDeleted");
-	}
-
-	public void deleteTempAttachment(
-			ActionRequest actionRequest, ActionResponse actionResponse)
-		throws Exception {
-
-		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
-		long resourcePrimKey = ParamUtil.getLong(
-			actionRequest, "resourcePrimKey");
-		String fileName = ParamUtil.getString(actionRequest, "fileName");
-
-		JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
-
-		try {
-			KBArticleServiceUtil.deleteTempAttachment(
-				themeDisplay.getScopeGroupId(), resourcePrimKey, fileName,
-				_TEMP_FOLDER_NAME);
-
-			jsonObject.put("deleted", Boolean.TRUE);
-		}
-		catch (Exception e) {
-			String errorMessage = themeDisplay.translate(
-				"an-unexpected-error-occurred-while-deleting-the-file");
-
-			jsonObject.put("deleted", Boolean.FALSE);
-			jsonObject.put("errorMessage", errorMessage);
-		}
-
-		writeJSON(actionRequest, actionResponse, jsonObject);
-	}
-
-	public void moveKBArticle(
-			ActionRequest actionRequest, ActionResponse actionResponse)
-		throws Exception {
-
-		long resourcePrimKey = ParamUtil.getLong(
-			actionRequest, "resourcePrimKey");
-
-		long parentResourcePrimKey = ParamUtil.getLong(
-			actionRequest, "parentResourcePrimKey");
-		double priority = ParamUtil.getDouble(actionRequest, "priority");
-
-		KBArticleServiceUtil.moveKBArticle(
-			resourcePrimKey, parentResourcePrimKey, priority);
-	}
+public class DisplayPortlet extends BaseKBPortlet {
 
 	@Override
 	public void render(
@@ -209,26 +80,51 @@ public class DisplayPortlet extends MVCPortlet {
 
 			KBArticle kbArticle = null;
 
-			long resourcePrimKey = getResourcePrimKey(renderRequest);
+			Tuple resourceTuple = getResourceTuple(renderRequest);
 
-			long parentResourcePrimKey = ParamUtil.getLong(
-				renderRequest, "parentResourcePrimKey",
-				KBArticleConstants.DEFAULT_PARENT_RESOURCE_PRIM_KEY);
+			long resourcePrimKey = (Long)resourceTuple.getObject(1);
 
-			if (resourcePrimKey > 0) {
-				kbArticle = KBArticleServiceUtil.getLatestKBArticle(
-					resourcePrimKey, status);
+			if (resourcePrimKey != KBFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
+				long resourceClassNameId = (Long)resourceTuple.getObject(0);
+
+				long kbFolderClassNameId = PortalUtil.getClassNameId(
+					KBFolderConstants.getClassName());
+
+				if (resourceClassNameId == kbFolderClassNameId) {
+					PortalPreferences portalPreferences =
+						PortletPreferencesFactoryUtil.getPortalPreferences(
+							renderRequest);
+
+					String preferredKBFolderUrlTitle =
+						portalPreferences.getValue(
+							PortletKeys.KNOWLEDGE_BASE_DISPLAY,
+							"preferredKBFolderUrlTitle");
+
+					kbArticle = getKBFolderKBArticle(
+						themeDisplay.getScopeGroupId(), resourcePrimKey,
+						preferredKBFolderUrlTitle);
+				}
+				else {
+					kbArticle = KBArticleServiceUtil.fetchLatestKBArticle(
+						resourcePrimKey, status);
+				}
 			}
-			else if (parentResourcePrimKey ==
-						KBArticleConstants.DEFAULT_PARENT_RESOURCE_PRIM_KEY) {
+			else {
+				long parentResourcePrimKey = ParamUtil.getLong(
+					renderRequest, "parentResourcePrimKey",
+					KBFolderConstants.DEFAULT_PARENT_FOLDER_ID);
 
-				List<KBArticle> kbArticles =
-					KBArticleLocalServiceUtil.getGroupKBArticles(
-						themeDisplay.getScopeGroupId(), status, 0, 1,
-						new KBArticlePriorityComparator(true));
+				if (parentResourcePrimKey ==
+						KBFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
 
-				if (!kbArticles.isEmpty()) {
-					kbArticle = kbArticles.get(0);
+					List<KBArticle> kbArticles =
+						KBArticleLocalServiceUtil.getGroupKBArticles(
+							themeDisplay.getScopeGroupId(), status, 0, 1,
+							new KBArticlePriorityComparator(true));
+
+					if (!kbArticles.isEmpty()) {
+						kbArticle = kbArticles.get(0);
+					}
 				}
 			}
 
@@ -254,223 +150,53 @@ public class DisplayPortlet extends MVCPortlet {
 		super.render(renderRequest, renderResponse);
 	}
 
-	public void serveAttachment(
-			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
-		throws Exception {
-
-		long fileEntryId = ParamUtil.getLong(resourceRequest, "fileEntryId");
-
-		FileEntry fileEntry = PortletFileRepositoryUtil.getPortletFileEntry(
-			fileEntryId);
-
-		PortletResponseUtil.sendFile(
-			resourceRequest, resourceResponse, fileEntry.getTitle(),
-			fileEntry.getContentStream(), fileEntry.getMimeType());
-	}
-
-	public void serveKBArticleRSS(
-			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
-		throws Exception {
-
-		if (!PortalUtil.isRSSFeedsEnabled()) {
-			PortalUtil.sendRSSFeedsDisabledError(
-				resourceRequest, resourceResponse);
-
-			return;
-		}
-
-		ThemeDisplay themeDisplay = (ThemeDisplay)resourceRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
-		long resourcePrimKey = ParamUtil.getLong(
-			resourceRequest, "resourcePrimKey");
-
-		int rssDelta = ParamUtil.getInteger(resourceRequest, "rssDelta");
-		String rssDisplayStyle = ParamUtil.getString(
-			resourceRequest, "rssDisplayStyle");
-		String rssFormat = ParamUtil.getString(resourceRequest, "rssFormat");
-
-		String rss = KBArticleServiceUtil.getKBArticleRSS(
-			resourcePrimKey, WorkflowConstants.STATUS_APPROVED, rssDelta,
-			rssDisplayStyle, rssFormat, themeDisplay);
-
-		PortletResponseUtil.sendFile(
-			resourceRequest, resourceResponse, null,
-			rss.getBytes(StringPool.UTF8), ContentTypes.TEXT_XML_UTF8);
-	}
-
-	@Override
-	public void serveResource(
-			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
-		throws IOException, PortletException {
-
-		try {
-			String resourceID = resourceRequest.getResourceID();
-
-			if (resourceID.equals("attachment")) {
-				serveAttachment(resourceRequest, resourceResponse);
-			}
-			else if (resourceID.equals("kbArticleRSS")) {
-				serveKBArticleRSS(resourceRequest, resourceResponse);
-			}
-		}
-		catch (IOException ioe) {
-			throw ioe;
-		}
-		catch (PortletException pe) {
-			throw pe;
-		}
-		catch (Exception e) {
-			throw new PortletException(e);
-		}
-	}
-
-	public void subscribeKBArticle(
-			ActionRequest actionRequest, ActionResponse actionResponse)
-		throws Exception {
-
-		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
-		long resourcePrimKey = ParamUtil.getLong(
-			actionRequest, "resourcePrimKey");
-
-		KBArticleServiceUtil.subscribeKBArticle(
-			themeDisplay.getScopeGroupId(), resourcePrimKey);
-	}
-
-	public void unsubscribeKBArticle(
-			ActionRequest actionRequest, ActionResponse actionResponse)
-		throws Exception {
-
-		long resourcePrimKey = ParamUtil.getLong(
-			actionRequest, "resourcePrimKey");
-
-		KBArticleServiceUtil.unsubscribeKBArticle(resourcePrimKey);
-	}
-
-	public void updateKBArticle(
-			ActionRequest actionRequest, ActionResponse actionResponse)
-		throws Exception {
-
-		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
-		String portletId = PortalUtil.getPortletId(actionRequest);
-
-		String cmd = ParamUtil.getString(actionRequest, Constants.CMD);
-
-		long resourcePrimKey = ParamUtil.getLong(
-			actionRequest, "resourcePrimKey");
-
-		long parentResourcePrimKey = ParamUtil.getLong(
-			actionRequest, "parentResourcePrimKey");
-		String title = ParamUtil.getString(actionRequest, "title");
-		String urlTitle = ParamUtil.getString(actionRequest, "urlTitle");
-		String content = ParamUtil.getString(actionRequest, "content");
-		String description = ParamUtil.getString(actionRequest, "description");
-		String[] sections = actionRequest.getParameterValues("sections");
-		String[] selectedFileNames = ParamUtil.getParameterValues(
-			actionRequest, "selectedFileName");
-		long[] removeFileEntryIds = ParamUtil.getLongValues(
-			actionRequest, "removeFileEntryIds");
-		int workflowAction = ParamUtil.getInteger(
-			actionRequest, "workflowAction");
-
-		KBArticle kbArticle = null;
-
-		ServiceContext serviceContext = ServiceContextFactory.getInstance(
-			KBArticle.class.getName(), actionRequest);
-
-		if (cmd.equals(Constants.ADD)) {
-			kbArticle = KBArticleServiceUtil.addKBArticle(
-				portletId, parentResourcePrimKey, title, urlTitle, content,
-				description, sections, selectedFileNames, serviceContext);
-		}
-		else if (cmd.equals(Constants.UPDATE)) {
-			kbArticle = KBArticleServiceUtil.updateKBArticle(
-				resourcePrimKey, title, content, description, sections,
-				selectedFileNames, removeFileEntryIds, serviceContext);
-		}
-
-		if (!cmd.equals(Constants.ADD) && !cmd.equals(Constants.UPDATE)) {
-			return;
-		}
-
-		if (workflowAction == WorkflowConstants.ACTION_SAVE_DRAFT) {
-			String namespace = actionResponse.getNamespace();
-			String redirect = getRedirect(actionRequest, actionResponse);
-
-			String editURL = PortalUtil.getLayoutFullURL(themeDisplay);
-
-			editURL = HttpUtil.setParameter(
-				editURL, "p_p_id", PortletKeys.KNOWLEDGE_BASE_ARTICLE);
-			editURL = HttpUtil.setParameter(
-				editURL, namespace + "mvcPath",
-				templatePath + "edit_article.jsp");
-			editURL = HttpUtil.setParameter(
-				editURL, namespace + "redirect", redirect);
-			editURL = HttpUtil.setParameter(
-				editURL, namespace + "resourcePrimKey",
-				kbArticle.getResourcePrimKey());
-			editURL = HttpUtil.setParameter(
-				editURL, namespace + "status", WorkflowConstants.STATUS_ANY);
-
-			actionRequest.setAttribute(WebKeys.REDIRECT, editURL);
-		}
-	}
-
-	public void updateKBComment(
-			ActionRequest actionRequest, ActionResponse actionResponse)
-		throws Exception {
-
-		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
-		if (!themeDisplay.isSignedIn()) {
-			return;
-		}
-
-		String cmd = ParamUtil.getString(actionRequest, Constants.CMD);
-
-		long kbCommentId = ParamUtil.getLong(actionRequest, "kbCommentId");
-
-		long classNameId = ParamUtil.getLong(actionRequest, "classNameId");
-		long classPK = ParamUtil.getLong(actionRequest, "classPK");
-		String content = ParamUtil.getString(actionRequest, "content");
-		boolean helpful = ParamUtil.getBoolean(actionRequest, "helpful");
-
-		ServiceContext serviceContext = ServiceContextFactory.getInstance(
-			KBComment.class.getName(), actionRequest);
-
-		if (cmd.equals(Constants.ADD)) {
-			KBCommentLocalServiceUtil.addKBComment(
-				themeDisplay.getUserId(), classNameId, classPK, content,
-				helpful, serviceContext);
-		}
-		else if (cmd.equals(Constants.UPDATE)) {
-			KBCommentServiceUtil.updateKBComment(
-				kbCommentId, classNameId, classPK, content, helpful,
-				serviceContext);
-		}
-
-		SessionMessages.add(actionRequest, "feedbackSaved");
-	}
-
-	public void updateKBCommentStatus(
+	public void updateRootKBFolderId(
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws PortalException {
 
-		long kbCommentId = ParamUtil.getLong(actionRequest, "kbCommentId");
+		long kbFolderId = ParamUtil.getLong(actionRequest, "rootKBFolderId");
 
-		int status = ParamUtil.getInteger(actionRequest, "status");
+		if (kbFolderId == KBFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
+			return;
+		}
 
-		ServiceContext serviceContext = ServiceContextFactory.getInstance(
-			KBComment.class.getName(), actionRequest);
+		KBFolder kbFolder = KBFolderServiceUtil.getKBFolder(kbFolderId);
 
-		KBCommentServiceUtil.updateStatus(kbCommentId, status, serviceContext);
+		PortalPreferences portalPreferences =
+			PortletPreferencesFactoryUtil.getPortalPreferences(
+				PortalUtil.getLiferayPortletRequest(actionRequest));
 
-		SessionMessages.add(actionRequest, "feedbackStatusUpdated");
+		portalPreferences.setValue(
+			PortletKeys.KNOWLEDGE_BASE_DISPLAY, "preferredKBFolderUrlTitle",
+			kbFolder.getUrlTitle());
+
+		String urlTitle = ParamUtil.getString(actionRequest, "urlTitle");
+
+		if (Validator.isNull(urlTitle)) {
+			return;
+		}
+
+		KBArticle kbArticle =
+			KBArticleLocalServiceUtil.fetchKBArticleByUrlTitle(
+				kbFolder.getGroupId(), kbFolder.getUrlTitle(), urlTitle);
+
+		if (kbArticle == null) {
+			return;
+		}
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		if (!KBArticlePermission.contains(
+				themeDisplay.getPermissionChecker(), kbArticle,
+				ActionKeys.VIEW)) {
+
+			return;
+		}
+
+		actionResponse.setRenderParameter(
+			"kbFolderUrlTitle", kbFolder.getUrlTitle());
+		actionResponse.setRenderParameter("urlTitle", urlTitle);
 	}
 
 	@Override
@@ -481,27 +207,13 @@ public class DisplayPortlet extends MVCPortlet {
 			actionRequest, ActionRequest.ACTION_NAME);
 
 		if (actionName.equals("deleteKBArticle") ||
-			actionName.equals("updateKBComment")) {
+			actionName.equals("updateKBComment") ||
+			actionName.equals("updateRootKBFolderId")) {
 
 			return;
 		}
 
 		super.addSuccessMessage(actionRequest, actionResponse);
-	}
-
-	protected void checkExceededSizeLimit(HttpServletRequest request)
-		throws PortalException {
-
-		UploadException uploadException = (UploadException)request.getAttribute(
-			WebKeys.UPLOAD_EXCEPTION);
-
-		if (uploadException != null) {
-			if (uploadException.isExceededSizeLimit()) {
-				throw new FileSizeException(uploadException.getCause());
-			}
-
-			throw new PortalException(uploadException.getCause());
-		}
 	}
 
 	@Override
@@ -525,7 +237,43 @@ public class DisplayPortlet extends MVCPortlet {
 		}
 	}
 
-	protected long getResourcePrimKey(RenderRequest renderRequest)
+	protected KBArticle getKBFolderKBArticle(
+			long groupId, long kbFolderId, String kbFolderUrlTitle)
+		throws PortalException {
+
+		if (Validator.isNotNull(kbFolderUrlTitle)) {
+			KBFolder kbFolder = KBFolderServiceUtil.fetchKBFolderByUrlTitle(
+				groupId, kbFolderId, kbFolderUrlTitle);
+
+			if (kbFolder != null) {
+				kbFolderId = kbFolder.getKbFolderId();
+			}
+		}
+
+		List<KBArticle> kbArticles = KBArticleServiceUtil.getKBArticles(
+			groupId, kbFolderId, WorkflowConstants.STATUS_APPROVED, 0, 1,
+			new KBArticlePriorityComparator(true));
+
+		if (!kbArticles.isEmpty()) {
+			return kbArticles.get(0);
+		}
+
+		List<KBFolder> kbFolders = KnowledgeBaseUtil.getAlternateRootKBFolders(
+			groupId, kbFolderId);
+
+		for (KBFolder kbFolder : kbFolders) {
+			KBArticle kbArticle = getKBFolderKBArticle(
+				groupId, kbFolder.getKbFolderId(), kbFolder.getUrlTitle());
+
+			if (kbArticle != null) {
+				return kbArticle;
+			}
+		}
+
+		return null;
+	}
+
+	protected Tuple getResourceTuple(RenderRequest renderRequest)
 		throws Exception {
 
 		ThemeDisplay themeDisplay = (ThemeDisplay)renderRequest.getAttribute(
@@ -534,43 +282,96 @@ public class DisplayPortlet extends MVCPortlet {
 		String urlTitle = ParamUtil.getString(renderRequest, "urlTitle");
 
 		if (Validator.isNotNull(urlTitle)) {
-			KBArticle kbArticle =
-				KBArticleLocalServiceUtil.getKBArticleByUrlTitle(
-					themeDisplay.getScopeGroupId(), urlTitle);
+			String kbFolderUrlTitle = ParamUtil.getString(
+				renderRequest, "kbFolderUrlTitle");
 
-			return kbArticle.getResourcePrimKey();
+			KBArticle kbArticle = null;
+
+			if (Validator.isNotNull(kbFolderUrlTitle)) {
+				kbArticle = KBArticleLocalServiceUtil.fetchKBArticleByUrlTitle(
+					themeDisplay.getScopeGroupId(), kbFolderUrlTitle, urlTitle);
+			}
+			else {
+				kbArticle = KBArticleLocalServiceUtil.fetchKBArticleByUrlTitle(
+					themeDisplay.getScopeGroupId(),
+					KBFolderConstants.DEFAULT_PARENT_FOLDER_ID, urlTitle);
+			}
+
+			if ((kbArticle != null) &&
+				KBArticlePermission.contains(
+					themeDisplay.getPermissionChecker(), kbArticle,
+					ActionKeys.VIEW)) {
+
+				return new Tuple(
+					kbArticle.getClassNameId(), kbArticle.getResourcePrimKey());
+			}
 		}
 
-		PortletPreferences preferences = renderRequest.getPreferences();
+		PortletPreferences portletPreferences = renderRequest.getPreferences();
 
-		long defaultValue = GetterUtil.getLong(
-			preferences.getValue("resourcePrimKey", null));
+		long defaultResourcePrimKey = GetterUtil.getLong(
+			portletPreferences.getValue("resourcePrimKey", null));
 
 		String mvcPath = ParamUtil.getString(renderRequest, "mvcPath");
 
-		if (((defaultValue == 0) && mvcPath.equals(viewTemplate)) ||
+		if (((defaultResourcePrimKey == 0) && mvcPath.equals(viewTemplate)) ||
 			mvcPath.equals("/display/select_configuration_article.jsp")) {
 
-			return 0;
+			return new Tuple(
+				PortalUtil.getClassNameId(KBFolderConstants.getClassName()),
+				KBFolderConstants.DEFAULT_PARENT_FOLDER_ID);
 		}
+
+		long defaultResourceClassNameId = GetterUtil.getLong(
+			portletPreferences.getValue("resourceClassNameId", null));
+
+		long resourceClassNameId = ParamUtil.getLong(
+			renderRequest, "resourceClassNameId", defaultResourceClassNameId);
 
 		long resourcePrimKey = ParamUtil.getLong(
-			renderRequest, "resourcePrimKey", defaultValue);
+			renderRequest, "resourcePrimKey", defaultResourcePrimKey);
 
-		if ((resourcePrimKey == 0) || (resourcePrimKey != defaultValue)) {
-			return resourcePrimKey;
+		if ((resourcePrimKey == 0) ||
+			(resourcePrimKey != defaultResourcePrimKey)) {
+
+			return new Tuple(resourceClassNameId, resourcePrimKey);
 		}
 
-		PermissionChecker permissionChecker =
-			themeDisplay.getPermissionChecker();
+		long kbFolderClassNameId = PortalUtil.getClassNameId(
+			KBFolderConstants.getClassName());
 
-		if (!KBArticlePermission.contains(
-				permissionChecker, defaultValue, ActionKeys.VIEW)) {
+		if (resourceClassNameId == kbFolderClassNameId) {
+			KBFolder kbFolder = KBFolderLocalServiceUtil.fetchKBFolder(
+				resourcePrimKey);
 
-			return 0;
+			if ((kbFolder != null) &&
+				!KBFolderPermission.contains(
+					themeDisplay.getPermissionChecker(),
+					themeDisplay.getScopeGroupId(), defaultResourcePrimKey,
+					ActionKeys.VIEW)) {
+
+				return new Tuple(
+					PortalUtil.getClassNameId(KBFolderConstants.getClassName()),
+					KBFolderConstants.DEFAULT_PARENT_FOLDER_ID);
+			}
+		}
+		else {
+			KBArticle kbArticle =
+				KBArticleLocalServiceUtil.fetchLatestKBArticle(
+					defaultResourcePrimKey, WorkflowConstants.STATUS_ANY);
+
+			if ((kbArticle != null) &&
+				!KBArticlePermission.contains(
+					themeDisplay.getPermissionChecker(), defaultResourcePrimKey,
+					ActionKeys.VIEW)) {
+
+				return new Tuple(
+					PortalUtil.getClassNameId(KBFolderConstants.getClassName()),
+					KBFolderConstants.DEFAULT_PARENT_FOLDER_ID);
+			}
 		}
 
-		return defaultValue;
+		return new Tuple(defaultResourceClassNameId, defaultResourcePrimKey);
 	}
 
 	protected int getStatus(RenderRequest renderRequest) throws Exception {
@@ -581,56 +382,47 @@ public class DisplayPortlet extends MVCPortlet {
 			return WorkflowConstants.STATUS_APPROVED;
 		}
 
-		String value = renderRequest.getParameter("status");
-		int status = GetterUtil.getInteger(value);
+		String statusString = renderRequest.getParameter("status");
 
-		if ((value != null) && (status == WorkflowConstants.STATUS_APPROVED)) {
+		int status = GetterUtil.getInteger(statusString);
+
+		if ((statusString != null) &&
+			(status == WorkflowConstants.STATUS_APPROVED)) {
+
 			return WorkflowConstants.STATUS_APPROVED;
 		}
 
-		long resourcePrimKey = getResourcePrimKey(renderRequest);
+		Tuple resourceTuple = getResourceTuple(renderRequest);
 
-		if (resourcePrimKey == 0) {
+		long resourcePrimKey = (Long)resourceTuple.getObject(1);
+
+		if (resourcePrimKey == KBFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
 			return WorkflowConstants.STATUS_APPROVED;
 		}
 
-		PermissionChecker permissionChecker =
-			themeDisplay.getPermissionChecker();
+		long resourceClassNameId = (Long)resourceTuple.getObject(0);
 
-		if (KBArticlePermission.contains(
-				permissionChecker, resourcePrimKey, ActionKeys.UPDATE)) {
+		long kbArticleClassNameId = PortalUtil.getClassNameId(
+			KBArticleConstants.getClassName());
 
-			return ParamUtil.getInteger(
-				renderRequest, "status", WorkflowConstants.STATUS_ANY);
+		if (resourceClassNameId == kbArticleClassNameId) {
+			KBArticle kbArticle = KBArticleServiceUtil.fetchLatestKBArticle(
+				resourcePrimKey, WorkflowConstants.STATUS_ANY);
+
+			if (kbArticle == null) {
+				return WorkflowConstants.STATUS_APPROVED;
+			}
+
+			if (KBArticlePermission.contains(
+					themeDisplay.getPermissionChecker(), resourcePrimKey,
+					ActionKeys.UPDATE)) {
+
+				return ParamUtil.getInteger(
+					renderRequest, "status", WorkflowConstants.STATUS_ANY);
+			}
 		}
 
 		return WorkflowConstants.STATUS_APPROVED;
 	}
-
-	@Override
-	protected boolean isSessionErrorException(Throwable cause) {
-		if (cause instanceof AssetCategoryException ||
-			cause instanceof AssetTagException ||
-			cause instanceof DuplicateFileException ||
-			cause instanceof FileNameException ||
-			cause instanceof FileSizeException ||
-			cause instanceof KBArticleContentException ||
-			cause instanceof KBArticlePriorityException ||
-			cause instanceof KBArticleTitleException ||
-			cause instanceof KBCommentContentException ||
-			cause instanceof NoSuchArticleException ||
-			cause instanceof NoSuchCommentException ||
-			cause instanceof NoSuchFileException ||
-			cause instanceof PrincipalException ||
-			super.isSessionErrorException(cause)) {
-
-			return true;
-		}
-
-		return false;
-	}
-
-	private static final String _TEMP_FOLDER_NAME =
-		AdminPortlet.class.getName();
 
 }

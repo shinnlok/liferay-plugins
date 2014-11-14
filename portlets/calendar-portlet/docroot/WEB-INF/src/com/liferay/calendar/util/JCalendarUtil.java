@@ -52,22 +52,22 @@ public class JCalendarUtil {
 	}
 
 	public static int getDSTShift(
-		Calendar calendar1, Calendar calendar2, TimeZone timeZone) {
+		Calendar jCalendar1, Calendar jCalendar2, TimeZone timeZone) {
 
-		calendar1 = JCalendarUtil.getJCalendar(
-			calendar1.getTimeInMillis(), timeZone);
-		calendar2 = JCalendarUtil.getJCalendar(
-			calendar2.getTimeInMillis(), timeZone);
+		jCalendar1 = JCalendarUtil.getJCalendar(
+			jCalendar1.getTimeInMillis(), timeZone);
+		jCalendar2 = JCalendarUtil.getJCalendar(
+			jCalendar2.getTimeInMillis(), timeZone);
 
-		Calendar sameDayCalendar = JCalendarUtil.getJCalendar(
-			calendar1.get(Calendar.YEAR), calendar1.get(Calendar.MONTH),
-			calendar1.get(Calendar.DAY_OF_MONTH),
-			calendar2.get(Calendar.HOUR_OF_DAY), calendar2.get(Calendar.MINUTE),
-			calendar2.get(Calendar.SECOND), calendar2.get(Calendar.MILLISECOND),
-			timeZone);
+		Calendar sameDayJCalendar = getJCalendar(
+			jCalendar1.get(Calendar.YEAR), jCalendar1.get(Calendar.MONTH),
+			jCalendar1.get(Calendar.DAY_OF_MONTH),
+			jCalendar2.get(Calendar.HOUR_OF_DAY),
+			jCalendar2.get(Calendar.MINUTE), jCalendar2.get(Calendar.SECOND),
+			jCalendar2.get(Calendar.MILLISECOND), timeZone);
 
 		Long shift =
-			calendar1.getTimeInMillis() - sameDayCalendar.getTimeInMillis();
+			jCalendar1.getTimeInMillis() - sameDayJCalendar.getTimeInMillis();
 
 		return shift.intValue();
 	}
@@ -111,6 +111,22 @@ public class JCalendarUtil {
 		}
 
 		return offset;
+	}
+
+	public static int getWeekdayPosition(Calendar jCalendar) {
+		int weekOfMonth = jCalendar.get(Calendar.WEEK_OF_MONTH);
+
+		Calendar firstDayJCalendar = (Calendar)jCalendar.clone();
+
+		firstDayJCalendar.set(Calendar.DAY_OF_MONTH, 1);
+
+		if (firstDayJCalendar.get(Calendar.DAY_OF_WEEK) >
+				jCalendar.get(Calendar.DAY_OF_WEEK)) {
+
+			return weekOfMonth - 1;
+		}
+
+		return weekOfMonth;
 	}
 
 	public static Calendar toLastHourJCalendar(Calendar jCalendar) {

@@ -14,17 +14,12 @@
 
 package com.liferay.pushnotifications.service.impl;
 
-import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.pushnotifications.model.PushNotificationsDevice;
-import com.liferay.pushnotifications.sender.PushNotificationsSender;
 import com.liferay.pushnotifications.service.base.PushNotificationsDeviceLocalServiceBaseImpl;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Silvio Santos
@@ -66,62 +61,16 @@ public class PushNotificationsDeviceLocalServiceImpl
 	}
 
 	@Override
-	public void sendPushNotification(JSONObject jsonObject, int start, int end)
-		throws PortalException {
+	public List<PushNotificationsDevice> getPushNotificationsDevices(
+		long toUserId, String platform, int start, int end) {
 
-		sendPushNotification(0, jsonObject, start, end);
-	}
-
-	@Override
-	public void sendPushNotification(
-			long userId, JSONObject jsonObject, int start, int end)
-		throws PortalException {
-
-		for (Map.Entry<String, PushNotificationsSender> entry :
-				_pushNotificationsSenders.entrySet()) {
-
-			List<String> tokens = new ArrayList<String>();
-
-			List<PushNotificationsDevice> pushNotificationsDevices =
-				getPushNotificationsDevices(userId, entry.getKey(), start, end);
-
-			for (PushNotificationsDevice pushNotificationsDevice :
-					pushNotificationsDevices) {
-
-				tokens.add(pushNotificationsDevice.getToken());
-			}
-
-			if (tokens.isEmpty()) {
-				continue;
-			}
-
-			PushNotificationsSender pushNotificationsSender = entry.getValue();
-
-			try {
-				pushNotificationsSender.send(tokens, jsonObject);
-			}
-			catch (PortalException pe) {
-				throw pe;
-			}
-			catch (Exception e) {
-				throw new PortalException(e);
-			}
-		}
-	}
-
-	protected List<PushNotificationsDevice> getPushNotificationsDevices(
-		long userId, String platform, int start, int end) {
-
-		if (userId == 0) {
+		if (toUserId == 0) {
 			return pushNotificationsDevicePersistence.findByPlatform(
 				platform, start, end);
 		}
 
 		return pushNotificationsDevicePersistence.findByU_P(
-			userId, platform, start, end);
+			toUserId, platform, start, end);
 	}
-
-	@BeanReference(name = "pushNotificationsSenders")
-	private Map<String, PushNotificationsSender> _pushNotificationsSenders;
 
 }

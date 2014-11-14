@@ -14,6 +14,8 @@
 
 package com.liferay.knowledgebase.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.lar.StagedModelType;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.ModelWrapper;
@@ -31,6 +33,7 @@ import java.util.Map;
  * @see KBArticle
  * @generated
  */
+@ProviderType
 public class KBArticleWrapper implements KBArticle, ModelWrapper<KBArticle> {
 	public KBArticleWrapper(KBArticle kbArticle) {
 		_kbArticle = kbArticle;
@@ -60,7 +63,10 @@ public class KBArticleWrapper implements KBArticle, ModelWrapper<KBArticle> {
 		attributes.put("createDate", getCreateDate());
 		attributes.put("modifiedDate", getModifiedDate());
 		attributes.put("rootResourcePrimKey", getRootResourcePrimKey());
+		attributes.put("parentResourceClassNameId",
+			getParentResourceClassNameId());
 		attributes.put("parentResourcePrimKey", getParentResourcePrimKey());
+		attributes.put("kbFolderId", getKbFolderId());
 		attributes.put("version", getVersion());
 		attributes.put("title", getTitle());
 		attributes.put("urlTitle", getUrlTitle());
@@ -71,6 +77,7 @@ public class KBArticleWrapper implements KBArticle, ModelWrapper<KBArticle> {
 		attributes.put("viewCount", getViewCount());
 		attributes.put("latest", getLatest());
 		attributes.put("main", getMain());
+		attributes.put("sourceURL", getSourceURL());
 		attributes.put("status", getStatus());
 		attributes.put("statusByUserId", getStatusByUserId());
 		attributes.put("statusByUserName", getStatusByUserName());
@@ -141,11 +148,24 @@ public class KBArticleWrapper implements KBArticle, ModelWrapper<KBArticle> {
 			setRootResourcePrimKey(rootResourcePrimKey);
 		}
 
+		Long parentResourceClassNameId = (Long)attributes.get(
+				"parentResourceClassNameId");
+
+		if (parentResourceClassNameId != null) {
+			setParentResourceClassNameId(parentResourceClassNameId);
+		}
+
 		Long parentResourcePrimKey = (Long)attributes.get(
 				"parentResourcePrimKey");
 
 		if (parentResourcePrimKey != null) {
 			setParentResourcePrimKey(parentResourcePrimKey);
+		}
+
+		Long kbFolderId = (Long)attributes.get("kbFolderId");
+
+		if (kbFolderId != null) {
+			setKbFolderId(kbFolderId);
 		}
 
 		Integer version = (Integer)attributes.get("version");
@@ -208,6 +228,12 @@ public class KBArticleWrapper implements KBArticle, ModelWrapper<KBArticle> {
 			setMain(main);
 		}
 
+		String sourceURL = (String)attributes.get("sourceURL");
+
+		if (sourceURL != null) {
+			setSourceURL(sourceURL);
+		}
+
 		Integer status = (Integer)attributes.get("status");
 
 		if (status != null) {
@@ -268,6 +294,11 @@ public class KBArticleWrapper implements KBArticle, ModelWrapper<KBArticle> {
 	public long getAttachmentsFolderId()
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _kbArticle.getAttachmentsFolderId();
+	}
+
+	@Override
+	public long getClassNameId() {
+		return _kbArticle.getClassNameId();
 	}
 
 	@Override
@@ -341,6 +372,16 @@ public class KBArticleWrapper implements KBArticle, ModelWrapper<KBArticle> {
 	}
 
 	/**
+	* Returns the kb folder ID of this k b article.
+	*
+	* @return the kb folder ID of this k b article
+	*/
+	@Override
+	public long getKbFolderId() {
+		return _kbArticle.getKbFolderId();
+	}
+
+	/**
 	* Returns the latest of this k b article.
 	*
 	* @return the latest of this k b article
@@ -377,6 +418,16 @@ public class KBArticleWrapper implements KBArticle, ModelWrapper<KBArticle> {
 	}
 
 	/**
+	* Returns the parent resource class name ID of this k b article.
+	*
+	* @return the parent resource class name ID of this k b article
+	*/
+	@Override
+	public long getParentResourceClassNameId() {
+		return _kbArticle.getParentResourceClassNameId();
+	}
+
+	/**
 	* Returns the parent resource prim key of this k b article.
 	*
 	* @return the parent resource prim key of this k b article
@@ -384,6 +435,12 @@ public class KBArticleWrapper implements KBArticle, ModelWrapper<KBArticle> {
 	@Override
 	public long getParentResourcePrimKey() {
 		return _kbArticle.getParentResourcePrimKey();
+	}
+
+	@Override
+	public java.lang.String getParentTitle(java.util.Locale locale, int status)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _kbArticle.getParentTitle(locale, status);
 	}
 
 	/**
@@ -439,6 +496,16 @@ public class KBArticleWrapper implements KBArticle, ModelWrapper<KBArticle> {
 	@Override
 	public java.lang.String getSections() {
 		return _kbArticle.getSections();
+	}
+
+	/**
+	* Returns the source u r l of this k b article.
+	*
+	* @return the source u r l of this k b article
+	*/
+	@Override
+	public java.lang.String getSourceURL() {
+		return _kbArticle.getSourceURL();
 	}
 
 	/**
@@ -795,6 +862,16 @@ public class KBArticleWrapper implements KBArticle, ModelWrapper<KBArticle> {
 	}
 
 	/**
+	* Sets the kb folder ID of this k b article.
+	*
+	* @param kbFolderId the kb folder ID of this k b article
+	*/
+	@Override
+	public void setKbFolderId(long kbFolderId) {
+		_kbArticle.setKbFolderId(kbFolderId);
+	}
+
+	/**
 	* Sets whether this k b article is latest.
 	*
 	* @param latest the latest of this k b article
@@ -827,6 +904,16 @@ public class KBArticleWrapper implements KBArticle, ModelWrapper<KBArticle> {
 	@Override
 	public void setNew(boolean n) {
 		_kbArticle.setNew(n);
+	}
+
+	/**
+	* Sets the parent resource class name ID of this k b article.
+	*
+	* @param parentResourceClassNameId the parent resource class name ID of this k b article
+	*/
+	@Override
+	public void setParentResourceClassNameId(long parentResourceClassNameId) {
+		_kbArticle.setParentResourceClassNameId(parentResourceClassNameId);
 	}
 
 	/**
@@ -892,6 +979,16 @@ public class KBArticleWrapper implements KBArticle, ModelWrapper<KBArticle> {
 	@Override
 	public void setSections(java.lang.String sections) {
 		_kbArticle.setSections(sections);
+	}
+
+	/**
+	* Sets the source u r l of this k b article.
+	*
+	* @param sourceURL the source u r l of this k b article
+	*/
+	@Override
+	public void setSourceURL(java.lang.String sourceURL) {
+		_kbArticle.setSourceURL(sourceURL);
 	}
 
 	/**
@@ -1101,5 +1198,5 @@ public class KBArticleWrapper implements KBArticle, ModelWrapper<KBArticle> {
 		_kbArticle.resetOriginalValues();
 	}
 
-	private KBArticle _kbArticle;
+	private final KBArticle _kbArticle;
 }

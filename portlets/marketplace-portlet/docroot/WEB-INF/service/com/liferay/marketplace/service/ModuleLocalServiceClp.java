@@ -14,12 +14,15 @@
 
 package com.liferay.marketplace.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.service.InvokableLocalService;
 
 /**
  * @author Ryan Park
  * @generated
  */
+@ProviderType
 public class ModuleLocalServiceClp implements ModuleLocalService {
 	public ModuleLocalServiceClp(InvokableLocalService invokableLocalService) {
 		_invokableLocalService = invokableLocalService;
@@ -32,7 +35,10 @@ public class ModuleLocalServiceClp implements ModuleLocalService {
 
 		_methodName1 = "addModule";
 
-		_methodParameterTypes1 = new String[] { "long", "long", "java.lang.String" };
+		_methodParameterTypes1 = new String[] {
+				"long", "long", "java.lang.String", "java.lang.String",
+				"java.lang.String"
+			};
 
 		_methodName2 = "createModule";
 
@@ -92,7 +98,10 @@ public class ModuleLocalServiceClp implements ModuleLocalService {
 
 		_methodName12 = "fetchModule";
 
-		_methodParameterTypes12 = new String[] { "long", "java.lang.String" };
+		_methodParameterTypes12 = new String[] {
+				"long", "java.lang.String", "java.lang.String",
+				"java.lang.String"
+			};
 
 		_methodName13 = "fetchModule";
 
@@ -164,7 +173,9 @@ public class ModuleLocalServiceClp implements ModuleLocalService {
 
 	@Override
 	public com.liferay.marketplace.model.Module addModule(long userId,
-		long appId, java.lang.String contextName) {
+		long appId, java.lang.String bundleSymbolicName,
+		java.lang.String bundleVersion, java.lang.String contextName)
+		throws com.liferay.portal.kernel.exception.PortalException {
 		Object returnObj = null;
 
 		try {
@@ -175,11 +186,19 @@ public class ModuleLocalServiceClp implements ModuleLocalService {
 						
 					appId,
 						
+					ClpSerializer.translateInput(bundleSymbolicName),
+						
+					ClpSerializer.translateInput(bundleVersion),
+						
 					ClpSerializer.translateInput(contextName)
 					});
 		}
 		catch (Throwable t) {
 			t = ClpSerializer.translateThrowable(t);
+
+			if (t instanceof com.liferay.portal.kernel.exception.PortalException) {
+				throw (com.liferay.portal.kernel.exception.PortalException)t;
+			}
 
 			if (t instanceof RuntimeException) {
 				throw (RuntimeException)t;
@@ -471,6 +490,7 @@ public class ModuleLocalServiceClp implements ModuleLocalService {
 
 	@Override
 	public com.liferay.marketplace.model.Module fetchModule(long appId,
+		java.lang.String bundleSymbolicName, java.lang.String bundleVersion,
 		java.lang.String contextName) {
 		Object returnObj = null;
 
@@ -479,6 +499,10 @@ public class ModuleLocalServiceClp implements ModuleLocalService {
 					_methodParameterTypes12,
 					new Object[] {
 						appId,
+						
+					ClpSerializer.translateInput(bundleSymbolicName),
+						
+					ClpSerializer.translateInput(bundleVersion),
 						
 					ClpSerializer.translateInput(contextName)
 					});

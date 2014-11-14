@@ -14,17 +14,20 @@
 
 package com.liferay.pushnotifications.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.model.PersistedModel;
 
 /**
  * The extended model interface for the PushNotificationsDevice service. Represents a row in the &quot;PushNotificationsDevice&quot; database table, with each column mapped to a property of this class.
  *
- * @author Silvio Santos
+ * @author Bruno Farache
  * @see PushNotificationsDeviceModel
  * @see com.liferay.pushnotifications.model.impl.PushNotificationsDeviceImpl
  * @see com.liferay.pushnotifications.model.impl.PushNotificationsDeviceModelImpl
  * @generated
  */
+@ProviderType
 public interface PushNotificationsDevice extends PushNotificationsDeviceModel,
 	PersistedModel {
 	/*

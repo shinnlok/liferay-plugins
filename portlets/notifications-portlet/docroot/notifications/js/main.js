@@ -1,737 +1,860 @@
-AUI().use(
-	'aui-base',
-	'aui-io-plugin-deprecated',
-	'liferay-menu-toggle',
-	'liferay-poller',
-	'liferay-portlet-url',
+AUI.add(
+	'liferay-plugin-dockbar-notifications',
 	function(A) {
-		Liferay.namespace('Notifications');
+		var DockbarNotifications = A.Component.create(
+			{
+				AUGMENTS: [Liferay.PortletBase],
 
-		Liferay.Notifications = {
-			init: function(config) {
-				var instance = this;
+				EXTENDS: A.Base,
 
-				instance._baseActionURL = config.baseActionURL;
-				instance._baseRenderURL = config.baseRenderURL;
-				instance._baseResourceURL = config.baseResourceURL;
-				instance._currentPageNotificationEventsCount = config.currentPageNotificationEventsCount;
-				instance._dockbarNotificationsURL = instance._getRenderURL('/notifications/view_entries.jsp', 'dockbar', null, null, 'false', 'true');
-				instance._dockbarViewDelta = config.dockbarViewDelta;
-				instance._fullViewNotificationsURL = instance._getRenderURL('/notifications/view_entries.jsp', config.filter, config.start.toString(), config.end.toString(), 'true');
-				instance._lastPage = config.userNotificationEventsCount <= config.end;
-				instance._namespace = config.namespace;
-				instance._nextPageNotificationsURL = instance._getRenderURL('/notifications/view_entries.jsp', config.filter, (config.start + config.delta).toString(), (config.end + config.delta).toString(), 'true');
+				NAME: 'dockbarnotifications',
 
-				if ((config.end - config.delta) <= 0) {
-					instance._previousPageNotificationsURL = instance._getRenderURL('/notifications/view_entries.jsp', config.filter, '0', config.delta.toString(), 'true');
-				}
-				else {
-					instance._previousPageNotificationsURL = instance._getRenderURL('/notifications/view_entries.jsp', config.filter, (config.start - config.delta).toString(), (config.end - config.delta).toString(), 'true');
-				}
+				prototype: {
+					initializer: function(config) {
+						var instance = this;
 
-				instance._totalMarkAsReadableCount = config.unreadNonactionableUserNotificationsCount;
+						instance._actionableNotificationsList = config.actionableNotificationsList;
+						instance._baseActionURL = config.baseActionURL;
+						instance._baseResourceURL = config.baseResourceURL;
+						instance._nonactionableNotificationsList = config.nonactionableNotificationsList;
+						instance._portletKey = config.portletKey;
 
-				instance._createMarkAllAsReadNode(config);
+						var navAccountControls =  A.one('.nav-account-controls');
 
-				instance._bindUI();
+						navAccountControls.delegate(
+							'click',
+							function(event) {
+								var target = event.target;
 
-				instance._updateFullViewNotificationsCount(config.unreadActionableUserNotificationsCount, config.unreadNonactionableUserNotificationsCount);
-			},
+								if (target.ancestor('.dockbar-user-notifications-container')) {
+									return;
+								}
 
-			initDockbarNotifications: function(config) {
-				var instance = this;
+								var currentTarget = event.currentTarget;
 
-				instance._baseActionURL = config.baseActionURL;
-				instance._baseRenderURL = config.baseRenderURL;
-				instance._portletKey = config.portletKey;
+								instance._setDelivered(currentTarget.hasClass('actionable-container'));
 
-				instance._dockbarNotificationsURL = instance._getRenderURL('/notifications/view_entries.jsp', 'dockbar', null, null, 'false', 'true');
+								var container = currentTarget.one('.dockbar-user-notifications-container');
 
-				instance._createMenuToggle();
+								container.toggleClass('open');
 
-				A.on(
-					'domready',
-					function() {
-						Liferay.Poller.addListener(instance._portletKey, instance._onPollerUpdate, instance);
-					}
-				);
-			},
+								currentTarget.toggleClass('open');
 
-			renderNotificationsList: function(notificationsList, uri) {
-				var instance = this;
+								var menuOpen = container.hasClass('open');
 
-				if (notificationsList && !instance._hasRequestSent(notificationsList, uri)) {
-					if (!notificationsList.io) {
-						notificationsList.plug(
-							A.Plugin.IO,
-							{
-								autoLoad: false
+								if (menuOpen) {
+									currentTarget.on(
+										'clickoutside',
+										function(event) {
+											container.removeClass('open');
+											currentTarget.removeClass('open');
+										}
+									);
+
+									if (currentTarget.hasClass('actionable-container')) {
+										instance._actionableNotificationsList.render();
+									}
+
+									if (currentTarget.hasClass('nonactionable-container')) {
+										instance._nonactionableNotificationsList.render();
+									}
+								}
+							},
+							'.dockbar-user-notifications'
+						);
+
+						A.on(
+							'domready',
+							function() {
+								Liferay.Poller.addListener(instance._portletKey, instance._onPollerUpdate, instance);
 							}
 						);
-					}
 
-					notificationsList.io.set('uri', uri);
-					notificationsList.io.start();
-				}
-			},
+						Liferay.on('updateNotificationsCount', instance._getNotificationsCount, instance);
+					},
 
-			_bindMarkAllAsRead: function() {
-				var instance = this;
+					_getNotificationsCount: function() {
+						var instance = this;
 
-				instance._bindMarkAsReadDelegation(false, instance._getDockbarNotificationsList(), true, '.mark-all-as-read');
-				instance._bindMarkAsReadDelegation(true, instance._getFullViewNotificationsList(), true, '.mark-all-as-read');
-			},
+						var portletURL = new Liferay.PortletURL.createURL(instance._baseResourceURL);
 
-			_bindMarkAsRead: function() {
-				var instance = this;
+						portletURL.setResourceId('getNotificationsCount');
 
-				instance._bindMarkAsReadDelegation(false, instance._getDockbarNotificationsList(), false, '.user-notification .btn-action');
-				instance._bindMarkAsReadDelegation(true, instance._getFullViewNotificationsList(), false, '.user-notification .btn-action');
-			},
+						A.io.request(
+							portletURL.toString(),
+							{
+								dataType: 'JSON',
+								on: {
+									success: function() {
+										var response = this.get('responseData');
 
-			_bindMarkAsReadDelegation: function(fullView, notificationsList, markAllAsRead, selector) {
-				var instance = this;
-
-				if (notificationsList) {
-					notificationsList.delegate(
-						'click',
-						function(event) {
-							instance._markAsRead(event, fullView, markAllAsRead);
-						},
-						selector
-					);
-				}
-			},
-
-			_bindNavMenu: function(menu, uri, allNotifications, unreadActionable, unreadNonactionable) {
-				var instance = this;
-
-				if (menu) {
-					menu.on(
-						'click',
-						function() {
-							instance._allNotifications = allNotifications;
-							instance._unreadActionable = unreadActionable;
-							instance._unreadNonactionable = unreadNonactionable;
-
-							instance._setDelivered();
-
-							instance.renderNotificationsList(instance._getFullViewNotificationsList(), uri);
-
-							var userNotificationsSidebar = A.one('.user-notifications-sidebar');
-
-							if (userNotificationsSidebar) {
-								userNotificationsSidebar.all('.nav a').removeClass('selected');
-							}
-
-							menu.addClass('selected');
-						}
-					);
-				}
-			},
-
-			_bindNextPageNotifications: function() {
-				var instance = this;
-
-				instance._bindPaginateDelegation(instance._getFullViewNotificationsList(), false, '.message .next a');
-			},
-
-			_bindPaginateDelegation: function(userNotificationsList, previous, selector) {
-				var instance = this;
-
-				if (userNotificationsList) {
-					userNotificationsList.delegate(
-						'click',
-						function(event) {
-							event.preventDefault();
-
-							var currentTarget = event.currentTarget;
-
-							var userNotificationsList = currentTarget.ancestor('.user-notifications-list-container .user-notifications-list');
-
-							if (userNotificationsList) {
-								if (previous) {
-									instance.renderNotificationsList(instance._getFullViewNotificationsList(), instance._previousPageNotificationsURL);
-								}
-								else {
-									instance.renderNotificationsList(instance._getFullViewNotificationsList(), instance._nextPageNotificationsURL);
+										if (response) {
+											instance._updateDockbarNotificationsCount(response);
+										}
+									}
 								}
 							}
-						},
-						selector
-					);
-				}
-			},
+						);
+					},
 
-			_bindPreviousPageNotifications: function() {
-				var instance = this;
+					_onPollerUpdate: function(response) {
+						var instance = this;
 
-				instance._bindPaginateDelegation(instance._getFullViewNotificationsList(), true, '.message .previous a');
-			},
+						instance._updateDockbarNotificationsCount(response);
+					},
 
-			_bindUI: function() {
-				var instance = this;
+					_setDelivered: function(actionable) {
+						var instance = this;
 
-				instance._bindMarkAllAsRead();
+						var portletURL = new Liferay.PortletURL.createURL(instance._baseActionURL);
 
-				instance._bindMarkAsRead();
+						portletURL.setParameter('javax.portlet.action', 'setDelivered');
 
-				instance._bindNextPageNotifications();
+						portletURL.setParameter('actionable', actionable);
 
-				instance._bindPreviousPageNotifications();
+						portletURL.setWindowState('normal');
 
-				instance._bindUserNotificationsSideBar();
+						A.io.request(
+							portletURL.toString(),
+							{
+								on: {
+									success: function() {
+										instance._getNotificationsCount();
+									}
+								}
+							}
+						);
+					},
 
-				instance._bindViewNotification();
-			},
+					_updateDockbarNotificationsCount: function(response) {
+						var instance = this;
 
-			_bindUserNotificationsSideBar: function() {
-				var instance = this;
+						var timestamp = response.timestamp;
 
-				var userNotificationsSidebar = A.one('.user-notifications-sidebar');
+						if (!instance._previousTimestamp || (instance._previousTimestamp < timestamp)) {
+							instance._previousTimestamp = timestamp;
 
-				if (userNotificationsSidebar) {
-					var allNotificationsNav = userNotificationsSidebar.one('.all-notifications');
+							var dockbarUserNotificationsCount = A.one('.dockbar-user-notifications .user-notifications-count');
 
-					instance._bindNavMenu(allNotificationsNav, instance._getRenderURL('/notifications/view_entries.jsp'), true, false, false);
+							if (dockbarUserNotificationsCount) {
+								dockbarUserNotificationsCount.toggleClass('alert', (response.newUserNotificationsCount > 0));
 
-					var unreadActionableNav = userNotificationsSidebar.one('.unread-actionable');
+								dockbarUserNotificationsCount.setHTML(response.unreadUserNotificationsCount);
+							}
 
-					instance._bindNavMenu(unreadActionableNav, instance._getRenderURL('/notifications/view_entries.jsp', 'unread-actionable'), false, true, false);
+							var dockbarActionableUserNotificationsCount = A.one('.dockbar-user-notifications .actionable-user-notifications-count');
 
-					var unreadNonactionableNav = userNotificationsSidebar.one('.unread-nonactionable');
+							if (dockbarActionableUserNotificationsCount) {
+								dockbarActionableUserNotificationsCount.toggleClass('alert', (response.newActionableUserNotificationsCount > 0));
+								dockbarActionableUserNotificationsCount.toggleClass('hide', (response.unreadActionableUserNotificationsCount == 0));
 
-					instance._bindNavMenu(unreadNonactionableNav, instance._getRenderURL('/notifications/view_entries.jsp', 'unread-nonactionable'), false, false, true);
+								dockbarActionableUserNotificationsCount.setHTML(response.unreadActionableUserNotificationsCount);
+							}
 
-					var manageNav = userNotificationsSidebar.one('.manage');
+							var dockbarNonactionableUserNotificationsCount = A.one('.dockbar-user-notifications .nonactionable-user-notifications-count');
 
-					instance._bindNavMenu(manageNav, instance._getRenderURL('/notifications/configuration.jsp'), false, false, false);
-				}
-			},
+							if (dockbarNonactionableUserNotificationsCount) {
+								dockbarNonactionableUserNotificationsCount.toggleClass('alert', (response.newNonactionableUserNotificationsCount > 0));
+								dockbarNonactionableUserNotificationsCount.toggleClass('hide', (response.unreadNonactionableUserNotificationsCount == 0));
 
-			_bindViewDelegation: function(notificationsList, selector) {
-				var instance = this;
-
-				if (notificationsList) {
-					notificationsList.delegate(
-						'click',
-						function(event) {
-							instance._viewNotification(event);
-						},
-						selector
-					);
-				}
-			},
-
-			_bindViewNotification: function() {
-				var instance = this;
-
-				instance._bindViewDelegation(instance._getDockbarNotificationsList(), '.user-notification .user-notification-link');
-				instance._bindViewDelegation(instance._getFullViewNotificationsList(), '.user-notification .user-notification-link');
-			},
-
-			_createMarkAllAsReadNode: function(config) {
-				var instance = this;
-
-				if (config.userNotificationEventsCount > 0) {
-					var nodeHTML = '<a class="mark-all-as-read" href="' + instance._getActionURL('markAllAsRead', config.userNotificationEventIds) + '">' +
-						A.Lang.sub(Liferay.Language.get('mark-all-as-read-x-of-x'), [config.currentPageNotificationEventsCount, instance._totalMarkAsReadableCount]) + '</a><hr class="separator" />';
-
-					var dockbarMarkAllAsRead = A.one('.dockbarMarkAllAsRead');
-
-					if (dockbarMarkAllAsRead) {
-						dockbarMarkAllAsRead.get('parentNode').replaceChild(A.Node.create(nodeHTML), dockbarMarkAllAsRead);
-
-						if (config.userNotificationEventIds == '') {
-							var dockbarMarkAsReadNode = A.one('.dockbar-user-notifications .mark-all-as-read');
-
-							if (dockbarMarkAsReadNode) {
-								dockbarMarkAsReadNode.addClass('hide');
+								dockbarNonactionableUserNotificationsCount.setHTML(response.unreadNonactionableUserNotificationsCount);
 							}
 						}
 					}
-
-					var fullViewMarkAllAsRead = A.one('.fullViewMarkAllAsRead');
-
-					if (fullViewMarkAllAsRead) {
-						fullViewMarkAllAsRead.get('parentNode').replaceChild(A.Node.create(nodeHTML), fullViewMarkAllAsRead);
-					}
 				}
-			},
+			}
+		);
 
-			_createMenuToggle: function() {
-				var instance = this;
+		Liferay.DockbarNotifications = DockbarNotifications;
+	},
+	'',
+	{
+		requires: ['aui-base', 'aui-io', 'liferay-poller', 'liferay-portlet-base', 'liferay-portlet-url']
+	}
 
-				new Liferay.MenuToggle(
-					{
-						after: {
-							openChange: function(event) {
-								if (event.newVal) {
-									instance._setDelivered();
+);
 
-									instance.renderNotificationsList(instance._getDockbarNotificationsList(), instance._dockbarNotificationsURL);
+AUI.add(
+	'liferay-plugin-notifications',
+	function(A) {
+		var Notifications = A.Component.create(
+			{
+				AUGMENTS: [Liferay.PortletBase],
 
-									if (instance._allNotifications || ((typeof(instance._allNotifications) == 'undefined') && (typeof(instance._unreadActionable) == 'undefined') && (typeof(instance._unreadNonactionable) == 'undefined'))) {
-										instance.renderNotificationsList(instance._getFullViewNotificationsList(), instance._getRenderURL('/notifications/view_entries.jsp'));
+				EXTENDS: A.Base,
+
+				NAME: 'notifications',
+
+				prototype: {
+					initializer: function(config) {
+						var instance = this;
+
+						instance._actionableUserNotificationsStart = 0;
+						instance._baseRenderURL = config.baseRenderURL;
+						instance._nonactionableUserNotificationsStart = 0;
+						instance._notificationsList = config.notificationsList;
+
+						instance._notificationsList.render();
+
+						var notificationsConfigurationNode = A.one('.notifications-portlet .user-notifications-container .notifications-configurations');
+						var userNotificationsListNode = A.one('.notifications-portlet .user-notifications-container .user-notifications-list');
+						var userNotificationsContainerNode = A.one('.notifications-portlet .user-notifications-container');
+
+						var nonactionableUserNotificationsLink = A.one('.notifications-portlet .user-notifications-container .user-notifications-sidebar .nav .nonactionable');
+
+						if (nonactionableUserNotificationsLink) {
+							nonactionableUserNotificationsLink.on(
+								'click',
+								function() {
+									var userNotificationsSidebar = A.one('.user-notifications-sidebar');
+
+									if (userNotificationsSidebar) {
+										userNotificationsSidebar.all('.nav a').removeClass('selected');
 									}
-									else if (instance._unreadActionable) {
-										instance.renderNotificationsList(instance._getFullViewNotificationsList(), instance._getRenderURL('/notifications/view_entries.jsp', 'unread-actionable'));
-									}
-									else if (instance._unreadNonactionable) {
-										instance.renderNotificationsList(instance._getFullViewNotificationsList(), instance._getRenderURL('/notifications/view_entries.jsp', 'unread-nonactionable'));
+
+									nonactionableUserNotificationsLink.addClass('selected');
+
+									if (userNotificationsContainerNode) {
+										userNotificationsContainerNode.addClass('nonactionable');
+										userNotificationsContainerNode.removeClass('actionable');
 									}
 
-									var dockbarUserNotificationsCount = A.one('.dockbar-user-notifications .user-notifications-count');
+									notificationsConfigurationNode.hide();
+									userNotificationsListNode.show();
 
-									if (dockbarUserNotificationsCount) {
-										dockbarUserNotificationsCount.toggleClass('alert', false);
+									instance._notificationsList.setActionable(false);
+
+									instance._notificationsList.setNotificationsCount('.nonactionable .count');
+
+									instance._actionableUserNotificationsStart = instance._notificationsList.getStart();
+
+									instance._notificationsList.setStart(instance._nonactionableUserNotificationsStart);
+
+									instance._notificationsList.render();
+								}
+							);
+						}
+
+						var actionableUserNotificationsLink = A.one('.notifications-portlet .user-notifications-container .user-notifications-sidebar .nav .actionable');
+
+						if (actionableUserNotificationsLink) {
+							actionableUserNotificationsLink.on(
+								'click',
+								function() {
+									var userNotificationsSidebar = A.one('.user-notifications-sidebar');
+
+									if (userNotificationsSidebar) {
+										userNotificationsSidebar.all('.nav a').removeClass('selected');
+									}
+
+									actionableUserNotificationsLink.addClass('selected');
+
+									if (userNotificationsContainerNode) {
+										userNotificationsContainerNode.addClass('actionable');
+										userNotificationsContainerNode.removeClass('nonactionable');
+									}
+
+									notificationsConfigurationNode.hide();
+									userNotificationsListNode.show();
+
+									instance._notificationsList.setActionable(true);
+
+									instance._notificationsList.setNotificationsCount('.actionable .count');
+
+									instance._nonactionableUserNotificationsStart = instance._notificationsList.getStart();
+
+									instance._notificationsList.setStart(instance._actionableUserNotificationsStart);
+
+									instance._notificationsList.render();
+								}
+							);
+						}
+
+						var manageLink = A.one('.notifications-portlet .user-notifications-container .user-notifications-sidebar .nav .manage');
+
+						if (manageLink) {
+							manageLink.on(
+								'click',
+								function() {
+									var userNotificationsSidebar = A.one('.user-notifications-sidebar');
+
+									if (userNotificationsSidebar) {
+										userNotificationsSidebar.all('.nav a').removeClass('selected');
+									}
+
+									manageLink.addClass('selected');
+
+									if (notificationsConfigurationNode) {
+										notificationsConfigurationNode.show();
+										notificationsConfigurationNode.plug(A.LoadingMask).loadingmask.show();
+
+										userNotificationsListNode.hide();
+
+										var portletURL = new Liferay.PortletURL.createURL(instance._baseRenderURL);
+
+										portletURL.setParameter('mvcPath', '/notifications/configuration.jsp');
+
+										portletURL.setWindowState('exclusive');
+
+										notificationsConfigurationNode.load(
+											portletURL.toString(),
+											function() {
+												notificationsConfigurationNode.unplug(A.LoadingMask);
+											}
+										);
 									}
 								}
-							}
-						},
-						content: A.one('.dockbar-user-notifications'),
-						toggleTouch: true,
-						trigger: '.dockbar-user-notifications .dropdown-toggle'
-					}
-				);
-			},
-
-			_deleteNotification: function(target) {
-				var instance = this;
-
-				var deleteNode = target.ancestor('.user-notification-delete');
-
-				if (deleteNode) {
-
-					if (instance._hasRequestSent(deleteNode, deleteNode.getAttribute('data-deleteURL'))) {
-						return;
-					}
-
-					A.io.request(deleteNode.getAttribute('data-deleteURL'));
-				}
-			},
-
-			_getActionURL: function(name, userNotificationEventIds) {
-				var instance = this;
-
-				var portletURL = new Liferay.PortletURL.createURL(instance._baseActionURL);
-
-				portletURL.setParameter('javax.portlet.action', name);
-
-				if (userNotificationEventIds) {
-					portletURL.setParameter('userNotificationEventIds', userNotificationEventIds);
-				}
-
-				portletURL.setWindowState('normal');
-
-				return portletURL.toString();
-			},
-
-			_getDockbarNotificationsList: function() {
-				var instance = this;
-
-				if (instance._dockbarNotificationsList) {
-					return instance._dockbarNotificationsList;
-				}
-
-				instance._dockbarNotificationsList = A.one('.dockbar-user-notifications .user-notifications-list');
-
-				return instance._dockbarNotificationsList ;
-			},
-
-			_getFullViewNotificationsList: function() {
-				var instance = this;
-
-				if (instance._fullViewNotificationsList) {
-					return instance._fullViewNotificationsList;
-				}
-
-				instance._fullViewNotificationsList = A.one('.user-notifications-list-container .user-notifications-list');
-
-				return instance._fullViewNotificationsList;
-			},
-
-			_getRenderURL: function(mvcPath, filter, start, end, fullView) {
-				var instance = this;
-
-				var portletURL = new Liferay.PortletURL.createURL(instance._baseRenderURL);
-
-				portletURL.setParameter('mvcPath', mvcPath);
-
-				if (filter) {
-					portletURL.setParameter('filter', filter);
-				}
-
-				if (start) {
-					portletURL.setParameter('start', start);
-				}
-
-				if (end) {
-					portletURL.setParameter('end', end);
-				}
-
-				if (fullView) {
-					portletURL.setParameter('fullView', fullView);
-				}
-
-				portletURL.setWindowState('exclusive');
-
-				return portletURL.toString();
-			},
-
-			_getResourceURL: function(resourceId, dockbarViewDelta) {
-				var instance = this;
-
-				var portletURL = new Liferay.PortletURL.createURL(instance._baseResourceURL);
-
-				if (dockbarViewDelta) {
-					portletURL.setParameter('dockbarViewDelta', dockbarViewDelta);
-				}
-
-				portletURL.setResourceId(resourceId);
-
-				return portletURL.toString();
-			},
-
-			_hasRequestSent: function(node, uri) {
-				var instance = this;
-
-				if ((instance._lastNode == node) && (instance._lastUri == uri)) {
-					return true;
-				}
-				else {
-					instance._lastNode = node;
-					instance._lastUri = uri;
-
-					setTimeout(
-						function() {
-							instance._lastNode = null;
-							instance._lastUri = null;
-						}, 300);
-
-					return false;
-				}
-			},
-
-			_markAsRead: function(event, fullView, markAllAsRead) {
-				event.preventDefault();
-
-				var instance = this;
-
-				var currentRow;
-
-				var currentTarget = event.currentTarget;
-
-				if (instance._hasRequestSent(currentTarget, currentTarget.attr('href'))) {
-					return;
-				}
-
-				var dockbarNotificationsList;
-
-				var fullViewNotificationsList;
-
-				var loadingRow = A.Node.create('<div class="loading-animation"></div>');
-
-				if (!markAllAsRead) {
-					currentRow = currentTarget.ancestor('.user-notification');
-					currentRow.hide().placeAfter(loadingRow);
-				}
-				else {
-					dockbarNotificationsList = A.one('.dockbar-user-notifications .nonactionable-user-notifications-list');
-
-					if (dockbarNotificationsList) {
-						dockbarNotificationsList.hide().placeAfter(loadingRow);
-					}
-
-					fullViewNotificationsList = A.one('.user-notifications-list-container .nonactionable-user-notifications-list');
-
-					if (fullViewNotificationsList) {
-						fullViewNotificationsList.hide().placeAfter(loadingRow);
+							);
+						}
 					}
 				}
+			}
+		);
 
-				A.io.request(
-					currentTarget.attr('href'),
-					{
-						after: {
-							success: function() {
-								var response = this.get('responseData');
+		Liferay.Notifications = Notifications;
+	},
+	'',
+	{
+		requires: ['aui-base', 'aui-io', 'aui-loading-mask-deprecated', 'liferay-portlet-base', 'liferay-portlet-url', 'node-load']
+	}
 
-								if (response) {
-									if (!markAllAsRead) {
-										currentRow.remove();
-										loadingRow.remove();
-									}
-									else {
-										if (dockbarNotificationsList) {
-											dockbarNotificationsList.remove();
-										}
-										if (fullViewNotificationsList) {
-											fullViewNotificationsList.remove();
-										}
+);
 
-										loadingRow.remove();
-									}
+AUI.add(
+	'liferay-plugin-notifications-list',
+	function(A) {
+		var Lang = A.Lang;
 
-									if (response.success) {
-										instance._deleteNotification(currentTarget);
+		var NotificationsList = A.Component.create(
+			{
+				AUGMENTS: [Liferay.PortletBase],
 
-										instance._updateNotifications(fullView, markAllAsRead);
-									}
-								}
-							}
-						},
-						dataType: 'JSON'
-					}
-				);
-			},
+				EXTENDS: A.Base,
 
-			_onPollerUpdate: function(response) {
-				var instance = this;
+				NAME: 'notificationslist',
 
-				instance._updateDockbarNotificationsCount(response.newUserNotificationsCount, response.timestamp, response.unreadNonactionableUserNotificationsCount, response.unreadUserNotificationsCount);
-			},
+				prototype: {
+					initializer: function(config) {
+						var instance = this;
 
-			_openWindow: function(uri) {
-				if (uri.match('p_p_state=maximized') || uri.match('p_p_state=pop_up') || uri.match('p_p_state=exclusive')) {
-					return true;
-				}
+						instance._actionable = config.actionable;
+						instance._baseActionURL = config.baseActionURL;
+						instance._baseRenderURL = config.baseRenderURL;
+						instance._baseResourceURL = config.baseResourceURL;
+						instance._delta = config.delta;
+						instance._end = config.start + config.delta;
+						instance._fullView = config.fullView;
+						instance._namespace = config.namespace;
+						instance._nextPageNode = config.nextPageNode;
+						instance._markAllAsReadNode = config.markAllAsReadNode;
+						instance._notificationsContainer = config.notificationsContainer;
+						instance._notificationsCount = config.notificationsCount;
+						instance._notificationsNode = config.notificationsNode;
+						instance._paginationInfoNode = config.paginationInfoNode;
+						instance._portletKey = config.portletKey;
+						instance._previousPageNode = config.previousPageNode;
+						instance._start = config.start;
 
-				return false;
-			},
+						instance._bindUI();
+					},
 
-			_redirect: function(uri, openDialog) {
-				if (uri) {
-					if (openDialog === 'false') {
-						var topWindow = Liferay.Util.getTop();
+					getStart: function() {
+						var instance = this;
 
-						topWindow.location.href = uri;
-					}
-					else {
-						Liferay.Util.openWindow(
+						return instance._start;
+					},
+
+					render: function() {
+						var instance = this;
+
+						var notificationsContainer = A.one(instance._notificationsContainer);
+
+						var notificationsNode = notificationsContainer.one(instance._notificationsNode);
+
+						notificationsNode.plug(A.LoadingMask);
+
+						notificationsNode.loadingmask.show();
+
+						var portletURL = new Liferay.PortletURL.createURL(instance._baseResourceURL);
+
+						portletURL.setParameter('actionable', instance._actionable);
+						portletURL.setParameter('end', instance._end);
+						portletURL.setParameter('fullView', instance._fullView);
+						portletURL.setParameter('start', instance._start);
+
+						portletURL.setResourceId('getUserNotificationEvents');
+
+						A.io.request(
+							portletURL.toString(),
 							{
-								id: 'notificationsWindow',
-								uri: uri
-							}
-						);
-					}
-				}
-			},
+								dataType: 'JSON',
+								on: {
+									success: function() {
+										var response = this.get('responseData');
 
-			_setDelivered: function() {
-				var instance = this;
+										if (response) {
+											var newTotalUuserNotificationEventsCount = response.newTotalUuserNotificationEventsCount;
 
-				A.io.request(instance._getActionURL('setDelivered'));
-			},
+											var notificationsCountNode = notificationsContainer.one(instance._notificationsCount);
 
-			_updateDockbarNotificationsCount: function(newUserNotificationsCount, timestamp, unreadNonactionableUserNotificationsCount, unreadUserNotificationsCount) {
-				var instance = this;
-
-				if (!instance._previousTimestamp || (instance._previousTimestamp < timestamp)) {
-					instance._previousTimestamp = timestamp;
-
-					var dockbarUserNotificationsCount = A.one('.dockbar-user-notifications .user-notifications-count');
-
-					if (dockbarUserNotificationsCount) {
-						dockbarUserNotificationsCount.toggleClass('alert', (newUserNotificationsCount > 0));
-
-						dockbarUserNotificationsCount.setHTML(unreadUserNotificationsCount);
-
-						instance._totalMarkAsReadableCount = unreadNonactionableUserNotificationsCount;
-					}
-				}
-			},
-
-			_updateDockbarNotificationsList: function() {
-				var instance = this;
-
-				var userNotifications =  A.one('.dockbar-user-notifications');
-
-				if (!userNotifications.hasClass('open')) {
-					userNotifications.addClass('open');
-				}
-
-				A.io.request(
-					instance._getResourceURL('userNotificationEvents', instance._dockbarViewDelta),
-					{
-						dataType: 'JSON',
-						on: {
-							success: function() {
-								var response = this.get('responseData');
-
-								if (response) {
-									var dockbarNotificationsList = A.one('.dockbar-user-notifications .dockbar-user-notifications-list');
-
-									if (dockbarNotificationsList) {
-										var dockbarMarkAllAsRead = A.one('.dockbar-user-notifications .mark-all-as-read');
-
-										if (response.noResult) {
-											dockbarNotificationsList.empty();
-
-											var message = A.one('.dockbar-user-notifications .message');
-
-											if (message.hasClass('hide')) {
-												message.removeClass('hide');
-											}
-
-											if (dockbarMarkAllAsRead) {
-												if (!dockbarMarkAllAsRead.hasClass('hide')) {
-													dockbarMarkAllAsRead.addClass('hide');
-												}
-											}
-
-											var separator = dockbarMarkAllAsRead.next('.separator');
-
-											if (separator) {
-												separator.addClass('hide');
-											}
-										}
-										else {
-											if (response['markAsReadCount'] && response['markAsReadCount'] > 0) {
-												if (dockbarMarkAllAsRead.hasClass('hide')) {
-													dockbarMarkAllAsRead.removeClass('hide');
-												}
-
-												dockbarMarkAllAsRead.setAttribute('href', instance._getActionURL('markAllAsRead', response['userNotificationEventIds']));
-
-												var html = A.Lang.sub(Liferay.Language.get('mark-all-as-read-x-of-x'), [response['markAsReadCount'].toString(), instance._totalMarkAsReadableCount]);
-
-												dockbarMarkAllAsRead.setHTML(html);
-											}
-											else {
-												if (!dockbarMarkAllAsRead.hasClass('hide')) {
-													dockbarMarkAllAsRead.addClass('hide');
-												}
+											if (notificationsCountNode) {
+												notificationsCountNode.setHTML(newTotalUuserNotificationEventsCount);
 											}
 
 											var entries = [];
 
-											var jsonArray = response['entries'];
+											var entriesJSONArray = response.entries;
 
-											if (jsonArray) {
-												for (var i = 0; i < jsonArray.length; i++) {
-													entries.push(jsonArray[i]);
+											if (entriesJSONArray) {
+												for (var i = 0; i < entriesJSONArray.length; i++) {
+													entries.push(entriesJSONArray[i]);
+												}
+
+												entries = entries.join('');
+											}
+
+											var markAllAsReadNode = notificationsContainer.one(instance._markAllAsReadNode);
+
+											var markAllAsReadLink;
+
+											if (markAllAsReadNode) {
+												markAllAsReadLink = markAllAsReadNode.one('a');
+											}
+
+											var hasEntries = (entriesJSONArray.length > 0);
+
+											if (!hasEntries) {
+												var message = Liferay.Language.get('you-do-not-have-any-notifications');
+
+												if (instance._actionable) {
+													message = Liferay.Language.get('you-do-not-have-any-requests');
+												}
+
+												notificationsNode.setHTML('<div class=\"message\">' + message + '</div>');
+
+												if (markAllAsReadLink) {
+													markAllAsReadLink.hide();
+												}
+											}
+											else {
+												notificationsNode.setHTML(entries);
+
+												var newUserNotificationEventsCount = response.newUserNotificationEventsCount;
+
+												if (markAllAsReadLink) {
+													markAllAsReadLink.toggle(!instance._actionable && newUserNotificationEventsCount > 0);
 												}
 											}
 
-											entries = entries.join('');
+											var nextPageNode = notificationsContainer.all(instance._nextPageNode);
+											var previousPageNode = notificationsContainer.all(instance._previousPageNode);
 
-											dockbarNotificationsList.empty();
+											var total = response.total;
 
-											dockbarNotificationsList.append(entries);
-										}
-									}
-								}
-							}
-						}
-					}
-				);
-			},
-
-			_updateFullViewNotificationsCount: function(unreadActionableUserNotificationsCount, unreadNonactionableUserNotificationsCount) {
-				var userNotificationsSidebar = A.one('.user-notifications-sidebar');
-
-				if (userNotificationsSidebar) {
-					var unreadCount = userNotificationsSidebar.one('.unread-actionable .count');
-
-					if (unreadCount) {
-						unreadCount.setHTML(unreadActionableUserNotificationsCount);
-					}
-
-					unreadCount = userNotificationsSidebar.one('.unread-nonactionable .count');
-
-					if (unreadCount) {
-						unreadCount.setHTML(unreadNonactionableUserNotificationsCount);
-					}
-				}
-			},
-
-			_updateNotifications: function(fullView, markAllAsRead) {
-				var instance = this;
-
-				A.io.request(
-					instance._getResourceURL('notificationsCount'),
-					{
-						on: {
-							success: function() {
-								var response = this.get('responseData');
-
-								if (response.success) {
-									if (!fullView) {
-										instance._updateDockbarNotificationsList();
-									}
-
-									if (instance._unreadActionable || instance._unreadNonactionable || ((typeof(instance._allNotifications) == 'undefined') && (typeof(instance._unreadActionable) == 'undefined') && (typeof(instance._unreadNonactionable) == 'undefined'))) {
-										if (instance._lastPage && (markAllAsRead || (instance._currentPageNotificationEventsCount == 1))) {
-											instance.renderNotificationsList(instance._getFullViewNotificationsList(), instance._previousPageNotificationsURL);
-										}
-										else {
-											instance.renderNotificationsList(instance._getFullViewNotificationsList(), instance._fullViewNotificationsURL);
-										}
-									}
-
-									instance._updateDockbarNotificationsCount(response['newUserNotificationsCount'], response['timestamp'], response['unreadNonactionableUserNotificationsCount'], response['unreadUserNotificationsCount']);
-									instance._updateFullViewNotificationsCount(response['unreadActionableUserNotificationsCount'], response['unreadNonactionableUserNotificationsCount']);
-								}
-							}
-						},
-						dataType: 'JSON'
-					}
-				);
-			},
-
-			_viewNotification: function(event) {
-				var instance = this;
-
-				var currentTarget = event.currentTarget;
-
-				var openDialog = currentTarget.attr('data-openDialog');
-
-				var uri = currentTarget.attr('data-href');
-
-				var markAsReadURL = currentTarget.attr('data-markAsReadURL');
-
-				if (instance._hasRequestSent(currentTarget, markAsReadURL)) {
-					return;
-				}
-
-				if (markAsReadURL) {
-					A.io.request(
-						markAsReadURL,
-						{
-							after: {
-								success: function() {
-									var responseData = this.get('responseData');
-
-									if (responseData.success) {
-										var userNotification = currentTarget.ancestor('.user-notification');
-
-										if (userNotification) {
-											userNotification.removeClass('unread');
-
-											var read = userNotification.one('.content .read');
-
-											if (read) {
-												read.setHTML(Liferay.Language.get('read'));
+											if (nextPageNode) {
+												nextPageNode.toggle(total > instance._end);
 											}
 
-											instance._redirect(uri, openDialog);
+											if (previousPageNode) {
+												previousPageNode.toggle(instance._start != 0);
+											}
+
+											var paginationInfoNode = notificationsContainer.all(instance._paginationInfoNode);
+
+											var displayingCount = instance._end <= total ? instance._end : total;
+
+											var paginationInfoText = Lang.sub(Liferay.Language.get('showing-x-x-of-x-results'), [(instance._start + 1), displayingCount, total]);
+
+											if (paginationInfoNode) {
+												if (hasEntries) {
+													paginationInfoNode.setHTML(paginationInfoText);
+												}
+
+												paginationInfoNode.toggle(hasEntries);
+											}
+
+											instance._userNotificationEventIds = response.newUserNotificationEventIds;
+
+											notificationsNode.loadingmask.hide();
 										}
 									}
 								}
-							},
-							dataType: 'JSON'
-						}
-					);
-				}
-				else {
-					var userNotification = currentTarget.ancestor('.user-notification');
+							}
+						);
 
-					if (userNotification) {
-						instance._redirect(uri, openDialog);
+						Liferay.fire('updateNotificationsCount');
+					},
+
+					setActionable: function(actionable) {
+						var instance = this;
+
+						instance._actionable = actionable;
+					},
+
+					setNotificationsCount: function(notificationsCount) {
+						var instance = this;
+
+						instance._notificationsCount = notificationsCount;
+					},
+
+					setStart: function(start) {
+						var instance = this;
+
+						instance._start = start;
+
+						instance._end = instance._start + instance._delta;
+					},
+
+					_bindIconMenu: function() {
+						var instance = this;
+
+						var notificationsContainer = A.one(instance._notificationsContainer);
+
+						var notificationsNode = notificationsContainer.one(instance._notificationsNode);
+
+						if (notificationsNode) {
+							notificationsNode.delegate(
+								'click',
+								function(event) {
+									var currentTarget = event.currentTarget;
+
+									var currentRow = currentTarget.ancestor('.user-notification');
+
+									currentRow.plug(A.LoadingMask);
+
+									currentRow.loadingmask.show();
+
+									var unsubscribeLink = currentRow.one('.user-notification-link .unsubscribe');
+
+									var unsubscribeURL = unsubscribeLink.attr('data-unsubscribeURL');
+
+									if (unsubscribeURL) {
+										A.io.request(
+											unsubscribeURL,
+											{
+												after: {
+													success: function() {
+														var responseData = this.get('responseData');
+
+														if (responseData.success) {
+															currentRow.loadingmask.hide();
+
+															instance.render();
+														}
+														else {
+															currentRow.loadingmask.hide();
+
+															instance.render();
+
+															var notificationsNode = notificationsContainer.one(instance._notificationsNode);
+
+															notificationsContainer.insertBefore('<div class="alert alert-error">' + Liferay.Language.get('there-was-an-unexpected-error.-please-refresh-the-current-page') + '</div>', notificationsNode);
+														}
+													}
+												},
+												dataType: 'JSON'
+											}
+										);
+									}
+								},
+								'.user-notification .unsubscribe'
+							);
+
+							notificationsNode.delegate(
+								'click',
+								function(event) {
+									var currentTarget = event.currentTarget;
+
+									var iconMenu = currentTarget.ancestor('.lfr-icon-menu');
+
+									iconMenu.addClass('open');
+
+									if (iconMenu.hasClass('open')) {
+										currentTarget.on(
+											'clickoutside',
+											function(event) {
+												currentTarget.ancestor().removeClass('open');
+											}
+										);
+									}
+								},
+								'.user-notification .dropdown-toggle'
+							);
+						}
+					},
+
+					_bindMarkAllAsRead: function() {
+						var instance = this;
+
+						var notificationsContainer = A.one(instance._notificationsContainer);
+
+						var markAllAsReadNode = notificationsContainer.one(instance._markAllAsReadNode);
+
+						if (markAllAsReadNode) {
+							markAllAsReadNode.on(
+								'click',
+								function(event) {
+									event.preventDefault();
+
+									var portletURL = new Liferay.PortletURL.createURL(instance._baseActionURL);
+
+									portletURL.setParameter('javax.portlet.action', 'markAllAsRead');
+									portletURL.setParameter('userNotificationEventIds', instance._userNotificationEventIds);
+
+									portletURL.setWindowState('normal');
+
+									A.io.request(
+										portletURL.toString(),
+										{
+											after: {
+												success: function() {
+													var response = this.get('responseData');
+
+													if (response.success) {
+														instance.render();
+													}
+												}
+											},
+											dataType: 'JSON'
+										}
+									);
+								}
+							);
+						}
+					},
+
+					_bindMarkAsRead: function() {
+						var instance = this;
+
+						var notificationsContainer = A.one(instance._notificationsContainer);
+
+						var notificationsNode = notificationsContainer.one(instance._notificationsNode);
+
+						if (notificationsNode) {
+							notificationsNode.delegate(
+								'click',
+								function(event) {
+									var currentTarget = event.currentTarget;
+
+									var currentRow = currentTarget.ancestor('.user-notification');
+
+									currentRow.plug(A.LoadingMask);
+
+									currentRow.loadingmask.show();
+
+									var userNotificationLink = currentRow.one('.user-notification-link');
+
+									var markAsReadURL = userNotificationLink.attr('data-markAsReadURL');
+
+									if (markAsReadURL) {
+										A.io.request(
+											markAsReadURL,
+											{
+												after: {
+													success: function() {
+														var responseData = this.get('responseData');
+
+														if (responseData.success) {
+															currentRow.loadingmask.hide();
+
+															instance.render();
+														}
+													}
+												},
+												dataType: 'JSON'
+											}
+										);
+									}
+								},
+								'.user-notification .mark-as-read'
+							);
+						}
+					},
+
+					_bindNextPageNotifications: function() {
+						var instance = this;
+
+						var notificationsContainer = A.one(instance._notificationsContainer);
+
+						if (notificationsContainer) {
+							notificationsContainer.delegate(
+								'click',
+								function() {
+									instance._start += instance._delta;
+									instance._end += instance._delta;
+
+									instance.render();
+								},
+								instance._nextPageNode
+							);
+						}
+					},
+
+					_bindNotificationsAction: function() {
+						var instance = this;
+
+						var notificationsContainer = A.one(instance._notificationsContainer);
+
+						var notificationsNode = notificationsContainer.one(instance._notificationsNode);
+
+						if (notificationsNode) {
+							notificationsNode.delegate(
+								'click',
+								function(event) {
+									event.preventDefault();
+
+									var currentTarget = event.currentTarget;
+
+									var currentRow = currentTarget.ancestor('.user-notification');
+
+									currentRow.plug(A.LoadingMask);
+
+									currentRow.loadingmask.show();
+
+									A.io.request(
+										currentTarget.attr('href'),
+										{
+											after: {
+												success: function() {
+													var response = this.get('responseData');
+
+													if (response.success) {
+														var deleteNode = currentTarget.ancestor('.user-notification-delete');
+
+														if (deleteNode) {
+															A.io.request(deleteNode.getAttribute('data-deleteURL'));
+														}
+
+														currentRow.loadingmask.hide();
+
+														instance.render();
+													}
+													else {
+														currentRow.loadingmask.hide();
+													}
+												}
+											},
+											dataType: 'JSON'
+										}
+									);
+								},
+								'.user-notification .btn-action'
+							);
+						}
+					},
+
+					_bindPreviousPageNotifications: function() {
+						var instance = this;
+
+						var notificationsContainer = A.one(instance._notificationsContainer);
+
+						if (notificationsContainer) {
+							notificationsContainer.delegate(
+								'click',
+								function() {
+									instance._start -= instance._delta;
+									instance._end -= instance._delta;
+
+									instance.render();
+								},
+								instance._previousPageNode
+							);
+
+						}
+					},
+
+					_bindUI: function() {
+						var instance = this;
+
+						instance._bindIconMenu();
+						instance._bindMarkAllAsRead();
+						instance._bindMarkAsRead();
+						instance._bindNotificationsAction();
+						instance._bindNextPageNotifications();
+						instance._bindPreviousPageNotifications();
+						instance._bindViewNotification();
+					},
+
+					_bindViewNotification: function() {
+						var instance = this;
+
+						var notificationsContainer = A.one(instance._notificationsContainer);
+
+						var notificationsNode = notificationsContainer.one(instance._notificationsNode);
+
+						if (notificationsNode) {
+							notificationsNode.delegate(
+								'click',
+								function(event) {
+									var currentTarget = event.currentTarget;
+
+									var target = event.target;
+
+									if (target.hasClass('.mark-as-read') || target.ancestor('.mark-as-read') || (target._node.tagName == 'A') || (target.ancestor()._node.tagName == 'A')) {
+										return;
+									}
+
+									var uri = currentTarget.attr('data-href');
+
+									var markAsReadURL = currentTarget.attr('data-markAsReadURL');
+
+									if (markAsReadURL) {
+										A.io.request(
+											markAsReadURL,
+											{
+												after: {
+													success: function() {
+														var responseData = this.get('responseData');
+
+														if (responseData.success) {
+															instance._redirect(uri);
+														}
+													}
+												},
+												dataType: 'JSON'
+											}
+										);
+									}
+									else {
+										instance._redirect(uri);
+									}
+								},
+								'.user-notification .user-notification-link'
+							);
+						}
+					},
+
+					_openWindow: function(uri) {
+						return /p_p_state=(maximized|pop_up|exclusive)/.test(uri);
+					},
+
+					_redirect: function(uri) {
+						var instance = this;
+
+						if (uri) {
+							if (instance._openWindow(uri)) {
+								Liferay.Util.openWindow(
+									{
+										id: 'notificationsWindow',
+										uri: uri
+									}
+								);
+							}
+							else {
+								var topWindow = Liferay.Util.getTop();
+
+								topWindow.location.href = uri;
+							}
+						}
 					}
 				}
 			}
-		};
+		);
+
+		Liferay.NotificationsList = NotificationsList;
+	},
+	'',
+	{
+		requires: ['aui-base', 'aui-io', 'aui-loading-mask-deprecated', 'liferay-poller', 'liferay-portlet-base', 'liferay-portlet-url']
 	}
 );

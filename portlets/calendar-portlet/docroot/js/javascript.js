@@ -44,10 +44,6 @@ AUI.add(
 										'</div>' +
 									'</button>';
 
-		var TPL_MESSAGE_UPDATE_ALL_INVITED = '<p class="calendar-portlet-confirmation-text">' +
-												Liferay.Language.get('invited-users-will-be-notified') +
-											'</p>';
-
 		var COMPANY_ID = toInt(themeDisplay.getCompanyId());
 
 		var USER_ID = toInt(themeDisplay.getUserId());
@@ -256,6 +252,7 @@ AUI.add(
 						endDate: endDate.getTime(),
 						firstReminder: calendarBooking.firstReminder,
 						firstReminderType: calendarBooking.firstReminderType,
+						hasChildCalendarBookings: calendarBooking.hasChildCalendarBookings,
 						instanceIndex: calendarBooking.instanceIndex,
 						location: calendarBooking.location,
 						parentCalendarBookingId: calendarBooking.parentCalendarBookingId,
@@ -374,6 +371,98 @@ AUI.add(
 				);
 			},
 
+			getCalendarsMenu: function(config) {
+				var instance = this;
+
+				var toggler = new A.Toggler(
+					{
+						after: {
+							expandedChange: function(event) {
+								if (event.newVal) {
+									var activeView = config.scheduler.get('activeView');
+
+									activeView._fillHeight();
+								}
+							}
+						},
+						animated: true,
+						content: config.content,
+						expanded: false,
+						header: config.header
+					}
+				);
+
+				var items = [
+					{
+						caption: Liferay.Language.get('check-availability'),
+						fn: function(event) {
+							var instance = this;
+
+							A.each(
+								CalendarUtil.availableCalendars,
+								function(item, index) {
+									item.set('visible', false);
+								}
+							);
+
+							var calendarList = instance.get('host');
+
+							calendarList.activeItem.set('visible', true);
+
+							toggler.expand();
+							instance.hide();
+
+							return false;
+						},
+						id: 'check-availability'
+					}
+				];
+
+				var calendarsMenu = {
+					items: items
+				};
+
+				if (config.invitable) {
+					items.push(
+						{
+							caption: Liferay.Language.get('remove'),
+							fn: function(event) {
+								var instance = this;
+
+								var calendarList = instance.get('host');
+
+								calendarList.remove(calendarList.activeItem);
+
+								instance.hide();
+							},
+							id: 'remove'
+						}
+					);
+
+					calendarsMenu.on = {
+						visibleChange: function(event) {
+							var instance = this;
+
+							if (event.newVal) {
+								var calendarList = instance.get('host');
+
+								var calendar = calendarList.activeItem;
+
+								var hiddenItems = [];
+
+								if (calendar.get('calendarId') === config.defaultCalendarId) {
+									hiddenItems.push('remove');
+								}
+
+								instance.set('hiddenItems', hiddenItems);
+							}
+						}
+					};
+				}
+
+				return calendarsMenu;
+			},
+
 			getDatesList: function(startDate, total) {
 				var instance = this;
 
@@ -448,23 +537,6 @@ AUI.add(
 						calendarResourceId: calendarResourceId
 					},
 					callback
-				);
-			},
-
-			hasChildCalendarBookings: function(schedulerEvent, callback) {
-				var instance = this;
-
-				instance.invokeService(
-					{
-						'/calendar-portlet/calendarbooking/has-child-calendar-bookings': {
-							parentCalendarBookingId: schedulerEvent.get('calendarBookingId')
-						}
-					},
-					{
-						success: function() {
-							callback(this.get('responseData'));
-						}
-					}
 				);
 			},
 
@@ -856,6 +928,11 @@ AUI.add(
 						value: CalendarUtil.NOTIFICATION_DEFAULT_TYPE
 					},
 
+					hasChildCalendarBookings: {
+						validator: isBoolean,
+						value: false
+					},
+
 					instanceIndex: {
 						setter: toInt,
 						value: 0
@@ -994,7 +1071,8 @@ AUI.add(
 
 						var node = instance.get('node');
 
-						node.attr('data-endDate', instance._formatDate(val, '%m/%d/%Y %I:%M %p'));
+						node.attr('data-endDate', instance._formatDate(val, '%m/%d/%Y'));
+						node.attr('data-endTime', instance._formatDate(val, '%I:%M %p'));
 					},
 
 					_uiSetLoading: function(val) {
@@ -1008,7 +1086,8 @@ AUI.add(
 
 						var node = instance.get('node');
 
-						node.attr('data-startDate', instance._formatDate(val, '%m/%d/%Y %I:%M %p'));
+						node.attr('data-startDate', instance._formatDate(val, '%m/%d/%Y'));
+						node.attr('data-startTime', instance._formatDate(val, '%I:%M %p'));
 					},
 
 					_uiSetStatus: function(val) {
@@ -1404,16 +1483,6 @@ AUI.add(
 						return offset;
 					},
 
-					_hasChildCalendarBookingsPromise: function(schedulerEvent) {
-						var instance = this;
-
-						return A.Promise(
-							function(resolve) {
-								CalendarUtil.hasChildCalendarBookings(schedulerEvent, resolve);
-							}
-						);
-					},
-
 					_onClickAddEvent: function(event) {
 						var instance = this;
 
@@ -1500,82 +1569,15 @@ AUI.add(
 						);
 					},
 
-					_promptSchedulerEventUpdate: function(data) {
-						var instance = this;
-
-						var hasChild = data[3];
-						var schedulerEvent = data[0];
-
-						instance.queue = new A.AsyncQueue();
-
-						if (schedulerEvent.isRecurring()) {
-							instance.queue.add(
-								{
-									args: [data],
-									autoContinue: false,
-									context: instance,
-									fn: instance._queueableQuestionUpdateRecurring,
-									timeout: 0
-								}
-							);
-						}
-
-						if (schedulerEvent.isMasterBooking()) {
-							if (hasChild) {
-								instance.queue.add(
-									{
-										args: [data],
-										autoContinue: false,
-										context: instance,
-										fn: instance._queueableQuestionUpdateAllInvited,
-										timeout: 0
-									}
-								);
-							}
-						}
-						else {
-							instance.queue.add(
-								{
-									args: [data],
-									autoContinue: false,
-									context: instance,
-									fn: instance._queueableQuestionUserCalendarOnly,
-									timeout: 0
-								}
-							);
-						}
-
-						instance.queue.add(
-							{
-								args: [data],
-								autoContinue: false,
-								context: instance,
-								fn: instance._queueableQuestionResolver,
-								timeout: 0
-							}
-						);
-
-						instance.queue.add(
-							{
-								autoContinue: false,
-								context: instance,
-								fn: instance.load,
-								timeout: 0
-							}
-						);
-
-						instance.queue.run();
-					},
-
 					_queueableQuestionResolver: function(data) {
 						var instance = this;
 
-						var answers = data[4];
-						var duration = data[2];
-						var offset = data[1];
-						var schedulerEvent = data[0];
+						var answers = data.answers;
+						var duration = data.duration;
+						var offset = data.offset;
+						var schedulerEvent = data.schedulerEvent;
 
-						var showNextQuestion = A.bind(instance.queue.run, instance.queue);
+						var showNextQuestion = A.bind(instance.load, instance);
 
 						if (answers.cancel) {
 							A.soon(showNextQuestion);
@@ -1588,124 +1590,21 @@ AUI.add(
 						}
 					},
 
-					_queueableQuestionUpdateAllInvited: function(data) {
-						var instance = this;
-
-						var answers = data[4];
-
-						var showNextQuestion = A.bind(instance.queue.run, instance.queue);
-
-						if (answers.cancel) {
-							A.soon(showNextQuestion);
-						}
-						else {
-							Liferay.CalendarMessageUtil.confirm(
-								TPL_MESSAGE_UPDATE_ALL_INVITED,
-								Liferay.Language.get('save-changes'),
-								Liferay.Language.get('do-not-change-the-event'),
-								function() {
-									showNextQuestion();
-								},
-								function() {
-									answers.cancel = true;
-
-									showNextQuestion();
-								}
-							);
-						}
-					},
-
-					_queueableQuestionUpdateRecurring: function(data) {
-						var instance = this;
-
-						var answers = data[4];
-
-						var showNextQuestion = A.bind(instance.queue.run, instance.queue);
-
-						if (answers.cancel) {
-							A.soon(showNextQuestion);
-						}
-						else {
-							Liferay.RecurrenceUtil.openConfirmationPanel(
-								'update',
-								function() {
-									answers.updateInstance = true;
-
-									showNextQuestion();
-								},
-								function() {
-									answers.allFollowing = true;
-									answers.updateInstance = true;
-
-									showNextQuestion();
-								},
-								function() {
-									showNextQuestion();
-								},
-								function() {
-									answers.cancel = true;
-
-									showNextQuestion();
-								}
-							);
-						}
-					},
-
-					_queueableQuestionUserCalendarOnly: function(data) {
-						var instance = this;
-
-						var answers = data[4];
-						var schedulerEvent = data[0];
-
-						var showNextQuestion = A.bind(instance.queue.run, instance.queue);
-
-						if (answers.cancel) {
-							A.soon(showNextQuestion);
-						}
-						else {
-							var calendar = Liferay.CalendarUtil.availableCalendars[schedulerEvent.get('calendarId')];
-
-							var content = [
-								'<p class="calendar-portlet-confirmation-text">',
-								Lang.sub(
-									Liferay.Language.get('you-are-about-to-make-changes-that-will-only-effect-your-calendar-x'),
-									[LString.escapeHTML(calendar.get('name'))]
-								),
-								'</p>'
-							].join(STR_BLANK);
-
-							Liferay.CalendarMessageUtil.confirm(
-								content,
-								Liferay.Language.get('save-changes'),
-								Liferay.Language.get('do-not-change-the-event'),
-								function() {
-									showNextQuestion();
-								},
-								function() {
-									answers.cancel = true;
-
-									showNextQuestion();
-								}
-							);
-						}
-					},
-
 					_updateSchedulerEvent: function(schedulerEvent, changedAttributes) {
 						var instance = this;
 
-						var answers = {};
-						var calendarBookingId = schedulerEvent.get('calendarBookingId');
+						var calendar = Liferay.CalendarUtil.availableCalendars[schedulerEvent.get('calendarId')];
 
-						A.batch(
-							schedulerEvent,
-							instance._getCalendarBookingOffset(schedulerEvent, changedAttributes),
-							instance._getCalendarBookingDuration(schedulerEvent),
-							instance._hasChildCalendarBookingsPromise(schedulerEvent),
-							answers
-						)
-						.then(
-							function(data) {
-								instance._promptSchedulerEventUpdate(data);
+						Liferay.CalendarMessageUtil.promptSchedulerEventUpdate(
+							{
+								calendarName: calendar.get('name'),
+								duration: instance._getCalendarBookingDuration(schedulerEvent),
+								hasChild: schedulerEvent.get('hasChildCalendarBookings'),
+								masterBooking: schedulerEvent.isMasterBooking(),
+								offset: instance._getCalendarBookingOffset(schedulerEvent, changedAttributes),
+								recurring: schedulerEvent.isRecurring(),
+								resolver: A.bind(instance._queueableQuestionResolver, instance),
+								schedulerEvent: schedulerEvent
 							}
 						);
 					}
@@ -1860,6 +1759,8 @@ AUI.add(
 						);
 
 						instance.popover.headerNode.toggleClass('hide', !templateData.permissions.VIEW_BOOKING_DETAILS);
+
+						instance._syncInvitees();
 					},
 
 					_afterPopoverVisibleChange: function(event) {
@@ -1906,10 +1807,6 @@ AUI.add(
 
 						if (eventRecorderCalendar) {
 							eventRecorderCalendar.val(calendarId.toString());
-						}
-
-						if (event.newVal) {
-							instance._syncInvitees();
 						}
 					},
 

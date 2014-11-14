@@ -28,7 +28,9 @@
 		<!-- Other fields -->
 
 		<column name="rootResourcePrimKey" type="long" filter-primary="true" />
+		<column name="parentResourceClassNameId" type="long" />
 		<column name="parentResourcePrimKey" type="long" />
+		<column name="kbFolderId" type="long" />
 		<column name="version" type="int" />
 		<column name="title" type="String" />
 		<column name="urlTitle" type="String" />
@@ -39,6 +41,7 @@
 		<column name="viewCount" type="int" />
 		<column name="latest" type="boolean" />
 		<column name="main" type="boolean" />
+		<column name="sourceURL" type="String" />
 		<column name="status" type="int" />
 		<column name="statusByUserId" type="long" />
 		<column name="statusByUserName" type="String" />
@@ -74,10 +77,6 @@
 		<finder name="R_S" return-type="Collection">
 			<finder-column name="resourcePrimKey" arrayable-operator="OR" />
 			<finder-column name="status" />
-		</finder>
-		<finder name="G_UT" return-type="Collection">
-			<finder-column name="groupId" />
-			<finder-column name="urlTitle" />
 		</finder>
 		<finder name="G_L" return-type="Collection">
 			<finder-column name="groupId" />
@@ -145,10 +144,10 @@
 			<finder-column name="parentResourcePrimKey" arrayable-operator="OR" />
 			<finder-column name="status" />
 		</finder>
-		<finder name="G_UT_ST" return-type="Collection">
+		<finder name="G_KBFI_UT" return-type="Collection">
 			<finder-column name="groupId" />
+			<finder-column name="kbFolderId" />
 			<finder-column name="urlTitle" />
-			<finder-column name="status" />
 		</finder>
 		<finder name="G_P_S_L" return-type="Collection" db-index="false">
 			<finder-column name="groupId" />
@@ -167,6 +166,12 @@
 			<finder-column name="parentResourcePrimKey" />
 			<finder-column name="sections" comparator="LIKE" arrayable-operator="OR" />
 			<finder-column name="status" />
+		</finder>
+		<finder name="G_KBFI_UT_ST" return-type="Collection">
+			<finder-column name="groupId" />
+			<finder-column name="kbFolderId" />
+			<finder-column name="urlTitle" />
+			<finder-column name="status" arrayable-operator="OR" />
 		</finder>
 
 		<!-- References -->
@@ -248,6 +253,48 @@
 		<reference package-path="com.liferay.portal" entity="PortletPreferences" />
 		<reference package-path="com.liferay.portlet.social" entity="SocialActivity" />
 	</entity>
+	<entity name="KBFolder" uuid="true" local-service="true" remote-service="true">
+
+		<!-- PK fields -->
+
+		<column name="kbFolderId" type="long" primary="true" />
+
+		<!-- Group instance -->
+
+		<column name="groupId" type="long" />
+
+		<!-- Audit fields -->
+
+		<column name="companyId" type="long" />
+		<column name="userId" type="long" />
+		<column name="userName" type="String" />
+		<column name="createDate" type="Date" />
+		<column name="modifiedDate" type="Date" />
+
+		<!-- Other fields -->
+
+		<column name="parentKBFolderId" type="long" />
+		<column name="name" type="String" />
+		<column name="urlTitle" type="String" />
+		<column name="description" type="String" />
+
+		<!-- Finder methods -->
+
+		<finder name="G_P" return-type="Collection">
+			<finder-column name="groupId" />
+			<finder-column name="parentKBFolderId" />
+		</finder>
+		<finder name="G_P_N" return-type="KBFolder">
+			<finder-column name="groupId" />
+			<finder-column name="parentKBFolderId" />
+			<finder-column name="name" />
+		</finder>
+		<finder name="G_P_UT" return-type="KBFolder">
+			<finder-column name="groupId" />
+			<finder-column name="parentKBFolderId" />
+			<finder-column name="urlTitle" />
+		</finder>
+	</entity>
 	<entity name="KBTemplate" uuid="true" local-service="true" remote-service="true">
 
 		<!-- PK fields -->
@@ -289,9 +336,15 @@
 		<reference package-path="com.liferay.portlet.social" entity="SocialActivity" />
 	</entity>
 	<exceptions>
+		<exception>DuplicateKBArticleUrlTitle</exception>
+		<exception>DuplicateKBFolderName</exception>
+		<exception>InvalidKBArticleUrlTitle</exception>
+		<exception>InvalidKBFolderName</exception>
 		<exception>KBArticleContent</exception>
 		<exception>KBArticleImport</exception>
+		<exception>KBArticleParent</exception>
 		<exception>KBArticlePriority</exception>
+		<exception>KBArticleSourceURL</exception>
 		<exception>KBArticleTitle</exception>
 		<exception>KBCommentContent</exception>
 		<exception>KBTemplateContent</exception>

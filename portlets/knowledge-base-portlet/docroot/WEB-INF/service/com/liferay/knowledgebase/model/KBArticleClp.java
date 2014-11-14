@@ -14,6 +14,8 @@
 
 package com.liferay.knowledgebase.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.knowledgebase.service.ClpSerializer;
 import com.liferay.knowledgebase.service.KBArticleLocalServiceUtil;
 
@@ -43,6 +45,7 @@ import java.util.Map;
 /**
  * @author Brian Wing Shun Chan
  */
+@ProviderType
 public class KBArticleClp extends BaseModelImpl<KBArticle> implements KBArticle {
 	public KBArticleClp() {
 	}
@@ -91,7 +94,10 @@ public class KBArticleClp extends BaseModelImpl<KBArticle> implements KBArticle 
 		attributes.put("createDate", getCreateDate());
 		attributes.put("modifiedDate", getModifiedDate());
 		attributes.put("rootResourcePrimKey", getRootResourcePrimKey());
+		attributes.put("parentResourceClassNameId",
+			getParentResourceClassNameId());
 		attributes.put("parentResourcePrimKey", getParentResourcePrimKey());
+		attributes.put("kbFolderId", getKbFolderId());
 		attributes.put("version", getVersion());
 		attributes.put("title", getTitle());
 		attributes.put("urlTitle", getUrlTitle());
@@ -102,6 +108,7 @@ public class KBArticleClp extends BaseModelImpl<KBArticle> implements KBArticle 
 		attributes.put("viewCount", getViewCount());
 		attributes.put("latest", getLatest());
 		attributes.put("main", getMain());
+		attributes.put("sourceURL", getSourceURL());
 		attributes.put("status", getStatus());
 		attributes.put("statusByUserId", getStatusByUserId());
 		attributes.put("statusByUserName", getStatusByUserName());
@@ -175,11 +182,24 @@ public class KBArticleClp extends BaseModelImpl<KBArticle> implements KBArticle 
 			setRootResourcePrimKey(rootResourcePrimKey);
 		}
 
+		Long parentResourceClassNameId = (Long)attributes.get(
+				"parentResourceClassNameId");
+
+		if (parentResourceClassNameId != null) {
+			setParentResourceClassNameId(parentResourceClassNameId);
+		}
+
 		Long parentResourcePrimKey = (Long)attributes.get(
 				"parentResourcePrimKey");
 
 		if (parentResourcePrimKey != null) {
 			setParentResourcePrimKey(parentResourcePrimKey);
+		}
+
+		Long kbFolderId = (Long)attributes.get("kbFolderId");
+
+		if (kbFolderId != null) {
+			setKbFolderId(kbFolderId);
 		}
 
 		Integer version = (Integer)attributes.get("version");
@@ -240,6 +260,12 @@ public class KBArticleClp extends BaseModelImpl<KBArticle> implements KBArticle 
 
 		if (main != null) {
 			setMain(main);
+		}
+
+		String sourceURL = (String)attributes.get("sourceURL");
+
+		if (sourceURL != null) {
+			setSourceURL(sourceURL);
 		}
 
 		Integer status = (Integer)attributes.get("status");
@@ -527,6 +553,30 @@ public class KBArticleClp extends BaseModelImpl<KBArticle> implements KBArticle 
 	}
 
 	@Override
+	public long getParentResourceClassNameId() {
+		return _parentResourceClassNameId;
+	}
+
+	@Override
+	public void setParentResourceClassNameId(long parentResourceClassNameId) {
+		_parentResourceClassNameId = parentResourceClassNameId;
+
+		if (_kbArticleRemoteModel != null) {
+			try {
+				Class<?> clazz = _kbArticleRemoteModel.getClass();
+
+				Method method = clazz.getMethod("setParentResourceClassNameId",
+						long.class);
+
+				method.invoke(_kbArticleRemoteModel, parentResourceClassNameId);
+			}
+			catch (Exception e) {
+				throw new UnsupportedOperationException(e);
+			}
+		}
+	}
+
+	@Override
 	public long getParentResourcePrimKey() {
 		return _parentResourcePrimKey;
 	}
@@ -543,6 +593,29 @@ public class KBArticleClp extends BaseModelImpl<KBArticle> implements KBArticle 
 						long.class);
 
 				method.invoke(_kbArticleRemoteModel, parentResourcePrimKey);
+			}
+			catch (Exception e) {
+				throw new UnsupportedOperationException(e);
+			}
+		}
+	}
+
+	@Override
+	public long getKbFolderId() {
+		return _kbFolderId;
+	}
+
+	@Override
+	public void setKbFolderId(long kbFolderId) {
+		_kbFolderId = kbFolderId;
+
+		if (_kbArticleRemoteModel != null) {
+			try {
+				Class<?> clazz = _kbArticleRemoteModel.getClass();
+
+				Method method = clazz.getMethod("setKbFolderId", long.class);
+
+				method.invoke(_kbArticleRemoteModel, kbFolderId);
 			}
 			catch (Exception e) {
 				throw new UnsupportedOperationException(e);
@@ -791,6 +864,29 @@ public class KBArticleClp extends BaseModelImpl<KBArticle> implements KBArticle 
 	}
 
 	@Override
+	public String getSourceURL() {
+		return _sourceURL;
+	}
+
+	@Override
+	public void setSourceURL(String sourceURL) {
+		_sourceURL = sourceURL;
+
+		if (_kbArticleRemoteModel != null) {
+			try {
+				Class<?> clazz = _kbArticleRemoteModel.getClass();
+
+				Method method = clazz.getMethod("setSourceURL", String.class);
+
+				method.invoke(_kbArticleRemoteModel, sourceURL);
+			}
+			catch (Exception e) {
+				throw new UnsupportedOperationException(e);
+			}
+		}
+	}
+
+	@Override
 	public int getStatus() {
 		return _status;
 	}
@@ -967,6 +1063,46 @@ public class KBArticleClp extends BaseModelImpl<KBArticle> implements KBArticle 
 			Object[] parameterValues = new Object[] {  };
 
 			com.liferay.knowledgebase.model.KBArticle returnObj = (com.liferay.knowledgebase.model.KBArticle)invokeOnRemoteModel(methodName,
+					parameterTypes, parameterValues);
+
+			return returnObj;
+		}
+		catch (Exception e) {
+			throw new UnsupportedOperationException(e);
+		}
+	}
+
+	@Override
+	public java.lang.String getParentTitle(java.util.Locale locale, int status) {
+		try {
+			String methodName = "getParentTitle";
+
+			Class<?>[] parameterTypes = new Class<?>[] {
+					java.util.Locale.class, int.class
+				};
+
+			Object[] parameterValues = new Object[] { locale, status };
+
+			java.lang.String returnObj = (java.lang.String)invokeOnRemoteModel(methodName,
+					parameterTypes, parameterValues);
+
+			return returnObj;
+		}
+		catch (Exception e) {
+			throw new UnsupportedOperationException(e);
+		}
+	}
+
+	@Override
+	public long getClassNameId() {
+		try {
+			String methodName = "getClassNameId";
+
+			Class<?>[] parameterTypes = new Class<?>[] {  };
+
+			Object[] parameterValues = new Object[] {  };
+
+			Long returnObj = (Long)invokeOnRemoteModel(methodName,
 					parameterTypes, parameterValues);
 
 			return returnObj;
@@ -1207,7 +1343,9 @@ public class KBArticleClp extends BaseModelImpl<KBArticle> implements KBArticle 
 		clone.setCreateDate(getCreateDate());
 		clone.setModifiedDate(getModifiedDate());
 		clone.setRootResourcePrimKey(getRootResourcePrimKey());
+		clone.setParentResourceClassNameId(getParentResourceClassNameId());
 		clone.setParentResourcePrimKey(getParentResourcePrimKey());
+		clone.setKbFolderId(getKbFolderId());
 		clone.setVersion(getVersion());
 		clone.setTitle(getTitle());
 		clone.setUrlTitle(getUrlTitle());
@@ -1218,6 +1356,7 @@ public class KBArticleClp extends BaseModelImpl<KBArticle> implements KBArticle 
 		clone.setViewCount(getViewCount());
 		clone.setLatest(getLatest());
 		clone.setMain(getMain());
+		clone.setSourceURL(getSourceURL());
 		clone.setStatus(getStatus());
 		clone.setStatusByUserId(getStatusByUserId());
 		clone.setStatusByUserName(getStatusByUserName());
@@ -1285,7 +1424,7 @@ public class KBArticleClp extends BaseModelImpl<KBArticle> implements KBArticle 
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(51);
+		StringBundler sb = new StringBundler(57);
 
 		sb.append("{uuid=");
 		sb.append(getUuid());
@@ -1307,8 +1446,12 @@ public class KBArticleClp extends BaseModelImpl<KBArticle> implements KBArticle 
 		sb.append(getModifiedDate());
 		sb.append(", rootResourcePrimKey=");
 		sb.append(getRootResourcePrimKey());
+		sb.append(", parentResourceClassNameId=");
+		sb.append(getParentResourceClassNameId());
 		sb.append(", parentResourcePrimKey=");
 		sb.append(getParentResourcePrimKey());
+		sb.append(", kbFolderId=");
+		sb.append(getKbFolderId());
 		sb.append(", version=");
 		sb.append(getVersion());
 		sb.append(", title=");
@@ -1329,6 +1472,8 @@ public class KBArticleClp extends BaseModelImpl<KBArticle> implements KBArticle 
 		sb.append(getLatest());
 		sb.append(", main=");
 		sb.append(getMain());
+		sb.append(", sourceURL=");
+		sb.append(getSourceURL());
 		sb.append(", status=");
 		sb.append(getStatus());
 		sb.append(", statusByUserId=");
@@ -1344,7 +1489,7 @@ public class KBArticleClp extends BaseModelImpl<KBArticle> implements KBArticle 
 
 	@Override
 	public String toXmlString() {
-		StringBundler sb = new StringBundler(79);
+		StringBundler sb = new StringBundler(88);
 
 		sb.append("<model><model-name>");
 		sb.append("com.liferay.knowledgebase.model.KBArticle");
@@ -1391,8 +1536,16 @@ public class KBArticleClp extends BaseModelImpl<KBArticle> implements KBArticle 
 		sb.append(getRootResourcePrimKey());
 		sb.append("]]></column-value></column>");
 		sb.append(
+			"<column><column-name>parentResourceClassNameId</column-name><column-value><![CDATA[");
+		sb.append(getParentResourceClassNameId());
+		sb.append("]]></column-value></column>");
+		sb.append(
 			"<column><column-name>parentResourcePrimKey</column-name><column-value><![CDATA[");
 		sb.append(getParentResourcePrimKey());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>kbFolderId</column-name><column-value><![CDATA[");
+		sb.append(getKbFolderId());
 		sb.append("]]></column-value></column>");
 		sb.append(
 			"<column><column-name>version</column-name><column-value><![CDATA[");
@@ -1435,6 +1588,10 @@ public class KBArticleClp extends BaseModelImpl<KBArticle> implements KBArticle 
 		sb.append(getMain());
 		sb.append("]]></column-value></column>");
 		sb.append(
+			"<column><column-name>sourceURL</column-name><column-value><![CDATA[");
+		sb.append(getSourceURL());
+		sb.append("]]></column-value></column>");
+		sb.append(
 			"<column><column-name>status</column-name><column-value><![CDATA[");
 		sb.append(getStatus());
 		sb.append("]]></column-value></column>");
@@ -1467,7 +1624,9 @@ public class KBArticleClp extends BaseModelImpl<KBArticle> implements KBArticle 
 	private Date _createDate;
 	private Date _modifiedDate;
 	private long _rootResourcePrimKey;
+	private long _parentResourceClassNameId;
 	private long _parentResourcePrimKey;
+	private long _kbFolderId;
 	private int _version;
 	private String _title;
 	private String _urlTitle;
@@ -1478,6 +1637,7 @@ public class KBArticleClp extends BaseModelImpl<KBArticle> implements KBArticle 
 	private int _viewCount;
 	private boolean _latest;
 	private boolean _main;
+	private String _sourceURL;
 	private int _status;
 	private long _statusByUserId;
 	private String _statusByUserName;

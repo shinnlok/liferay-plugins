@@ -14,6 +14,8 @@
 
 package com.liferay.microblogs.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.bean.PortletBeanLocatorUtil;
 import com.liferay.portal.kernel.util.ReferenceRegistry;
 import com.liferay.portal.service.InvokableLocalService;
@@ -32,6 +34,7 @@ import com.liferay.portal.service.InvokableLocalService;
  * @see com.liferay.microblogs.service.impl.MicroblogsEntryLocalServiceImpl
  * @generated
  */
+@ProviderType
 public class MicroblogsEntryLocalServiceUtil {
 	/*
 	 * NOTE FOR DEVELOPERS:
@@ -51,13 +54,25 @@ public class MicroblogsEntryLocalServiceUtil {
 	}
 
 	public static com.liferay.microblogs.model.MicroblogsEntry addMicroblogsEntry(
-		long userId, java.lang.String content, int type, long receiverUserId,
-		long receiverMicroblogsEntryId, int socialRelationType,
+		long userId, java.lang.String content, int type,
+		long parentMicroblogsEntryId, int socialRelationType,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return getService()
-				   .addMicroblogsEntry(userId, content, type, receiverUserId,
-			receiverMicroblogsEntryId, socialRelationType, serviceContext);
+				   .addMicroblogsEntry(userId, content, type,
+			parentMicroblogsEntryId, socialRelationType, serviceContext);
+	}
+
+	public static com.liferay.microblogs.model.MicroblogsEntry addMicroblogsEntry(
+		long userId, long creatorClassNameId, long creatorClassPK,
+		java.lang.String content, int type, long parentMicroblogsEntryId,
+		int socialRelationType,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService()
+				   .addMicroblogsEntry(userId, creatorClassNameId,
+			creatorClassPK, content, type, parentMicroblogsEntryId,
+			socialRelationType, serviceContext);
 	}
 
 	/**
@@ -69,6 +84,12 @@ public class MicroblogsEntryLocalServiceUtil {
 	public static com.liferay.microblogs.model.MicroblogsEntry createMicroblogsEntry(
 		long microblogsEntryId) {
 		return getService().createMicroblogsEntry(microblogsEntryId);
+	}
+
+	public static void deleteMicroblogsEntries(long creatorClassNameId,
+		long creatorClassPK)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		getService().deleteMicroblogsEntries(creatorClassNameId, creatorClassPK);
 	}
 
 	/**
@@ -216,6 +237,45 @@ public class MicroblogsEntryLocalServiceUtil {
 		return getService().getCompanyMicroblogsEntriesCount(companyId);
 	}
 
+	public static java.util.List<com.liferay.microblogs.model.MicroblogsEntry> getMicroblogsEntries(
+		long creatorClassNameId, java.lang.String assetTagName, int start,
+		int end) {
+		return getService()
+				   .getMicroblogsEntries(creatorClassNameId, assetTagName,
+			start, end);
+	}
+
+	public static java.util.List<com.liferay.microblogs.model.MicroblogsEntry> getMicroblogsEntries(
+		long creatorClassNameId, long creatorClassPK,
+		java.lang.String assetTagName, int start, int end) {
+		return getService()
+				   .getMicroblogsEntries(creatorClassNameId, creatorClassPK,
+			assetTagName, start, end);
+	}
+
+	public static java.util.List<com.liferay.microblogs.model.MicroblogsEntry> getMicroblogsEntries(
+		long creatorClassNameId, long creatorClassPK, int start, int end) {
+		return getService()
+				   .getMicroblogsEntries(creatorClassNameId, creatorClassPK,
+			start, end);
+	}
+
+	public static java.util.List<com.liferay.microblogs.model.MicroblogsEntry> getMicroblogsEntries(
+		long creatorClassNameId, long creatorClassPK, int type, int start,
+		int end) {
+		return getService()
+				   .getMicroblogsEntries(creatorClassNameId, creatorClassPK,
+			type, start, end);
+	}
+
+	public static java.util.List<com.liferay.microblogs.model.MicroblogsEntry> getMicroblogsEntries(
+		long creatorClassNameId, int type, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator obc) {
+		return getService()
+				   .getMicroblogsEntries(creatorClassNameId, type, start, end,
+			obc);
+	}
+
 	/**
 	* Returns a range of all the microblogs entries.
 	*
@@ -241,6 +301,32 @@ public class MicroblogsEntryLocalServiceUtil {
 		return getService().getMicroblogsEntriesCount();
 	}
 
+	public static int getMicroblogsEntriesCount(long creatorClassNameId,
+		java.lang.String assetTagName) {
+		return getService()
+				   .getMicroblogsEntriesCount(creatorClassNameId, assetTagName);
+	}
+
+	public static int getMicroblogsEntriesCount(long creatorClassNameId,
+		long creatorClassPK) {
+		return getService()
+				   .getMicroblogsEntriesCount(creatorClassNameId, creatorClassPK);
+	}
+
+	public static int getMicroblogsEntriesCount(long creatorClassNameId,
+		long creatorClassPK, java.lang.String assetTagName) {
+		return getService()
+				   .getMicroblogsEntriesCount(creatorClassNameId,
+			creatorClassPK, assetTagName);
+	}
+
+	public static int getMicroblogsEntriesCount(long creatorClassNameId,
+		long creatorClassPK, int type) {
+		return getService()
+				   .getMicroblogsEntriesCount(creatorClassNameId,
+			creatorClassPK, type);
+	}
+
 	/**
 	* Returns the microblogs entry with the primary key.
 	*
@@ -254,45 +340,32 @@ public class MicroblogsEntryLocalServiceUtil {
 		return getService().getMicroblogsEntry(microblogsEntryId);
 	}
 
+	public static java.util.List<com.liferay.microblogs.model.MicroblogsEntry> getParentMicroblogsEntryMicroblogsEntries(
+		int type, long parentMicroblogsEntryId, int start, int end) {
+		return getService()
+				   .getParentMicroblogsEntryMicroblogsEntries(type,
+			parentMicroblogsEntryId, start, end);
+	}
+
+	public static java.util.List<com.liferay.microblogs.model.MicroblogsEntry> getParentMicroblogsEntryMicroblogsEntries(
+		int type, long parentMicroblogsEntryId, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.microblogs.model.MicroblogsEntry> orderByComparator) {
+		return getService()
+				   .getParentMicroblogsEntryMicroblogsEntries(type,
+			parentMicroblogsEntryId, start, end, orderByComparator);
+	}
+
+	public static int getParentMicroblogsEntryMicroblogsEntriesCount(int type,
+		long parentMicroblogsEntryId) {
+		return getService()
+				   .getParentMicroblogsEntryMicroblogsEntriesCount(type,
+			parentMicroblogsEntryId);
+	}
+
 	public static com.liferay.portal.model.PersistedModel getPersistedModel(
 		java.io.Serializable primaryKeyObj)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return getService().getPersistedModel(primaryKeyObj);
-	}
-
-	public static java.util.List<com.liferay.microblogs.model.MicroblogsEntry> getReceiverMicroblogsEntryMicroblogsEntries(
-		int type, long receiverMicroblogsEntryId, int start, int end) {
-		return getService()
-				   .getReceiverMicroblogsEntryMicroblogsEntries(type,
-			receiverMicroblogsEntryId, start, end);
-	}
-
-	public static java.util.List<com.liferay.microblogs.model.MicroblogsEntry> getReceiverMicroblogsEntryMicroblogsEntries(
-		int type, long receiverMicroblogsEntryId, int start, int end,
-		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.microblogs.model.MicroblogsEntry> orderByComparator) {
-		return getService()
-				   .getReceiverMicroblogsEntryMicroblogsEntries(type,
-			receiverMicroblogsEntryId, start, end, orderByComparator);
-	}
-
-	public static int getReceiverMicroblogsEntryMicroblogsEntriesCount(
-		int type, long receiverMicroblogsEntryId) {
-		return getService()
-				   .getReceiverMicroblogsEntryMicroblogsEntriesCount(type,
-			receiverMicroblogsEntryId);
-	}
-
-	public static java.util.List<com.liferay.microblogs.model.MicroblogsEntry> getReceiverUserMicroblogsEntries(
-		int type, long receiverUserId, int start, int end) {
-		return getService()
-				   .getReceiverUserMicroblogsEntries(type, receiverUserId,
-			start, end);
-	}
-
-	public static int getReceiverUserMicroblogsEntriesCount(int type,
-		long receiverUserId) {
-		return getService()
-				   .getReceiverUserMicroblogsEntriesCount(type, receiverUserId);
 	}
 
 	public static java.util.List<com.liferay.microblogs.model.MicroblogsEntry> getUserMicroblogsEntries(

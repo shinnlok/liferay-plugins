@@ -14,6 +14,8 @@
 
 package com.liferay.pushnotifications.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import java.io.Serializable;
 
 import java.util.ArrayList;
@@ -23,10 +25,11 @@ import java.util.List;
 /**
  * This class is used by SOAP remote services, specifically {@link com.liferay.pushnotifications.service.http.PushNotificationsDeviceServiceSoap}.
  *
- * @author Silvio Santos
+ * @author Bruno Farache
  * @see com.liferay.pushnotifications.service.http.PushNotificationsDeviceServiceSoap
  * @generated
  */
+@ProviderType
 public class PushNotificationsDeviceSoap implements Serializable {
 	public static PushNotificationsDeviceSoap toSoapModel(
 		PushNotificationsDevice model) {

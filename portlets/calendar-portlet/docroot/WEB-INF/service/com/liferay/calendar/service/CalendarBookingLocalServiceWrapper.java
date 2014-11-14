@@ -14,6 +14,8 @@
 
 package com.liferay.calendar.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.service.ServiceWrapper;
 
 /**
@@ -23,6 +25,7 @@ import com.liferay.portal.service.ServiceWrapper;
  * @see CalendarBookingLocalService
  * @generated
  */
+@ProviderType
 public class CalendarBookingLocalServiceWrapper
 	implements CalendarBookingLocalService,
 		ServiceWrapper<CalendarBookingLocalService> {
@@ -320,6 +323,14 @@ public class CalendarBookingLocalServiceWrapper
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _calendarBookingLocalService.getCalendarBookingByUuidAndGroupId(uuid,
 			groupId);
+	}
+
+	@Override
+	public com.liferay.calendar.model.CalendarBooking getCalendarBookingInstance(
+		long calendarBookingId, int instanceIndex)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _calendarBookingLocalService.getCalendarBookingInstance(calendarBookingId,
+			instanceIndex);
 	}
 
 	@Override

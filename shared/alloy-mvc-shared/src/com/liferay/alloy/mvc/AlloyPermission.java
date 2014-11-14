@@ -64,6 +64,13 @@ public class AlloyPermission {
 		PermissionChecker permissionChecker, long groupId, String name,
 		long primKey, String actionId) {
 
+		return contains(permissionChecker, groupId, name, primKey, actionId, 0);
+	}
+
+	public static boolean contains(
+		PermissionChecker permissionChecker, long groupId, String name,
+		long primKey, String actionId, long ownerId) {
+
 		try {
 			ResourceActionsUtil.checkAction(name, actionId);
 		}
@@ -71,12 +78,17 @@ public class AlloyPermission {
 			return true;
 		}
 
-		if ((name.indexOf(CharPool.PERIOD) != -1) &&
-			permissionChecker.hasOwnerPermission(
-				permissionChecker.getCompanyId(), name, primKey,
-				_getOwnerId(name, primKey), actionId)) {
+		if (name.indexOf(CharPool.PERIOD) != -1) {
+			if (ownerId <= 0) {
+				ownerId = getOwnerId(name, primKey);
+			}
 
-			return true;
+			if (permissionChecker.hasOwnerPermission(
+					permissionChecker.getCompanyId(), name, primKey, ownerId,
+					actionId)) {
+
+				return true;
+			}
 		}
 
 		return permissionChecker.hasPermission(
@@ -97,7 +109,7 @@ public class AlloyPermission {
 
 		PortletDisplay portletDisplay = themeDisplay.getPortletDisplay();
 
-		String actionId = _formatActionId(controller, action);
+		String actionId = formatActionId(controller, action);
 
 		return contains(
 			themeDisplay.getPermissionChecker(), themeDisplay.getScopeGroupId(),
@@ -105,7 +117,7 @@ public class AlloyPermission {
 			actionId);
 	}
 
-	private static String _formatActionId(String controller, String action) {
+	protected static String formatActionId(String controller, String action) {
 		StringBuilder sb = new StringBuilder(StringUtil.toUpperCase(action));
 
 		for (int i = 0; i < action.length(); i++) {
@@ -124,7 +136,7 @@ public class AlloyPermission {
 		return sb.toString();
 	}
 
-	private static long _getOwnerId(String className, long classPK) {
+	protected static long getOwnerId(String className, long classPK) {
 		BaseModel<?> baseModel = null;
 
 		try {

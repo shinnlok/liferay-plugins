@@ -14,6 +14,8 @@
 
 package com.liferay.pushnotifications.service.persistence;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.service.persistence.BasePersistence;
 
 import com.liferay.pushnotifications.model.PushNotificationsDevice;
@@ -25,11 +27,12 @@ import com.liferay.pushnotifications.model.PushNotificationsDevice;
  * Caching information and settings can be found in <code>portal.properties</code>
  * </p>
  *
- * @author Silvio Santos
+ * @author Bruno Farache
  * @see PushNotificationsDevicePersistenceImpl
  * @see PushNotificationsDeviceUtil
  * @generated
  */
+@ProviderType
 public interface PushNotificationsDevicePersistence extends BasePersistence<PushNotificationsDevice> {
 	/*
 	 * NOTE FOR DEVELOPERS:

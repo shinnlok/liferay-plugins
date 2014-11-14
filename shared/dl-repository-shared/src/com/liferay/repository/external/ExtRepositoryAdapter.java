@@ -18,6 +18,7 @@ import com.liferay.portal.NoSuchRepositoryEntryException;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.repository.BaseRepositoryImpl;
@@ -34,6 +35,7 @@ import com.liferay.portal.kernel.search.Query;
 import com.liferay.portal.kernel.search.QueryConfig;
 import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.search.SearchException;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
@@ -107,7 +109,7 @@ public class ExtRepositoryAdapter extends BaseRepositoryImpl {
 
 	@Override
 	public ExtRepositoryFolderAdapter addFolder(
-			long parentFolderId, String title, String description,
+			long parentFolderId, String name, String description,
 			ServiceContext serviceContext)
 		throws PortalException {
 
@@ -116,7 +118,7 @@ public class ExtRepositoryAdapter extends BaseRepositoryImpl {
 
 		ExtRepositoryFolder extRepositoryFolder =
 			_extRepository.addExtRepositoryFolder(
-				extRepositoryParentFolderKey, title, description);
+				extRepositoryParentFolderKey, name, description);
 
 		return _toExtRepositoryObjectAdapter(
 			ExtRepositoryObjectAdapterType.FOLDER, extRepositoryFolder);
@@ -178,6 +180,9 @@ public class ExtRepositoryAdapter extends BaseRepositoryImpl {
 			ExtRepositoryObjectAdapterType.FILE, extRepositoryFileEntry);
 	}
 
+	/**
+	 * @throws PortalException
+	 */
 	@Override
 	public FileEntry checkOutFileEntry(
 			long fileEntryId, String owner, long expirationTime,
@@ -325,7 +330,7 @@ public class ExtRepositoryAdapter extends BaseRepositoryImpl {
 		extRepositoryFileEntryAdapters = _filterByMimeType(
 			extRepositoryFileEntryAdapters, mimeTypes);
 
-		return (List)_subList(extRepositoryFileEntryAdapters, start, end, obc);
+		return _subList(extRepositoryFileEntryAdapters, start, end, obc);
 	}
 
 	@Override
@@ -455,7 +460,7 @@ public class ExtRepositoryAdapter extends BaseRepositoryImpl {
 
 	@Override
 	public ExtRepositoryFolderAdapter getFolder(
-			long parentFolderId, String title)
+			long parentFolderId, String name)
 		throws PortalException {
 
 		String extRepositoryParentFolderKey = getExtRepositoryObjectKey(
@@ -464,7 +469,7 @@ public class ExtRepositoryAdapter extends BaseRepositoryImpl {
 		ExtRepositoryFolder extRepositoryFolder =
 			_extRepository.getExtRepositoryObject(
 				ExtRepositoryObjectType.FOLDER, extRepositoryParentFolderKey,
-				title);
+				name);
 
 		return _toExtRepositoryObjectAdapter(
 			ExtRepositoryObjectAdapterType.FOLDER, extRepositoryFolder);
@@ -487,10 +492,11 @@ public class ExtRepositoryAdapter extends BaseRepositoryImpl {
 			_toExtRepositoryObjectAdapters(
 				ExtRepositoryObjectAdapterType.FOLDER, extRepositoryFolders);
 
-		return (List)_subList(extRepositoryFolderAdapters, start, end, obc);
+		return _subList(extRepositoryFolderAdapters, start, end, obc);
 	}
 
 	@Override
+	@SuppressWarnings("rawtypes")
 	public List getFoldersAndFileEntries(
 		long folderId, int start, int end, OrderByComparator<?> obc) {
 
@@ -831,7 +837,8 @@ public class ExtRepositoryAdapter extends BaseRepositoryImpl {
 				extRepositoryFileEntryKey,
 				extRepositoryFileVersion.getMimeType(), inputStream);
 
-			String changeLog = "Reverted to " + version;
+			String changeLog = LanguageUtil.format(
+				serviceContext.getLocale(), "reverted-to-x", version, false);
 
 			try {
 				_extRepository.checkInExtRepositoryFileEntry(
@@ -946,7 +953,7 @@ public class ExtRepositoryAdapter extends BaseRepositoryImpl {
 		hits.setDocs(documents.toArray(new Document[documents.size()]));
 		hits.setLength(total);
 		hits.setQueryTerms(new String[0]);
-		hits.setScores(scores.toArray(new Float[scores.size()]));
+		hits.setScores(ArrayUtil.toFloatArray(scores));
 		hits.setSearchTime(searchTime);
 		hits.setSnippets(snippets.toArray(new String[snippets.size()]));
 		hits.setStart(startTime);
@@ -1015,7 +1022,7 @@ public class ExtRepositoryAdapter extends BaseRepositoryImpl {
 
 	@Override
 	public ExtRepositoryFolderAdapter updateFolder(
-			long folderId, String title, String description,
+			long folderId, String name, String description,
 			ServiceContext serviceContext)
 		throws PortalException {
 
@@ -1031,7 +1038,7 @@ public class ExtRepositoryAdapter extends BaseRepositoryImpl {
 		ExtRepositoryFolder newExtRepositoryFolder =
 			_extRepository.moveExtRepositoryObject(
 				ExtRepositoryObjectType.FOLDER, extRepositoryFolderKey,
-				parentExtRepositoryFolder.getExtRepositoryModelKey(), title);
+				parentExtRepositoryFolder.getExtRepositoryModelKey(), name);
 
 		return _toExtRepositoryObjectAdapter(
 			ExtRepositoryObjectAdapterType.FOLDER, newExtRepositoryFolder);
@@ -1054,6 +1061,10 @@ public class ExtRepositoryAdapter extends BaseRepositoryImpl {
 	}
 
 	protected ExtRepositoryAdapter(ExtRepository extRepository) {
+		if (extRepository == null) {
+			extRepository = (ExtRepository)this;
+		}
+
 		_extRepository = extRepository;
 	}
 
@@ -1211,6 +1222,16 @@ public class ExtRepositoryAdapter extends BaseRepositoryImpl {
 		return repositoryEntry;
 	}
 
+	private <T, V extends T> List<T> _subList(
+		List<V> list, int start, int end, OrderByComparator<T> obc) {
+
+		if (obc != null) {
+			list = ListUtil.sort(list, obc);
+		}
+
+		return (List<T>)ListUtil.toList(ListUtil.subList(list, start, end));
+	}
+
 	private ExtRepositoryFileVersionAdapter _toExtRepositoryFileVersionAdapter(
 			ExtRepositoryFileEntryAdapter extRepositoryFileEntryAdapter,
 			ExtRepositoryFileVersion extRepositoryFileVersion)
@@ -1364,16 +1385,6 @@ public class ExtRepositoryAdapter extends BaseRepositoryImpl {
 		}
 
 		return extRepositoryObjectAdapters;
-	}
-
-	private <T, V extends T> List<T>_subList(
-		List<V> list, int start, int end, OrderByComparator<T> obc) {
-
-		if (obc != null) {
-			list = ListUtil.sort(list, obc);
-		}
-
-		return ListUtil.toList(ListUtil.subList(list, start, end));
 	}
 
 	private static Log _log = LogFactoryUtil.getLog(ExtRepositoryAdapter.class);

@@ -14,6 +14,8 @@
 
 package com.liferay.microblogs.service.http;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.microblogs.service.MicroblogsEntryServiceUtil;
 
 import com.liferay.portal.kernel.log.Log;
@@ -61,16 +63,17 @@ import java.rmi.RemoteException;
  * @see com.liferay.microblogs.service.MicroblogsEntryServiceUtil
  * @generated
  */
+@ProviderType
 public class MicroblogsEntryServiceSoap {
 	public static com.liferay.microblogs.model.MicroblogsEntrySoap addMicroblogsEntry(
-		long userId, java.lang.String content, int type, long receiverUserId,
-		long receiverMicroblogsEntryId, int socialRelationType,
+		long userId, java.lang.String content, int type,
+		long parentMicroblogsEntryId, int socialRelationType,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws RemoteException {
 		try {
 			com.liferay.microblogs.model.MicroblogsEntry returnValue = MicroblogsEntryServiceUtil.addMicroblogsEntry(userId,
-					content, type, receiverUserId, receiverMicroblogsEntryId,
-					socialRelationType, serviceContext);
+					content, type, parentMicroblogsEntryId, socialRelationType,
+					serviceContext);
 
 			return com.liferay.microblogs.model.MicroblogsEntrySoap.toSoapModel(returnValue);
 		}

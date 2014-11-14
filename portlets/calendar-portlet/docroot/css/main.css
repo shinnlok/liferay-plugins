@@ -145,6 +145,10 @@
 		}
 	}
 
+	.modal-title {
+		text-transform: capitalize;
+	}
+
 	.scheduler-event-content, .scheduler-event-title {
 		font-family: inherit;
 		font-size: inherit;
@@ -288,6 +292,10 @@
 .calendar-portlet-recurrence-container {
 	.field-content, .field-wrapper-content {
 		margin: 2px;
+	}
+
+	table {
+		width: 100%;
 	}
 }
 

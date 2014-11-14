@@ -14,6 +14,8 @@
 
 package com.liferay.knowledgebase.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.jsonwebservice.JSONWebService;
@@ -37,6 +39,7 @@ import com.liferay.portal.service.InvokableService;
  */
 @AccessControlled
 @JSONWebService
+@ProviderType
 @Transactional(isolation = Isolation.PORTAL, rollbackFor =  {
 	PortalException.class, SystemException.class})
 public interface KBArticleService extends BaseService, InvokableService {
@@ -46,15 +49,16 @@ public interface KBArticleService extends BaseService, InvokableService {
 	 * Never modify or reference this interface directly. Always use {@link KBArticleServiceUtil} to access the k b article remote service. Add custom service methods to {@link com.liferay.knowledgebase.service.impl.KBArticleServiceImpl} and rerun ServiceBuilder to automatically copy the method declarations to this interface.
 	 */
 	public com.liferay.knowledgebase.model.KBArticle addKBArticle(
-		java.lang.String portletId, long parentResourcePrimKey,
-		java.lang.String title, java.lang.String urlTitle,
-		java.lang.String content, java.lang.String description,
+		java.lang.String portletId, long parentResourceClassNameId,
+		long parentResourcePrimKey, java.lang.String title,
+		java.lang.String urlTitle, java.lang.String content,
+		java.lang.String description, java.lang.String sourceURL,
 		java.lang.String[] sections, java.lang.String[] selectedFileNames,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException;
 
-	public void addKBArticlesMarkdown(long groupId, java.lang.String fileName,
-		java.io.InputStream inputStream,
+	public void addKBArticlesMarkdown(long groupId, long parentKBFolderId,
+		java.lang.String fileName, java.io.InputStream inputStream,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException;
 
@@ -72,6 +76,11 @@ public interface KBArticleService extends BaseService, InvokableService {
 
 	public void deleteTempAttachment(long groupId, long resourcePrimKey,
 		java.lang.String fileName, java.lang.String tempFolderName)
+		throws com.liferay.portal.kernel.exception.PortalException;
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public com.liferay.knowledgebase.model.KBArticle fetchLatestKBArticle(
+		long resourcePrimKey, int status)
 		throws com.liferay.portal.kernel.exception.PortalException;
 
 	/**
@@ -207,7 +216,8 @@ public interface KBArticleService extends BaseService, InvokableService {
 		java.lang.String[] parameterTypes, java.lang.Object[] arguments)
 		throws java.lang.Throwable;
 
-	public void moveKBArticle(long resourcePrimKey, long parentResourcePrimKey,
+	public void moveKBArticle(long resourcePrimKey,
+		long parentResourceClassNameId, long parentResourcePrimKey,
 		double priority)
 		throws com.liferay.portal.kernel.exception.PortalException;
 
@@ -234,8 +244,9 @@ public interface KBArticleService extends BaseService, InvokableService {
 
 	public com.liferay.knowledgebase.model.KBArticle updateKBArticle(
 		long resourcePrimKey, java.lang.String title, java.lang.String content,
-		java.lang.String description, java.lang.String[] sections,
-		java.lang.String[] selectedFileNames, long[] removeFileEntryIds,
+		java.lang.String description, java.lang.String sourceURL,
+		java.lang.String[] sections, java.lang.String[] selectedFileNames,
+		long[] removeFileEntryIds,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException;
 

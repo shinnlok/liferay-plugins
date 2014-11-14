@@ -14,6 +14,8 @@
 
 package com.liferay.calendar.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.jsonwebservice.JSONWebService;
@@ -37,6 +39,7 @@ import com.liferay.portal.service.InvokableService;
  */
 @AccessControlled
 @JSONWebService
+@ProviderType
 @Transactional(isolation = Isolation.PORTAL, rollbackFor =  {
 	PortalException.class, SystemException.class})
 public interface CalendarBookingService extends BaseService, InvokableService {
@@ -104,6 +107,11 @@ public interface CalendarBookingService extends BaseService, InvokableService {
 		throws com.liferay.portal.kernel.exception.PortalException;
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public com.liferay.calendar.model.CalendarBooking getCalendarBookingInstance(
+		long calendarBookingId, int instanceIndex)
+		throws com.liferay.portal.kernel.exception.PortalException;
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public java.util.List<com.liferay.calendar.model.CalendarBooking> getCalendarBookings(
 		long calendarId, long startTime, long endTime)
 		throws com.liferay.portal.kernel.exception.PortalException;
@@ -136,8 +144,7 @@ public interface CalendarBookingService extends BaseService, InvokableService {
 		throws com.liferay.portal.kernel.exception.PortalException;
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public boolean hasChildCalendarBookings(long parentCalendarBookingId)
-		throws com.liferay.portal.kernel.exception.PortalException;
+	public boolean hasChildCalendarBookings(long parentCalendarBookingId);
 
 	@Override
 	public java.lang.Object invokeMethod(java.lang.String name,

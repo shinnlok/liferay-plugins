@@ -14,6 +14,11 @@
 
 package com.liferay.socialcoding.model.impl;
 
+import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.Validator;
+import com.liferay.socialcoding.model.JIRAProject;
+import com.liferay.socialcoding.service.JIRAProjectLocalServiceUtil;
+
 /**
  * @author Brian Wing Shun Chan
  */
@@ -21,5 +26,24 @@ public class JIRAIssueImpl extends JIRAIssueBaseImpl {
 
 	public JIRAIssueImpl() {
 	}
+
+	public String getKey() {
+		if (Validator.isNotNull(_key)) {
+			return _key;
+		}
+
+		try {
+			JIRAProject jiraProject =
+				JIRAProjectLocalServiceUtil.getJIRAProject(getProjectId());
+
+			_key = jiraProject.getKey() + StringPool.DASH + getIssueNumber();
+		}
+		catch (Exception e) {
+		}
+
+		return _key;
+	}
+
+	private String _key;
 
 }

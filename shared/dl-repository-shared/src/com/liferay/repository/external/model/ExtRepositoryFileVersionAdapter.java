@@ -18,6 +18,7 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.lar.StagedModelType;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.FileVersion;
+import com.liferay.portal.kernel.repository.model.RepositoryModelOperation;
 import com.liferay.portal.kernel.util.MimeTypesUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
@@ -48,6 +49,13 @@ public class ExtRepositoryFileVersionAdapter
 
 		_extRepositoryFileEntryAdapter = extRepositoryFileEntryAdapter;
 		_extRepositoryFileVersion = extRepositoryFileVersion;
+	}
+
+	@Override
+	public void execute(RepositoryModelOperation repositoryModelOperation)
+		throws PortalException {
+
+		repositoryModelOperation.execute(this);
 	}
 
 	@Override
@@ -88,6 +96,11 @@ public class ExtRepositoryFileVersionAdapter
 	@Override
 	public long getFileEntryId() {
 		return _extRepositoryFileEntryAdapter.getFileEntryId();
+	}
+
+	@Override
+	public String getFileName() {
+		return DLUtil.getSanitizedFileName(getTitle(), getExtension());
 	}
 
 	@Override
@@ -142,7 +155,6 @@ public class ExtRepositoryFileVersionAdapter
 	}
 
 	@Override
-	@SuppressWarnings("unused")
 	public String getStatusByUserUuid() {
 		return getUserUuid();
 	}

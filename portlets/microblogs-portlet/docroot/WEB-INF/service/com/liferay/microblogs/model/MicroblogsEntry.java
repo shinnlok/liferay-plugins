@@ -14,6 +14,8 @@
 
 package com.liferay.microblogs.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.model.PersistedModel;
 
 /**
@@ -25,10 +27,15 @@ import com.liferay.portal.model.PersistedModel;
  * @see com.liferay.microblogs.model.impl.MicroblogsEntryModelImpl
  * @generated
  */
+@ProviderType
 public interface MicroblogsEntry extends MicroblogsEntryModel, PersistedModel {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
 	 * Never modify this interface directly. Add methods to {@link com.liferay.microblogs.model.impl.MicroblogsEntryImpl} and rerun ServiceBuilder to automatically copy the method declarations to this interface.
 	 */
+	public long fetchParentMicroblogsEntryUserId();
+
+	public long getParentMicroblogsEntryUserId()
+		throws com.liferay.portal.kernel.exception.PortalException;
 }

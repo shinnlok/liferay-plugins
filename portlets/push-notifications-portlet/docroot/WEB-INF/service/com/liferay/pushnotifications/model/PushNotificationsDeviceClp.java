@@ -14,6 +14,8 @@
 
 package com.liferay.pushnotifications.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -37,8 +39,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author Silvio Santos
+ * @author Bruno Farache
  */
+@ProviderType
 public class PushNotificationsDeviceClp extends BaseModelImpl<PushNotificationsDevice>
 	implements PushNotificationsDevice {
 	public PushNotificationsDeviceClp() {

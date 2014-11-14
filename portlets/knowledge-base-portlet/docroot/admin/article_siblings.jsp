@@ -32,6 +32,15 @@ KBArticle nextKBArticle = previousAndNextKBArticles[2];
 				<c:choose>
 					<c:when test="<%= Validator.isNotNull(previousKBArticle.getUrlTitle()) %>">
 						<portlet:param name="urlTitle" value="<%= previousKBArticle.getUrlTitle() %>" />
+
+						<c:if test="<%= previousKBArticle.getKbFolderId() != KBFolderConstants.DEFAULT_PARENT_FOLDER_ID %>">
+
+							<%
+							KBFolder kbFolder = KBFolderServiceUtil.getKBFolder(previousKBArticle.getKbFolderId());
+							%>
+
+							<portlet:param name="kbFolderUrlTitle" value="<%= kbFolder.getUrlTitle() %>" />
+						</c:if>
 					</c:when>
 					<c:otherwise>
 						<portlet:param name="resourcePrimKey" value="<%= String.valueOf(previousKBArticle.getResourcePrimKey()) %>" />
@@ -42,7 +51,7 @@ KBArticle nextKBArticle = previousAndNextKBArticles[2];
 			<aui:a cssClass="hidden-xs" href="<%= previousKBArticleURL %>">
 				<i class="icon icon-circle-arrow-left"></i>
 
-				<span class="title"><%= previousKBArticle.getTitle() %></span>
+				<span class="title"><%= HtmlUtil.escape(previousKBArticle.getTitle()) %></span>
 			</aui:a>
 
 			<aui:a cssClass="visible-xs" href="<%= previousKBArticleURL %>">
@@ -59,6 +68,15 @@ KBArticle nextKBArticle = previousAndNextKBArticles[2];
 				<c:choose>
 					<c:when test="<%= Validator.isNotNull(nextKBArticle.getUrlTitle()) %>">
 						<portlet:param name="urlTitle" value="<%= nextKBArticle.getUrlTitle() %>" />
+
+						<c:if test="<%= nextKBArticle.getKbFolderId() != KBFolderConstants.DEFAULT_PARENT_FOLDER_ID %>">
+
+							<%
+							KBFolder kbFolder = KBFolderServiceUtil.getKBFolder(nextKBArticle.getKbFolderId());
+							%>
+
+							<portlet:param name="kbFolderUrlTitle" value="<%= kbFolder.getUrlTitle() %>" />
+						</c:if>
 					</c:when>
 					<c:otherwise>
 						<portlet:param name="resourcePrimKey" value="<%= String.valueOf(nextKBArticle.getResourcePrimKey()) %>" />
@@ -67,12 +85,12 @@ KBArticle nextKBArticle = previousAndNextKBArticles[2];
 			</liferay-portlet:renderURL>
 
 			<aui:a cssClass="hidden-xs next" href="<%= nextKBArticleURL %>">
-				<span class="title"><%= nextKBArticle.getTitle() %></span>
+				<span class="title"><%= HtmlUtil.escape(nextKBArticle.getTitle()) %></span>
 
 				<i class="icon icon-circle-arrow-right"></i>
 			</aui:a>
 
-			<aui:a cssClass="visible-xs next" href="<%= nextKBArticleURL %>">
+			<aui:a cssClass="next visible-phone" href="<%= nextKBArticleURL %>">
 				<span class="title"><liferay-ui:message key="next" /></span>
 
 				<i class="icon icon-circle-arrow-right"></i>

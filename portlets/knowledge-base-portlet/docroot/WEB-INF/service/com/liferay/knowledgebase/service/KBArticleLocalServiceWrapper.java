@@ -14,6 +14,8 @@
 
 package com.liferay.knowledgebase.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.service.ServiceWrapper;
 
 /**
@@ -23,6 +25,7 @@ import com.liferay.portal.service.ServiceWrapper;
  * @see KBArticleLocalService
  * @generated
  */
+@ProviderType
 public class KBArticleLocalServiceWrapper implements KBArticleLocalService,
 	ServiceWrapper<KBArticleLocalService> {
 	public KBArticleLocalServiceWrapper(
@@ -44,15 +47,17 @@ public class KBArticleLocalServiceWrapper implements KBArticleLocalService,
 
 	@Override
 	public com.liferay.knowledgebase.model.KBArticle addKBArticle(long userId,
-		long parentResourcePrimKey, java.lang.String title,
-		java.lang.String urlTitle, java.lang.String content,
-		java.lang.String description, java.lang.String[] sections,
+		long parentResourceClassNameId, long parentResourcePrimKey,
+		java.lang.String title, java.lang.String urlTitle,
+		java.lang.String content, java.lang.String description,
+		java.lang.String sourceURL, java.lang.String[] sections,
 		java.lang.String[] selectedFileNames,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _kbArticleLocalService.addKBArticle(userId,
-			parentResourcePrimKey, title, urlTitle, content, description,
-			sections, selectedFileNames, serviceContext);
+			parentResourceClassNameId, parentResourcePrimKey, title, urlTitle,
+			content, description, sourceURL, sections, selectedFileNames,
+			serviceContext);
 	}
 
 	@Override
@@ -91,11 +96,12 @@ public class KBArticleLocalServiceWrapper implements KBArticleLocalService,
 
 	@Override
 	public void addKBArticlesMarkdown(long userId, long groupId,
-		java.lang.String fileName, java.io.InputStream inputStream,
+		long parentKbFolderId, java.lang.String fileName,
+		java.io.InputStream inputStream,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
-		_kbArticleLocalService.addKBArticlesMarkdown(userId, groupId, fileName,
-			inputStream, serviceContext);
+		_kbArticleLocalService.addKBArticlesMarkdown(userId, groupId,
+			parentKbFolderId, fileName, inputStream, serviceContext);
 	}
 
 	@Override
@@ -151,6 +157,12 @@ public class KBArticleLocalServiceWrapper implements KBArticleLocalService,
 		long kbArticleId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _kbArticleLocalService.deleteKBArticle(kbArticleId);
+	}
+
+	@Override
+	public void deleteKBArticles(long groupId, long parentResourcePrimKey)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		_kbArticleLocalService.deleteKBArticles(groupId, parentResourcePrimKey);
 	}
 
 	@Override
@@ -269,8 +281,18 @@ public class KBArticleLocalServiceWrapper implements KBArticleLocalService,
 
 	@Override
 	public com.liferay.knowledgebase.model.KBArticle fetchKBArticleByUrlTitle(
-		long groupId, java.lang.String urlTitle) {
-		return _kbArticleLocalService.fetchKBArticleByUrlTitle(groupId, urlTitle);
+		long groupId, long kbFolderId, java.lang.String urlTitle) {
+		return _kbArticleLocalService.fetchKBArticleByUrlTitle(groupId,
+			kbFolderId, urlTitle);
+	}
+
+	@Override
+	public com.liferay.knowledgebase.model.KBArticle fetchKBArticleByUrlTitle(
+		long groupId, java.lang.String kbFolderUrlTitle,
+		java.lang.String urlTitle)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _kbArticleLocalService.fetchKBArticleByUrlTitle(groupId,
+			kbFolderUrlTitle, urlTitle);
 	}
 
 	/**
@@ -296,9 +318,9 @@ public class KBArticleLocalServiceWrapper implements KBArticleLocalService,
 
 	@Override
 	public com.liferay.knowledgebase.model.KBArticle fetchLatestKBArticleByUrlTitle(
-		long groupId, java.lang.String urlTitle, int status) {
+		long groupId, long kbFolderId, java.lang.String urlTitle, int status) {
 		return _kbArticleLocalService.fetchLatestKBArticleByUrlTitle(groupId,
-			urlTitle, status);
+			kbFolderId, urlTitle, status);
 	}
 
 	@Override
@@ -401,9 +423,19 @@ public class KBArticleLocalServiceWrapper implements KBArticleLocalService,
 
 	@Override
 	public com.liferay.knowledgebase.model.KBArticle getKBArticleByUrlTitle(
-		long groupId, java.lang.String urlTitle)
+		long groupId, long kbFolderId, java.lang.String urlTitle)
 		throws com.liferay.portal.kernel.exception.PortalException {
-		return _kbArticleLocalService.getKBArticleByUrlTitle(groupId, urlTitle);
+		return _kbArticleLocalService.getKBArticleByUrlTitle(groupId,
+			kbFolderId, urlTitle);
+	}
+
+	@Override
+	public com.liferay.knowledgebase.model.KBArticle getKBArticleByUrlTitle(
+		long groupId, java.lang.String kbFolderUrlTitle,
+		java.lang.String urlTitle)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _kbArticleLocalService.getKBArticleByUrlTitle(groupId,
+			kbFolderUrlTitle, urlTitle);
 	}
 
 	/**
@@ -510,10 +542,10 @@ public class KBArticleLocalServiceWrapper implements KBArticleLocalService,
 
 	@Override
 	public com.liferay.knowledgebase.model.KBArticle getLatestKBArticleByUrlTitle(
-		long groupId, java.lang.String urlTitle, int status)
+		long groupId, long kbFolderId, java.lang.String urlTitle, int status)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _kbArticleLocalService.getLatestKBArticleByUrlTitle(groupId,
-			urlTitle, status);
+			kbFolderId, urlTitle, status);
 	}
 
 	@Override
@@ -589,10 +621,11 @@ public class KBArticleLocalServiceWrapper implements KBArticleLocalService,
 
 	@Override
 	public void moveKBArticle(long userId, long resourcePrimKey,
-		long parentResourcePrimKey, double priority)
+		long parentResourceClassNameId, long parentResourcePrimKey,
+		double priority)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		_kbArticleLocalService.moveKBArticle(userId, resourcePrimKey,
-			parentResourcePrimKey, priority);
+			parentResourceClassNameId, parentResourcePrimKey, priority);
 	}
 
 	@Override
@@ -657,13 +690,13 @@ public class KBArticleLocalServiceWrapper implements KBArticleLocalService,
 	public com.liferay.knowledgebase.model.KBArticle updateKBArticle(
 		long userId, long resourcePrimKey, java.lang.String title,
 		java.lang.String content, java.lang.String description,
-		java.lang.String[] sections, java.lang.String[] selectedFileNames,
-		long[] removeFileEntryIds,
+		java.lang.String sourceURL, java.lang.String[] sections,
+		java.lang.String[] selectedFileNames, long[] removeFileEntryIds,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _kbArticleLocalService.updateKBArticle(userId, resourcePrimKey,
-			title, content, description, sections, selectedFileNames,
-			removeFileEntryIds, serviceContext);
+			title, content, description, sourceURL, sections,
+			selectedFileNames, removeFileEntryIds, serviceContext);
 	}
 
 	@Override
