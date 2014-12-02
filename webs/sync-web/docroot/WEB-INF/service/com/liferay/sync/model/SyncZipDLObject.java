@@ -1,4 +1,3 @@
-<%--
 /**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
@@ -12,8 +11,38 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
---%>
 
-<aui:input name="<%= UserDisplayTerms.LAST_NAME %>" size="20" type="text" value="<%= displayTerms.getLastName() %>" />
+package com.liferay.sync.model;
 
-<aui:input name="<%= UserDisplayTerms.FIRST_NAME %>" size="20" type="text" value="<%= displayTerms.getFirstName() %>" />
+import com.liferay.portal.kernel.json.JSON;
+
+/**
+ * @author Dennis Ju
+ */
+@JSON
+public class SyncZipDLObject extends SyncDLObjectWrapper {
+
+	public SyncZipDLObject(SyncDLObject syncDLObject) {
+		super(syncDLObject);
+	}
+
+	public String getException() {
+		return _exception;
+	}
+
+	public long getZipId() {
+		return _zipId;
+	}
+
+	public void setException(String exception) {
+		_exception = exception;
+	}
+
+	public void setZipId(long zipId) {
+		_zipId = zipId;
+	}
+
+	private String _exception;
+	private long _zipId;
+
+}
