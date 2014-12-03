@@ -1,4 +1,3 @@
-<%--
 /**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
@@ -12,8 +11,25 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
---%>
 
-<aui:input name="<%= UserDisplayTerms.LAST_NAME %>" size="20" type="text" value="<%= displayTerms.getLastName() %>" />
+package com.liferay.marketplace.hook.upgrade;
 
-<aui:input name="<%= UserDisplayTerms.FIRST_NAME %>" size="20" type="text" value="<%= displayTerms.getFirstName() %>" />
+import com.liferay.marketplace.hook.upgrade.v1_0_1.UpgradeModule;
+import com.liferay.portal.kernel.upgrade.UpgradeProcess;
+
+/**
+ * @author Joan Kim
+ */
+public class UpgradeProcess_1_0_1 extends UpgradeProcess {
+
+	@Override
+	public int getThreshold() {
+		return 101;
+	}
+
+	@Override
+	protected void doUpgrade() throws Exception {
+		upgrade(UpgradeModule.class);
+	}
+
+}
