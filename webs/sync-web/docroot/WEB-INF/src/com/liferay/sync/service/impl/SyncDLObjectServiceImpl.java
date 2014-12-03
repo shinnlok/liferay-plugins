@@ -827,6 +827,128 @@ public class SyncDLObjectServiceImpl extends SyncDLObjectServiceBaseImpl {
 	}
 
 	@Override
+	public Map<String, Object> updateFileEntries(File zipFile)
+		throws PortalException {
+
+		Map<String, Object> responseSyncDLObjects =
+			new HashMap<String, Object>();
+
+		ZipReader zipReader = ZipReaderFactoryUtil.getZipReader(zipFile);
+
+		String manifest = zipReader.getEntryAsString("/manifest.json");
+
+		JSONArray jsonArray = JSONFactoryUtil.createJSONArray(manifest);
+
+		for (int i = 0; i < jsonArray.length(); i++) {
+			JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+			SyncDLObject syncDLObject = null;
+
+			String zipFileId = jsonObject.getString("zipFileId");
+
+			ServiceContext serviceContext = new ServiceContext();
+
+			serviceContext.setAddGroupPermissions(
+				jsonObject.getBoolean("addGroupPermissions", false));
+			serviceContext.setAddGuestPermissions(
+				jsonObject.getBoolean("addGuestPermissions", false));
+
+			String urlPath = jsonObject.getString("urlPath");
+
+			try {
+				if (urlPath.endsWith("/add-file-entry")) {
+					InputStream is = zipReader.getEntryAsInputStream(
+						"/" + zipFileId);
+
+					File tempFile = FileUtil.createTempFile(is);
+
+					syncDLObject = addFileEntry(
+						jsonObject.getLong("repositoryId"),
+						jsonObject.getLong("folderId"),
+						jsonObject.getString("sourceFileName"),
+						jsonObject.getString("mimeType"),
+						jsonObject.getString("title"),
+						jsonObject.getString("description"),
+						jsonObject.getString("changeLog"), tempFile,
+						jsonObject.getString("checksum"), serviceContext);
+				}
+				else if (urlPath.endsWith("/add-folder")) {
+					syncDLObject = addFolder(
+						jsonObject.getLong("repositoryId"),
+						jsonObject.getLong("parentFolderId"),
+						jsonObject.getString("name"),
+						jsonObject.getString("description"), serviceContext);
+				}
+				else if (urlPath.endsWith("/move-file-entry")) {
+					syncDLObject = moveFileEntry(
+						jsonObject.getLong("fileEntryId"),
+						jsonObject.getLong("newFolderId"), serviceContext);
+				}
+				else if (urlPath.endsWith("/move-file-entry-to-trash")) {
+					syncDLObject = moveFileEntryToTrash(
+						jsonObject.getLong("fileEntryId"));
+				}
+				else if (urlPath.endsWith("/move-folder")) {
+					syncDLObject = moveFolder(
+						jsonObject.getLong("folderId"),
+						jsonObject.getLong("parentFolderId"), serviceContext);
+				}
+				else if (urlPath.endsWith("/move-folder-to-trash")) {
+					syncDLObject = moveFolderToTrash(
+						jsonObject.getLong("folderId"));
+				}
+				else if (urlPath.endsWith("/patch-file-entry")) {
+					InputStream is = zipReader.getEntryAsInputStream(
+						"/" + zipFileId);
+
+					File tempFile = FileUtil.createTempFile(is);
+
+					syncDLObject = patchFileEntry(
+						jsonObject.getLong("fileEntryId"),
+						jsonObject.getString("sourceVersion"),
+						jsonObject.getString("sourceFileName"),
+						jsonObject.getString("mimeType"),
+						jsonObject.getString("title"),
+						jsonObject.getString("description"),
+						jsonObject.getString("changeLog"),
+						jsonObject.getBoolean("majorVersion"), tempFile,
+						jsonObject.getString("checksum"), serviceContext);
+				}
+				else if (urlPath.endsWith("/update-file-entry")) {
+					InputStream is = zipReader.getEntryAsInputStream(
+						"/" + zipFileId);
+
+					File tempFile = FileUtil.createTempFile(is);
+
+					syncDLObject = updateFileEntry(
+						jsonObject.getLong("fileEntryId"),
+						jsonObject.getString("sourceFileName"),
+						jsonObject.getString("mimeType"),
+						jsonObject.getString("title"),
+						jsonObject.getString("description"),
+						jsonObject.getString("changeLog"),
+						jsonObject.getBoolean("majorVersion"), tempFile,
+						jsonObject.getString("checksum"), serviceContext);
+				}
+				else if (urlPath.endsWith("/update-folder")) {
+					syncDLObject = updateFolder(
+						jsonObject.getLong("folderId"),
+						jsonObject.getString("name"),
+						jsonObject.getString("description"), serviceContext);
+				}
+
+				responseSyncDLObjects.put(zipFileId, syncDLObject);
+			}
+			catch (Exception e) {
+				responseSyncDLObjects.put(
+					zipFileId, SyncUtil.buildExceptionMessage(e));
+			}
+		}
+
+		return responseSyncDLObjects;
+	}
+
+	@Override
 	public SyncDLObject updateFileEntry(
 			long fileEntryId, String sourceFileName, String mimeType,
 			String title, String description, String changeLog,
