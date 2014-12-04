@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.plugin.PluginPackage;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.Folder;
+import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ListUtil;
@@ -827,6 +828,7 @@ public class SyncDLObjectServiceImpl extends SyncDLObjectServiceBaseImpl {
 	}
 
 	@Override
+	@Transactional(enabled =false)
 	public Map<String, Object> updateFileEntries(File zipFile)
 		throws PortalException {
 
@@ -940,8 +942,9 @@ public class SyncDLObjectServiceImpl extends SyncDLObjectServiceBaseImpl {
 				responseSyncDLObjects.put(zipFileId, syncDLObject);
 			}
 			catch (Exception e) {
-				responseSyncDLObjects.put(
-					zipFileId, SyncUtil.buildExceptionMessage(e));
+				String json = "{\"exception\": \"" + e.getMessage() + "\"}";
+
+				responseSyncDLObjects.put(zipFileId, json);
 			}
 		}
 
