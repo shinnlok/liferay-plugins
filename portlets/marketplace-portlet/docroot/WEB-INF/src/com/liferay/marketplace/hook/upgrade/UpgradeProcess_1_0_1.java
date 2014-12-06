@@ -12,28 +12,24 @@
  * details.
  */
 
-package com.liferay.knowledgebase.hook.upgrade;
+package com.liferay.marketplace.hook.upgrade;
 
-import com.liferay.knowledgebase.hook.upgrade.v1_3_4.UpgradeKBComment;
-import com.liferay.knowledgebase.hook.upgrade.v1_3_4.UpgradePortletPreferences;
-import com.liferay.knowledgebase.hook.upgrade.v1_3_4.UpgradeResourceAction;
+import com.liferay.marketplace.hook.upgrade.v1_0_1.UpgradeModule;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 
 /**
- * @author Adolfo Pérez
+ * @author Joan Kim
  */
-public class UpgradeProcess_1_3_4 extends UpgradeProcess {
+public class UpgradeProcess_1_0_1 extends UpgradeProcess {
 
 	@Override
 	public int getThreshold() {
-		return 134;
+		return 101;
 	}
 
 	@Override
 	protected void doUpgrade() throws Exception {
-		upgrade(UpgradeKBComment.class);
-		upgrade(UpgradePortletPreferences.class);
-		upgrade(UpgradeResourceAction.class);
+		upgrade(UpgradeModule.class);
 	}
 
 }
