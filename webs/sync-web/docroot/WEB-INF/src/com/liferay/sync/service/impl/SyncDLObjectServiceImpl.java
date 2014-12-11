@@ -19,11 +19,15 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.deploy.DeployManagerUtil;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.plugin.PluginPackage;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.Folder;
+import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ListUtil;
@@ -31,6 +35,8 @@ import com.liferay.portal.kernel.util.PrefsPropsUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.ReleaseInfo;
+import com.liferay.portal.kernel.zip.ZipReader;
+import com.liferay.portal.kernel.zip.ZipReaderFactoryUtil;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.Organization;
 import com.liferay.portal.model.Repository;
@@ -61,6 +67,7 @@ import com.liferay.sync.util.SyncUtil;
 import com.liferay.util.portlet.PortletProps;
 
 import java.io.File;
+import java.io.InputStream;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -824,6 +831,129 @@ public class SyncDLObjectServiceImpl extends SyncDLObjectServiceBaseImpl {
 		catch (PortalException pe) {
 			throw new PortalException(SyncUtil.buildExceptionMessage(pe), pe);
 		}
+	}
+
+	@Override
+	@Transactional(enabled = false)
+	public Map<String, Object> updateFileEntries(File zipFile)
+		throws PortalException {
+
+		Map<String, Object> responseMap = new HashMap<String, Object>();
+
+		ZipReader zipReader = ZipReaderFactoryUtil.getZipReader(zipFile);
+
+		String manifest = zipReader.getEntryAsString("/manifest.json");
+
+		JSONArray jsonArray = JSONFactoryUtil.createJSONArray(manifest);
+
+		for (int i = 0; i < jsonArray.length(); i++) {
+			JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+			String zipFileId = jsonObject.getString("zipFileId");
+
+			try {
+				SyncDLObject syncDLObject = null;
+
+				ServiceContext serviceContext = new ServiceContext();
+
+				serviceContext.setAddGroupPermissions(
+					jsonObject.getBoolean("addGroupPermissions", false));
+				serviceContext.setAddGuestPermissions(
+					jsonObject.getBoolean("addGuestPermissions", false));
+
+				String urlPath = jsonObject.getString("urlPath");
+
+				if (urlPath.endsWith("/add-file-entry")) {
+					InputStream is = zipReader.getEntryAsInputStream(
+						"/" + zipFileId);
+
+					File tempFile = FileUtil.createTempFile(is);
+
+					syncDLObject = addFileEntry(
+						jsonObject.getLong("repositoryId"),
+						jsonObject.getLong("folderId"),
+						jsonObject.getString("sourceFileName"),
+						jsonObject.getString("mimeType"),
+						jsonObject.getString("title"),
+						jsonObject.getString("description"),
+						jsonObject.getString("changeLog"), tempFile,
+						jsonObject.getString("checksum"), serviceContext);
+				}
+				else if (urlPath.endsWith("/add-folder")) {
+					syncDLObject = addFolder(
+						jsonObject.getLong("repositoryId"),
+						jsonObject.getLong("parentFolderId"),
+						jsonObject.getString("name"),
+						jsonObject.getString("description"), serviceContext);
+				}
+				else if (urlPath.endsWith("/move-file-entry")) {
+					syncDLObject = moveFileEntry(
+						jsonObject.getLong("fileEntryId"),
+						jsonObject.getLong("newFolderId"), serviceContext);
+				}
+				else if (urlPath.endsWith("/move-file-entry-to-trash")) {
+					syncDLObject = moveFileEntryToTrash(
+						jsonObject.getLong("fileEntryId"));
+				}
+				else if (urlPath.endsWith("/move-folder")) {
+					syncDLObject = moveFolder(
+						jsonObject.getLong("folderId"),
+						jsonObject.getLong("parentFolderId"), serviceContext);
+				}
+				else if (urlPath.endsWith("/move-folder-to-trash")) {
+					syncDLObject = moveFolderToTrash(
+						jsonObject.getLong("folderId"));
+				}
+				else if (urlPath.endsWith("/patch-file-entry")) {
+					InputStream is = zipReader.getEntryAsInputStream(
+						"/" + zipFileId);
+
+					File tempFile = FileUtil.createTempFile(is);
+
+					syncDLObject = patchFileEntry(
+						jsonObject.getLong("fileEntryId"),
+						jsonObject.getString("sourceVersion"),
+						jsonObject.getString("sourceFileName"),
+						jsonObject.getString("mimeType"),
+						jsonObject.getString("title"),
+						jsonObject.getString("description"),
+						jsonObject.getString("changeLog"),
+						jsonObject.getBoolean("majorVersion"), tempFile,
+						jsonObject.getString("checksum"), serviceContext);
+				}
+				else if (urlPath.endsWith("/update-file-entry")) {
+					InputStream is = zipReader.getEntryAsInputStream(
+						"/" + zipFileId);
+
+					File tempFile = FileUtil.createTempFile(is);
+
+					syncDLObject = updateFileEntry(
+						jsonObject.getLong("fileEntryId"),
+						jsonObject.getString("sourceFileName"),
+						jsonObject.getString("mimeType"),
+						jsonObject.getString("title"),
+						jsonObject.getString("description"),
+						jsonObject.getString("changeLog"),
+						jsonObject.getBoolean("majorVersion"), tempFile,
+						jsonObject.getString("checksum"), serviceContext);
+				}
+				else if (urlPath.endsWith("/update-folder")) {
+					syncDLObject = updateFolder(
+						jsonObject.getLong("folderId"),
+						jsonObject.getString("name"),
+						jsonObject.getString("description"), serviceContext);
+				}
+
+				responseMap.put(zipFileId, syncDLObject);
+			}
+			catch (Exception e) {
+				String json = "{\"exception\": \"" + e.getMessage() + "\"}";
+
+				responseMap.put(zipFileId, json);
+			}
+		}
+
+		return responseMap;
 	}
 
 	@Override
