@@ -19,6 +19,9 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.deploy.DeployManagerUtil;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.plugin.PluginPackage;
@@ -32,6 +35,8 @@ import com.liferay.portal.kernel.util.PrefsPropsUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.ReleaseInfo;
+import com.liferay.portal.kernel.zip.ZipReader;
+import com.liferay.portal.kernel.zip.ZipReaderFactoryUtil;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.Organization;
 import com.liferay.portal.model.Repository;
@@ -62,6 +67,7 @@ import com.liferay.sync.util.SyncUtil;
 import com.liferay.util.portlet.PortletProps;
 
 import java.io.File;
+import java.io.InputStream;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -828,12 +834,11 @@ public class SyncDLObjectServiceImpl extends SyncDLObjectServiceBaseImpl {
 	}
 
 	@Override
-	@Transactional(enabled =false)
+	@Transactional(enabled = false)
 	public Map<String, Object> updateFileEntries(File zipFile)
 		throws PortalException {
 
-		Map<String, Object> responseSyncDLObjects =
-			new HashMap<String, Object>();
+		Map<String, Object> responseMap = new HashMap<String, Object>();
 
 		ZipReader zipReader = ZipReaderFactoryUtil.getZipReader(zipFile);
 
@@ -844,20 +849,20 @@ public class SyncDLObjectServiceImpl extends SyncDLObjectServiceBaseImpl {
 		for (int i = 0; i < jsonArray.length(); i++) {
 			JSONObject jsonObject = jsonArray.getJSONObject(i);
 
-			SyncDLObject syncDLObject = null;
-
 			String zipFileId = jsonObject.getString("zipFileId");
 
-			ServiceContext serviceContext = new ServiceContext();
-
-			serviceContext.setAddGroupPermissions(
-				jsonObject.getBoolean("addGroupPermissions", false));
-			serviceContext.setAddGuestPermissions(
-				jsonObject.getBoolean("addGuestPermissions", false));
-
-			String urlPath = jsonObject.getString("urlPath");
-
 			try {
+				SyncDLObject syncDLObject = null;
+
+				ServiceContext serviceContext = new ServiceContext();
+
+				serviceContext.setAddGroupPermissions(
+					jsonObject.getBoolean("addGroupPermissions", false));
+				serviceContext.setAddGuestPermissions(
+					jsonObject.getBoolean("addGuestPermissions", false));
+
+				String urlPath = jsonObject.getString("urlPath");
+
 				if (urlPath.endsWith("/add-file-entry")) {
 					InputStream is = zipReader.getEntryAsInputStream(
 						"/" + zipFileId);
@@ -939,16 +944,16 @@ public class SyncDLObjectServiceImpl extends SyncDLObjectServiceBaseImpl {
 						jsonObject.getString("description"), serviceContext);
 				}
 
-				responseSyncDLObjects.put(zipFileId, syncDLObject);
+				responseMap.put(zipFileId, syncDLObject);
 			}
 			catch (Exception e) {
 				String json = "{\"exception\": \"" + e.getMessage() + "\"}";
 
-				responseSyncDLObjects.put(zipFileId, json);
+				responseMap.put(zipFileId, json);
 			}
 		}
 
-		return responseSyncDLObjects;
+		return responseMap;
 	}
 
 	@Override

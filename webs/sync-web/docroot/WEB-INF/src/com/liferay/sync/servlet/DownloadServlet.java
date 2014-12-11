@@ -97,17 +97,18 @@ public class DownloadServlet extends HttpServlet {
 				sendImage(response, imageId);
 			}
 			else if (pathArray[0].equals("zip")) {
-				String zipIdsJSONString = ParamUtil.get(request, "zipIds", "");
+				String zipFileIdsJSONString = ParamUtil.get(
+					request, "zipFileIds", "");
 
-				if (Validator.isNull(zipIdsJSONString)) {
+				if (Validator.isNull(zipFileIdsJSONString)) {
 					throw new IllegalArgumentException(
-						"Missing parameter zipIds");
+						"Missing parameter zipFileIds");
 				}
 
-				JSONArray zipIdsJSONArray = JSONFactoryUtil.createJSONArray(
-					zipIdsJSONString);
+				JSONArray zipFileIdsJSONArray = JSONFactoryUtil.createJSONArray(
+					zipFileIdsJSONString);
 
-				sendZipFile(response, user, zipIdsJSONArray);
+				sendZipFile(response, user, zipFileIdsJSONArray);
 			}
 			else {
 				long groupId = GetterUtil.getLong(pathArray[0]);
@@ -167,10 +168,8 @@ public class DownloadServlet extends HttpServlet {
 		DownloadServletInputStream downloadServletInputStream =
 			_getFileDownloadServletInputStream(groupId, uuid, version);
 
-		response.setContentType(downloadServletInputStream.getMimeType());
-
 		ServletResponseUtil.write(
-			response, downloadServletInputStream,
+			response, downloadServletInputStream.getInputStream(),
 			downloadServletInputStream.getSize());
 	}
 
@@ -212,7 +211,7 @@ public class DownloadServlet extends HttpServlet {
 				user, groupId, uuid, sourceVersion, targetVersion);
 
 		ServletResponseUtil.write(
-			response, downloadServletInputStream,
+			response, downloadServletInputStream.getInputStream(),
 			downloadServletInputStream.getSize());
 	}
 
@@ -230,13 +229,13 @@ public class DownloadServlet extends HttpServlet {
 				i);
 
 			long groupId = zipObjectJSONObject.getLong("groupId");
-			String zipId = zipObjectJSONObject.getString("zipId");
+			String zipFileId = zipObjectJSONObject.getString("zipFileId");
 
 			Group group = GroupLocalServiceUtil.fetchGroup(groupId);
 
 			if ((group == null) || !SyncUtil.isSyncEnabled(group)) {
 				_writeExceptionJSONObject(
-					zipId, SyncSiteUnavailableException.class.getName(),
+					zipFileId, SyncSiteUnavailableException.class.getName(),
 					errorsJSONArray);
 
 				continue;
@@ -257,7 +256,7 @@ public class DownloadServlet extends HttpServlet {
 						Validator.isNull(targetVersion)) {
 
 						_writeExceptionJSONObject(
-							zipId, IllegalArgumentException.class.getName(),
+							zipFileId, IllegalArgumentException.class.getName(),
 							errorsJSONArray);
 
 						continue;
@@ -265,23 +264,24 @@ public class DownloadServlet extends HttpServlet {
 
 					InputStream inputStream =
 						_getPatchDownloadServletInputStream(
-							user, groupId, uuid, sourceVersion, targetVersion);
+							user, groupId, uuid, sourceVersion,
+							targetVersion).getInputStream();
 
-					zipWriter.addEntry(zipId, inputStream);
+					zipWriter.addEntry(zipFileId, inputStream);
 				}
 				else {
 					String version = zipObjectJSONObject.getString("version");
 
 					InputStream inputStream =
 						_getFileDownloadServletInputStream(
-							groupId, uuid, version);
+							groupId, uuid, version).getInputStream();
 
-					zipWriter.addEntry(zipId, inputStream);
+					zipWriter.addEntry(zipFileId, inputStream);
 				}
 			}
 			catch (Exception e) {
 				_writeExceptionJSONObject(
-					zipId, e.getClass().getName(), errorsJSONArray);
+					zipFileId, e.getClass().getName(), errorsJSONArray);
 
 				continue;
 			}
@@ -368,7 +368,7 @@ public class DownloadServlet extends HttpServlet {
 	}
 
 	private void _writeExceptionJSONObject(
-		String zipId, String exception, JSONArray errorsJSONArray) {
+		String zipFileId, String exception, JSONArray errorsJSONArray) {
 
 		JSONObject errorJSONObject = JSONFactoryUtil.createJSONObject();
 
@@ -376,7 +376,7 @@ public class DownloadServlet extends HttpServlet {
 
 		exceptionJSONObject.put("exception", exception);
 
-		errorJSONObject.put(zipId, exceptionJSONObject);
+		errorJSONObject.put(zipFileId, exceptionJSONObject);
 
 		errorsJSONArray.put(errorJSONObject);
 	}
