@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE project>
 
-<project name="sync-web-benchmark" basedir=".">
+<project name="sync-web-benchmark" basedir="." default="compile">
 	<import file="../build.xml" />
 
 	<path id="benchmark.classpath">
