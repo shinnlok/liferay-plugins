@@ -24,18 +24,18 @@
 <%@ taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %>
 
 <%@ page import="com.liferay.portal.kernel.util.GetterUtil" %><%@
-page import="com.liferay.portal.kernel.util.KeyValuePair" %><%@
-page import="com.liferay.portal.kernel.util.KeyValuePairComparator" %><%@
 page import="com.liferay.portal.kernel.util.ListUtil" %><%@
 page import="com.liferay.portal.kernel.util.ParamUtil" %><%@
 page import="com.liferay.portal.kernel.util.PrefsPropsUtil" %><%@
+page import="com.liferay.portal.kernel.util.WebKeys" %><%@
 page import="com.liferay.portal.model.Group" %><%@
 page import="com.liferay.portal.model.GroupConstants" %><%@
 page import="com.liferay.portal.service.GroupLocalServiceUtil" %><%@
 page import="com.liferay.sync.service.SyncDLObjectServiceUtil" %><%@
-page import="com.liferay.sync.shared.util.PortletPropsKeys" %>
+page import="com.liferay.sync.shared.util.PortletPropsKeys" %><%@
+page import="com.liferay.taglib.search.ResultRow" %>
 
-<%@ page import="java.util.ArrayList" %><%@
+<%@ page import="java.util.Iterator" %><%@
 page import="java.util.List" %>
 
 <portlet:defineObjects />

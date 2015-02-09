@@ -30,8 +30,6 @@ int pollInterval = PrefsPropsUtil.getInteger(portletPreferences, themeDisplay.ge
 
 <aui:form action="<%= configurationActionURL %>" method="post" name="fm" onSubmit='<%= "event.preventDefault(); " + renderResponse.getNamespace() + "submit();" %>'>
 	<aui:input name="redirect" type="hidden" value="<%= redirect %>" />
-	<aui:input name="disabledGroupIds" type="hidden" />
-	<aui:input name="enabledGroupIds" type="hidden" />
 
 	<aui:fieldset>
 		<aui:input name="enabled" type="checkbox" value="<%= enabled %>" />
@@ -42,38 +40,54 @@ int pollInterval = PrefsPropsUtil.getInteger(portletPreferences, themeDisplay.ge
 			<liferay-ui:message key="deactivating-a-site-will-delete-all-associated-files-from-all-clients" />
 		</div>
 
+		<liferay-ui:header
+			title="sites"
+		/>
+
 		<%
 		List<Group> groups = GroupLocalServiceUtil.getGroups(themeDisplay.getCompanyId(), GroupConstants.ANY_PARENT_GROUP_ID, true);
 
-		List<KeyValuePair> leftList = new ArrayList<KeyValuePair>();
-		List<KeyValuePair> rightList = new ArrayList<KeyValuePair>();
+		groups = ListUtil.copy(groups);
 
-		for (Group group : groups) {
+		Iterator<Group> iterator = groups.iterator();
+
+		while (iterator.hasNext()) {
+			Group group = iterator.next();
+
 			if (group.isCompany()) {
-				continue;
-			}
-
-			KeyValuePair keyValuePair = new KeyValuePair(String.valueOf(group.getGroupId()), group.getDescriptiveName());
-
-			boolean syncEnabled = GetterUtil.getBoolean(group.getTypeSettingsProperty("syncEnabled"), true);
-
-			if (syncEnabled) {
-				leftList.add(keyValuePair);
-			}
-			else {
-				rightList.add(keyValuePair);
+				iterator.remove();
 			}
 		}
 		%>
 
-		<liferay-ui:input-move-boxes
-			leftBoxName="currentGroupIds"
-			leftList="<%= ListUtil.sort(leftList, new KeyValuePairComparator(false, true)) %>"
-			leftTitle="enabled"
-			rightBoxName="availableGroupIds"
-			rightList="<%= ListUtil.sort(rightList, new KeyValuePairComparator(false, true)) %>"
-			rightTitle="disabled"
-		/>
+		<liferay-ui:search-container
+			emptyResultsMessage="no-sites-found"
+			total="<%= groups.size() %>"
+		>
+			<liferay-ui:search-container-results
+				results="<%= groups %>"
+			/>
+
+			<liferay-ui:search-container-row
+				className="com.liferay.portal.model.Group"
+				escapedModel="<%= true %>"
+				keyProperty="groupId"
+				modelVar="group"
+			>
+				<liferay-ui:search-container-column-text
+					name="name"
+					value="<%= group.getDescriptiveName() %>"
+				/>
+
+				<liferay-ui:search-container-column-jsp
+					align="right"
+					cssClass="entry-action"
+					path="/sync_admin_group_action.jsp"
+				/>
+			</liferay-ui:search-container-row>
+
+			<liferay-ui:search-iterator />
+		</liferay-ui:search-container>
 	</aui:fieldset>
 
 	<aui:fieldset label="sync-client">
@@ -94,15 +108,7 @@ int pollInterval = PrefsPropsUtil.getInteger(portletPreferences, themeDisplay.ge
 </aui:form>
 
 <aui:script>
-	Liferay.provide(
-		window,
-		'<portlet:namespace />submit',
-		function() {
-			document.<portlet:namespace />fm.<portlet:namespace />disabledGroupIds.value = Liferay.Util.listSelect(document.<portlet:namespace />fm.<portlet:namespace />availableGroupIds);
-			document.<portlet:namespace />fm.<portlet:namespace />enabledGroupIds.value = Liferay.Util.listSelect(document.<portlet:namespace />fm.<portlet:namespace />currentGroupIds);
-
-			submitForm(document.<portlet:namespace />fm);
-		},
-		['liferay-util-list-fields']
-	);
+	function <portlet:namespace />submit() {
+		submitForm(document.<portlet:namespace />fm, '<portlet:actionURL name="submit" />');
+	}
 </aui:script>
