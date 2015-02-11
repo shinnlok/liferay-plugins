@@ -17,6 +17,7 @@ package com.liferay.sync.admin.portlet;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PrefsPropsUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.security.auth.CompanyThreadLocal;
@@ -35,33 +36,86 @@ import javax.portlet.PortletPreferences;
  */
 public class AdminPortlet extends MVCPortlet {
 
+	public void configurePermissions(
+		ActionRequest actionRequest, ActionResponse actionResponse) {
+
+		String tabs1 = ParamUtil.getString(actionRequest, "tabs1");
+
+		long[] groupIds = ParamUtil.getLongValues(actionRequest, "groupIds");
+
+		String permissions = ParamUtil.getString(actionRequest, "permissions");
+
+		for (long groupId : groupIds) {
+			Group group = GroupLocalServiceUtil.fetchGroup(groupId);
+
+			UnicodeProperties typeSettingsProperties =
+				group.getTypeSettingsProperties();
+
+			typeSettingsProperties.setProperty("permissions", permissions);
+
+			group.setTypeSettingsProperties(typeSettingsProperties);
+
+			GroupLocalServiceUtil.updateGroup(group);
+		}
+
+		actionResponse.setRenderParameter("tabs1", tabs1);
+	}
+
 	public void configureSite(
 		ActionRequest actionRequest, ActionResponse actionResponse) {
 
-		long groupId = ParamUtil.getLong(actionRequest, "groupId");
+		String enableSite = ParamUtil.getString(actionRequest, "enableSite");
 
-		boolean syncEnabled = ParamUtil.getBoolean(
-			actionRequest, "syncEnabled");
+		String tabs1 = ParamUtil.getString(actionRequest, "tabs1");
 
-		Group group = GroupLocalServiceUtil.fetchGroup(groupId);
+		long[] groupIds = ParamUtil.getLongValues(actionRequest, "groupIds");
 
-		UnicodeProperties typeSettingsProperties =
-			group.getTypeSettingsProperties();
+		for (long groupId : groupIds) {
+			Group group = GroupLocalServiceUtil.fetchGroup(groupId);
 
-		typeSettingsProperties.setProperty(
-			"syncEnabled", String.valueOf(syncEnabled));
+			UnicodeProperties typeSettingsProperties =
+				group.getTypeSettingsProperties();
 
-		group.setTypeSettingsProperties(typeSettingsProperties);
+			typeSettingsProperties.setProperty("syncEnabled", enableSite);
 
-		GroupLocalServiceUtil.updateGroup(group);
+			group.setTypeSettingsProperties(typeSettingsProperties);
+
+			GroupLocalServiceUtil.updateGroup(group);
+		}
+
+		actionResponse.setRenderParameter("tabs1", tabs1);
 	}
 
-	public void submit(
+	public void updatePreferences(
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws IOException, PortletException {
 
 		try {
-			updatePreferences(actionRequest, actionResponse);
+			PortletPreferences portletPreferences =
+				PrefsPropsUtil.getPreferences(
+					CompanyThreadLocal.getCompanyId());
+
+			int maxConnections = ParamUtil.getInteger(
+				actionRequest, "maxConnections");
+
+			portletPreferences.setValue(
+				PortletPropsKeys.SYNC_CLIENT_MAX_CONNECTIONS,
+				String.valueOf(maxConnections));
+
+			int pollInterval = ParamUtil.getInteger(
+				actionRequest, "pollInterval");
+
+			portletPreferences.setValue(
+				PortletPropsKeys.SYNC_CLIENT_POLL_INTERVAL,
+				String.valueOf(pollInterval));
+
+			boolean enabled = ParamUtil.getBoolean(actionRequest, "enabled");
+
+			portletPreferences.setValue(
+				PortletPropsKeys.SYNC_SERVICES_ENABLED,
+				String.valueOf(enabled));
+
+			portletPreferences.store();
 
 			addSuccessMessage(actionRequest, actionResponse);
 
@@ -70,34 +124,6 @@ public class AdminPortlet extends MVCPortlet {
 		catch (Exception e) {
 			throw new PortletException(e);
 		}
-	}
-
-	protected void updatePreferences(
-			ActionRequest actionRequest, ActionResponse actionResponse)
-		throws Exception {
-
-		PortletPreferences portletPreferences = PrefsPropsUtil.getPreferences(
-			CompanyThreadLocal.getCompanyId());
-
-		int maxConnections = ParamUtil.getInteger(
-			actionRequest, "maxConnections");
-
-		portletPreferences.setValue(
-			PortletPropsKeys.SYNC_CLIENT_MAX_CONNECTIONS,
-			String.valueOf(maxConnections));
-
-		int pollInterval = ParamUtil.getInteger(actionRequest, "pollInterval");
-
-		portletPreferences.setValue(
-			PortletPropsKeys.SYNC_CLIENT_POLL_INTERVAL,
-			String.valueOf(pollInterval));
-
-		boolean enabled = ParamUtil.getBoolean(actionRequest, "enabled");
-
-		portletPreferences.setValue(
-			PortletPropsKeys.SYNC_SERVICES_ENABLED, String.valueOf(enabled));
-
-		portletPreferences.store();
 	}
 
 }
