@@ -131,30 +131,36 @@ String redirect = ParamUtil.getString(request, "redirect");
 	</aui:fieldset>
 </aui:form>
 
-<aui:script use="aui-base">
+<aui:script>
 	Liferay.provide(
 		window,
 		'<portlet:namespace />configurePermissions',
 		function(permissions) {
-			document.<portlet:namespace />fm.<portlet:namespace />permissions.value = permissions;
+			var groupIds = Liferay.Util.listCheckedExcept(document.<portlet:namespace />fm, '<portlet:namespace />allRowIds');
 
-			document.<portlet:namespace />fm.<portlet:namespace />groupIds.value = Liferay.Util.listCheckedExcept(document.<portlet:namespace />fm, '<portlet:namespace />allRowIds');
+			if (groupIds) {
+				document.<portlet:namespace />fm.<portlet:namespace />groupIds.value = groupIds
 
-			submitForm(document.<portlet:namespace />fm, '<liferay-portlet:actionURL name="configurePermissions" />');
-		},
-		['aui-base']
+				document.<portlet:namespace />fm.<portlet:namespace />permissions.value = permissions;
+
+				submitForm(document.<portlet:namespace />fm, '<liferay-portlet:actionURL name="configurePermissions" />');
+			}
+		}
 	);
 
 	Liferay.provide(
 		window,
 		'<portlet:namespace />configureSite',
 		function(enableSite) {
-			document.<portlet:namespace />fm.<portlet:namespace />enableSite.value = enableSite;
+			var groupIds = Liferay.Util.listCheckedExcept(document.<portlet:namespace />fm, '<portlet:namespace />allRowIds');
 
-			document.<portlet:namespace />fm.<portlet:namespace />groupIds.value = Liferay.Util.listCheckedExcept(document.<portlet:namespace />fm, '<portlet:namespace />allRowIds');
+			if (groupIds) {
+				document.<portlet:namespace />fm.<portlet:namespace />groupIds.value = groupIds
 
-			submitForm(document.<portlet:namespace />fm, '<liferay-portlet:actionURL name="configureSite" />');
-		},
-		['aui-base']
+				document.<portlet:namespace />fm.<portlet:namespace />enableSite.value = enableSite;
+
+				submitForm(document.<portlet:namespace />fm, '<liferay-portlet:actionURL name="configureSite" />');
+			}
+		}
 	);
 </aui:script>
