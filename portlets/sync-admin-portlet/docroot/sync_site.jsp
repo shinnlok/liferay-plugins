@@ -74,7 +74,7 @@ String redirect = ParamUtil.getString(request, "redirect");
 <aui:form method="post" name="fm">
 	<aui:input name="enableSite" type="hidden" />
 	<aui:input name="groupIds" type="hidden" />
-	<aui:input name="keywords" type="hidden" value="" />
+	<aui:input name="keywords" type="hidden" />
 	<aui:input name="permissions" type="hidden" />
 	<aui:input name="redirect" type="hidden" value="<%= redirect %>" />
 	<aui:input name="tabs1" type="hidden" value='<%= ParamUtil.getString(request, "tabs1", "sync-admin") %>' />
@@ -104,7 +104,7 @@ String redirect = ParamUtil.getString(request, "redirect");
 		%>
 
 		<liferay-ui:search-container
-			emptyResultsMessage="no-sites-found"
+			emptyResultsMessage="no-sites-were-found"
 			iteratorURL="<%= portletURL %>"
 			rowChecker="<%= new RowChecker(renderResponse) %>"
 			total="<%= groups.size() %>"

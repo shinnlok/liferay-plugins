@@ -17,6 +17,9 @@
 <%@ include file="/init.jsp" %>
 
 <%
+String keywords = ParamUtil.getString(request, "keywords");
+String tabs1 = ParamUtil.getString(request, "tabs1");
+
 ResultRow row = (ResultRow)request.getAttribute(WebKeys.SEARCH_CONTAINER_RESULT_ROW);
 
 Group group = (Group)row.getObject();
@@ -26,8 +29,11 @@ Group group = (Group)row.getObject();
 	<c:choose>
 		<c:when test='<%= !GetterUtil.getBoolean(group.getTypeSettingsProperty("syncEnabled"), true) %>'>
 			<portlet:actionURL name="configureSite" var="configureSiteURL">
-				<portlet:param name="groupId" value="<%= String.valueOf(group.getGroupId()) %>" />
+				<portlet:param name="enableSite" value="true" />
+				<portlet:param name="groupIds" value="<%= String.valueOf(group.getGroupId()) %>" />
+				<portlet:param name="keywords" value="<%= keywords %>" />
 				<portlet:param name="syncEnabled" value="true" />
+				<portlet:param name="tabs1" value="<%= tabs1 %>" />
 			</portlet:actionURL>
 
 			<liferay-ui:icon
@@ -39,8 +45,11 @@ Group group = (Group)row.getObject();
 		</c:when>
 		<c:otherwise>
 			<portlet:actionURL name="configureSite" var="configureSiteURL">
-				<portlet:param name="groupId" value="<%= String.valueOf(group.getGroupId()) %>" />
+				<portlet:param name="enableSite" value="false" />
+				<portlet:param name="groupIds" value="<%= String.valueOf(group.getGroupId()) %>" />
+				<portlet:param name="keywords" value="<%= keywords %>" />
 				<portlet:param name="syncEnabled" value="false" />
+				<portlet:param name="tabs1" value="<%= tabs1 %>" />
 			</portlet:actionURL>
 
 			<liferay-ui:icon
@@ -53,8 +62,10 @@ Group group = (Group)row.getObject();
 	</c:choose>
 
 	<portlet:actionURL name="configurePermissions" var="setViewPermissionURL">
-		<portlet:param name="groupId" value="<%= String.valueOf(group.getGroupId()) %>" />
+		<portlet:param name="groupIds" value="<%= String.valueOf(group.getGroupId()) %>" />
+		<portlet:param name="keywords" value="<%= keywords %>" />
 		<portlet:param name="permissions" value="view-permission" />
+		<portlet:param name="tabs1" value="<%= tabs1 %>" />
 	</portlet:actionURL>
 
 	<liferay-ui:icon
@@ -65,8 +76,10 @@ Group group = (Group)row.getObject();
 	/>
 
 	<portlet:actionURL name="configurePermissions" var="setViewAndAddDiscussionPermissionURL">
-		<portlet:param name="groupId" value="<%= String.valueOf(group.getGroupId()) %>" />
+		<portlet:param name="groupIds" value="<%= String.valueOf(group.getGroupId()) %>" />
+		<portlet:param name="keywords" value="<%= keywords %>" />
 		<portlet:param name="permissions" value="view-and-add-discussion-permission" />
+		<portlet:param name="tabs1" value="<%= tabs1 %>" />
 	</portlet:actionURL>
 
 	<liferay-ui:icon
@@ -77,8 +90,10 @@ Group group = (Group)row.getObject();
 	/>
 
 	<portlet:actionURL name="configurePermissions" var="setFullAccessPermissionURL">
-		<portlet:param name="groupId" value="<%= String.valueOf(group.getGroupId()) %>" />
+		<portlet:param name="groupIds" value="<%= String.valueOf(group.getGroupId()) %>" />
+		<portlet:param name="keywords" value="<%= keywords %>" />
 		<portlet:param name="permissions" value="full-access-permission" />
+		<portlet:param name="tabs1" value="<%= tabs1 %>" />
 	</portlet:actionURL>
 
 	<liferay-ui:icon
