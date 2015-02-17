@@ -26,7 +26,9 @@ int maxConnections = PrefsPropsUtil.getInteger(portletPreferences, themeDisplay.
 int pollInterval = PrefsPropsUtil.getInteger(portletPreferences, themeDisplay.getCompanyId(), PortletPropsKeys.SYNC_CLIENT_POLL_INTERVAL);
 %>
 
-<aui:form method="post" name="fm">
+<liferay-portlet:actionURL var="configurationActionURL" />
+
+<aui:form action="<%= configurationActionURL %>" method="post" name="fm" onSubmit='<%= "event.preventDefault(); " + renderResponse.getNamespace() + "updatePreferences();" %>'>
 	<aui:input name="redirect" type="hidden" value="<%= redirect %>" />
 
 	<aui:fieldset>
@@ -46,19 +48,12 @@ int pollInterval = PrefsPropsUtil.getInteger(portletPreferences, themeDisplay.ge
 	</aui:fieldset>
 
 	<aui:button-row>
-		<aui:button id="updatePreferences" type="submit" />
+		<aui:button type="submit" />
 	</aui:button-row>
 </aui:form>
 
-<aui:script use="aui-base">
-	var updatePreferences = A.one('#<portlet:namespace />updatePreferences');
-
-	if (updatePreferences) {
-		updatePreferences.on(
-			'click',
-			function() {
-				submitForm(document.<portlet:namespace />fm, '<portlet:actionURL name="updatePreferences" />');
-			}
-		);
+<aui:script>
+	function <portlet:namespace />updatePreferences() {
+		submitForm(document.<portlet:namespace />fm, '<portlet:actionURL name="updatePreferences" />');
 	}
 </aui:script>
