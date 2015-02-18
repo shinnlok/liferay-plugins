@@ -35,15 +35,15 @@ String redirect = ParamUtil.getString(request, "redirect");
 		String taglibURL = "javascript:" + renderResponse.getNamespace() + "configureSite('true');";
 		%>
 
-		<aui:nav-item href="<%= taglibURL %>" iconCssClass="icon-ok" label="enable-sync" />
+		<aui:nav-item href="<%= taglibURL %>" iconCssClass="icon-ok" label="enable-sync-sites" />
 
 		<%
 		taglibURL = "javascript:" + renderResponse.getNamespace() + "configureSite('false');";
 		%>
 
-		<aui:nav-item href="<%= taglibURL %>" iconCssClass="icon-remove" label="disable-sync" />
+		<aui:nav-item href="<%= taglibURL %>" iconCssClass="icon-remove" label="disable-sync-sites" />
 
-		<aui:nav-item dropdown="<%= true %>" iconCssClass="icon-lock" id="permissionsButton" label="permissions">
+		<aui:nav-item dropdown="<%= true %>" iconCssClass="icon-lock" id="defaultPermissionsButton" label="default-permissions">
 			<%
 			taglibURL = "javascript:" + renderResponse.getNamespace() + "configurePermissions('view-permission');";
 			%>
@@ -81,7 +81,7 @@ String redirect = ParamUtil.getString(request, "redirect");
 
 	<aui:fieldset label="sync-sites">
 		<div class="alert alert-info">
-			<liferay-ui:message key="deactivating-a-site-will-delete-all-associated-files-from-all-clients" />
+			<liferay-ui:message key="disabling-a-site-will-delete-all-associated-files-from-all-clients" />
 		</div>
 
 		<%
@@ -125,12 +125,12 @@ String redirect = ParamUtil.getString(request, "redirect");
 				/>
 
 				<liferay-ui:search-container-column-text
-					name="sync-enabled"
+					name="sync-site-enabled"
 					value='<%= LanguageUtil.get(locale, GetterUtil.getString(group.getTypeSettingsProperty("syncEnabled"), "true")) %>'
 				/>
 
 				<liferay-ui:search-container-column-text
-					name="permissions"
+					name="default-permissions"
 					value='<%= LanguageUtil.get(locale, GetterUtil.getString(group.getTypeSettingsProperty("permissions"), "full-access-permission")) %>'
 				/>
 
@@ -168,7 +168,7 @@ String redirect = ParamUtil.getString(request, "redirect");
 	Liferay.provide(
 		window,
 		'<portlet:namespace />configureSite',
-		function(enableSite) {
+		function(enableSyncSites) {
 			var groupIds = Liferay.Util.listCheckedExcept(document.<portlet:namespace />fm, '<portlet:namespace />allRowIds');
 
 			if (groupIds) {
@@ -176,7 +176,7 @@ String redirect = ParamUtil.getString(request, "redirect");
 
 				document.<portlet:namespace />fm.<portlet:namespace />keywords.value = "<%= keywords %>";
 
-				document.<portlet:namespace />fm.<portlet:namespace />enableSite.value = enableSite;
+				document.<portlet:namespace />fm.<portlet:namespace />enableSyncSites.value = enableSyncSites;
 
 				submitForm(document.<portlet:namespace />fm, '<liferay-portlet:actionURL name="configureSite" />');
 			}

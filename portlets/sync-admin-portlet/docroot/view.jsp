@@ -25,7 +25,7 @@ portletURL.setParameter("tabs1", tabs1);
 %>
 
 <liferay-ui:tabs
-	names="sync-admin,sync-site"
+	names="sync-admin,sync-sites"
 	param="tabs1"
 	portletURL="<%= portletURL %>"
 />
@@ -35,6 +35,6 @@ portletURL.setParameter("tabs1", tabs1);
 		<liferay-util:include page="/sync_admin.jsp" servletContext="<%= application %>" />
 	</c:when>
 	<c:otherwise>
-		<liferay-util:include page="/sync_site.jsp" servletContext="<%= application %>" />
+		<liferay-util:include page="/sync_sites.jsp" servletContext="<%= application %>" />
 	</c:otherwise>
 </c:choose>

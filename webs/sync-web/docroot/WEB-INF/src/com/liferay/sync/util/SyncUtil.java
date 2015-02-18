@@ -140,7 +140,7 @@ public class SyncUtil {
 		}
 	}
 
-	public static void checkSyncGroupPermissions(
+	public static void checkDefaultPermissions(
 		Group group, ServiceContext serviceContext) {
 
 		String permissions = group.getTypeSettingsProperty("permissions");

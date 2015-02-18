@@ -105,7 +105,7 @@ public class SyncDLObjectServiceImpl extends SyncDLObjectServiceBaseImpl {
 
 			SyncUtil.isSyncEnabled(group);
 
-			SyncUtil.checkSyncGroupPermissions(group, serviceContext);
+			SyncUtil.checkDefaultPermissions(group, serviceContext);
 
 			FileEntry fileEntry = dlAppService.addFileEntry(
 				repositoryId, folderId, sourceFileName, mimeType, title,

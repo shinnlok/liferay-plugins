@@ -67,7 +67,8 @@ public class AdminPortlet extends MVCPortlet {
 		ActionRequest actionRequest, ActionResponse actionResponse) {
 
 		String keywords = ParamUtil.getString(actionRequest, "keywords");
-		String enableSite = ParamUtil.getString(actionRequest, "enableSite");
+		String enableSyncSites = ParamUtil.getString(
+			actionRequest, "enableSyncSites");
 
 		String tabs1 = ParamUtil.getString(actionRequest, "tabs1");
 
@@ -79,7 +80,7 @@ public class AdminPortlet extends MVCPortlet {
 			UnicodeProperties typeSettingsProperties =
 				group.getTypeSettingsProperties();
 
-			typeSettingsProperties.setProperty("syncEnabled", enableSite);
+			typeSettingsProperties.setProperty("syncEnabled", enableSyncSites);
 
 			group.setTypeSettingsProperties(typeSettingsProperties);
 

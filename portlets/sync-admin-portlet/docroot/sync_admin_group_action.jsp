@@ -29,33 +29,31 @@ Group group = (Group)row.getObject();
 	<c:choose>
 		<c:when test='<%= !GetterUtil.getBoolean(group.getTypeSettingsProperty("syncEnabled"), true) %>'>
 			<portlet:actionURL name="configureSite" var="configureSiteURL">
-				<portlet:param name="enableSite" value="true" />
+				<portlet:param name="enableSyncSites" value="true" />
 				<portlet:param name="groupIds" value="<%= String.valueOf(group.getGroupId()) %>" />
 				<portlet:param name="keywords" value="<%= keywords %>" />
-				<portlet:param name="syncEnabled" value="true" />
 				<portlet:param name="tabs1" value="<%= tabs1 %>" />
 			</portlet:actionURL>
 
 			<liferay-ui:icon
 				iconCssClass="icon-ok-sign"
 				label="<%= true %>"
-				message="enable-sync"
+				message="enable-sync-sites"
 				url="<%= configureSiteURL %>"
 			/>
 		</c:when>
 		<c:otherwise>
 			<portlet:actionURL name="configureSite" var="configureSiteURL">
-				<portlet:param name="enableSite" value="false" />
+				<portlet:param name="enableSyncSites" value="false" />
 				<portlet:param name="groupIds" value="<%= String.valueOf(group.getGroupId()) %>" />
 				<portlet:param name="keywords" value="<%= keywords %>" />
-				<portlet:param name="syncEnabled" value="false" />
 				<portlet:param name="tabs1" value="<%= tabs1 %>" />
 			</portlet:actionURL>
 
 			<liferay-ui:icon
 				iconCssClass="icon-remove-sign"
 				label="<%= true %>"
-				message="disable-sync"
+				message="disable-sync-sites"
 				url="<%= configureSiteURL %>"
 			/>
 		</c:otherwise>
