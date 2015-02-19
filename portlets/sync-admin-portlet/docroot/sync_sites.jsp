@@ -72,7 +72,7 @@ String redirect = ParamUtil.getString(request, "redirect");
 </aui:nav-bar>
 
 <aui:form method="post" name="fm">
-	<aui:input name="enableSite" type="hidden" />
+	<aui:input name="enableSyncSites" type="hidden" />
 	<aui:input name="groupIds" type="hidden" />
 	<aui:input name="keywords" type="hidden" />
 	<aui:input name="permissions" type="hidden" />
@@ -80,10 +80,6 @@ String redirect = ParamUtil.getString(request, "redirect");
 	<aui:input name="tabs1" type="hidden" value='<%= ParamUtil.getString(request, "tabs1", "sync-admin") %>' />
 
 	<aui:fieldset label="sync-sites">
-		<div class="alert alert-info">
-			<liferay-ui:message key="disabling-a-site-will-delete-all-associated-files-from-all-clients" />
-		</div>
-
 		<%
 		List<Group> groups = GroupLocalServiceUtil.getGroups(themeDisplay.getCompanyId(), GroupConstants.ANY_PARENT_GROUP_ID, true);
 
@@ -172,13 +168,15 @@ String redirect = ParamUtil.getString(request, "redirect");
 			var groupIds = Liferay.Util.listCheckedExcept(document.<portlet:namespace />fm, '<portlet:namespace />allRowIds');
 
 			if (groupIds) {
-				document.<portlet:namespace />fm.<portlet:namespace />groupIds.value = groupIds;
+				if ((enableSyncSites === 'true') || confirm('<%= UnicodeLanguageUtil.get(request, "disabling-a-sync-site-will-delete-all-associated-files-from-all-clients") %>')) {
+					document.<portlet:namespace />fm.<portlet:namespace />groupIds.value = groupIds;
 
-				document.<portlet:namespace />fm.<portlet:namespace />keywords.value = "<%= keywords %>";
+					document.<portlet:namespace />fm.<portlet:namespace />keywords.value = "<%= keywords %>";
 
-				document.<portlet:namespace />fm.<portlet:namespace />enableSyncSites.value = enableSyncSites;
+					document.<portlet:namespace />fm.<portlet:namespace />enableSyncSites.value = enableSyncSites;
 
-				submitForm(document.<portlet:namespace />fm, '<liferay-portlet:actionURL name="configureSite" />');
+					submitForm(document.<portlet:namespace />fm, '<liferay-portlet:actionURL name="configureSite" />');
+				}
 			}
 		}
 	);
