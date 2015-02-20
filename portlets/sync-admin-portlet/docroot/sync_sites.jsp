@@ -29,8 +29,8 @@ String currentURL = currentURLObj.toString();
 
 PortletURL portletURL = renderResponse.createRenderURL();
 
-portletURL.setParameter("tabs1", tabs1);
 portletURL.setParameter("delta", String.valueOf(delta));
+portletURL.setParameter("tabs1", tabs1);
 %>
 
 <aui:nav-bar>

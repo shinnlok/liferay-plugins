@@ -145,11 +145,11 @@ public class SyncUtil {
 
 		String permissions = group.getTypeSettingsProperty("permissions");
 
-		if (permissions.equals(SyncConstants.VIEW_PERMISSION)) {
+		if (SyncConstants.VIEW_PERMISSION.equals(permissions)) {
 			serviceContext.setGroupPermissions(new String[] {"VIEW"});
 		}
-		else if (permissions.equals(
-			SyncConstants.VIEW_AND_ADD_DISCUSSION_PERMISSION)) {
+		else if (SyncConstants.VIEW_AND_ADD_DISCUSSION_PERMISSION.equals(
+			permissions)) {
 
 			serviceContext.setGroupPermissions(
 				new String[] {"VIEW", "ADD_DISCUSSION"});
