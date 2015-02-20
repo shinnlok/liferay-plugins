@@ -21,11 +21,16 @@ String keywords = ParamUtil.getString(request, "keywords");
 
 String tabs1 = ParamUtil.getString(request, "tabs1", "sync-admin");
 
+int delta = ParamUtil.getInteger(request, "delta", SearchContainer.DEFAULT_DELTA);
+
+PortletURL currentURLObj = PortletURLUtil.getCurrent(liferayPortletRequest, liferayPortletResponse);
+
+String currentURL = currentURLObj.toString();
+
 PortletURL portletURL = renderResponse.createRenderURL();
 
 portletURL.setParameter("tabs1", tabs1);
-
-String redirect = ParamUtil.getString(request, "redirect");
+portletURL.setParameter("delta", String.valueOf(delta));
 %>
 
 <aui:nav-bar>
@@ -74,10 +79,8 @@ String redirect = ParamUtil.getString(request, "redirect");
 <aui:form method="post" name="fm">
 	<aui:input name="enableSyncSites" type="hidden" />
 	<aui:input name="groupIds" type="hidden" />
-	<aui:input name="keywords" type="hidden" />
 	<aui:input name="permissions" type="hidden" />
-	<aui:input name="redirect" type="hidden" value="<%= redirect %>" />
-	<aui:input name="tabs1" type="hidden" value='<%= ParamUtil.getString(request, "tabs1", "sync-admin") %>' />
+	<aui:input name="redirect" type="hidden" value="<%= currentURL %>" />
 
 	<aui:fieldset label="sync-sites">
 		<%
@@ -152,8 +155,6 @@ String redirect = ParamUtil.getString(request, "redirect");
 			if (groupIds) {
 				document.<portlet:namespace />fm.<portlet:namespace />groupIds.value = groupIds;
 
-				document.<portlet:namespace />fm.<portlet:namespace />keywords.value = "<%= keywords %>";
-
 				document.<portlet:namespace />fm.<portlet:namespace />permissions.value = permissions;
 
 				submitForm(document.<portlet:namespace />fm, '<liferay-portlet:actionURL name="configurePermissions" />');
@@ -170,8 +171,6 @@ String redirect = ParamUtil.getString(request, "redirect");
 			if (groupIds) {
 				if ((enableSyncSites === 'true') || confirm('<%= UnicodeLanguageUtil.get(request, "disabling-a-sync-site-will-delete-all-associated-files-from-all-clients") %>')) {
 					document.<portlet:namespace />fm.<portlet:namespace />groupIds.value = groupIds;
-
-					document.<portlet:namespace />fm.<portlet:namespace />keywords.value = "<%= keywords %>";
 
 					document.<portlet:namespace />fm.<portlet:namespace />enableSyncSites.value = enableSyncSites;
 

@@ -17,12 +17,15 @@
 <%@ include file="/init.jsp" %>
 
 <%
-String keywords = ParamUtil.getString(request, "keywords");
-String tabs1 = ParamUtil.getString(request, "tabs1");
-
 ResultRow row = (ResultRow)request.getAttribute(WebKeys.SEARCH_CONTAINER_RESULT_ROW);
 
 Group group = (Group)row.getObject();
+
+String groupId = String.valueOf(group.getGroupId());
+
+PortletURL currentURLObj = PortletURLUtil.getCurrent(liferayPortletRequest, liferayPortletResponse);
+
+String currentURL = currentURLObj.toString();
 %>
 
 <liferay-ui:icon-menu icon="" message="">
@@ -30,40 +33,37 @@ Group group = (Group)row.getObject();
 		<c:when test='<%= !GetterUtil.getBoolean(group.getTypeSettingsProperty("syncEnabled"), true) %>'>
 			<portlet:actionURL name="configureSite" var="configureSiteURL">
 				<portlet:param name="enableSyncSites" value="true" />
-				<portlet:param name="groupIds" value="<%= String.valueOf(group.getGroupId()) %>" />
-				<portlet:param name="keywords" value="<%= keywords %>" />
-				<portlet:param name="tabs1" value="<%= tabs1 %>" />
+				<portlet:param name="groupIds" value="<%= groupId %>" />
+				<portlet:param name="redirect" value="<%= currentURL %>" />
 			</portlet:actionURL>
 
 			<liferay-ui:icon
 				iconCssClass="icon-ok-sign"
 				label="<%= true %>"
-				message="enable-sync-sites"
+				message="enable-sync-site"
 				url="<%= configureSiteURL %>"
 			/>
 		</c:when>
 		<c:otherwise>
 			<portlet:actionURL name="configureSite" var="configureSiteURL">
 				<portlet:param name="enableSyncSites" value="false" />
-				<portlet:param name="groupIds" value="<%= String.valueOf(group.getGroupId()) %>" />
-				<portlet:param name="keywords" value="<%= keywords %>" />
-				<portlet:param name="tabs1" value="<%= tabs1 %>" />
+				<portlet:param name="groupIds" value="<%= groupId %>" />
+				<portlet:param name="redirect" value="<%= currentURL %>" />
 			</portlet:actionURL>
 
-			<liferay-ui:icon
-				iconCssClass="icon-remove-sign"
+			<liferay-ui:icon-delete
+				confirmation="disabling-a-sync-site-will-delete-all-associated-files-from-all-clients"
 				label="<%= true %>"
-				message="disable-sync-sites"
+				message="disable-sync-site"
 				url="<%= configureSiteURL %>"
 			/>
 		</c:otherwise>
 	</c:choose>
 
 	<portlet:actionURL name="configurePermissions" var="setViewPermissionURL">
-		<portlet:param name="groupIds" value="<%= String.valueOf(group.getGroupId()) %>" />
-		<portlet:param name="keywords" value="<%= keywords %>" />
+		<portlet:param name="groupIds" value="<%= groupId %>" />
 		<portlet:param name="permissions" value="view-permission" />
-		<portlet:param name="tabs1" value="<%= tabs1 %>" />
+		<portlet:param name="redirect" value="<%= currentURL %>" />
 	</portlet:actionURL>
 
 	<liferay-ui:icon
@@ -74,10 +74,9 @@ Group group = (Group)row.getObject();
 	/>
 
 	<portlet:actionURL name="configurePermissions" var="setViewAndAddDiscussionPermissionURL">
-		<portlet:param name="groupIds" value="<%= String.valueOf(group.getGroupId()) %>" />
-		<portlet:param name="keywords" value="<%= keywords %>" />
+		<portlet:param name="groupIds" value="<%= groupId %>" />
 		<portlet:param name="permissions" value="view-and-add-discussion-permission" />
-		<portlet:param name="tabs1" value="<%= tabs1 %>" />
+		<portlet:param name="redirect" value="<%= currentURL %>" />
 	</portlet:actionURL>
 
 	<liferay-ui:icon
@@ -88,10 +87,9 @@ Group group = (Group)row.getObject();
 	/>
 
 	<portlet:actionURL name="configurePermissions" var="setFullAccessPermissionURL">
-		<portlet:param name="groupIds" value="<%= String.valueOf(group.getGroupId()) %>" />
-		<portlet:param name="keywords" value="<%= keywords %>" />
+		<portlet:param name="groupIds" value="<%= groupId %>" />
 		<portlet:param name="permissions" value="full-access-permission" />
-		<portlet:param name="tabs1" value="<%= tabs1 %>" />
+		<portlet:param name="redirect" value="<%= currentURL %>" />
 	</portlet:actionURL>
 
 	<liferay-ui:icon

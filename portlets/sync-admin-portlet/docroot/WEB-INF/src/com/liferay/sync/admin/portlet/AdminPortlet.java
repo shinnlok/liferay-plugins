@@ -37,10 +37,8 @@ import javax.portlet.PortletPreferences;
 public class AdminPortlet extends MVCPortlet {
 
 	public void configurePermissions(
-		ActionRequest actionRequest, ActionResponse actionResponse) {
-
-		String keywords = ParamUtil.getString(actionRequest, "keywords");
-		String tabs1 = ParamUtil.getString(actionRequest, "tabs1");
+			ActionRequest actionRequest, ActionResponse actionResponse)
+		throws IOException {
 
 		long[] groupIds = ParamUtil.getLongValues(actionRequest, "groupIds");
 
@@ -59,18 +57,15 @@ public class AdminPortlet extends MVCPortlet {
 			GroupLocalServiceUtil.updateGroup(group);
 		}
 
-		actionResponse.setRenderParameter("keywords", keywords);
-		actionResponse.setRenderParameter("tabs1", tabs1);
+		sendRedirect(actionRequest, actionResponse);
 	}
 
 	public void configureSite(
-		ActionRequest actionRequest, ActionResponse actionResponse) {
+			ActionRequest actionRequest, ActionResponse actionResponse)
+		throws IOException {
 
-		String keywords = ParamUtil.getString(actionRequest, "keywords");
 		String enableSyncSites = ParamUtil.getString(
 			actionRequest, "enableSyncSites");
-
-		String tabs1 = ParamUtil.getString(actionRequest, "tabs1");
 
 		long[] groupIds = ParamUtil.getLongValues(actionRequest, "groupIds");
 
@@ -87,8 +82,7 @@ public class AdminPortlet extends MVCPortlet {
 			GroupLocalServiceUtil.updateGroup(group);
 		}
 
-		actionResponse.setRenderParameter("keywords", keywords);
-		actionResponse.setRenderParameter("tabs1", tabs1);
+		sendRedirect(actionRequest, actionResponse);
 	}
 
 	public void updatePreferences(
