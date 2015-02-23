@@ -51,6 +51,7 @@ import com.liferay.portal.kernel.sanitizer.SanitizerUtil;
 import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
@@ -197,6 +198,11 @@ public class CalendarBookingLocalServiceImpl
 			CalendarActivityKeys.ADD_CALENDAR_BOOKING,
 			getExtraDataJSON(calendarBooking), 0);
 
+		// Notifications
+
+		sendNotification(
+			calendarBooking, NotificationTemplateType.INVITE, serviceContext);
+
 		// Workflow
 
 		calendarBookingApprovalWorkflow.startWorkflow(
@@ -243,7 +249,8 @@ public class CalendarBookingLocalServiceImpl
 	@Override
 	@SystemEvent(
 		action = SystemEventConstants.ACTION_SKIP,
-		type = SystemEventConstants.TYPE_DELETE)
+		type = SystemEventConstants.TYPE_DELETE
+	)
 	public CalendarBooking deleteCalendarBooking(
 			CalendarBooking calendarBooking)
 		throws PortalException {
@@ -544,10 +551,13 @@ public class CalendarBookingLocalServiceImpl
 			return calendarBooking;
 		}
 
+		ServiceContext serviceContext = new ServiceContext();
+
+		serviceContext.setUserId(userId);
+
 		calendarBookingLocalService.updateStatus(
 			userId, calendarBooking,
-			CalendarBookingWorkflowConstants.STATUS_IN_TRASH,
-			new ServiceContext());
+			CalendarBookingWorkflowConstants.STATUS_IN_TRASH, serviceContext);
 
 		socialActivityCounterLocalService.disableActivityCounters(
 			CalendarBooking.class.getName(),
@@ -585,12 +595,15 @@ public class CalendarBookingLocalServiceImpl
 			return calendarBooking;
 		}
 
+		ServiceContext serviceContext = new ServiceContext();
+
+		serviceContext.setUserId(userId);
+
 		TrashEntry trashEntry = trashEntryLocalService.getEntry(
 			CalendarBooking.class.getName(), calendarBookingId);
 
 		calendarBookingLocalService.updateStatus(
-			userId, calendarBookingId, trashEntry.getStatus(),
-			new ServiceContext());
+			userId, calendarBookingId, trashEntry.getStatus(), serviceContext);
 
 		socialActivityCounterLocalService.enableActivityCounters(
 			CalendarBooking.class.getName(), calendarBookingId);
@@ -797,6 +810,11 @@ public class CalendarBookingLocalServiceImpl
 		calendarBookingApprovalWorkflow.invokeTransition(
 			userId, calendarBooking, status, serviceContext);
 
+		// Notifications
+
+		sendNotification(
+			calendarBooking, NotificationTemplateType.UPDATE, serviceContext);
+
 		return calendarBooking;
 	}
 
@@ -932,10 +950,6 @@ public class CalendarBookingLocalServiceImpl
 					userId, childCalendarBooking,
 					CalendarBookingWorkflowConstants.STATUS_IN_TRASH,
 					serviceContext);
-
-				sendNotification(
-					childCalendarBooking,
-					NotificationTemplateType.MOVED_TO_TRASH, serviceContext);
 			}
 		}
 		else if (oldStatus ==
@@ -952,10 +966,6 @@ public class CalendarBookingLocalServiceImpl
 				updateStatus(
 					userId, childCalendarBooking,
 					CalendarBookingWorkflowConstants.STATUS_PENDING,
-					serviceContext);
-
-				sendNotification(
-					childCalendarBooking, NotificationTemplateType.INVITE,
 					serviceContext);
 			}
 		}
@@ -998,6 +1008,10 @@ public class CalendarBookingLocalServiceImpl
 					CalendarBookingWorkflowConstants.STATUS_PENDING, null,
 					null);
 			}
+
+			sendNotification(
+				calendarBooking, NotificationTemplateType.MOVED_TO_TRASH,
+				serviceContext);
 		}
 
 		return calendarBooking;
@@ -1029,12 +1043,14 @@ public class CalendarBookingLocalServiceImpl
 			calendarBookingPersistence.findByParentCalendarBookingId(
 				calendarBooking.getCalendarBookingId());
 
-		Set<Long> existingCalendarBookingIds = new HashSet<Long>(
+		Set<Long> existingCalendarBookingIds = new HashSet<>(
 			childCalendarIds.length);
 
 		for (CalendarBooking childCalendarBooking : childCalendarBookings) {
 			if (childCalendarBooking.isMasterBooking() ||
-				childCalendarBooking.isDenied()) {
+				(childCalendarBooking.isDenied() &&
+				 ArrayUtil.contains(
+					 childCalendarIds, childCalendarBooking.getCalendarId()))) {
 
 				continue;
 			}
@@ -1101,11 +1117,15 @@ public class CalendarBookingLocalServiceImpl
 		}
 
 		try {
+			User sender = userLocalService.fetchUser(
+				serviceContext.getUserId());
+
 			NotificationType notificationType = NotificationType.parse(
 				PortletPropsValues.CALENDAR_NOTIFICATION_DEFAULT_TYPE);
 
 			NotificationUtil.notifyCalendarBookingRecipients(
-				calendarBooking, notificationType, notificationTemplateType);
+				calendarBooking, notificationType, notificationTemplateType,
+				sender);
 		}
 		catch (Exception e) {
 			if (_log.isWarnEnabled()) {
@@ -1117,8 +1137,7 @@ public class CalendarBookingLocalServiceImpl
 	protected void updateChildCalendarBookings(
 		CalendarBooking calendarBooking, Date modifiedDate, String recurrence) {
 
-		List<CalendarBooking> childCalendarBookings =
-			new ArrayList<CalendarBooking>();
+		List<CalendarBooking> childCalendarBookings = new ArrayList<>();
 
 		if (calendarBooking.isMasterBooking()) {
 			childCalendarBookings = getChildCalendarBookings(

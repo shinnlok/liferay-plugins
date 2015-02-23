@@ -28,6 +28,8 @@ import com.liferay.portlet.asset.model.AssetEntry;
 import com.liferay.portlet.asset.model.AssetRenderer;
 import com.liferay.portlet.asset.model.AssetRendererFactory;
 import com.liferay.portlet.asset.model.AssetTag;
+import com.liferay.portlet.asset.provider.PortletProvider;
+import com.liferay.portlet.asset.provider.PortletProviderUtil;
 import com.liferay.portlet.asset.service.AssetEntryServiceUtil;
 import com.liferay.portlet.asset.service.AssetTagLocalServiceUtil;
 import com.liferay.portlet.asset.service.AssetTagServiceUtil;
@@ -36,8 +38,8 @@ import com.liferay.portlet.blogs.model.BlogsEntry;
 import com.liferay.portlet.journal.model.JournalArticle;
 import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
 import com.liferay.portlet.messageboards.model.MBMessage;
-import com.liferay.portlet.wiki.model.WikiPage;
-import com.liferay.portlet.wiki.service.WikiPageLocalServiceUtil;
+import com.liferay.wiki.model.WikiPage;
+import com.liferay.wiki.service.WikiPageLocalServiceUtil;
 
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -94,7 +96,7 @@ public class KBArticleAssetEntriesUtil {
 		long[] tagIds = AssetTagLocalServiceUtil.getTagIds(
 			groupIds, StringUtil.split(ListUtil.toString(assetTags, "name")));
 
-		Set<Long> filteredTagIds = new LinkedHashSet<Long>();
+		Set<Long> filteredTagIds = new LinkedHashSet<>();
 
 		for (long tagId : tagIds) {
 			try {
@@ -122,12 +124,14 @@ public class KBArticleAssetEntriesUtil {
 
 		long classPK = assetRenderer.getClassPK();
 		String className = assetRendererFactory.getClassName();
+		String portletId = PortletProviderUtil.getPortletId(
+			className, PortletProvider.Action.VIEW);
 
 		PortletURL portletURL = null;
 
 		if (className.equals(BlogsEntry.class.getName())) {
 			portletURL = PortletURLFactoryUtil.create(
-				request, PortletKeys.BLOGS, themeDisplay.getPlid(),
+				request, portletId, themeDisplay.getPlid(),
 				PortletRequest.RENDER_PHASE);
 
 			portletURL.setParameter("struts_action", "/blogs/view_entry");
@@ -138,7 +142,7 @@ public class KBArticleAssetEntriesUtil {
 				JournalArticleLocalServiceUtil.getLatestArticle(classPK);
 
 			portletURL = PortletURLFactoryUtil.create(
-				request, PortletKeys.JOURNAL_CONTENT, themeDisplay.getPlid(),
+				request, portletId, themeDisplay.getPlid(),
 				PortletRequest.RENDER_PHASE);
 
 			portletURL.setParameter("struts_action", "/journal_content/view");
@@ -156,7 +160,7 @@ public class KBArticleAssetEntriesUtil {
 		}
 		else if (className.equals(MBMessage.class.getName())) {
 			portletURL = PortletURLFactoryUtil.create(
-				request, PortletKeys.MESSAGE_BOARDS, themeDisplay.getPlid(),
+				request, portletId, themeDisplay.getPlid(),
 				PortletRequest.RENDER_PHASE);
 
 			portletURL.setParameter(
@@ -167,7 +171,7 @@ public class KBArticleAssetEntriesUtil {
 			WikiPage wikiPage = WikiPageLocalServiceUtil.getPage(classPK);
 
 			portletURL = PortletURLFactoryUtil.create(
-				request, PortletKeys.WIKI, themeDisplay.getPlid(),
+				request, portletId, themeDisplay.getPlid(),
 				PortletRequest.RENDER_PHASE);
 
 			portletURL.setParameter("struts_action", "/wiki/view");

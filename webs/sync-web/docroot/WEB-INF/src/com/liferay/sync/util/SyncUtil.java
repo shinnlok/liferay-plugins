@@ -35,6 +35,7 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.Lock;
 import com.liferay.portal.service.GroupLocalServiceUtil;
+import com.liferay.portal.service.ServiceContext;
 import com.liferay.portlet.documentlibrary.NoSuchFileVersionException;
 import com.liferay.portlet.documentlibrary.model.DLFileEntry;
 import com.liferay.portlet.documentlibrary.model.DLFileEntryConstants;
@@ -136,6 +137,22 @@ public class SyncUtil {
 
 		if ((group == null) || !isSyncEnabled(group)) {
 			throw new SyncSiteUnavailableException();
+		}
+	}
+
+	public static void checkDefaultPermissions(
+		Group group, ServiceContext serviceContext) {
+
+		String permissions = group.getTypeSettingsProperty("permissions");
+
+		if (SyncConstants.VIEW_PERMISSION.equals(permissions)) {
+			serviceContext.setGroupPermissions(new String[] {"VIEW"});
+		}
+		else if (SyncConstants.VIEW_AND_ADD_DISCUSSION_PERMISSION.equals(
+			permissions)) {
+
+			serviceContext.setGroupPermissions(
+				new String[] {"VIEW", "ADD_DISCUSSION"});
 		}
 	}
 
@@ -332,14 +349,15 @@ public class SyncUtil {
 	}
 
 	public static SyncDLObject toSyncDLObject(
-			DLFileEntry dlFileEntry, String event)
+			DLFileEntry dlFileEntry, String event, boolean calculateChecksum)
 		throws PortalException {
 
-		return toSyncDLObject(dlFileEntry, event, false);
+		return toSyncDLObject(dlFileEntry, event, calculateChecksum, false);
 	}
 
 	public static SyncDLObject toSyncDLObject(
-			DLFileEntry dlFileEntry, String event, boolean excludeWorkingCopy)
+			DLFileEntry dlFileEntry, String event, boolean calculateChecksum,
+			boolean excludeWorkingCopy)
 		throws PortalException {
 
 		DLFileVersion dlFileVersion = null;
@@ -393,15 +411,17 @@ public class SyncUtil {
 		syncDLObject.setMimeType(dlFileVersion.getMimeType());
 		syncDLObject.setDescription(dlFileVersion.getDescription());
 		syncDLObject.setChangeLog(dlFileVersion.getChangeLog());
-		syncDLObject.setExtraSettings(dlFileVersion.getExtraSettings());
+		syncDLObject.setExtraSettings(StringPool.BLANK);
 		syncDLObject.setVersion(dlFileVersion.getVersion());
 		syncDLObject.setSize(dlFileVersion.getSize());
 
-		if (Validator.isNull(dlFileVersion.getChecksum())) {
-			syncDLObject.setChecksum(getChecksum(dlFileVersion));
-		}
-		else {
-			syncDLObject.setChecksum(dlFileVersion.getChecksum());
+		if (calculateChecksum) {
+			if (Validator.isNull(dlFileVersion.getChecksum())) {
+				syncDLObject.setChecksum(getChecksum(dlFileVersion));
+			}
+			else {
+				syncDLObject.setChecksum(dlFileVersion.getChecksum());
+			}
 		}
 
 		syncDLObject.setEvent(event);
@@ -446,10 +466,17 @@ public class SyncUtil {
 	public static SyncDLObject toSyncDLObject(FileEntry fileEntry, String event)
 		throws PortalException {
 
+		return toSyncDLObject(fileEntry, event, false);
+	}
+
+	public static SyncDLObject toSyncDLObject(
+			FileEntry fileEntry, String event, boolean calculateChecksum)
+		throws PortalException {
+
 		if (fileEntry.getModel() instanceof DLFileEntry) {
 			DLFileEntry dlFileEntry = (DLFileEntry)fileEntry.getModel();
 
-			return toSyncDLObject(dlFileEntry, event);
+			return toSyncDLObject(dlFileEntry, event, calculateChecksum);
 		}
 
 		throw new PortalException(

@@ -144,9 +144,13 @@ public class SyncDLObjectLocalServiceClpInvoker {
 				"java.lang.String", "java.lang.String"
 			};
 
-		_methodName91 = "getLatestModifiedTime";
+		_methodName91 = "fetchSyncDLObject";
 
-		_methodParameterTypes91 = new String[] {  };
+		_methodParameterTypes91 = new String[] { "java.lang.String", "long" };
+
+		_methodName92 = "getLatestModifiedTime";
+
+		_methodParameterTypes92 = new String[] {  };
 	}
 
 	public Object invokeMethod(String name, String[] parameterTypes,
@@ -290,6 +294,12 @@ public class SyncDLObjectLocalServiceClpInvoker {
 
 		if (_methodName91.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes91, parameterTypes)) {
+			return SyncDLObjectLocalServiceUtil.fetchSyncDLObject((java.lang.String)arguments[0],
+				((Long)arguments[1]).longValue());
+		}
+
+		if (_methodName92.equals(name) &&
+				Arrays.deepEquals(_methodParameterTypes92, parameterTypes)) {
 			return SyncDLObjectLocalServiceUtil.getLatestModifiedTime();
 		}
 
@@ -342,4 +352,6 @@ public class SyncDLObjectLocalServiceClpInvoker {
 	private String[] _methodParameterTypes90;
 	private String _methodName91;
 	private String[] _methodParameterTypes91;
+	private String _methodName92;
+	private String[] _methodParameterTypes92;
 }

@@ -33,15 +33,10 @@ String eventName = PortalUtil.getPortletNamespace(PortletKeys.PORTLET_CONFIGURAT
 		<aui:button-row cssClass="input-append">
 			<c:choose>
 				<c:when test="<%= resourceClassNameId == kbFolderClassNameId %>">
-
-					<%
-					KBFolder kbFolder = KBFolderServiceUtil.getKBFolder(resourcePrimKey);
-					%>
-
-					<liferay-ui:input-resource url="<%= kbFolder.getName() %>" />
+					<liferay-ui:input-resource url='<%= BeanPropertiesUtil.getString(KBFolderLocalServiceUtil.fetchKBFolder(resourcePrimKey), "name") %>' />
 				</c:when>
 				<c:otherwise>
-					<liferay-ui:input-resource url='<%= BeanPropertiesUtil.getString(KBArticleServiceUtil.fetchLatestKBArticle(resourcePrimKey, WorkflowConstants.STATUS_APPROVED), "title") %>' />
+					<liferay-ui:input-resource url='<%= BeanPropertiesUtil.getString(KBArticleLocalServiceUtil.fetchLatestKBArticle(resourcePrimKey, WorkflowConstants.STATUS_APPROVED), "title") %>' />
 				</c:otherwise>
 			</c:choose>
 
@@ -130,7 +125,7 @@ String eventName = PortalUtil.getPortletNamespace(PortletKeys.PORTLET_CONFIGURAT
 					data.put("priority", KBArticleConstants.DEFAULT_PRIORITY);
 					data.put("resourceClassNameId", kbFolder.getClassNameId());
 					data.put("resourcePrimKey", kbFolder.getKbFolderId());
-					data.put("title", HtmlUtil.escapeAttribute(kbFolder.getName()));
+					data.put("title", kbFolder.getName());
 					%>
 
 					<aui:button
@@ -239,7 +234,7 @@ String eventName = PortalUtil.getPortletNamespace(PortletKeys.PORTLET_CONFIGURAT
 
 				data.put("resourceClassNameId", kbArticle.getClassNameId());
 				data.put("resourcePrimKey", kbArticle.getResourcePrimKey());
-				data.put("title", HtmlUtil.escapeAttribute(kbArticle.getTitle()));
+				data.put("title", kbArticle.getTitle());
 				%>
 
 				<aui:button cssClass="selector-button" data="<%= data %>" value="choose" />

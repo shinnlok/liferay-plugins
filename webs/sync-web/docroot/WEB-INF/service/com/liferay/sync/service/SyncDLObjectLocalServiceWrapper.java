@@ -209,6 +209,12 @@ public class SyncDLObjectLocalServiceWrapper implements SyncDLObjectLocalService
 	}
 
 	@Override
+	public com.liferay.sync.model.SyncDLObject fetchSyncDLObject(
+		java.lang.String type, long typePK) {
+		return _syncDLObjectLocalService.fetchSyncDLObject(type, typePK);
+	}
+
+	@Override
 	public com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery getActionableDynamicQuery() {
 		return _syncDLObjectLocalService.getActionableDynamicQuery();
 	}

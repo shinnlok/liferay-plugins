@@ -201,6 +201,11 @@ public class SyncDLObjectLocalServiceUtil {
 		return getService().fetchSyncDLObject(syncDLObjectId);
 	}
 
+	public static com.liferay.sync.model.SyncDLObject fetchSyncDLObject(
+		java.lang.String type, long typePK) {
+		return getService().fetchSyncDLObject(type, typePK);
+	}
+
 	public static com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery getActionableDynamicQuery() {
 		return getService().getActionableDynamicQuery();
 	}

@@ -34,18 +34,20 @@ public abstract class BaseJSONWebServiceClientHandler {
 	public abstract JSONWebServiceClient getJSONWebServiceClient();
 
 	protected BaseJSONWebServiceClientHandler() {
-		_objectMapper.configure(
+		objectMapper.configure(
 			DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	}
 
 	protected String doGet(String url, String... parametersArray) {
-		Map<String, String> parameters = new HashMap<String, String>();
+		JSONWebServiceClient jsonWebServiceClient = getJSONWebServiceClient();
+
+		Map<String, String> parameters = new HashMap<>();
 
 		for (int i = 0; i < parametersArray.length; i += 2) {
 			parameters.put(parametersArray[i], parametersArray[i + 1]);
 		}
 
-		return getJSONWebServiceClient().doGet(url, parameters);
+		return jsonWebServiceClient.doGet(url, parameters);
 	}
 
 	protected <T> List<T> doGetToList(
@@ -66,12 +68,12 @@ public abstract class BaseJSONWebServiceClientHandler {
 		}
 
 		try {
-			TypeFactory typeFactory = _objectMapper.getTypeFactory();
+			TypeFactory typeFactory = objectMapper.getTypeFactory();
 
 			JavaType javaType = typeFactory.constructCollectionType(
 				List.class, clazz);
 
-			return _objectMapper.readValue(json, javaType);
+			return objectMapper.readValue(json, javaType);
 		}
 		catch (IOException ie) {
 			throw new JSONWebServiceInvocationException(ie);
@@ -94,30 +96,44 @@ public abstract class BaseJSONWebServiceClientHandler {
 		}
 
 		try {
-			return _objectMapper.readValue(json, clazz);
+			return objectMapper.readValue(json, clazz);
 		}
 		catch (IOException ie) {
 			throw new JSONWebServiceInvocationException(ie);
 		}
 	}
 
+	protected String doPost(
+		String url, Map<String, String> parameters,
+		Map<String, String> headers) {
+
+		JSONWebServiceClient jsonWebServiceClient = getJSONWebServiceClient();
+
+		return jsonWebServiceClient.doPost(url, parameters, headers);
+	}
+
 	protected String doPost(String url, String... parametersArray) {
-		Map<String, String> parameters = new HashMap<String, String>();
+		JSONWebServiceClient jsonWebServiceClient = getJSONWebServiceClient();
+
+		Map<String, String> parameters = new HashMap<>();
 
 		for (int i = 0; i < parametersArray.length; i += 2) {
 			parameters.put(parametersArray[i], parametersArray[i + 1]);
 		}
 
-		return getJSONWebServiceClient().doPost(url, parameters);
+		return jsonWebServiceClient.doPost(url, parameters);
 	}
 
 	protected String doPostAsJSON(String url, Object object)
 		throws JSONWebServiceInvocationException {
 
 		try {
-			String json = _objectMapper.writeValueAsString(object);
+			JSONWebServiceClient jsonWebServiceClient =
+				getJSONWebServiceClient();
 
-			return getJSONWebServiceClient().doPostAsJSON(url, json);
+			String json = objectMapper.writeValueAsString(object);
+
+			return jsonWebServiceClient.doPostAsJSON(url, json);
 		}
 		catch (IOException ie) {
 			throw new JSONWebServiceInvocationException(ie);
@@ -132,6 +148,6 @@ public abstract class BaseJSONWebServiceClientHandler {
 		return json.substring(exceptionMessageStart, exceptionMessageEnd);
 	}
 
-	private ObjectMapper _objectMapper = new ObjectMapper();
+	protected ObjectMapper objectMapper = new ObjectMapper();
 
 }

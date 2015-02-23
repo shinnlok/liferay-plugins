@@ -149,6 +149,11 @@
 			<finder-column name="kbFolderId" />
 			<finder-column name="urlTitle" />
 		</finder>
+		<finder name="G_KBFI_S" return-type="Collection">
+			<finder-column name="groupId" />
+			<finder-column name="kbFolderId" />
+			<finder-column name="status" />
+		</finder>
 		<finder name="G_P_S_L" return-type="Collection" db-index="false">
 			<finder-column name="groupId" />
 			<finder-column name="parentResourcePrimKey" />
@@ -211,7 +216,7 @@
 		<column name="classNameId" type="long" />
 		<column name="classPK" type="long" />
 		<column name="content" type="String" />
-		<column name="helpful" type="boolean" />
+		<column name="userRating" type="int" />
 		<column name="status" type="int" />
 
 		<!-- Order -->
@@ -251,6 +256,7 @@
 		<!-- References -->
 
 		<reference package-path="com.liferay.portal" entity="PortletPreferences" />
+		<reference package-path="com.liferay.portlet.ratings" entity="RatingsEntry" />
 		<reference package-path="com.liferay.portlet.social" entity="SocialActivity" />
 	</entity>
 	<entity name="KBFolder" uuid="true" local-service="true" remote-service="true">
@@ -349,5 +355,6 @@
 		<exception>KBCommentContent</exception>
 		<exception>KBTemplateContent</exception>
 		<exception>KBTemplateTitle</exception>
+		<exception>NoSuchKBArticleSelector</exception>
 	</exceptions>
 </service-builder>

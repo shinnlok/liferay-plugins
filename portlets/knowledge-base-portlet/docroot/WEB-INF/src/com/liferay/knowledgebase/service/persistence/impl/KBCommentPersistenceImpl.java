@@ -65,7 +65,7 @@ import java.util.Set;
  *
  * @author Brian Wing Shun Chan
  * @see KBCommentPersistence
- * @see KBCommentUtil
+ * @see com.liferay.knowledgebase.service.persistence.KBCommentUtil
  * @generated
  */
 @ProviderType
@@ -5312,7 +5312,7 @@ public class KBCommentPersistenceImpl extends BasePersistenceImpl<KBComment>
 		kbCommentImpl.setClassNameId(kbComment.getClassNameId());
 		kbCommentImpl.setClassPK(kbComment.getClassPK());
 		kbCommentImpl.setContent(kbComment.getContent());
-		kbCommentImpl.setHelpful(kbComment.isHelpful());
+		kbCommentImpl.setUserRating(kbComment.getUserRating());
 		kbCommentImpl.setStatus(kbComment.getStatus());
 
 		return kbCommentImpl;
