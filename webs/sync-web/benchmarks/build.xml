@@ -7,6 +7,7 @@
 	<path id="benchmark.classpath">
 		<path refid="portal.classpath" />
 		<fileset dir="../docroot/WEB-INF/lib" includes="*.jar" />
+		<fileset dir="${module.framework.base.dir}/" includes="*/*.jar" />
 		<pathelement location="../docroot/WEB-INF/classes" />
 		<pathelement location="classes" />
 	</path>
