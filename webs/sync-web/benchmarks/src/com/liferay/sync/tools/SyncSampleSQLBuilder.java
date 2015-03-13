@@ -21,6 +21,7 @@ import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.SortedProperties;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.tools.ToolDependencies;
 import com.liferay.portal.tools.samplesqlbuilder.DataFactory;
 import com.liferay.portal.tools.samplesqlbuilder.SampleSQLBuilder;
 import com.liferay.portal.util.InitUtil;
@@ -40,7 +41,7 @@ import java.util.Properties;
 public class SyncSampleSQLBuilder {
 
 	public static void main(String[] args) {
-		InitUtil.initWithSpring();
+		ToolDependencies.wireBasic();
 
 		Reader reader = null;
 

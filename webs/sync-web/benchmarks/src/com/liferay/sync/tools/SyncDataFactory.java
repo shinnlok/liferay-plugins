@@ -15,8 +15,10 @@
 package com.liferay.sync.tools;
 
 import com.liferay.portal.kernel.portlet.PortletClassLoaderUtil;
+import com.liferay.portal.kernel.util.ClassLoaderPool;
 import com.liferay.portal.kernel.util.Digester;
 import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.CompanyModel;
 import com.liferay.portal.tools.samplesqlbuilder.DataFactory;
 import com.liferay.portal.util.DigesterImpl;
@@ -106,13 +108,12 @@ public class SyncDataFactory extends DataFactory {
 		long parentFolderId, String name, String checksum, long size,
 		String type, long typePK, String typeUuid, String version) {
 
-		if (PortletClassLoaderUtil.getClassLoader() == null) {
-			Thread currentThread = Thread.currentThread();
+		Thread currentThread = Thread.currentThread();
 
-			ClassLoader classLoader = currentThread.getContextClassLoader();
+		ClassLoader classLoader = currentThread.getContextClassLoader();
 
-			PortletClassLoaderUtil.setClassLoader(classLoader);
-		}
+		PortletClassLoaderUtil.setServletContextName(
+			ClassLoaderPool.getContextName(classLoader));
 
 		SyncDLObjectModel syncDLObjectModel = new SyncDLObjectModelImpl();
 
