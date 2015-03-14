@@ -31,8 +31,8 @@
 		<copy file="${sample.sql.properties.file}" tofile="temp.properties" overwrite="true" />
 
 		<concat destfile="temp.properties" append="true">
-sample.sql.db.time.zone=${global.user.timezone}
-sample.sql.virtual.hostname=${portal.server.ip}
+sample.sql.db.time.zone=${sample.sql.db.time.zone}
+sample.sql.virtual.hostname=${sample.sql.virtual.hostname}
 sample.sql.output.dir=${sample.sql.output.dir}
 
 sql.dir=${sdk.dir}/webs/sync-web/docroot/WEB-INF/sql
