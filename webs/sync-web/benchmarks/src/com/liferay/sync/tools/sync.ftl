@@ -1,3 +1,5 @@
+<#include "/com/liferay/portal/tools/samplesqlbuilder/dependencies/sample.ftl">
+
 <#setting number_format = "computer">
 
 <#list dataFactory.syncDLObjectModels as syncDLObjectModel>

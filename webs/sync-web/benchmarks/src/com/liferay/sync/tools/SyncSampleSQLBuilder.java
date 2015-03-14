@@ -83,10 +83,6 @@ public class SyncSampleSQLBuilder {
 		syncOutput.mkdir();
 
 		properties.put("sample.sql.output.dir", syncOutput.getPath());
-
-		new SampleSQLBuilder(properties, dataFactory);
-
-		properties.put("sample.sql.output.csv.file.names", StringPool.SPACE);
 		properties.put("sample.sql.script", "com/liferay/sync/tools/sync.ftl");
 
 		new SampleSQLBuilder(properties, dataFactory);
