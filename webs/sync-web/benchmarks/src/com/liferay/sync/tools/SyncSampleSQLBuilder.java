@@ -77,7 +77,7 @@ public class SyncSampleSQLBuilder {
 		String portalOutputDir = properties.getProperty(
 			"sample.sql.output.dir");
 
-		File syncOutput = new File(portalOutputDir, "plugin");
+		File syncOutput = new File(portalOutputDir);
 
 		FileUtil.deltree(syncOutput);
 		syncOutput.mkdir();
