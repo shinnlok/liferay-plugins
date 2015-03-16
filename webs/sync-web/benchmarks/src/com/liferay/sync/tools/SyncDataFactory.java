@@ -127,14 +127,13 @@ public class SyncDataFactory extends DataFactory {
 		syncDLObjectModel.setRepositoryId(repositoryId);
 		syncDLObjectModel.setParentFolderId(parentFolderId);
 		syncDLObjectModel.setName(name);
+		syncDLObjectModel.setVersion(version);
+		syncDLObjectModel.setSize(size);
 		syncDLObjectModel.setChecksum(checksum);
 		syncDLObjectModel.setEvent(DLSyncConstants.EVENT_ADD);
-		syncDLObjectModel.setSize(size);
+		syncDLObjectModel.setType(type);
 		syncDLObjectModel.setTypePK(typePK);
 		syncDLObjectModel.setTypeUuid(typeUuid);
-		syncDLObjectModel.setType(type);
-		syncDLObjectModel.setVersion(version);
-		syncDLObjectModel.setVersionId(0);
 
 		return syncDLObjectModel;
 	}
