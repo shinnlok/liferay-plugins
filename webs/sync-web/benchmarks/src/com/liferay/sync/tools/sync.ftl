@@ -16,8 +16,6 @@
 
 <#include "/com/liferay/portal/tools/samplesqlbuilder/dependencies/counters.ftl">
 
-update Release_ set verified = TRUE;
-
 <#setting number_format = "computer">
 
 <#list dataFactory.syncDLObjectModels as syncDLObjectModel>
