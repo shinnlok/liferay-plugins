@@ -73,7 +73,7 @@ public class SyncDataFactory extends DataFactory {
 
 		SyncDLObjectModel syncDLObjectModel = newSyncDLObjectModel(
 			dlFileEntryModel.getCreateDate(),
-			dlFileEntryModel.getModifiedDate(),
+			dlFileEntryModel.getCreateDate(),
 			dlFileEntryModel.getRepositoryId(), dlFileEntryModel.getFolderId(),
 			dlFileEntryModel.getTitle(), checksum, size,
 			DLSyncConstants.TYPE_FILE, dlFileEntryModel.getFileEntryId(),
@@ -92,7 +92,7 @@ public class SyncDataFactory extends DataFactory {
 			groupId, parentFolderId, index);
 
 		SyncDLObjectModel syncDLObjectModel = newSyncDLObjectModel(
-			dlFolderModel.getCreateDate(), dlFolderModel.getModifiedDate(),
+			dlFolderModel.getCreateDate(), dlFolderModel.getCreateDate(),
 			dlFolderModel.getRepositoryId(), dlFolderModel.getParentFolderId(),
 			dlFolderModel.getName(), StringPool.BLANK, 0,
 			DLSyncConstants.TYPE_FOLDER, dlFolderModel.getFolderId(),
