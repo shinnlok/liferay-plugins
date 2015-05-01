@@ -205,15 +205,45 @@
 			<if>
 				<available file="@{compile.jsp.docroot.dir}" />
 				<then>
+					<var name="compile.jsp.dependencies.classpath" />
+
+					<if>
+						<isset property="osgi.compile.jsp.wab.dependencies" />
+						<then>
+							<for list="${osgi.compile.jsp.wab.dependencies}" param="osgi.compile.jsp.wab.dependency">
+								<sequential>
+									<var name="compile.jsp.dependency.dir" value="${basedir}/../@{osgi.compile.jsp.wab.dependency}" />
+
+									<compile module.dir="${compile.jsp.dependency.dir}" />
+
+									<if>
+										<equals arg1="${compile.jsp.dependencies.classpath}" arg2="" />
+										<then>
+											<var name="compile.jsp.dependencies.classpath" value="${compile.jsp.dependency.dir}/docroot/WEB-INF/classes" />
+										</then>
+										<else>
+											<var name="compile.jsp.dependencies.classpath" value="${compile.jsp.dependencies.classpath}:${compile.jsp.dependency.dir}/docroot/WEB-INF/classes" />
+										</else>
+									</if>
+
+									<var name="compile.jsp.dependency.dir" unset="true"/>
+								</sequential>
+							</for>
+						</then>
+					</if>
+
 					<path id="jspc.classpath.common">
 						<pathelement location="${env.JAVA_HOME}/jre/lib/rt.jar" />
 						<fileset dir="${app.server.lib.global.dir}" includes="*.jar" />
 						<fileset dir="${sdk.dir}/dependencies/com.liferay.jasper.jspc/lib" includes="*.jar" />
 						<pathelement location="${app.server.lib.portal.dir}/ant.jar" />
+						<pathelement path="${compile.jsp.dependencies.classpath}"/>
 						<fileset dir="${basedir}" includes="lib/*.jar" />
 						<fileset dir="${basedir}" includes="docroot/WEB-INF/lib/*.jar" />
 						<fileset dir="@{compile.jsp.docroot.dir}" includes="WEB-INF/lib/*.jar" />
 					</path>
+
+					<var name="compile.jsp.dependencies.classpath" unset="true"/>
 
 					<local name="jspc.module.web" />
 
@@ -656,6 +686,10 @@ Include-Resource: WEB-INF/=server-config.wsdd,classes;filter:=*.wsdd
 	</target>
 
 	<target name="format-xsd">
+		<path id="xml.formatter.classpath">
+			<fileset dir="${sdk.dir}/dependencies/com.liferay.xml.formatter/lib" includes="*.jar" />
+		</path>
+
 		<for param="xsd.full.path">
 			<path>
 				<fileset
@@ -665,8 +699,8 @@ Include-Resource: WEB-INF/=server-config.wsdd,classes;filter:=*.wsdd
 			</path>
 			<sequential>
 				<java
-					classname="com.liferay.portal.tools.XMLFormatter"
-					classpathref="portal.classpath"
+					classname="com.liferay.xml.formatter.XMLFormatter"
+					classpathref="xml.formatter.classpath"
 					fork="true"
 					newenvironment="true"
 				>

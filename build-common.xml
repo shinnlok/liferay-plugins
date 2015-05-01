@@ -781,7 +781,7 @@ Error-Prone was automatically installed. Please rerun your task.
 
 					<for param="import.shared.full.path">
 						<path>
-							<fileset dir="${sdk.dir}/dist" includes="${import.shared.current.plugin.name}-${import.shared.current.plugin.full.version}*.jar" />
+							<fileset dir="${sdk.dir}/dist" excludes="**-sources.jar" includes="${import.shared.current.plugin.name}-${import.shared.current.plugin.full.version}*.jar" />
 						</path>
 						<sequential>
 							<copy
@@ -3032,9 +3032,13 @@ for (String path : paths) {
 	</target>
 
 	<target name="format-javadoc">
+		<path id="javadoc.formatter.classpath">
+			<fileset dir="${sdk.dir}/dependencies/com.liferay.javadoc.formatter/lib" includes="*.jar" />
+		</path>
+
 		<java
-			classname="com.liferay.portal.tools.JavadocFormatter"
-			classpathref="portal.classpath"
+			classname="com.liferay.javadoc.formatter.JavadocFormatter"
+			classpathref="javadoc.formatter.classpath"
 			fork="true"
 			newenvironment="true"
 		>
