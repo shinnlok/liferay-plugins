@@ -13,6 +13,9 @@
 	</path>
 
 	<target name="compile">
+		<echo>
+			${liferay.home}
+		</echo>
 		<copy todir="classes">
 			<fileset dir="src" excludes="**/*.java" />
 		</copy>
