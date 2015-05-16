@@ -23,7 +23,7 @@ import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.tools.ToolDependencies;
 import com.liferay.portal.tools.sample.sql.builder.DataFactory;
-import com.liferay.portal.tools.sample.sql.builder.sample.sql.builder;
+import com.liferay.portal.tools.sample.sql.builder.SampleSQLBuilder;
 import com.liferay.portal.util.InitUtil;
 
 import java.io.File;
@@ -38,7 +38,7 @@ import java.util.Properties;
 /**
  * @author Tina Tian
  */
-public class Syncsample.sql.builder {
+public class SyncSampleSQLBuilder {
 
 	public static void main(String[] args) {
 		ToolDependencies.wireBasic();
@@ -54,7 +54,7 @@ public class Syncsample.sql.builder {
 
 			DataFactory dataFactory = new SyncDataFactory(properties);
 
-			new Syncsample.sql.builder(properties, dataFactory);
+			new SyncSampleSQLBuilder(properties, dataFactory);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -71,7 +71,7 @@ public class Syncsample.sql.builder {
 		}
 	}
 
-	public Syncsample.sql.builder(Properties properties, DataFactory dataFactory)
+	public SyncSampleSQLBuilder(Properties properties, DataFactory dataFactory)
 		throws Exception {
 
 		String portalOutputDir = properties.getProperty(
@@ -85,7 +85,7 @@ public class Syncsample.sql.builder {
 		properties.put("sample.sql.output.dir", syncOutput.getPath());
 		properties.put("sample.sql.script", "com/liferay/sync/tools/sync.ftl");
 
-		new sample.sql.builder(properties, dataFactory);
+		new SampleSQLBuilder(properties, dataFactory);
 
 		String dbType = properties.getProperty("sample.sql.db.type");
 		String sqlDir = properties.getProperty("sql.dir");
