@@ -20,7 +20,7 @@ import com.liferay.portal.kernel.util.Digester;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.CompanyModel;
-import com.liferay.portal.tools.samplesqlbuilder.DataFactory;
+import com.liferay.portal.tools.sample.sql.builder.DataFactory;
 import com.liferay.portal.util.DigesterImpl;
 import com.liferay.portlet.documentlibrary.model.DLFileEntryModel;
 import com.liferay.portlet.documentlibrary.model.DLFolderModel;
