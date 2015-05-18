@@ -72,6 +72,8 @@ public class SyncDataFactory extends DataFactory {
 		String checksum = _DIGESTER.digestBase64(byteBuffer);
 
 		SyncDLObjectModel syncDLObjectModel = newSyncDLObjectModel(
+			dlFileEntryModel.getUserName(),
+			dlFileEntryModel.getUserId(),
 			dlFileEntryModel.getCreateDate(),
 			dlFileEntryModel.getCreateDate(),
 			dlFileEntryModel.getRepositoryId(), dlFileEntryModel.getFolderId(),
@@ -92,11 +94,12 @@ public class SyncDataFactory extends DataFactory {
 			groupId, parentFolderId, index);
 
 		SyncDLObjectModel syncDLObjectModel = newSyncDLObjectModel(
+			dlFolderModel.getUserName(), dlFolderModel.getUserId(),
 			dlFolderModel.getCreateDate(), dlFolderModel.getCreateDate(),
-			dlFolderModel.getRepositoryId(), dlFolderModel.getParentFolderId(),
-			dlFolderModel.getName(), StringPool.BLANK, 0,
-			DLSyncConstants.TYPE_FOLDER, dlFolderModel.getFolderId(),
-			dlFolderModel.getUuid(), "-1");
+			dlFolderModel.getRepositoryId(),
+			dlFolderModel.getParentFolderId(), dlFolderModel.getName(),
+			StringPool.BLANK, 0, DLSyncConstants.TYPE_FOLDER,
+			dlFolderModel.getFolderId(), dlFolderModel.getUuid(), "-1");
 
 		_syncDLObjectModels.add(syncDLObjectModel);
 
@@ -104,9 +107,9 @@ public class SyncDataFactory extends DataFactory {
 	}
 
 	private SyncDLObjectModel newSyncDLObjectModel(
-		Date createDate, Date modifiedDate, long repositoryId,
-		long parentFolderId, String name, String checksum, long size,
-		String type, long typePK, String typeUuid, String version) {
+		String userName, long userId, Date createDate, Date modifiedDate,
+		long repositoryId, long parentFolderId, String name, String checksum,
+		long size, String type, long typePK, String typeUuid, String version) {
 
 		Thread currentThread = Thread.currentThread();
 
