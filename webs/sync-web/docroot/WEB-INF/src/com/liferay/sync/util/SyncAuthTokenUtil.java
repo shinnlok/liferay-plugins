@@ -20,7 +20,9 @@ import com.google.gson.JsonPrimitive;
 
 import com.liferay.portal.kernel.util.PwdGenerator;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.oauth.jsontoken.Checker;
 import net.oauth.jsontoken.JsonToken;
@@ -66,6 +68,10 @@ public class SyncAuthTokenUtil {
 		}
 	}
 
+	public static void expireTokens(long userId) {
+		_userIds.put(userId, new Instant());
+	}
+
 	public static String getUserId(String tokenString) {
 		try {
 			JsonTokenParser jsonTokenParser = getJsonTokenParser();
@@ -80,7 +86,15 @@ public class SyncAuthTokenUtil {
 				return null;
 			}
 
-			return userIdJsonPrimitive.getAsString();
+			long userId = userIdJsonPrimitive.getAsLong();
+
+			Instant instant = _userIds.get(userId);
+
+			if ((instant != null) && instant.isAfter(jsonToken.getIssuedAt())) {
+				return null;
+			}
+
+			return String.valueOf(userId);
 		}
 		catch (Exception e) {
 			return null;
@@ -140,5 +154,6 @@ public class SyncAuthTokenUtil {
 	private static JsonTokenParser _jsonTokenParser;
 	private static String _secret = PwdGenerator.getPassword();
 	private static Signer _signer;
+	private static final Map<Long, Instant> _userIds = new HashMap<>();
 
 }
