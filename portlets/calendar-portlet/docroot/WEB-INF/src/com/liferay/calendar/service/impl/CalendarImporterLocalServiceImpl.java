@@ -298,6 +298,7 @@ public class CalendarImporterLocalServiceImpl
 		calendarBooking.setCalendarId(calendarId);
 		calendarBooking.setCalendarResourceId(calendarResourceId);
 		calendarBooking.setParentCalendarBookingId(calendarBookingId);
+		calendarBooking.setVEventUid(uuid);
 		calendarBooking.setTitle(title);
 		calendarBooking.setDescription(description);
 		calendarBooking.setLocation(location);

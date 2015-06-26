@@ -49,11 +49,13 @@ int startTimeMinute = ParamUtil.getInteger(request, "startTimeMinute", startTime
 
 startTimeJCalendar = CalendarFactoryUtil.getCalendar(startTimeYear, startTimeMonth, startTimeDay, startTimeHour, startTimeMinute, 0, 0, calendarBookingTimeZone);
 
+startTimeJCalendar.setFirstDayOfWeek(weekStartsOn + 1);
+
 startTime = startTimeJCalendar.getTimeInMillis();
 
 java.util.Calendar defaultEndTimeJCalendar = (java.util.Calendar)nowJCalendar.clone();
 
-defaultEndTimeJCalendar.add(java.util.Calendar.HOUR, 1);
+defaultEndTimeJCalendar.add(java.util.Calendar.MINUTE, defaultDuration);
 
 long endTime = BeanPropertiesUtil.getLong(calendarBooking, "endTime", defaultEndTimeJCalendar.getTimeInMillis());
 
@@ -66,6 +68,8 @@ int endTimeHour = ParamUtil.getInteger(request, "endTimeHour", endTimeJCalendar.
 int endTimeMinute = ParamUtil.getInteger(request, "endTimeMinute", endTimeJCalendar.get(java.util.Calendar.MINUTE));
 
 endTimeJCalendar = CalendarFactoryUtil.getCalendar(endTimeYear, endTimeMonth, endTimeDay, endTimeHour, endTimeMinute, 0, 0, calendarBookingTimeZone);
+
+endTimeJCalendar.setFirstDayOfWeek(weekStartsOn + 1);
 
 endTime = endTimeJCalendar.getTimeInMillis();
 
@@ -367,7 +371,7 @@ for (long otherCalendarId : otherCalendarIds) {
 				var calendarId = A.one('#<portlet:namespace />calendarId').val();
 				var childCalendarIds = A.Object.keys(Liferay.CalendarUtil.availableCalendars);
 
-				A.Array.remove(childCalendarIds, A.Array.indexOf(childCalendarIds, calendarId));
+				A.Array.remove(childCalendarIds, childCalendarIds.indexOf(calendarId));
 
 				A.one('#<portlet:namespace />childCalendarIds').val(childCalendarIds.join(','));
 			</c:if>
@@ -422,7 +426,7 @@ for (long otherCalendarId : otherCalendarIds) {
 				item.set('disabled', true);
 			}
 		);
-	}
+	};
 
 	var calendarsMenu = Liferay.CalendarUtil.getCalendarsMenu(
 		{
@@ -582,8 +586,7 @@ for (long otherCalendarId : otherCalendarIds) {
 	<c:if test="<%= invitable %>">
 		var manageableCalendars = {};
 
-		A.Array.each(
-			<%= CalendarUtil.toCalendarsJSONArray(themeDisplay, manageableCalendars) %>,
+		<%= CalendarUtil.toCalendarsJSONArray(themeDisplay, manageableCalendars) %>.forEach(
 			function(item, index) {
 				manageableCalendars[item.calendarId] = item;
 			}
@@ -596,16 +599,15 @@ for (long otherCalendarId : otherCalendarIds) {
 
 				var calendar = manageableCalendars[calendarId];
 
-				A.Array.each(
-					[
-						<portlet:namespace />calendarListAccepted,
+				[
+					<portlet:namespace />calendarListAccepted,
 
-						<c:if test="<%= calendarBooking != null %>">
-							<portlet:namespace />calendarListDeclined, <portlet:namespace />calendarListMaybe,
-						</c:if>
+					<c:if test="<%= calendarBooking != null %>">
+						<portlet:namespace />calendarListDeclined, <portlet:namespace />calendarListMaybe,
+					</c:if>
 
-						<portlet:namespace />calendarListPending
-					],
+					<portlet:namespace />calendarListPending
+				].forEach(
 					function(calendarList) {
 						calendarList.remove(calendarList.getCalendar(calendarId));
 						calendarList.remove(calendarList.getCalendar(defaultCalendarId));

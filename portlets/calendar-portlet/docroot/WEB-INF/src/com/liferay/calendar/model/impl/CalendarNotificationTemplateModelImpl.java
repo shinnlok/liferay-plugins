@@ -23,7 +23,6 @@ import com.liferay.calendar.model.CalendarNotificationTemplateSoap;
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSON;
-import com.liferay.portal.kernel.lar.StagedModelType;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
@@ -37,6 +36,7 @@ import com.liferay.portal.util.PortalUtil;
 
 import com.liferay.portlet.expando.model.ExpandoBridge;
 import com.liferay.portlet.expando.util.ExpandoBridgeFactoryUtil;
+import com.liferay.portlet.exportimport.lar.StagedModelType;
 
 import java.io.Serializable;
 
@@ -458,8 +458,14 @@ public class CalendarNotificationTemplateModelImpl extends BaseModelImpl<Calenda
 		return _modifiedDate;
 	}
 
+	public boolean hasSetModifiedDate() {
+		return _setModifiedDate;
+	}
+
 	@Override
 	public void setModifiedDate(Date modifiedDate) {
+		_setModifiedDate = true;
+
 		_modifiedDate = modifiedDate;
 	}
 
@@ -711,6 +717,8 @@ public class CalendarNotificationTemplateModelImpl extends BaseModelImpl<Calenda
 
 		calendarNotificationTemplateModelImpl._setOriginalCompanyId = false;
 
+		calendarNotificationTemplateModelImpl._setModifiedDate = false;
+
 		calendarNotificationTemplateModelImpl._originalCalendarId = calendarNotificationTemplateModelImpl._calendarId;
 
 		calendarNotificationTemplateModelImpl._setOriginalCalendarId = false;
@@ -940,6 +948,7 @@ public class CalendarNotificationTemplateModelImpl extends BaseModelImpl<Calenda
 	private String _userName;
 	private Date _createDate;
 	private Date _modifiedDate;
+	private boolean _setModifiedDate;
 	private long _calendarId;
 	private long _originalCalendarId;
 	private boolean _setOriginalCalendarId;

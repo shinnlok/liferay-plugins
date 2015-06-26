@@ -24,6 +24,8 @@ import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
+import com.liferay.portal.kernel.portlet.PortletProvider;
+import com.liferay.portal.kernel.portlet.PortletProviderUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.util.ClassResolverUtil;
 import com.liferay.portal.kernel.util.Constants;
@@ -42,6 +44,7 @@ import com.liferay.portal.model.Layout;
 import com.liferay.portal.model.LayoutConstants;
 import com.liferay.portal.model.LayoutSet;
 import com.liferay.portal.model.LayoutSetPrototype;
+import com.liferay.portal.model.MembershipRequest;
 import com.liferay.portal.model.MembershipRequestConstants;
 import com.liferay.portal.model.Organization;
 import com.liferay.portal.model.User;
@@ -279,13 +282,10 @@ public class SitesPortlet extends MVCPortlet {
 			groupJSONObject.put("socialOfficeGroup", socialOfficeGroup);
 
 			PortletURL siteAssignmentsPortletURL =
-				liferayPortletResponse.createActionURL(
-					PortletKeys.SITE_MEMBERSHIPS_ADMIN);
+				PortletProviderUtil.getPortletURL(
+					resourceRequest, MembershipRequest.class.getName(),
+					PortletProvider.Action.EDIT);
 
-			siteAssignmentsPortletURL.setParameter(
-				"struts_action", "/sites_admin/edit_site_assignments");
-			siteAssignmentsPortletURL.setParameter(
-				Constants.CMD, "group_users");
 			siteAssignmentsPortletURL.setParameter(
 				"redirect", themeDisplay.getURLCurrent());
 			siteAssignmentsPortletURL.setParameter(
@@ -311,11 +311,10 @@ public class SitesPortlet extends MVCPortlet {
 
 					PortletURL membershipRequestURL =
 						liferayPortletResponse.createActionURL(
-							PortletKeys.SITES_ADMIN);
+							PortletKeys.SITE_ADMIN);
 
 					membershipRequestURL.setParameter(
-						"struts_action",
-						"/sites_admin/post_membership_request");
+						"javax.portlet.action", "postMembershipRequest");
 					membershipRequestURL.setParameter(
 						"redirect", themeDisplay.getURLCurrent());
 					membershipRequestURL.setParameter(
@@ -331,7 +330,6 @@ public class SitesPortlet extends MVCPortlet {
 						}, false);
 
 					membershipRequestURL.setParameter("comments", comments);
-
 					membershipRequestURL.setWindowState(WindowState.NORMAL);
 
 					groupJSONObject.put(
@@ -367,18 +365,15 @@ public class SitesPortlet extends MVCPortlet {
 				else {
 					PortletURL deletePortletURL =
 						liferayPortletResponse.createActionURL(
-							PortletKeys.SITES_ADMIN);
-
-					deletePortletURL.setWindowState(WindowState.NORMAL);
+							PortletKeys.SITE_ADMIN);
 
 					deletePortletURL.setParameter(
-						"struts_action", "/sites_admin/edit_site");
-					deletePortletURL.setParameter(
-						Constants.CMD, Constants.DELETE);
+						"javax.portlet.action", "deleteGroups");
 					deletePortletURL.setParameter(
 						"redirect", themeDisplay.getURLCurrent());
 					deletePortletURL.setParameter(
 						"groupId", String.valueOf(group.getGroupId()));
+					deletePortletURL.setWindowState(WindowState.NORMAL);
 
 					groupJSONObject.put(
 						"deleteURL", deletePortletURL.toString());
@@ -387,14 +382,13 @@ public class SitesPortlet extends MVCPortlet {
 
 			PortletURL favoritePortletURL = resourceResponse.createActionURL();
 
-			favoritePortletURL.setWindowState(WindowState.NORMAL);
-
 			favoritePortletURL.setParameter(
 				ActionRequest.ACTION_NAME, "updateFavorites");
 			favoritePortletURL.setParameter(
 				"redirect", themeDisplay.getURLCurrent());
 			favoritePortletURL.setParameter(
 				"groupId", String.valueOf(group.getGroupId()));
+			favoritePortletURL.setWindowState(WindowState.NORMAL);
 
 			if (!member && !group.hasPublicLayouts()) {
 				groupJSONObject.put("favoriteURL", StringPool.BLANK);

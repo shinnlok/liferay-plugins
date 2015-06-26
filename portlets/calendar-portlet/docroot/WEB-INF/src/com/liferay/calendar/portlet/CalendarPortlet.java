@@ -915,15 +915,18 @@ public class CalendarPortlet extends MVCPortlet {
 
 		long[] calendarIds = ParamUtil.getLongValues(
 			resourceRequest, "calendarIds");
-		long endTime = ParamUtil.getLong(resourceRequest, "endTime");
-		long startTime = ParamUtil.getLong(resourceRequest, "startTime");
+		java.util.Calendar endTimeJCalendar = getJCalendar(
+			resourceRequest, "endTime");
+		java.util.Calendar startTimeJCalendar = getJCalendar(
+			resourceRequest, "startTime");
 		int[] statuses = ParamUtil.getIntegerValues(
 			resourceRequest, "statuses");
 
 		List<CalendarBooking> calendarBookings =
 			CalendarBookingServiceUtil.search(
 				themeDisplay.getCompanyId(), new long[0], calendarIds,
-				new long[0], -1, null, startTime, endTime, true, statuses,
+				new long[0], -1, null, startTimeJCalendar.getTimeInMillis(),
+				endTimeJCalendar.getTimeInMillis(), true, statuses,
 				QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 
 		JSONArray jsonArray = CalendarUtil.toCalendarBookingsJSONArray(
@@ -936,7 +939,13 @@ public class CalendarPortlet extends MVCPortlet {
 			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
 		throws Exception {
 
-		if (!PortalUtil.isRSSFeedsEnabled()) {
+		PortletPreferences portletPreferences =
+			resourceRequest.getPreferences();
+
+		boolean enableRss = GetterUtil.getBoolean(
+			portletPreferences.getValue("enableRss", null), true);
+
+		if (!PortalUtil.isRSSFeedsEnabled() || !enableRss) {
 			PortalUtil.sendRSSFeedsDisabledError(
 				resourceRequest, resourceResponse);
 
@@ -947,9 +956,6 @@ public class CalendarPortlet extends MVCPortlet {
 			WebKeys.THEME_DISPLAY);
 
 		long calendarId = ParamUtil.getLong(resourceRequest, "calendarId");
-
-		PortletPreferences portletPreferences =
-			resourceRequest.getPreferences();
 
 		long timeInterval = GetterUtil.getLong(
 			portletPreferences.getValue("rssTimeInterval", StringPool.BLANK),
@@ -1022,9 +1028,14 @@ public class CalendarPortlet extends MVCPortlet {
 		for (Document document : hits.getDocs()) {
 			long calendarId = GetterUtil.getLong(
 				document.get(Field.ENTRY_CLASS_PK));
+
 			Calendar calendar = CalendarServiceUtil.getCalendar(calendarId);
 
-			calendarsSet.add(calendar);
+			CalendarResource calendarResource = calendar.getCalendarResource();
+
+			if (calendarResource.isActive()) {
+				calendarsSet.add(calendar);
+			}
 		}
 
 		long groupClassNameId = PortalUtil.getClassNameId(Group.class);
@@ -1193,12 +1204,6 @@ public class CalendarPortlet extends MVCPortlet {
 
 		String className = ParamUtil.getString(actionRequest, "className");
 		long classPK = ParamUtil.getLong(actionRequest, "classPK");
-		String permissionClassName = ParamUtil.getString(
-			actionRequest, "permissionClassName");
-		long permissionClassPK = ParamUtil.getLong(
-			actionRequest, "permissionClassPK");
-		long permissionOwnerId = ParamUtil.getLong(
-			actionRequest, "permissionOwnerId");
 
 		long messageId = ParamUtil.getLong(actionRequest, "messageId");
 
@@ -1215,14 +1220,12 @@ public class CalendarPortlet extends MVCPortlet {
 
 		if (messageId <= 0) {
 			message = MBMessageServiceUtil.addDiscussionMessage(
-				serviceContext.getScopeGroupId(), className, classPK,
-				permissionClassName, permissionClassPK, permissionOwnerId,
-				threadId, parentMessageId, subject, body, serviceContext);
+				serviceContext.getScopeGroupId(), className, classPK, threadId,
+				parentMessageId, subject, body, serviceContext);
 		}
 		else {
 			message = MBMessageServiceUtil.updateDiscussionMessage(
-				className, classPK, permissionClassName, permissionClassPK,
-				permissionOwnerId, messageId, subject, body, serviceContext);
+				className, classPK, messageId, subject, body, serviceContext);
 		}
 
 		// Subscription

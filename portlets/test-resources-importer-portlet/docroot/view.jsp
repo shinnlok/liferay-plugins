@@ -176,12 +176,12 @@ for (String importer : importers) {
 			<c:when test="<%= journalArticle == null %>">
 				JournalArticleLocalServiceUtil#getArticle=<%= _assertTrue(journalArticle != null) %><br />
 			</c:when>
-			<c:when test="<%= journalArticle != null %>">
+			<c:otherwise>
 				JournalArticle#getDescription=<%= _assertTrue(Validator.isNotNull(journalArticle.getDescription())) %><br />
 				JournalArticle#isSmallImage=<%= _assertTrue(journalArticle.isSmallImage()) %><br />
 				JournalArticle#isTemplateDriven=<%= _assertTrue(journalArticle.isTemplateDriven()) %><br />
 				JournalArticleLocalService#getArticlesCount=<%= _assertEquals(2, JournalArticleLocalServiceUtil.getArticlesCount(groupId)) %><br />
-			</c:when>
+			</c:otherwise>
 		</c:choose>
 	</p>
 
@@ -227,28 +227,30 @@ for (String importer : importers) {
 			<c:when test="<%= ddmStructure == null %>">
 				DDMStructureLocalServiceUtil#getStructure=<%= _assertTrue(ddmStructure != null) %><br />
 			</c:when>
-			<c:when test="<%= ddmStructure != null %>">
+			<c:otherwise>
 				DDMStructure#getParentStructureId=<%= _assertEquals("PARENT-STRUCTURE" + keySuffix, parentDDMStructureKey) %><br />
 				DDMStructureLocalServiceUtil#getStructuresCount(groupId, DDLRecordSet)=<%= _assertEquals(2, DDMStructureLocalServiceUtil.getStructuresCount(groupId, PortalUtil.getClassNameId(DDLRecordSet.class))) %><br />
 				DDMStructureLocalServiceUtil#getStructuresCount=<%= _assertEquals(5, DDMStructureLocalServiceUtil.getStructuresCount(groupId)) %>
-			</c:when>
+			</c:otherwise>
 		</c:choose>
 	</p>
 
 	<p>
 
 		<%
-		DDMTemplate ddmTemplate = null;
+		DDMTemplate ddmTemplate1 = null;
+		DDMTemplate ddmTemplate2 = null;
 
 		String ddmStructureKey = StringPool.BLANK;
 
 		try {
-			ddmTemplate = DDMTemplateLocalServiceUtil.getTemplate(groupId, PortalUtil.getClassNameId(DDMStructure.class), "CHILD-TEMPLATE-1" + keySuffix);
+			ddmTemplate1 = DDMTemplateLocalServiceUtil.getTemplate(groupId, PortalUtil.getClassNameId(DDMStructure.class), "CHILD-TEMPLATE-1" + keySuffix);
+			ddmTemplate2 = DDMTemplateLocalServiceUtil.getTemplate(groupId, PortalUtil.getClassNameId(AssetCategory.class), "ASSET-CATEGORY" + keySuffix);
 
 			DDMStructure ddmTemplateStructure = null;
 
-			if (ddmTemplate != null) {
-				ddmTemplateStructure = DDMStructureLocalServiceUtil.fetchDDMStructure(ddmTemplate.getClassPK());
+			if (ddmTemplate1 != null) {
+				ddmTemplateStructure = DDMStructureLocalServiceUtil.fetchDDMStructure(ddmTemplate1.getClassPK());
 			}
 
 			if (ddmTemplateStructure != null) {
@@ -260,10 +262,11 @@ for (String importer : importers) {
 		%>
 
 		<c:choose>
-			<c:when test="<%= ddmTemplate == null %>">
+			<c:when test="<%= ddmTemplate1 == null %>">
 				DDMTemplateLocalServiceUtil#getTemplate=<%= _assertTrue(ddmStructure != null) %><br />
 			</c:when>
-			<c:when test="<%= ddmTemplate != null %>">
+			<c:otherwise>
+				DDMTemplate#getLanguage=<%= _assertEquals("ftl", ddmTemplate2.getLanguage()) %><br />
 				DDMTemplate#getStructureId=<%= _assertEquals("CHILD-STRUCTURE-1" + keySuffix, ddmStructureKey) %><br />
 				DDMTemplateLocalServiceUtil#getTemplatesCount(groupId, AssetCategory)=<%= _assertEquals(1, DDMTemplateLocalServiceUtil.getTemplatesCount(groupId, PortalUtil.getClassNameId(AssetCategory.class))) %><br />
 				DDMTemplateLocalServiceUtil#getTemplatesCount(groupId, AssetEntry)=<%= _assertEquals(2, DDMTemplateLocalServiceUtil.getTemplatesCount(groupId, PortalUtil.getClassNameId(AssetEntry.class))) %><br />
@@ -274,7 +277,7 @@ for (String importer : importers) {
 				DDMTemplateLocalServiceUtil#getTemplatesCount(groupId, LayoutSet)=<%= _assertEquals(1, DDMTemplateLocalServiceUtil.getTemplatesCount(groupId, PortalUtil.getClassNameId(LayoutSet.class))) %><br />
 				DDMTemplateLocalServiceUtil#getTemplatesCount(groupId, WikiPage)=<%= _assertEquals(1, DDMTemplateLocalServiceUtil.getTemplatesCount(groupId, PortalUtil.getClassNameId(WikiPage.class))) %><br />
 				DDMTemplateLocalServiceUtil#getTemplatesCount=<%= _assertEquals(16, DDMTemplateLocalServiceUtil.getTemplatesCount(groupId)) %><br />
-			</c:when>
+			</c:otherwise>
 		</c:choose>
 	</p>
 

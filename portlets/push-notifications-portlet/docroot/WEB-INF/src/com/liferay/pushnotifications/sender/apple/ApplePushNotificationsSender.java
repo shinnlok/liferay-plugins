@@ -37,7 +37,7 @@ import java.util.List;
 public class ApplePushNotificationsSender implements PushNotificationsSender {
 
 	@Override
-	public void reset() {
+	public synchronized void reset() {
 		_apnsService = null;
 	}
 
@@ -63,7 +63,7 @@ public class ApplePushNotificationsSender implements PushNotificationsSender {
 		String body = payloadJSONObject.getString(
 			PushNotificationsConstants.KEY_BODY);
 
-		if (body != null) {
+		if (Validator.isNotNull(body)) {
 			builder.alertBody(body);
 		}
 
@@ -76,7 +76,7 @@ public class ApplePushNotificationsSender implements PushNotificationsSender {
 		return builder.build();
 	}
 
-	protected ApnsService getApnsService() throws Exception {
+	protected synchronized ApnsService getApnsService() throws Exception {
 		if (_apnsService == null) {
 			ApnsServiceBuilder appleServiceBuilder = APNS.newService();
 
@@ -108,6 +108,9 @@ public class ApplePushNotificationsSender implements PushNotificationsSender {
 
 			if (sandbox) {
 				appleServiceBuilder.withSandboxDestination();
+			}
+			else {
+				appleServiceBuilder.withProductionDestination();
 			}
 
 			_apnsService = appleServiceBuilder.build();

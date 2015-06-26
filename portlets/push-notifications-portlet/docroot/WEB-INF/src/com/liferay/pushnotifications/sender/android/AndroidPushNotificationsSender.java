@@ -36,13 +36,13 @@ import java.util.List;
 public class AndroidPushNotificationsSender implements PushNotificationsSender {
 
 	@Override
-	public void reset() {
+	public synchronized void reset() {
 		_sender = null;
 	}
 
 	@Override
 	public void send(
-			String platform, List<String> tokens, JSONObject jsonObject)
+			String platform, List<String> tokens, JSONObject payloadJSONObject)
 		throws Exception {
 
 		Sender sender = getSender();
@@ -51,7 +51,7 @@ public class AndroidPushNotificationsSender implements PushNotificationsSender {
 			return;
 		}
 
-		Message message = buildMessage(jsonObject);
+		Message message = buildMessage(payloadJSONObject);
 
 		int retries = PrefsPropsUtil.getInteger(
 			PortletPropsKeys.ANDROID_RETRIES,
@@ -70,7 +70,7 @@ public class AndroidPushNotificationsSender implements PushNotificationsSender {
 		return builder.build();
 	}
 
-	protected Sender getSender() throws Exception {
+	protected synchronized Sender getSender() throws Exception {
 		if (_sender == null) {
 			String key = PrefsPropsUtil.getString(
 				PortletPropsKeys.ANDROID_API_KEY,

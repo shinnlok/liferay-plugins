@@ -9,7 +9,7 @@ AUI.add(
 
 		var getClassName = A.getClassName;
 
-		var isArray = Lang.isArray;
+		var isArray = Array.isArray;
 
 		var isString = Lang.isString;
 
@@ -23,7 +23,7 @@ AUI.add(
 
 		var STR_EMPTY = '';
 
-		var TPL_IFRAME = '<iframe id="{iframeId}" name="{iframeId}" class="' + CSS_CLASS_GADGET + '" src="{src}" frameborder="no" scrolling="{scrolling}" {height} {width}></iframe>';
+		var TPL_IFRAME = '<iframe class="' + CSS_CLASS_GADGET + '" frameborder="no" {height} id="{iframeId}" name="{iframeId}" scrolling="{scrolling}" src="{src}" {width}></iframe>';
 
 		var Gadget = A.Component.create(
 			{
@@ -204,11 +204,11 @@ AUI.add(
 							var iframe = Lang.sub(
 								TPL_IFRAME,
 								{
-									height: (height ? 'height="' + height + '"' : STR_EMPTY),
+									height: height ? 'height="' + height + '"' : STR_EMPTY,
 									iframeId: iframeId,
 									scrolling: scrolling,
 									src: instance.get('iframeUrl'),
-									width: (width ? 'width="' + width + '"' : STR_EMPTY)
+									width: width ? 'width="' + width + '"' : STR_EMPTY
 								}
 							);
 
@@ -366,7 +366,7 @@ AUI.add(
 						var parentUrl = instance.get('parentUrl');
 
 						if (parentUrl) {
-							instance._refreshSrcParameter('view-params', encodeURIComponent(A.JSON.stringify(viewParams)));
+							instance._refreshSrcParameter('view-params', encodeURIComponent(JSON.stringify(viewParams)));
 						}
 					},
 
@@ -431,7 +431,7 @@ AUI.add(
 						var viewParams = instance.get('viewParams');
 
 						if (viewParams) {
-							url += '&view-params=' + encodeURIComponent(A.JSON.stringify(viewParams));
+							url += '&view-params=' + encodeURIComponent(JSON.stringify(viewParams));
 						}
 
 						return url;
@@ -582,7 +582,7 @@ AUI.add(
 								classPK: themeDisplay.getPlid(),
 								columnName: instance.get('userPrefsKey'),
 								companyId: themeDisplay.getCompanyId(),
-								data: A.JSON.stringify(gadget.get('userPrefs')),
+								data: JSON.stringify(gadget.get('userPrefs')),
 								tableName: instance._TABLE_NAME
 							}
 						);
@@ -627,8 +627,9 @@ AUI.add(
 		Liferay._onInitialFn = Liferay.on;
 
 		Liferay.detach = function(topic, fn) {
-			var handle = topic;
 			var gadgetTopic = topic;
+			var handle = topic;
+
 			var subscriptionId;
 
 			if (handle && !handle.detach) {
@@ -653,8 +654,8 @@ AUI.add(
 		};
 
 		Liferay.on = function(topic, fn) {
-			var handle;
 			var gadgetTopic;
+			var handle;
 			var subscriptionId;
 
 			if (isArray(topic)) {
@@ -707,7 +708,7 @@ AUI.add(
 
 				var eventMap = MAP[eventType];
 
-				var allIds = (!fn);
+				var allIds = !fn;
 
 				if (allIds) {
 					subscriptionId = [];
@@ -759,15 +760,18 @@ AUI.add(
 		var unsubscribeTopic = function(topic, subscriptionId, fn) {
 			var i;
 
-			if (isString(topic) && isString(subscriptionId)) {
+			var arraySubscriptionId = isArray(subscriptionId);
+			var stringTopic = isString(topic);
+
+			if (stringTopic && isString(subscriptionId)) {
 				unsubscribeGadgetEvent(topic, subscriptionId, fn);
 			}
-			else if (isString(topic) && isArray(subscriptionId)) {
+			else if (stringTopic && arraySubscriptionId) {
 				for (i = 0; i < subscriptionId.length; i++) {
 					unsubscribeGadgetEvent(topic, subscriptionId[i], fn);
 				}
 			}
-			else if (isArray(topic) && isArray(subscriptionId)) {
+			else if (isArray(topic) && arraySubscriptionId) {
 				for (i = 0; i < subscriptionId.length; i++) {
 					unsubscribeGadgetEvent(topic[i], subscriptionId[i]);
 				}
@@ -785,7 +789,6 @@ AUI.add(
 
 					return true;
 				},
-
 				onSubscribe: Lang.emptyFnTrue,
 				onUnsubscribe: Lang.emptyFn
 			}

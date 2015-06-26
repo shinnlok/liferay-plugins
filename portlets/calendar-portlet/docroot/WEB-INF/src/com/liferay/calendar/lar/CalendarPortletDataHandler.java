@@ -18,6 +18,10 @@ import com.liferay.calendar.model.Calendar;
 import com.liferay.calendar.model.CalendarBooking;
 import com.liferay.calendar.model.CalendarNotificationTemplate;
 import com.liferay.calendar.model.CalendarResource;
+import com.liferay.calendar.model.impl.CalendarBookingImpl;
+import com.liferay.calendar.model.impl.CalendarImpl;
+import com.liferay.calendar.model.impl.CalendarNotificationTemplateImpl;
+import com.liferay.calendar.model.impl.CalendarResourceImpl;
 import com.liferay.calendar.service.CalendarBookingLocalServiceUtil;
 import com.liferay.calendar.service.CalendarLocalServiceUtil;
 import com.liferay.calendar.service.CalendarNotificationTemplateLocalServiceUtil;
@@ -29,13 +33,14 @@ import com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.Property;
 import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.lar.BasePortletDataHandler;
-import com.liferay.portal.kernel.lar.PortletDataContext;
-import com.liferay.portal.kernel.lar.PortletDataHandlerBoolean;
-import com.liferay.portal.kernel.lar.StagedModelDataHandlerUtil;
-import com.liferay.portal.kernel.lar.StagedModelType;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.util.PortalUtil;
+import com.liferay.portlet.exportimport.lar.BasePortletDataHandler;
+import com.liferay.portlet.exportimport.lar.PortletDataContext;
+import com.liferay.portlet.exportimport.lar.PortletDataHandlerBoolean;
+import com.liferay.portlet.exportimport.lar.StagedModelDataHandlerUtil;
+import com.liferay.portlet.exportimport.lar.StagedModelType;
+import com.liferay.portlet.exportimport.xstream.XStreamAliasRegistryUtil;
 
 import java.util.List;
 
@@ -74,6 +79,15 @@ public class CalendarPortletDataHandler extends BasePortletDataHandler {
 				},
 				CalendarNotificationTemplate.class.getName())
 		);
+
+		XStreamAliasRegistryUtil.register(CalendarImpl.class, "Calendar");
+		XStreamAliasRegistryUtil.register(
+			CalendarBookingImpl.class, "CalendarBooking");
+		XStreamAliasRegistryUtil.register(
+			CalendarResourceImpl.class, "CalendarResource");
+		XStreamAliasRegistryUtil.register(
+			CalendarNotificationTemplateImpl.class,
+			"CalendarNotificationTemplate");
 	}
 
 	protected void addSkipGuestCalendarResourceCriterion(

@@ -205,15 +205,45 @@
 			<if>
 				<available file="@{compile.jsp.docroot.dir}" />
 				<then>
+					<var name="compile.jsp.dependencies.classpath" />
+
+					<if>
+						<isset property="osgi.compile.jsp.wab.dependencies" />
+						<then>
+							<for list="${osgi.compile.jsp.wab.dependencies}" param="osgi.compile.jsp.wab.dependency">
+								<sequential>
+									<var name="compile.jsp.dependency.dir" value="${basedir}/../@{osgi.compile.jsp.wab.dependency}" />
+
+									<compile module.dir="${compile.jsp.dependency.dir}" />
+
+									<if>
+										<equals arg1="${compile.jsp.dependencies.classpath}" arg2="" />
+										<then>
+											<var name="compile.jsp.dependencies.classpath" value="${compile.jsp.dependency.dir}/docroot/WEB-INF/classes" />
+										</then>
+										<else>
+											<var name="compile.jsp.dependencies.classpath" value="${compile.jsp.dependencies.classpath}:${compile.jsp.dependency.dir}/docroot/WEB-INF/classes" />
+										</else>
+									</if>
+
+									<var name="compile.jsp.dependency.dir" unset="true"/>
+								</sequential>
+							</for>
+						</then>
+					</if>
+
 					<path id="jspc.classpath.common">
 						<pathelement location="${env.JAVA_HOME}/jre/lib/rt.jar" />
 						<fileset dir="${app.server.lib.global.dir}" includes="*.jar" />
 						<fileset dir="${sdk.dir}/dependencies/com.liferay.jasper.jspc/lib" includes="*.jar" />
 						<pathelement location="${app.server.lib.portal.dir}/ant.jar" />
+						<pathelement path="${compile.jsp.dependencies.classpath}"/>
 						<fileset dir="${basedir}" includes="lib/*.jar" />
 						<fileset dir="${basedir}" includes="docroot/WEB-INF/lib/*.jar" />
 						<fileset dir="@{compile.jsp.docroot.dir}" includes="WEB-INF/lib/*.jar" />
 					</path>
+
+					<var name="compile.jsp.dependencies.classpath" unset="true"/>
 
 					<local name="jspc.module.web" />
 
@@ -397,13 +427,17 @@
 	</target>
 
 	<target name="build-lang-cmd">
+		<path id="lang.builder.classpath">
+			<fileset dir="${sdk.dir}/dependencies/com.liferay.lang.builder/lib" includes="*.jar" />
+			<path refid="portal.classpath" />
+		</path>
+
 		<java
-			classname="com.liferay.portal.tools.LangBuilder"
-			classpathref="portal.classpath"
+			classname="com.liferay.lang.builder.LangBuilder"
+			classpathref="lang.builder.classpath"
 			fork="true"
 			newenvironment="true"
 		>
-			<jvmarg value="-Dexternal-properties=com/liferay/portal/tools/dependencies/portal-tools.properties" />
 			<jvmarg value="-Dfile.encoding=UTF-8" />
 			<jvmarg value="-Duser.country=US" />
 			<jvmarg value="-Duser.language=en" />
@@ -411,6 +445,8 @@
 			<arg value="lang.file=${lang.file}" />
 			<arg value="lang.plugin=true" />
 			<arg value="lang.translate=${lang.translate}" />
+			<arg value="lang.translate.client.id=${microsoft.translator.client.id}" />
+			<arg value="lang.translate.client.secret=${microsoft.translator.client.secret}" />
 		</java>
 
 		<copy file="${lang.dir}/${lang.file}.properties" tofile="${lang.dir}/${lang.file}_en.properties" />
@@ -520,6 +556,7 @@
 Bundle-Name: ${bnd.Bundle-Name} WSDD descriptors
 Bundle-Version: ${bnd.Bundle-Version}
 Fragment-Host: ${bnd.Bundle-SymbolicName}
+Import-Package: javax.servlet,javax.servlet.http
 Include-Resource: WEB-INF/=server-config.wsdd,classes;filter:=*.wsdd
 				</echo>
 
@@ -551,63 +588,74 @@ Include-Resource: WEB-INF/=server-config.wsdd,classes;filter:=*.wsdd
 	</target>
 
 	<target name="compile-jsp">
-		<set-module-properties
-			module.dir="${basedir}"
-		/>
-
 		<if>
-			<isset property="compile.jsp.docroot.dir" />
+			<resourcecount count="0" when="gt">
+				<fileset
+					dir="${basedir}"
+					excludes="**/custom_jsps/**/*,**/dependencies/**/*"
+					includes="docroot/**/*.jsp,src/META-INF/resources/**/*.jsp,tmp/**/*.jsp"
+				/>
+			</resourcecount>
 			<then>
-				<compile
+				<set-module-properties
 					module.dir="${basedir}"
 				/>
 
-				<compile-jsp
-					compile.jsp.docroot.dir="${compile.jsp.docroot.dir}"
-				/>
-			</then>
-			<elseif>
-				<available file="bnd.bnd" type="file" />
-				<then>
-					<antcall target="jar">
-						<param name="plugins.includes.path" value="${basedir}" />
-					</antcall>
+				<if>
+					<isset property="compile.jsp.docroot.dir" />
+					<then>
+						<compile
+							module.dir="${basedir}"
+						/>
 
-					<tstamp>
-						<format property="tstamp.value" pattern="yyyyMMddkkmmssSSS" />
-					</tstamp>
-
-					<unzip dest="${tstamp.value}" src="${plugin.file}" />
-
-					<if>
-						<available file="${tstamp.value}/META-INF/resources" type="dir" />
+						<compile-jsp
+							compile.jsp.docroot.dir="${compile.jsp.docroot.dir}"
+						/>
+					</then>
+					<elseif>
+						<available file="bnd.bnd" type="file" />
 						<then>
-							<compile-jsp
-								compile.jsp.docroot.dir="${tstamp.value}/META-INF/resources"
-								compile.jsp.temp.dir="${tstamp.value}"
-							/>
+							<antcall target="jar">
+								<param name="plugins.includes.path" value="${basedir}" />
+							</antcall>
+
+							<tstamp>
+								<format property="tstamp.value" pattern="yyyyMMddkkmmssSSS" />
+							</tstamp>
+
+							<unzip dest="${tstamp.value}" src="${plugin.file}" />
+
+							<if>
+								<available file="${tstamp.value}/META-INF/resources" type="dir" />
+								<then>
+									<compile-jsp
+										compile.jsp.docroot.dir="${tstamp.value}/META-INF/resources"
+										compile.jsp.temp.dir="${tstamp.value}"
+									/>
+								</then>
+								<else>
+									<compile-jsp
+										compile.jsp.docroot.dir="${tstamp.value}"
+										compile.jsp.temp.dir="${tstamp.value}"
+									/>
+								</else>
+							</if>
+
+							<delete dir="${tstamp.value}" />
 						</then>
-						<else>
-							<compile-jsp
-								compile.jsp.docroot.dir="${tstamp.value}"
-								compile.jsp.temp.dir="${tstamp.value}"
-							/>
-						</else>
-					</if>
+					</elseif>
+					<else>
+						<loop-macrodef-or-target
+							module.dirs="${basedir}"
+							target.name="compile"
+						/>
 
-					<delete dir="${tstamp.value}" />
-				</then>
-			</elseif>
-			<else>
-				<loop-macrodef-or-target
-					module.dirs="${basedir}"
-					target.name="compile"
-				/>
-
-				<compile-jsp
-					compile.jsp.docroot.dir="docroot"
-				/>
-			</else>
+						<compile-jsp
+							compile.jsp.docroot.dir="docroot"
+						/>
+					</else>
+				</if>
+			</then>
 		</if>
 	</target>
 
@@ -656,6 +704,10 @@ Include-Resource: WEB-INF/=server-config.wsdd,classes;filter:=*.wsdd
 	</target>
 
 	<target name="format-xsd">
+		<path id="xml.formatter.classpath">
+			<fileset dir="${sdk.dir}/dependencies/com.liferay.xml.formatter/lib" includes="*.jar" />
+		</path>
+
 		<for param="xsd.full.path">
 			<path>
 				<fileset
@@ -665,8 +717,8 @@ Include-Resource: WEB-INF/=server-config.wsdd,classes;filter:=*.wsdd
 			</path>
 			<sequential>
 				<java
-					classname="com.liferay.portal.tools.XMLFormatter"
-					classpathref="portal.classpath"
+					classname="com.liferay.xml.formatter.XMLFormatter"
+					classpathref="xml.formatter.classpath"
 					fork="true"
 					newenvironment="true"
 				>
@@ -677,6 +729,8 @@ Include-Resource: WEB-INF/=server-config.wsdd,classes;filter:=*.wsdd
 			</sequential>
 		</for>
 	</target>
+
+	<target name="install" depends="publish-local-m2-release" />
 
 	<target name="jar-javadoc" depends="javadoc">
 		<jar-javadoc
@@ -776,32 +830,6 @@ Include-Resource: WEB-INF/=server-config.wsdd,classes;filter:=*.wsdd
 		<var name="patched.file.available" unset="true" />
 	</target>
 
-	<target name="publish-local-m2-release" depends="jar-javadoc,jar-source,war">
-		<antcall target="build-common-ivy.publish">
-			<param name="ivy.publish.resolver" value="local-m2" />
-		</antcall>
-	</target>
-
-	<target name="publish-local-m2-snapshot" depends="jar-javadoc,jar-source,war">
-		<antcall target="build-common-ivy.publish">
-			<param name="ivy.publish.resolver" value="local-m2" />
-			<param name="plugin.release.qualifier" value="-SNAPSHOT" />
-		</antcall>
-	</target>
-
-	<target name="publish-remote-m2-release" depends="jar-javadoc,jar-source,war">
-		<antcall target="build-common-ivy.publish">
-			<param name="ivy.publish.resolver" value="sonatype-m2-release" />
-		</antcall>
-	</target>
-
-	<target name="publish-remote-m2-snapshot" depends="jar-javadoc,jar-source,war">
-		<antcall target="build-common-ivy.publish">
-			<param name="ivy.publish.resolver" value="sonatype-m2-snapshot" />
-			<param name="plugin.release.qualifier" value="-SNAPSHOT" />
-		</antcall>
-	</target>
-
 	<target name="shrink-zip-cmd">
 		<tstamp>
 			<format property="tstamp.value" pattern="yyyyMMddkkmmssSSS" />
@@ -873,5 +901,38 @@ Include-Resource: WEB-INF/=server-config.wsdd,classes;filter:=*.wsdd
 				<antcall target="compile-jsp" />
 			</then>
 		</if>
+	</target>
+
+	<target name="test-package">
+		<if>
+			<not>
+				<isset property="test.package" />
+			</not>
+			<then>
+				<fail>Use "ant test-package -Dtest.package=com.liferay.portal.kernel.util".</fail>
+			</then>
+		</if>
+
+		<propertyregex
+			global="true"
+			input="${test.package}"
+			property="test.package.dir"
+			regexp="\."
+			replace="/"
+		/>
+
+		<test-cmd
+			module.dir="${basedir}"
+			junit.forkmode="once"
+			test.class="**/${test.package.dir}/*Test.class"
+			test.type="integration"
+		/>
+
+		<test-cmd
+			module.dir="${basedir}"
+			junit.forkmode="perTest"
+			test.class="**/${test.package.dir}/*Test.class"
+			test.type="unit"
+		/>
 	</target>
 </project>

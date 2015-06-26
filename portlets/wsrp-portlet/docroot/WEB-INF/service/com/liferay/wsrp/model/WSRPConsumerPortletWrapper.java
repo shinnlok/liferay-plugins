@@ -14,9 +14,12 @@
 
 package com.liferay.wsrp.model;
 
-import com.liferay.portal.kernel.lar.StagedModelType;
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.ModelWrapper;
+
+import com.liferay.portlet.exportimport.lar.StagedModelType;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -31,6 +34,7 @@ import java.util.Map;
  * @see WSRPConsumerPortlet
  * @generated
  */
+@ProviderType
 public class WSRPConsumerPortletWrapper implements WSRPConsumerPortlet,
 	ModelWrapper<WSRPConsumerPortlet> {
 	public WSRPConsumerPortletWrapper(WSRPConsumerPortlet wsrpConsumerPortlet) {
@@ -142,7 +146,7 @@ public class WSRPConsumerPortletWrapper implements WSRPConsumerPortlet,
 	* @return the create date of this w s r p consumer portlet
 	*/
 	@Override
-	public java.util.Date getCreateDate() {
+	public Date getCreateDate() {
 		return _wsrpConsumerPortlet.getCreateDate();
 	}
 
@@ -157,7 +161,7 @@ public class WSRPConsumerPortletWrapper implements WSRPConsumerPortlet,
 	* @return the modified date of this w s r p consumer portlet
 	*/
 	@Override
-	public java.util.Date getModifiedDate() {
+	public Date getModifiedDate() {
 		return _wsrpConsumerPortlet.getModifiedDate();
 	}
 
@@ -272,7 +276,7 @@ public class WSRPConsumerPortletWrapper implements WSRPConsumerPortlet,
 	* @param createDate the create date of this w s r p consumer portlet
 	*/
 	@Override
-	public void setCreateDate(java.util.Date createDate) {
+	public void setCreateDate(Date createDate) {
 		_wsrpConsumerPortlet.setCreateDate(createDate);
 	}
 
@@ -300,7 +304,7 @@ public class WSRPConsumerPortletWrapper implements WSRPConsumerPortlet,
 	* @param modifiedDate the modified date of this w s r p consumer portlet
 	*/
 	@Override
-	public void setModifiedDate(java.util.Date modifiedDate) {
+	public void setModifiedDate(Date modifiedDate) {
 		_wsrpConsumerPortlet.setModifiedDate(modifiedDate);
 	}
 
@@ -452,5 +456,5 @@ public class WSRPConsumerPortletWrapper implements WSRPConsumerPortlet,
 		_wsrpConsumerPortlet.resetOriginalValues();
 	}
 
-	private WSRPConsumerPortlet _wsrpConsumerPortlet;
+	private final WSRPConsumerPortlet _wsrpConsumerPortlet;
 }

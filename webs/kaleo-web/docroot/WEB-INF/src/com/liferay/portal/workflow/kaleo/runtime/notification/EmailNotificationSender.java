@@ -18,6 +18,7 @@ import com.liferay.mail.service.MailServiceUtil;
 import com.liferay.portal.kernel.mail.MailMessage;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.workflow.kaleo.definition.NotificationReceptionType;
 import com.liferay.portal.workflow.kaleo.runtime.ExecutionContext;
 
 import java.io.Serializable;
@@ -47,7 +48,8 @@ public class EmailNotificationSender
 
 	@Override
 	protected void doSendNotification(
-			Set<NotificationRecipient> notificationRecipients,
+			Map<NotificationReceptionType, Set<NotificationRecipient>>
+				notificationRecipients,
 			String defaultSubject, String notificationMessage,
 			ExecutionContext executionContext)
 		throws Exception {
@@ -81,7 +83,15 @@ public class EmailNotificationSender
 		MailMessage mailMessage = new MailMessage(
 			from, subject, notificationMessage, true);
 
-		mailMessage.setTo(getInternetAddresses(notificationRecipients));
+		mailMessage.setTo(
+			getInternetAddresses(
+				notificationRecipients.get(NotificationReceptionType.TO)));
+		mailMessage.setCC(
+			getInternetAddresses(
+				notificationRecipients.get(NotificationReceptionType.CC)));
+		mailMessage.setBCC(
+			getInternetAddresses(
+				notificationRecipients.get(NotificationReceptionType.BCC)));
 
 		MailServiceUtil.sendEmail(mailMessage);
 	}
@@ -89,6 +99,10 @@ public class EmailNotificationSender
 	protected InternetAddress[] getInternetAddresses(
 			Set<NotificationRecipient> notificationRecipients)
 		throws AddressException, UnsupportedEncodingException {
+
+		if (notificationRecipients == null) {
+			return new InternetAddress[0];
+		}
 
 		List<InternetAddress> internetAddresses = new ArrayList<>(
 			notificationRecipients.size());

@@ -19,7 +19,6 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.messaging.Message;
 import com.liferay.portal.kernel.messaging.MessageBusUtil;
-import com.liferay.portal.kernel.util.ReleaseInfo;
 import com.liferay.portal.kernel.util.ServerDetector;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -131,17 +130,7 @@ public class TestPACLUtil {
 
 			fileName = StringUtil.replace(fileName, "../webapps", installedDir);
 
-			if (ServerDetector.isGeronimo()) {
-				String geronimoHome = System.getProperty(
-					"org.apache.geronimo.home.dir");
-				String version = ReleaseInfo.getVersion();
-
-				fileName = StringUtil.replace(
-					fileName, installedDir + "/chat-portlet/",
-					geronimoHome + "/repository/liferay/chat-portlet/" +
-						version + ".1/chat-portlet-" + version + ".1.car/");
-			}
-			else if (ServerDetector.isGlassfish()) {
+			if (ServerDetector.isGlassfish()) {
 				fileName = StringUtil.replace(
 					fileName, "autodeploy", "applications");
 			}

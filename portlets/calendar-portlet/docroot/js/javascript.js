@@ -41,10 +41,10 @@ AUI.add(
 		var STR_SPACE = ' ';
 
 		var TPL_ICON_ADD_EVENT_NODE = '<div class="btn-group">' +
-				'<button type="button" class="btn btn-primary calendar-add-event-btn">' +
+				'<button class="btn btn-primary calendar-add-event-btn" type="button">' +
 					Liferay.Language.get('add-calendar-booking') +
-				'</div>' +
-			'</button>';
+				'</button>' +
+			'</div>';
 
 		var USER_ID = toInt(themeDisplay.getUserId());
 
@@ -64,13 +64,14 @@ AUI.add(
 				var value = 0;
 
 				if (milliseconds > 0) {
-					AArray.some(
-						[Time.WEEK, Time.DAY, Time.HOUR, Time.MINUTE],
+					var timeArray = [Time.WEEK, Time.DAY, Time.HOUR, Time.MINUTE];
+
+					timeArray.some(
 						function(item, index) {
 							value = milliseconds / item;
 							desc = Time.TIME_DESC[index];
 
-							return (milliseconds % item === 0);
+							return milliseconds % item === 0;
 						}
 					);
 				}
@@ -220,20 +221,18 @@ AUI.add(
 						maxResults: 20,
 						requestTemplate: '&' + instance.PORTLET_NAMESPACE + 'keywords={query}',
 						resultFilters: function(query, results) {
-							return AArray.filter(
-								results,
+							return results.filter(
 								function(item, index) {
 									return !instance.availableCalendars[item.raw.calendarId];
 								}
 							);
 						},
 						resultFormatter: function(query, results) {
-							return AArray.map(
-								results,
+							return results.map(
 								function(result) {
 									var calendar = result.raw;
-									var name = calendar.name;
 									var calendarResourceName = calendar.calendarResourceName;
+									var name = calendar.name;
 
 									if (name !== calendarResourceName) {
 										name = [calendarResourceName, STR_DASH, name].join(STR_SPACE);
@@ -524,8 +523,16 @@ AUI.add(
 					'calendarBookings',
 					{
 						calendarIds: calendarIds.join(','),
-						endTime: endDate.getTime(),
-						startTime: startDate.getTime(),
+						endTimeDay: endDate.getDate(),
+						endTimeHour: endDate.getHours(),
+						endTimeMinute: endDate.getMinutes(),
+						endTimeMonth: endDate.getMonth(),
+						endTimeYear: endDate.getFullYear(),
+						startTimeDay: startDate.getDate(),
+						startTimeHour: startDate.getHours(),
+						startTimeMinute: startDate.getMinutes(),
+						startTimeMonth: startDate.getMonth(),
+						startTimeYear: startDate.getFullYear(),
 						statuses: status.join(',')
 					},
 					callback
@@ -539,7 +546,7 @@ AUI.add(
 
 				map[themeDisplay.getLanguageId()] = value;
 
-				return A.JSON.stringify(map);
+				return JSON.stringify(map);
 			},
 
 			getResourceCalendars: function(calendarResourceId, callback) {
@@ -586,7 +593,7 @@ AUI.add(
 					{
 						cache: false,
 						data: {
-							cmd: A.JSON.stringify(payload),
+							cmd: JSON.stringify(payload),
 							p_auth: Liferay.authToken
 						},
 						dataType: 'JSON',
@@ -666,8 +673,8 @@ AUI.add(
 				var oldCalendarId = schedulerEvent.get('calendarId');
 
 				if (scheduler) {
-					var oldCalendar = instance.availableCalendars[oldCalendarId];
 					var newCalendar = instance.availableCalendars[newCalendarId];
+					var oldCalendar = instance.availableCalendars[oldCalendarId];
 
 					if (oldCalendar !== newCalendar) {
 						oldCalendar.remove(schedulerEvent);
@@ -698,11 +705,10 @@ AUI.add(
 			syncCalendarsMap: function(calendarLists) {
 				var instance = this;
 
-				var visibleCalendars = instance.visibleCalendars = {};
 				var availableCalendars = instance.availableCalendars = {};
+				var visibleCalendars = instance.visibleCalendars = {};
 
-				AArray.each(
-					calendarLists,
+				calendarLists.forEach(
 					function(calendarList) {
 						var calendars = calendarList.get('calendars');
 
@@ -797,8 +803,8 @@ AUI.add(
 			updateEventInstance: function(schedulerEvent, allFollowing, success) {
 				var instance = this;
 
-				var startDate = schedulerEvent.get('startDate');
 				var endDate = schedulerEvent.get('endDate');
+				var startDate = schedulerEvent.get('startDate');
 
 				instance.invokeService(
 					{
@@ -854,6 +860,15 @@ AUI.add(
 								success.call(instance, data);
 							}
 						}
+					}
+				);
+			},
+
+			updateSchedulerEvents: function(schedulerEvents, calendarBooking) {
+				A.each(
+					schedulerEvents,
+					function(schedulerEvent) {
+						schedulerEvent.set('status', calendarBooking.status);
 					}
 				);
 			}
@@ -978,7 +993,7 @@ AUI.add(
 						getter: function() {
 							var instance = this;
 
-							return (instance.get('firstReminder') > 0) || (instance.get('secondReminder') > 0);
+							return instance.get('firstReminder') > 0 || instance.get('secondReminder') > 0;
 						}
 					},
 
@@ -1035,13 +1050,13 @@ AUI.add(
 					isMasterBooking: function() {
 						var instance = this;
 
-						return (instance.get('parentCalendarBookingId') === instance.get('calendarBookingId'));
+						return instance.get('parentCalendarBookingId') === instance.get('calendarBookingId');
 					},
 
 					isRecurring: function() {
 						var instance = this;
 
-						return (instance.get('recurrence') !== STR_BLANK);
+						return instance.get('recurrence') !== STR_BLANK;
 					},
 
 					syncNodeColorUI: function() {
@@ -1055,7 +1070,7 @@ AUI.add(
 						if (scheduler && !instance.get('editingEvent')) {
 							var activeViewName = scheduler.get('activeView').get('name');
 
-							if ((activeViewName === 'month') && !instance.get('allDay')) {
+							if (activeViewName === 'month' && !instance.get('allDay')) {
 								node.setStyles(
 									{
 										backgroundColor: instance.get('color'),
@@ -1066,6 +1081,19 @@ AUI.add(
 								);
 							}
 						}
+					},
+
+					syncWithServer: function() {
+						var instance = this;
+
+						var calendarBookingId = instance.get('calendarBookingId');
+						var scheduler = instance.get('scheduler');
+						var schedulerEvents = scheduler.getEventsByCalendarBookingId(calendarBookingId);
+
+						CalendarUtil.getEvent(
+							calendarBookingId,
+							A.bind(CalendarUtil.updateSchedulerEvents, CalendarUtil, schedulerEvents)
+						);
 					},
 
 					_onLoadingChange: function(event) {
@@ -1117,9 +1145,9 @@ AUI.add(
 
 						var node = instance.get('node');
 
-						node.toggleClass('calendar-portlet-event-approved', (val === CalendarWorkflow.STATUS_APPROVED));
-						node.toggleClass('calendar-portlet-event-maybe', (val === CalendarWorkflow.STATUS_MAYBE));
-						node.toggleClass('calendar-portlet-event-pending', (val === CalendarWorkflow.STATUS_PENDING));
+						node.toggleClass('calendar-portlet-event-approved', val === CalendarWorkflow.STATUS_APPROVED);
+						node.toggleClass('calendar-portlet-event-maybe', val === CalendarWorkflow.STATUS_MAYBE);
+						node.toggleClass('calendar-portlet-event-pending', val === CalendarWorkflow.STATUS_PENDING);
 					}
 				}
 			}
@@ -1252,7 +1280,7 @@ AUI.add(
 						date = DateMath.add(date, DateMath.WEEK, 1);
 					}
 
-					return CalendarUtil.toUTC(date);
+					return date;
 				},
 
 				getLoadStartDate: function(activeView) {
@@ -1267,7 +1295,7 @@ AUI.add(
 						date = DateMath.subtract(date, DateMath.WEEK, 1);
 					}
 
-					return CalendarUtil.toUTC(date);
+					return date;
 				},
 
 				_doRead: function(options, callback) {
@@ -1286,7 +1314,7 @@ AUI.add(
 						[CalendarWorkflow.STATUS_APPROVED, CalendarWorkflow.STATUS_MAYBE, CalendarWorkflow.STATUS_PENDING],
 						function(calendarBookings) {
 							if (filterCalendarBookings) {
-								calendarBookings = AArray.filter(calendarBookings, filterCalendarBookings);
+								calendarBookings = calendarBookings.filter(filterCalendarBookings);
 							}
 
 							callback(null, calendarBookings);
@@ -1377,6 +1405,16 @@ AUI.add(
 						Scheduler.superclass.bindUI.apply(this, arguments);
 					},
 
+					getEventsByCalendarBookingId: function(calendarBookingId) {
+						var instance = this;
+
+						return instance.getEvents(
+							function(schedulerEvent) {
+								return schedulerEvent.get('calendarBookingId') === calendarBookingId;
+							}
+						);
+					},
+
 					load: function() {
 						var instance = this;
 
@@ -1388,11 +1426,10 @@ AUI.add(
 					plotCalendarBookings: function(calendarBookings) {
 						var instance = this;
 
-						var events = [];
 						var calendarEvents = {};
+						var events = [];
 
-						AArray.each(
-							calendarBookings,
+						calendarBookings.forEach(
 							function(item, index) {
 								var calendarId = item.calendarId;
 
@@ -1476,7 +1513,7 @@ AUI.add(
 							A.each(
 								changedAttributes,
 								function(item, index) {
-									persist = AObject.owns(persistentAttrMap, index);
+									persist = persistentAttrMap.hasOwnProperty(index);
 								}
 							);
 
@@ -1887,8 +1924,8 @@ AUI.add(
 						var editGroup = [];
 						var respondGroup = [];
 
-						var status = schedulerEvent.get('status');
 						var calendar = CalendarUtil.availableCalendars[schedulerEvent.get('calendarId')];
+						var status = schedulerEvent.get('status');
 
 						if (calendar) {
 							var permissions = calendar.get('permissions');
@@ -1920,7 +1957,7 @@ AUI.add(
 								);
 							}
 
-							if ((schedulerEventCreated === true) && permissions.VIEW_BOOKING_DETAILS) {
+							if (schedulerEventCreated === true && permissions.VIEW_BOOKING_DETAILS) {
 								editGroup.push(
 									{
 										icon: 'icon-eye-open',
@@ -2054,7 +2091,7 @@ AUI.add(
 								dialog: {
 									after: {
 										destroy: function(event) {
-											scheduler.load();
+											schedulerEvent.syncWithServer();
 										}
 									},
 									destroyOnHide: true,
@@ -2095,7 +2132,7 @@ AUI.add(
 
 							var status = schedulerEvent.get('status');
 
-							hasPermission = permissions.MANAGE_BOOKINGS && (status !== newStatus) && (status !== CalendarWorkflow.STATUS_DRAFT);
+							hasPermission = permissions.MANAGE_BOOKINGS && status !== newStatus && status !== CalendarWorkflow.STATUS_DRAFT;
 						}
 
 						return hasPermission;
@@ -2215,8 +2252,7 @@ AUI.add(
 					_syncInviteesContent: function(contentNode, calendarResources) {
 						var instance = this;
 
-						var values = AArray.map(
-							calendarResources,
+						var values = calendarResources.map(
 							function(item) {
 								return item.name;
 							}

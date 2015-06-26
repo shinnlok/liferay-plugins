@@ -22,11 +22,13 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.jsonwebservice.NoSuchJSONWebServiceException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.plugin.PluginPackage;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.Folder;
+import com.liferay.portal.kernel.security.access.control.AccessControlled;
 import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -44,7 +46,6 @@ import com.liferay.portal.model.Group;
 import com.liferay.portal.model.Organization;
 import com.liferay.portal.model.Repository;
 import com.liferay.portal.model.User;
-import com.liferay.portal.security.ac.AccessControlled;
 import com.liferay.portal.security.auth.CompanyThreadLocal;
 import com.liferay.portal.security.permission.ActionKeys;
 import com.liferay.portal.security.permission.InlineSQLHelperUtil;
@@ -104,7 +105,9 @@ public class SyncDLObjectServiceImpl extends SyncDLObjectServiceBaseImpl {
 
 			SyncUtil.checkSyncEnabled(group.getGroupId());
 
-			if (serviceContext.getGroupPermissions() == null) {
+			if (!group.isUser() &&
+				(serviceContext.getGroupPermissions() == null)) {
+
 				SyncUtil.setFilePermissions(group, false, serviceContext);
 			}
 
@@ -147,7 +150,9 @@ public class SyncDLObjectServiceImpl extends SyncDLObjectServiceBaseImpl {
 
 			SyncUtil.checkSyncEnabled(group.getGroupId());
 
-			if (serviceContext.getGroupPermissions() == null) {
+			if (!group.isUser() &&
+				(serviceContext.getGroupPermissions() == null)) {
+
 				SyncUtil.setFilePermissions(group, true, serviceContext);
 			}
 
@@ -257,6 +262,39 @@ public class SyncDLObjectServiceImpl extends SyncDLObjectServiceBaseImpl {
 				fileEntryId, owner, expirationTime, serviceContext);
 
 			return toSyncDLObject(fileEntry, SyncConstants.EVENT_CHECK_OUT);
+		}
+		catch (PortalException pe) {
+			throw new PortalException(SyncUtil.buildExceptionMessage(pe), pe);
+		}
+	}
+
+	@Override
+	public SyncDLObject copyFileEntry(
+			long sourceFileEntryId, long repositoryId, long folderId,
+			String sourceFileName, String title, ServiceContext serviceContext)
+		throws PortalException {
+
+		try {
+			Group group = groupLocalService.getGroup(repositoryId);
+
+			SyncUtil.checkSyncEnabled(group.getGroupId());
+
+			FileEntry sourceFileEntry = dlAppLocalService.getFileEntry(
+				sourceFileEntryId);
+
+			if (!group.isUser() &&
+				(serviceContext.getGroupPermissions() == null)) {
+
+				SyncUtil.setFilePermissions(group, false, serviceContext);
+			}
+
+			FileEntry fileEntry = dlAppService.addFileEntry(
+				repositoryId, folderId, sourceFileName,
+				sourceFileEntry.getMimeType(), title, null, null,
+				sourceFileEntry.getContentStream(), sourceFileEntry.getSize(),
+				serviceContext);
+
+			return toSyncDLObject(fileEntry, SyncConstants.EVENT_ADD);
 		}
 		catch (PortalException pe) {
 			throw new PortalException(SyncUtil.buildExceptionMessage(pe), pe);
@@ -1005,7 +1043,9 @@ public class SyncDLObjectServiceImpl extends SyncDLObjectServiceBaseImpl {
 			String type = syncDLObject.getType();
 
 			try {
-				if (type.equals(SyncConstants.TYPE_FILE)) {
+				if (type.equals(SyncConstants.TYPE_FILE) ||
+					type.equals(SyncConstants.TYPE_PRIVATE_WORKING_COPY)) {
+
 					dlAppService.getFileEntry(syncDLObject.getTypePK());
 				}
 				else {
@@ -1170,6 +1210,22 @@ public class SyncDLObjectServiceImpl extends SyncDLObjectServiceBaseImpl {
 				repositoryId, parentFolderId, name, description,
 				serviceContext);
 		}
+		else if (urlPath.endsWith("/copy-file-entry")) {
+			long sourceFileEntryId = MapUtil.getLong(
+				jsonWebServiceActionParametersMap, "sourceFileEntryId");
+			long repositoryId = MapUtil.getLong(
+				jsonWebServiceActionParametersMap, "repositoryId");
+			long folderId = MapUtil.getLong(
+				jsonWebServiceActionParametersMap, "folderId");
+			String sourceFileName = MapUtil.getString(
+				jsonWebServiceActionParametersMap, "sourceFileName");
+			String title = MapUtil.getString(
+				jsonWebServiceActionParametersMap, "title");
+
+			return copyFileEntry(
+				sourceFileEntryId, repositoryId, folderId, sourceFileName,
+				title, serviceContext);
+		}
 		else if (urlPath.endsWith("/move-file-entry")) {
 			long fileEntryId = MapUtil.getLong(
 				jsonWebServiceActionParametersMap, "fileEntryId");
@@ -1284,8 +1340,10 @@ public class SyncDLObjectServiceImpl extends SyncDLObjectServiceBaseImpl {
 
 			return updateFolder(folderId, name, description, serviceContext);
 		}
-
-		return null;
+		else {
+			throw new NoSuchJSONWebServiceException(
+				"No JSON web service action with path " + urlPath);
+		}
 	}
 
 	private static Log _log = LogFactoryUtil.getLog(
