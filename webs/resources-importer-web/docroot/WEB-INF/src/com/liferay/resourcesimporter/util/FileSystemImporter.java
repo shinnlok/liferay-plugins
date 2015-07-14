@@ -14,6 +14,12 @@
 
 package com.liferay.resourcesimporter.util;
 
+import com.liferay.dynamic.data.lists.model.DDLRecordSet;
+import com.liferay.journal.configuration.JournalServiceConfigurationValues;
+import com.liferay.journal.model.JournalArticle;
+import com.liferay.journal.model.JournalArticleConstants;
+import com.liferay.journal.service.JournalArticleLocalServiceUtil;
+import com.liferay.journal.service.JournalArticleServiceUtil;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
@@ -33,8 +39,6 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.MimeTypesUtil;
-import com.liferay.portal.kernel.util.PropsKeys;
-import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -78,17 +82,13 @@ import com.liferay.portlet.documentlibrary.service.DLAppLocalServiceUtil;
 import com.liferay.portlet.documentlibrary.service.DLFileEntryLocalServiceUtil;
 import com.liferay.portlet.documentlibrary.service.DLFolderLocalServiceUtil;
 import com.liferay.portlet.documentlibrary.util.DLUtil;
-import com.liferay.portlet.dynamicdatalists.model.DDLRecordSet;
 import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
 import com.liferay.portlet.dynamicdatamapping.model.DDMStructureConstants;
 import com.liferay.portlet.dynamicdatamapping.model.DDMTemplate;
 import com.liferay.portlet.dynamicdatamapping.model.DDMTemplateConstants;
 import com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.portlet.dynamicdatamapping.service.DDMTemplateLocalServiceUtil;
-import com.liferay.portlet.journal.model.JournalArticle;
-import com.liferay.portlet.journal.model.JournalArticleConstants;
-import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
-import com.liferay.portlet.journal.service.JournalArticleServiceUtil;
+import com.liferay.portlet.dynamicdatamapping.storage.StorageType;
 import com.liferay.portlet.journal.util.JournalConverterUtil;
 import com.liferay.wiki.model.WikiPage;
 
@@ -164,16 +164,17 @@ public class FileSystemImporter extends BaseImporter {
 					PortalUtil.getClassNameId(JournalArticle.class),
 					getKey(fileName), getMap(name), null,
 					DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY,
-					StringPool.BLANK, getDDMTemplateLanguage(name), script,
-					false, false, StringPool.BLANK, null, serviceContext);
+					StringPool.BLANK, getDDMTemplateLanguage(file.getName()),
+					script, false, false, StringPool.BLANK, null,
+					serviceContext);
 			}
 			else {
 				DDMTemplateLocalServiceUtil.updateTemplate(
-					ddmTemplate.getTemplateId(), ddmTemplate.getClassPK(),
-					getMap(name), null,
+					userId, ddmTemplate.getTemplateId(),
+					ddmTemplate.getClassPK(), getMap(name), null,
 					DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY,
-					StringPool.BLANK, getDDMTemplateLanguage(name), script,
-					false, serviceContext);
+					StringPool.BLANK, getDDMTemplateLanguage(file.getName()),
+					script, false, serviceContext);
 			}
 		}
 		catch (PortalException e) {
@@ -244,8 +245,6 @@ public class FileSystemImporter extends BaseImporter {
 		File[] files = listFiles(dir);
 
 		for (File file : files) {
-			String language = getDDMTemplateLanguage(file.getName());
-
 			String script = StringUtil.read(getInputStream(file));
 
 			if (Validator.isNull(script)) {
@@ -254,8 +253,8 @@ public class FileSystemImporter extends BaseImporter {
 
 			addDDMTemplate(
 				groupId, ddmStructure.getStructureId(), file.getName(),
-				language, script, DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY,
-				null);
+				getDDMTemplateLanguage(file.getName()), script,
+				DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY, null);
 		}
 	}
 
@@ -340,8 +339,7 @@ public class FileSystemImporter extends BaseImporter {
 					DDMStructureConstants.DEFAULT_PARENT_STRUCTURE_ID,
 					PortalUtil.getClassNameId(DDLRecordSet.class),
 					getKey(fileName), getMap(name), null,
-					StringUtil.read(inputStream),
-					PropsUtil.get(PropsKeys.DYNAMIC_DATA_LISTS_STORAGE_TYPE),
+					StringUtil.read(inputStream), StorageType.JSON.toString(),
 					DDMStructureConstants.TYPE_DEFAULT, serviceContext);
 			}
 			else {
@@ -442,7 +440,8 @@ public class FileSystemImporter extends BaseImporter {
 					userId, groupId, parentDDMStructureKey,
 					PortalUtil.getClassNameId(JournalArticle.class),
 					getKey(fileName), getMap(name), null, xsd,
-					PropsUtil.get(PropsKeys.JOURNAL_ARTICLE_STORAGE_TYPE),
+					JournalServiceConfigurationValues.
+						JOURNAL_ARTICLE_STORAGE_TYPE,
 					DDMStructureConstants.TYPE_DEFAULT, serviceContext);
 			}
 			else {
@@ -529,7 +528,7 @@ public class FileSystemImporter extends BaseImporter {
 			}
 			else {
 				DDMTemplateLocalServiceUtil.updateTemplate(
-					ddmTemplate.getTemplateId(),
+					userId, ddmTemplate.getTemplateId(),
 					PortalUtil.getClassNameId(DDMStructure.class), getMap(name),
 					null, DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY, null,
 					language, script, false, false, null, null, serviceContext);
@@ -576,6 +575,8 @@ public class FileSystemImporter extends BaseImporter {
 			String ddmStructureKey, String fileName, InputStream inputStream)
 		throws Exception {
 
+		String language = getDDMTemplateLanguage(fileName);
+
 		fileName = FileUtil.stripExtension(fileName);
 
 		String name = getName(fileName);
@@ -616,17 +617,17 @@ public class FileSystemImporter extends BaseImporter {
 					ddmStructure.getStructureId(),
 					PortalUtil.getClassNameId(JournalArticle.class),
 					getKey(fileName), getMap(name), null,
-					DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY, null,
-					getDDMTemplateLanguage(fileName), replaceFileEntryURL(xsl),
-					false, false, null, null, serviceContext);
+					DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY, null, language,
+					replaceFileEntryURL(xsl), false, false, null, null,
+					serviceContext);
 			}
 			else {
 				ddmTemplate = DDMTemplateLocalServiceUtil.updateTemplate(
-					ddmTemplate.getTemplateId(),
+					userId, ddmTemplate.getTemplateId(),
 					PortalUtil.getClassNameId(DDMStructure.class), getMap(name),
 					null, DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY, null,
-					getDDMTemplateLanguage(fileName), replaceFileEntryURL(xsl),
-					false, false, null, null, serviceContext);
+					language, replaceFileEntryURL(xsl), false, false, null,
+					null, serviceContext);
 			}
 		}
 		catch (PortalException e) {
@@ -874,16 +875,15 @@ public class FileSystemImporter extends BaseImporter {
 					serviceContext);
 			}
 			else {
-				journalArticle =
-					JournalArticleLocalServiceUtil.updateArticle(
-						userId, groupId, 0, journalArticleId,
-						journalArticle.getVersion(),
-						getMap(articleDefaultLocale, title), descriptionMap,
-						content, ddmStructureKey, ddmTemplateKey,
-						StringPool.BLANK, 1, 1, 2010, 0, 0, 0, 0, 0, 0, 0, true,
-						0, 0, 0, 0, 0, true, indexable, smallImage,
-						smallImageURL, null, new HashMap<String, byte[]>(),
-						StringPool.BLANK, serviceContext);
+				journalArticle = JournalArticleLocalServiceUtil.updateArticle(
+					userId, groupId, 0, journalArticleId,
+					journalArticle.getVersion(),
+					getMap(articleDefaultLocale, title), descriptionMap,
+					content, ddmStructureKey, ddmTemplateKey, StringPool.BLANK,
+					1, 1, 2010, 0, 0, 0, 0, 0, 0, 0, true, 0, 0, 0, 0, 0, true,
+					indexable, smallImage, smallImageURL, null,
+					new HashMap<String, byte[]>(), StringPool.BLANK,
+					serviceContext);
 			}
 
 			JournalArticleLocalServiceUtil.updateStatus(
@@ -1668,17 +1668,17 @@ public class FileSystemImporter extends BaseImporter {
 	}
 
 	protected void setUpSitemap(String fileName) throws Exception {
-		LayoutLocalServiceUtil.deleteLayouts(
-			groupId, true, new ServiceContext());
-
-		LayoutLocalServiceUtil.deleteLayouts(
-			groupId, false, new ServiceContext());
-
 		JSONObject jsonObject = getJSONObject(fileName);
 
 		if (jsonObject == null) {
 			return;
 		}
+
+		LayoutLocalServiceUtil.deleteLayouts(
+			groupId, true, new ServiceContext());
+
+		LayoutLocalServiceUtil.deleteLayouts(
+			groupId, false, new ServiceContext());
 
 		_defaultLayoutTemplateId = jsonObject.getString(
 			"layoutTemplateId", StringPool.BLANK);
@@ -1761,7 +1761,8 @@ public class FileSystemImporter extends BaseImporter {
 			{"asset_category", AssetCategory.class},
 			{"asset_entry", AssetEntry.class}, {"asset_tag", AssetTag.class},
 			{"blogs_entry", BlogsEntry.class},
-			{"document_library",FileEntry.class}, {"site_map", LayoutSet.class},
+			{"document_library", FileEntry.class},
+			{"site_map", LayoutSet.class},
 			{"wiki_page", WikiPage.class}
 		};
 

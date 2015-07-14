@@ -14,6 +14,7 @@
 
 package com.liferay.alloy.mvc;
 
+import com.liferay.alloy.mvc.jsonwebservice.AlloyMockUtil;
 import com.liferay.counter.service.CounterLocalServiceUtil;
 import com.liferay.portal.kernel.bean.BeanPropertiesUtil;
 import com.liferay.portal.kernel.bean.ConstantsBeanFactoryUtil;
@@ -121,6 +122,9 @@ public abstract class BaseAlloyControllerImpl implements AlloyController {
 	public static final String TOUCH =
 		BaseAlloyControllerImpl.class.getName() + "#TOUCH#";
 
+	public static final String VIEW_PATH =
+		BaseAlloyControllerImpl.class.getName() + "#VIEW_PATH";
+
 	@Override
 	public void afterPropertiesSet() {
 		initClass();
@@ -182,6 +186,11 @@ public abstract class BaseAlloyControllerImpl implements AlloyController {
 	}
 
 	@Override
+	public String getResponseContent() {
+		return responseContent;
+	}
+
+	@Override
 	public ThemeDisplay getThemeDisplay() {
 		return themeDisplay;
 	}
@@ -199,8 +208,9 @@ public abstract class BaseAlloyControllerImpl implements AlloyController {
 			indexer.reindex(baseModel);
 		}
 		else {
-			Indexer baseModelIndexer = IndexerRegistryUtil.getIndexer(
-				baseModel.getModelClass());
+			Indexer<BaseModel<?>> baseModelIndexer =
+				(Indexer<BaseModel<?>>)IndexerRegistryUtil.getIndexer(
+					baseModel.getModelClass());
 
 			if (baseModelIndexer != null) {
 				baseModelIndexer.reindex(baseModel);
@@ -282,8 +292,6 @@ public abstract class BaseAlloyControllerImpl implements AlloyController {
 		setModel(baseModel, properties);
 
 		persistModel(baseModel);
-
-		indexModel(baseModel);
 	}
 
 	protected void addOpenerSuccessMessage() {
@@ -342,7 +350,7 @@ public abstract class BaseAlloyControllerImpl implements AlloyController {
 		return sb.toString();
 	}
 
-	protected Indexer buildIndexer() {
+	protected Indexer<BaseModel<?>> buildIndexer() {
 		return null;
 	}
 
@@ -617,7 +625,7 @@ public abstract class BaseAlloyControllerImpl implements AlloyController {
 
 		PortletBag portletBag = PortletBagPool.get(portlet.getPortletId());
 
-		List<Indexer> indexerInstances = portletBag.getIndexerInstances();
+		List<Indexer<?>> indexerInstances = portletBag.getIndexerInstances();
 
 		if (existingIndexer != null) {
 			IndexerRegistryUtil.unregister(existingIndexer);
@@ -1039,6 +1047,17 @@ public abstract class BaseAlloyControllerImpl implements AlloyController {
 	protected AlloySearchResult search(
 			Indexer indexer, AlloyServiceInvoker alloyServiceInvoker,
 			HttpServletRequest request, PortletRequest portletRequest,
+			Map<String, Serializable> attributes, String keywords, Sort[] sorts)
+		throws Exception {
+
+		return search(
+			indexer, alloyServiceInvoker, request, portletRequest, null,
+			attributes, keywords, sorts);
+	}
+
+	protected AlloySearchResult search(
+			Indexer indexer, AlloyServiceInvoker alloyServiceInvoker,
+			HttpServletRequest request, PortletRequest portletRequest,
 			Map<String, Serializable> attributes, String keywords, Sort[] sorts,
 			int start, int end)
 		throws Exception {
@@ -1349,29 +1368,19 @@ public abstract class BaseAlloyControllerImpl implements AlloyController {
 	protected void writeResponse(Object content, String contentType)
 		throws Exception {
 
-		if (actionResponse != null) {
-			HttpServletResponse response = PortalUtil.getHttpServletResponse(
-				actionResponse);
+		HttpServletResponse response = this.response;
 
-			response.setContentType(contentType);
-
-			ServletResponseUtil.write(response, content.toString());
+		if (!(response instanceof AlloyMockUtil.MockHttpServletResponse)) {
+			response = PortalUtil.getHttpServletResponse(portletResponse);
 		}
-		else if (renderResponse != null) {
-			renderResponse.setContentType(contentType);
 
-			HttpServletResponse response = PortalUtil.getHttpServletResponse(
-				renderResponse);
+		response.setContentType(contentType);
 
-			ServletResponseUtil.write(response, content.toString());
-		}
+		ServletResponseUtil.write(response, content.toString());
 	}
 
 	protected static final String CALLED_PROCESS_ACTION =
 		BaseAlloyControllerImpl.class.getName() + "#CALLED_PROCESS_ACTION";
-
-	protected static final String VIEW_PATH =
-		BaseAlloyControllerImpl.class.getName() + "#VIEW_PATH";
 
 	protected static Log log = LogFactoryUtil.getLog(
 		BaseAlloyControllerImpl.class);
@@ -1391,7 +1400,7 @@ public abstract class BaseAlloyControllerImpl implements AlloyController {
 	protected EventRequest eventRequest;
 	protected EventResponse eventResponse;
 	protected String format;
-	protected Indexer indexer;
+	protected Indexer<BaseModel<?>> indexer;
 	protected String indexerClassName;
 	protected String lifecycle;
 	protected LiferayPortletConfig liferayPortletConfig;

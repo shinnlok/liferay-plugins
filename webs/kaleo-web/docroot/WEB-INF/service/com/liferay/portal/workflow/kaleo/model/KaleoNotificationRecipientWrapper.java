@@ -68,7 +68,13 @@ public class KaleoNotificationRecipientWrapper
 		attributes.put("recipientClassName", getRecipientClassName());
 		attributes.put("recipientClassPK", getRecipientClassPK());
 		attributes.put("recipientRoleType", getRecipientRoleType());
+		attributes.put("recipientScript", getRecipientScript());
+		attributes.put("recipientScriptLanguage", getRecipientScriptLanguage());
+		attributes.put("recipientScriptRequiredContexts",
+			getRecipientScriptRequiredContexts());
 		attributes.put("address", getAddress());
+		attributes.put("notificationReceptionType",
+			getNotificationReceptionType());
 
 		return attributes;
 	}
@@ -148,10 +154,37 @@ public class KaleoNotificationRecipientWrapper
 			setRecipientRoleType(recipientRoleType);
 		}
 
+		String recipientScript = (String)attributes.get("recipientScript");
+
+		if (recipientScript != null) {
+			setRecipientScript(recipientScript);
+		}
+
+		String recipientScriptLanguage = (String)attributes.get(
+				"recipientScriptLanguage");
+
+		if (recipientScriptLanguage != null) {
+			setRecipientScriptLanguage(recipientScriptLanguage);
+		}
+
+		String recipientScriptRequiredContexts = (String)attributes.get(
+				"recipientScriptRequiredContexts");
+
+		if (recipientScriptRequiredContexts != null) {
+			setRecipientScriptRequiredContexts(recipientScriptRequiredContexts);
+		}
+
 		String address = (String)attributes.get("address");
 
 		if (address != null) {
 			setAddress(address);
+		}
+
+		String notificationReceptionType = (String)attributes.get(
+				"notificationReceptionType");
+
+		if (notificationReceptionType != null) {
+			setNotificationReceptionType(notificationReceptionType);
 		}
 	}
 
@@ -192,7 +225,7 @@ public class KaleoNotificationRecipientWrapper
 	* @return the create date of this kaleo notification recipient
 	*/
 	@Override
-	public java.util.Date getCreateDate() {
+	public Date getCreateDate() {
 		return _kaleoNotificationRecipient.getCreateDate();
 	}
 
@@ -247,8 +280,18 @@ public class KaleoNotificationRecipientWrapper
 	* @return the modified date of this kaleo notification recipient
 	*/
 	@Override
-	public java.util.Date getModifiedDate() {
+	public Date getModifiedDate() {
 		return _kaleoNotificationRecipient.getModifiedDate();
+	}
+
+	/**
+	* Returns the notification reception type of this kaleo notification recipient.
+	*
+	* @return the notification reception type of this kaleo notification recipient
+	*/
+	@Override
+	public java.lang.String getNotificationReceptionType() {
+		return _kaleoNotificationRecipient.getNotificationReceptionType();
 	}
 
 	/**
@@ -294,6 +337,36 @@ public class KaleoNotificationRecipientWrapper
 	@Override
 	public int getRecipientRoleType() {
 		return _kaleoNotificationRecipient.getRecipientRoleType();
+	}
+
+	/**
+	* Returns the recipient script of this kaleo notification recipient.
+	*
+	* @return the recipient script of this kaleo notification recipient
+	*/
+	@Override
+	public java.lang.String getRecipientScript() {
+		return _kaleoNotificationRecipient.getRecipientScript();
+	}
+
+	/**
+	* Returns the recipient script language of this kaleo notification recipient.
+	*
+	* @return the recipient script language of this kaleo notification recipient
+	*/
+	@Override
+	public java.lang.String getRecipientScriptLanguage() {
+		return _kaleoNotificationRecipient.getRecipientScriptLanguage();
+	}
+
+	/**
+	* Returns the recipient script required contexts of this kaleo notification recipient.
+	*
+	* @return the recipient script required contexts of this kaleo notification recipient
+	*/
+	@Override
+	public java.lang.String getRecipientScriptRequiredContexts() {
+		return _kaleoNotificationRecipient.getRecipientScriptRequiredContexts();
 	}
 
 	/**
@@ -382,7 +455,7 @@ public class KaleoNotificationRecipientWrapper
 	* @param createDate the create date of this kaleo notification recipient
 	*/
 	@Override
-	public void setCreateDate(java.util.Date createDate) {
+	public void setCreateDate(Date createDate) {
 		_kaleoNotificationRecipient.setCreateDate(createDate);
 	}
 
@@ -451,13 +524,24 @@ public class KaleoNotificationRecipientWrapper
 	* @param modifiedDate the modified date of this kaleo notification recipient
 	*/
 	@Override
-	public void setModifiedDate(java.util.Date modifiedDate) {
+	public void setModifiedDate(Date modifiedDate) {
 		_kaleoNotificationRecipient.setModifiedDate(modifiedDate);
 	}
 
 	@Override
 	public void setNew(boolean n) {
 		_kaleoNotificationRecipient.setNew(n);
+	}
+
+	/**
+	* Sets the notification reception type of this kaleo notification recipient.
+	*
+	* @param notificationReceptionType the notification reception type of this kaleo notification recipient
+	*/
+	@Override
+	public void setNotificationReceptionType(
+		java.lang.String notificationReceptionType) {
+		_kaleoNotificationRecipient.setNotificationReceptionType(notificationReceptionType);
 	}
 
 	/**
@@ -503,6 +587,38 @@ public class KaleoNotificationRecipientWrapper
 	@Override
 	public void setRecipientRoleType(int recipientRoleType) {
 		_kaleoNotificationRecipient.setRecipientRoleType(recipientRoleType);
+	}
+
+	/**
+	* Sets the recipient script of this kaleo notification recipient.
+	*
+	* @param recipientScript the recipient script of this kaleo notification recipient
+	*/
+	@Override
+	public void setRecipientScript(java.lang.String recipientScript) {
+		_kaleoNotificationRecipient.setRecipientScript(recipientScript);
+	}
+
+	/**
+	* Sets the recipient script language of this kaleo notification recipient.
+	*
+	* @param recipientScriptLanguage the recipient script language of this kaleo notification recipient
+	*/
+	@Override
+	public void setRecipientScriptLanguage(
+		java.lang.String recipientScriptLanguage) {
+		_kaleoNotificationRecipient.setRecipientScriptLanguage(recipientScriptLanguage);
+	}
+
+	/**
+	* Sets the recipient script required contexts of this kaleo notification recipient.
+	*
+	* @param recipientScriptRequiredContexts the recipient script required contexts of this kaleo notification recipient
+	*/
+	@Override
+	public void setRecipientScriptRequiredContexts(
+		java.lang.String recipientScriptRequiredContexts) {
+		_kaleoNotificationRecipient.setRecipientScriptRequiredContexts(recipientScriptRequiredContexts);
 	}
 
 	/**

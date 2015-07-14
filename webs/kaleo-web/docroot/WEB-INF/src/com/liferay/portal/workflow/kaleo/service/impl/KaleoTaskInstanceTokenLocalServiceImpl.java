@@ -19,7 +19,6 @@ import com.liferay.portal.kernel.dao.orm.DynamicQueryFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.Property;
 import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.staging.StagingUtil;
 import com.liferay.portal.kernel.util.CalendarFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
@@ -35,6 +34,7 @@ import com.liferay.portal.workflow.kaleo.model.KaleoTaskInstanceToken;
 import com.liferay.portal.workflow.kaleo.service.base.KaleoTaskInstanceTokenLocalServiceBaseImpl;
 import com.liferay.portal.workflow.kaleo.service.persistence.KaleoTaskInstanceTokenQuery;
 import com.liferay.portal.workflow.kaleo.util.WorkflowContextUtil;
+import com.liferay.portlet.exportimport.staging.StagingUtil;
 
 import java.io.Serializable;
 
@@ -394,10 +394,10 @@ public class KaleoTaskInstanceTokenLocalServiceImpl
 
 	@Override
 	public List<KaleoTaskInstanceToken>
-			getSubmittingUserKaleoTaskInstanceTokens(
-				long userId, Boolean completed, int start, int end,
-				OrderByComparator<KaleoTaskInstanceToken> orderByComparator,
-				ServiceContext serviceContext) {
+		getSubmittingUserKaleoTaskInstanceTokens(
+			long userId, Boolean completed, int start, int end,
+			OrderByComparator<KaleoTaskInstanceToken> orderByComparator,
+			ServiceContext serviceContext) {
 
 		DynamicQuery dynamicQuery = DynamicQueryFactoryUtil.forClass(
 			KaleoTaskInstanceToken.class, getClassLoader());
@@ -409,7 +409,8 @@ public class KaleoTaskInstanceTokenLocalServiceImpl
 		Property workflowContextProperty = PropertyFactoryUtil.forName(
 			"workflowContext");
 
-		dynamicQuery.add(workflowContextProperty.like("\"userId\":" + userId));
+		dynamicQuery.add(
+			workflowContextProperty.like("%\"userId\":\"" + userId + "\"%"));
 
 		addCompletedCriterion(dynamicQuery, completed);
 
@@ -430,7 +431,8 @@ public class KaleoTaskInstanceTokenLocalServiceImpl
 		Property workflowContextProperty = PropertyFactoryUtil.forName(
 			"workflowContext");
 
-		dynamicQuery.add(workflowContextProperty.like("\"userId\":" + userId));
+		dynamicQuery.add(
+			workflowContextProperty.like("%\"userId\":\"" + userId + "\"%"));
 
 		addCompletedCriterion(dynamicQuery, completed);
 

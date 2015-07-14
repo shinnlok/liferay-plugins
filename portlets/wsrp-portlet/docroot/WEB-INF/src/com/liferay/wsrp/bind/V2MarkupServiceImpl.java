@@ -15,11 +15,12 @@
 package com.liferay.wsrp.bind;
 
 import com.liferay.portal.NoSuchLayoutException;
-import com.liferay.portal.kernel.dao.shard.ShardUtil;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.LiferayWindowState;
+import com.liferay.portal.kernel.portlet.PortletProvider;
+import com.liferay.portal.kernel.portlet.PortletProviderUtil;
 import com.liferay.portal.kernel.servlet.HttpHeaders;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.Base64;
@@ -37,8 +38,8 @@ import com.liferay.portal.model.LayoutConstants;
 import com.liferay.portal.model.LayoutTypePortlet;
 import com.liferay.portal.service.LayoutLocalServiceUtil;
 import com.liferay.portal.util.PortalUtil;
-import com.liferay.portal.util.PortletKeys;
 import com.liferay.portlet.PortletPreferencesFactoryUtil;
+import com.liferay.portlet.portletconfiguration.util.PortletConfigurationApplicationType;
 import com.liferay.util.Encryptor;
 import com.liferay.util.axis.ServletUtil;
 import com.liferay.wsrp.model.WSRPProducer;
@@ -532,41 +533,33 @@ public class V2MarkupServiceImpl
 			PortletContext portletContext, WSRPProducer wsrpProducer)
 		throws Exception {
 
-		ShardUtil.pushCompanyService(wsrpProducer.getCompanyId());
+		List<Layout> layouts = LayoutLocalServiceUtil.getLayouts(
+			wsrpProducer.getGroupId(), false,
+			LayoutConstants.DEFAULT_PARENT_LAYOUT_ID, false, 0, 1);
 
-		try {
-			List<Layout> layouts = LayoutLocalServiceUtil.getLayouts(
-				wsrpProducer.getGroupId(), false,
-				LayoutConstants.DEFAULT_PARENT_LAYOUT_ID, false, 0, 1);
-
-			if (layouts.isEmpty()) {
-				throw new NoSuchLayoutException();
-			}
-
-			Layout layout = layouts.get(0);
-
-			LayoutTypePortlet layoutTypePortlet =
-				(LayoutTypePortlet)layout.getLayoutType();
-
-			String portletId = getPortletId(portletContext);
-
-			if (!layoutTypePortlet.hasPortletId(portletId)) {
-				layoutTypePortlet.addPortletId(
-					0, portletId, "column-1", -1, false);
-
-				LayoutLocalServiceUtil.updateLayout(
-					layout.getGroupId(), layout.isPrivateLayout(),
-					layout.getLayoutId(), layout.getTypeSettings());
-
-				PortletPreferencesFactoryUtil.getLayoutPortletSetup(
-					layout, portletId);
-			}
-
-			return layout;
+		if (layouts.isEmpty()) {
+			throw new NoSuchLayoutException();
 		}
-		finally {
-			ShardUtil.popCompanyService();
+
+		Layout layout = layouts.get(0);
+
+		LayoutTypePortlet layoutTypePortlet =
+			(LayoutTypePortlet)layout.getLayoutType();
+
+		String portletId = getPortletId(portletContext);
+
+		if (!layoutTypePortlet.hasPortletId(portletId)) {
+			layoutTypePortlet.addPortletId(0, portletId, "column-1", -1, false);
+
+			LayoutLocalServiceUtil.updateLayout(
+				layout.getGroupId(), layout.isPrivateLayout(),
+				layout.getLayoutId(), layout.getTypeSettings());
+
+			PortletPreferencesFactoryUtil.getLayoutPortletSetup(
+				layout, portletId);
 		}
+
+		return layout;
 	}
 
 	protected String getPortletId(PortletContext portletContext)
@@ -582,23 +575,31 @@ public class V2MarkupServiceImpl
 
 		String portletId = getPortletId(portletContext);
 
-		if (navigationalContext != null) {
-			String opaqueValue = navigationalContext.getOpaqueValue();
+		if (navigationalContext == null) {
+			return portletId;
+		}
 
-			if (Validator.isNotNull(opaqueValue)) {
-				opaqueValue = new String(
-					Base64.decode(Base64.fromURLSafe(opaqueValue)),
-					StringPool.UTF8);
-			}
+		String opaqueValue = navigationalContext.getOpaqueValue();
 
-			Map<String, String[]> parameterMap =
-				HttpUtil.parameterMapFromString(opaqueValue);
+		if (Validator.isNotNull(opaqueValue)) {
+			opaqueValue = new String(
+				Base64.decode(Base64.fromURLSafe(opaqueValue)),
+				StringPool.UTF8);
+		}
 
-			if (parameterMap.containsKey(
-					_STRUTS_ACTION_PORTLET_CONFIGURATION)) {
+		Map<String, String[]> parameterMap = HttpUtil.parameterMapFromString(
+			opaqueValue);
 
-				portletId = PortletKeys.PORTLET_CONFIGURATION;
-			}
+		String portletConfigurationPortletId = PortletProviderUtil.getPortletId(
+			PortletConfigurationApplicationType.
+				PortletConfiguration.CLASS_NAME,
+			PortletProvider.Action.VIEW);
+
+		if (parameterMap.containsKey(
+				PortalUtil.getPortletNamespace(portletConfigurationPortletId) +
+					"portletConfiguration")) {
+
+			portletId = portletConfigurationPortletId;
 		}
 
 		return portletId;
@@ -878,10 +879,6 @@ public class V2MarkupServiceImpl
 	}
 
 	private static final String _PATH_WIDGET = "/widget/c/portal/layout";
-
-	private static final String _STRUTS_ACTION_PORTLET_CONFIGURATION =
-		PortalUtil.getPortletNamespace(PortletKeys.PORTLET_CONFIGURATION) +
-			"struts_action";
 
 	private static Log _log = LogFactoryUtil.getLog(V2MarkupServiceImpl.class);
 

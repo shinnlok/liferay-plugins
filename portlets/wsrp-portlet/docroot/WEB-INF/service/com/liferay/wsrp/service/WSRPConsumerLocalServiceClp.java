@@ -14,12 +14,15 @@
 
 package com.liferay.wsrp.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.service.InvokableLocalService;
 
 /**
  * @author Brian Wing Shun Chan
  * @generated
  */
+@ProviderType
 public class WSRPConsumerLocalServiceClp implements WSRPConsumerLocalService {
 	public WSRPConsumerLocalServiceClp(
 		InvokableLocalService invokableLocalService) {
@@ -118,7 +121,7 @@ public class WSRPConsumerLocalServiceClp implements WSRPConsumerLocalService {
 		_methodName17 = "getExportActionableDynamicQuery";
 
 		_methodParameterTypes17 = new String[] {
-				"com.liferay.portal.kernel.lar.PortletDataContext"
+				"com.liferay.portlet.exportimport.lar.PortletDataContext"
 			};
 
 		_methodName18 = "getPersistedModel";
@@ -666,7 +669,7 @@ public class WSRPConsumerLocalServiceClp implements WSRPConsumerLocalService {
 
 	@Override
 	public com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery getExportActionableDynamicQuery(
-		com.liferay.portal.kernel.lar.PortletDataContext portletDataContext) {
+		com.liferay.portlet.exportimport.lar.PortletDataContext portletDataContext) {
 		Object returnObj = null;
 
 		try {

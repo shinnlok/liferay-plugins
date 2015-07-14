@@ -14,14 +14,17 @@
 
 package com.liferay.wsrp.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
-import com.liferay.portal.kernel.lar.StagedModelType;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.impl.BaseModelImpl;
 import com.liferay.portal.util.PortalUtil;
+
+import com.liferay.portlet.exportimport.lar.StagedModelType;
 
 import com.liferay.wsrp.service.ClpSerializer;
 import com.liferay.wsrp.service.WSRPProducerLocalServiceUtil;
@@ -37,6 +40,7 @@ import java.util.Map;
 /**
  * @author Brian Wing Shun Chan
  */
+@ProviderType
 public class WSRPProducerClp extends BaseModelImpl<WSRPProducer>
 	implements WSRPProducer {
 	public WSRPProducerClp() {
@@ -607,7 +611,7 @@ public class WSRPProducerClp extends BaseModelImpl<WSRPProducer>
 	private String _version;
 	private String _portletIds;
 	private BaseModel<?> _wsrpProducerRemoteModel;
-	private Class<?> _clpSerializerClass = com.liferay.wsrp.service.ClpSerializer.class;
+	private Class<?> _clpSerializerClass = ClpSerializer.class;
 	private boolean _entityCacheEnabled;
 	private boolean _finderCacheEnabled;
 }

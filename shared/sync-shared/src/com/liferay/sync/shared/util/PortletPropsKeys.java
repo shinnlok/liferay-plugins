@@ -25,6 +25,8 @@ public class PortletPropsKeys {
 	public static final String SYNC_CLIENT_MAX_CONNECTIONS =
 		"sync.client.max.connections";
 
+	public static final String SYNC_CLIENT_MIN_BUILD = "sync.client.min.build";
+
 	public static final String SYNC_CLIENT_POLL_INTERVAL =
 		"sync.client.poll.interval";
 
@@ -38,6 +40,8 @@ public class PortletPropsKeys {
 		"sync.oauth.consumer.secret";
 
 	public static final String SYNC_OAUTH_ENABLED = "sync.oauth.enabled";
+
+	public static final String SYNC_PAGINATION_DELTA = "sync.pagination.delta";
 
 	public static final String SYNC_SERVICES_ENABLED = "sync.services.enabled";
 

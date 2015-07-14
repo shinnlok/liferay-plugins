@@ -14,9 +14,10 @@
 
 package com.liferay.samplelar.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.lar.StagedModelType;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
@@ -26,6 +27,8 @@ import com.liferay.portal.model.User;
 import com.liferay.portal.model.impl.BaseModelImpl;
 import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.util.PortalUtil;
+
+import com.liferay.portlet.exportimport.lar.StagedModelType;
 
 import com.liferay.samplelar.service.ClpSerializer;
 import com.liferay.samplelar.service.SampleLARBookingLocalServiceUtil;
@@ -41,6 +44,7 @@ import java.util.Map;
 /**
  * @author Mate Thurzo
  */
+@ProviderType
 public class SampleLARBookingClp extends BaseModelImpl<SampleLARBooking>
 	implements SampleLARBooking {
 	public SampleLARBookingClp() {
@@ -611,7 +615,7 @@ public class SampleLARBookingClp extends BaseModelImpl<SampleLARBooking>
 	private Date _modifiedDate;
 	private String _bookingNumber;
 	private BaseModel<?> _sampleLARBookingRemoteModel;
-	private Class<?> _clpSerializerClass = com.liferay.samplelar.service.ClpSerializer.class;
+	private Class<?> _clpSerializerClass = ClpSerializer.class;
 	private boolean _entityCacheEnabled;
 	private boolean _finderCacheEnabled;
 }

@@ -14,12 +14,15 @@
 
 package com.liferay.sampleservicebuilder.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.service.InvokableLocalService;
 
 /**
  * @author Brian Wing Shun Chan
  * @generated
  */
+@ProviderType
 public class FooLocalServiceClp implements FooLocalService {
 	public FooLocalServiceClp(InvokableLocalService invokableLocalService) {
 		_invokableLocalService = invokableLocalService;
@@ -112,7 +115,7 @@ public class FooLocalServiceClp implements FooLocalService {
 		_methodName16 = "getExportActionableDynamicQuery";
 
 		_methodParameterTypes16 = new String[] {
-				"com.liferay.portal.kernel.lar.PortletDataContext"
+				"com.liferay.portlet.exportimport.lar.PortletDataContext"
 			};
 
 		_methodName17 = "getFoo";
@@ -623,7 +626,7 @@ public class FooLocalServiceClp implements FooLocalService {
 
 	@Override
 	public com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery getExportActionableDynamicQuery(
-		com.liferay.portal.kernel.lar.PortletDataContext portletDataContext) {
+		com.liferay.portlet.exportimport.lar.PortletDataContext portletDataContext) {
 		Object returnObj = null;
 
 		try {

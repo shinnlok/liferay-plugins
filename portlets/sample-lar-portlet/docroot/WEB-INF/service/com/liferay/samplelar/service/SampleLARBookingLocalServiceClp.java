@@ -14,12 +14,15 @@
 
 package com.liferay.samplelar.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.service.InvokableLocalService;
 
 /**
  * @author Mate Thurzo
  * @generated
  */
+@ProviderType
 public class SampleLARBookingLocalServiceClp
 	implements SampleLARBookingLocalService {
 	public SampleLARBookingLocalServiceClp(
@@ -118,7 +121,7 @@ public class SampleLARBookingLocalServiceClp
 		_methodName17 = "getExportActionableDynamicQuery";
 
 		_methodParameterTypes17 = new String[] {
-				"com.liferay.portal.kernel.lar.PortletDataContext"
+				"com.liferay.portlet.exportimport.lar.PortletDataContext"
 			};
 
 		_methodName18 = "getPersistedModel";
@@ -638,7 +641,7 @@ public class SampleLARBookingLocalServiceClp
 
 	@Override
 	public com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery getExportActionableDynamicQuery(
-		com.liferay.portal.kernel.lar.PortletDataContext portletDataContext) {
+		com.liferay.portlet.exportimport.lar.PortletDataContext portletDataContext) {
 		Object returnObj = null;
 
 		try {

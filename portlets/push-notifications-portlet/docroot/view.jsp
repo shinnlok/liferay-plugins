@@ -17,108 +17,66 @@
 <%@ include file="/init.jsp" %>
 
 <%
-String androidApiKey = PrefsPropsUtil.getString(PortletPropsKeys.ANDROID_API_KEY, PortletPropsValues.ANDROID_API_KEY);
-int androidRetries = PrefsPropsUtil.getInteger(PortletPropsKeys.ANDROID_RETRIES, PortletPropsValues.ANDROID_RETRIES);
-String appleCertificatePassword = PrefsPropsUtil.getString(PortletPropsKeys.APPLE_CERTIFICATE_PASSWORD, PortletPropsValues.APPLE_CERTIFICATE_PASSWORD);
-String appleCertificatePath = PrefsPropsUtil.getString(PortletPropsKeys.APPLE_CERTIFICATE_PATH, PortletPropsValues.APPLE_CERTIFICATE_PATH);
-boolean appleSandbox = PrefsPropsUtil.getBoolean(PortletPropsKeys.APPLE_SANDBOX, PortletPropsValues.APPLE_SANDBOX);
+String tabs1 = ParamUtil.getString(request, "tabs1", "devices");
+String tabs2 = ParamUtil.getString(request, "tabs2", "android");
+
+String orderByCol = ParamUtil.getString(request, "orderByCol", "platform");
+String orderByType = ParamUtil.getString(request, "orderByType", "asc");
+
+OrderByComparator orderByComparator = PushNotificationsUtil.getPushNotificationsDeviceOrderByComparator(orderByCol, orderByType);
+
+PortletURL portletURL = renderResponse.createRenderURL();
+
+portletURL.setParameter("tabs1", tabs1);
+portletURL.setParameter("tabs2", tabs2);
 %>
 
-<liferay-portlet:actionURL name="updatePortletPreferences" var="updatePortletPreferencesURL" />
-
 <liferay-ui:tabs
-	names="configuration,test"
-	refresh="<%= false %>"
->
-	<liferay-ui:section>
-		<aui:form action="<%= updatePortletPreferencesURL %>" method="post" name="configurationFm">
-			<aui:fieldset label="android">
-				<aui:input helpMessage="android-api-key-help" label="android-api-key" name="androidApiKey" type="text" value="<%= androidApiKey %>" wrapperCssClass="lfr-input-text-container" />
+	names="devices,configuration"
+	param="tabs1"
+	portletURL="<%= portletURL %>"
+/>
 
-				<aui:input helpMessage="android-retries-help" label="android-retries" name="androidRetries" type="text" value="<%= androidRetries %>" wrapperCssClass="lfr-input-text-container">
-					<aui:validator name="digits" />
-					<aui:validator name="min">0</aui:validator>
-				</aui:input>
-			</aui:fieldset>
+<c:choose>
+	<c:when test='<%= tabs1.equals("devices") %>'>
+		<liferay-ui:success key="pushNotificationsDeviceDeleted" message="the-device-was-deleted-successfully" />
 
-			<aui:fieldset label="ios">
-				<aui:input helpMessage="apple-certificate-path-help" label="apple-certificate-path" name="appleCertificatePath" type="text" value="<%= appleCertificatePath %>" wrapperCssClass="lfr-input-text-container" />
+		<liferay-ui:search-container
+			emptyResultsMessage="no-devices-were-found"
+			iteratorURL="<%= portletURL %>"
+			orderByCol="<%= orderByCol %>"
+			orderByComparator="<%= orderByComparator %>"
+			orderByType="<%= orderByType %>"
+			total="<%= PushNotificationsDeviceLocalServiceUtil.getPushNotificationsDevicesCount() %>"
+		>
+			<liferay-ui:search-container-results
+				results="<%= PushNotificationsDeviceLocalServiceUtil.getPushNotificationsDevices(searchContainer.getStart(), searchContainer.getEnd(), orderByComparator) %>"
+			/>
 
-				<aui:input helpMessage="apple-certificate-password-help" label="apple-certificate-password" name="appleCertificatePassword" type="password" value="<%= appleCertificatePassword %>" wrapperCssClass="lfr-input-text-container" />
+			<liferay-ui:search-container-row
+				className="com.liferay.pushnotifications.model.PushNotificationsDevice"
+				escapedModel="<%= true %>"
+				keyProperty="pushNotificationsDeviceId"
+				modelVar="device"
+			>
 
-				<aui:fieldset>
-					<aui:input helpMessage="apple-sandbox-help" label="apple-sandbox"  name="appleSandbox" type="checkbox" value="<%= appleSandbox %>" />
-				</aui:fieldset>
-			</aui:fieldset>
+				<%
+				User deviceUser = UserLocalServiceUtil.getUser(device.getUserId());
+				%>
 
-			<aui:button-row>
-				<aui:button type="submit" />
-			</aui:button-row>
-		</aui:form>
-	</liferay-ui:section>
+				<liferay-ui:search-container-column-text name="full-name" value="<%= deviceUser.getFullName() %>" />
 
-	<liferay-ui:section>
-		<aui:form name="fm">
-			<aui:input label="message" name="message" rows="6" type="textarea" />
+				<liferay-ui:search-container-column-text name="token" />
 
-			<aui:button type="submit" value="send" />
+				<liferay-ui:search-container-column-text name="platform" orderable="<%= true %>" value="<%= LanguageUtil.get(request, device.getPlatform()) %>" />
 
-			<aui:button type="reset" value="reset" />
-		</aui:form>
+				<liferay-ui:search-container-column-jsp align="right" path="/push_notifications_device_action.jsp" />
+			</liferay-ui:search-container-row>
 
-		<br />
-
-		<div class="alert alert-success hide" id="<portlet:namespace />success">
-			<p><liferay-ui:message key="the-push-notification-was-sent-successfully" /></p>
-		</div>
-
-		<div class="alert alert-danger hide" id="<portlet:namespace />error">
-			<p></p>
-		</div>
-	</liferay-ui:section>
-</liferay-ui:tabs>
-
-<aui:script use="aui-base">
-	var form = A.one('#<portlet:namespace />fm');
-
-	form.on(
-		'submit',
-		function(event) {
-			event.halt();
-
-			var message = form.one('textarea[name="<portlet:namespace />message"]').val();
-
-			Liferay.Service(
-				'/push-notifications-portlet.pushnotificationsdevice/send-push-notification',
-				{
-					payload: A.JSON.stringify(
-						{
-							body: message
-						}
-					),
-					toUserIds: []
-				},
-				<portlet:namespace />onSendPushNotification
-			);
-		}
-	);
-
-	function <portlet:namespace />onSendPushNotification(result) {
-		var success = A.one('#<portlet:namespace />success');
-
-		success.hide();
-
-		var error = A.one('#<portlet:namespace />error');
-
-		error.hide();
-
-		if (A.Object.hasKey(result, 'exception')) {
-			error.one('p').text(result);
-
-			error.show();
-		}
-		else {
-			success.show();
-		}
-	}
-</aui:script>
+			<liferay-ui:search-iterator />
+		</liferay-ui:search-container>
+	</c:when>
+	<c:otherwise>
+		<%@ include file="/configuration.jspf" %>
+	</c:otherwise>
+</c:choose>

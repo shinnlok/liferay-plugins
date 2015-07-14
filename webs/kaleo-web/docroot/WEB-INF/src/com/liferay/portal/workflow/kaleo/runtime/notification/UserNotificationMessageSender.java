@@ -20,6 +20,7 @@ import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.model.UserNotificationDeliveryConstants;
 import com.liferay.portal.service.UserNotificationEventLocalServiceUtil;
 import com.liferay.portal.util.PortletKeys;
+import com.liferay.portal.workflow.kaleo.definition.NotificationReceptionType;
 import com.liferay.portal.workflow.kaleo.model.KaleoInstanceToken;
 import com.liferay.portal.workflow.kaleo.model.KaleoTaskInstanceToken;
 import com.liferay.portal.workflow.kaleo.runtime.ExecutionContext;
@@ -37,22 +38,28 @@ public class UserNotificationMessageSender
 
 	@Override
 	protected void doSendNotification(
-			Set<NotificationRecipient> notificationRecipients,
-			String defaultSubject, String notificationMessage,
-			ExecutionContext executionContext)
+			Map<NotificationReceptionType, Set<NotificationRecipient>>
+				notificationRecipients, String defaultSubject,
+			String notificationMessage, ExecutionContext executionContext)
 		throws Exception {
 
 		JSONObject jsonObject = populateJSONObject(
 			notificationMessage, executionContext);
 
-		for (NotificationRecipient notificationRecipient :
-				notificationRecipients) {
+		for (Map.Entry<NotificationReceptionType, Set<NotificationRecipient>>
+				entry : notificationRecipients.entrySet()) {
 
-			if (notificationRecipient.getUserId() > 0) {
+			for (NotificationRecipient notificationRecipient :
+					entry.getValue()) {
+
+				if (notificationRecipient.getUserId() <= 0) {
+					continue;
+				}
+
 				UserNotificationEventLocalServiceUtil.
 					sendUserNotificationEvents(
 						notificationRecipient.getUserId(),
-						PortletKeys.MY_WORKFLOW_TASKS,
+						PortletKeys.MY_WORKFLOW_TASK,
 						UserNotificationDeliveryConstants.TYPE_WEBSITE,
 						jsonObject);
 			}
@@ -86,25 +93,32 @@ public class UserNotificationMessageSender
 			WorkflowConstants.CONTEXT_GROUP_ID,
 			String.valueOf(
 				workflowContext.get(WorkflowConstants.CONTEXT_GROUP_ID)));
-		jsonObject.put(
-			WorkflowConstants.CONTEXT_USER_ID,
-			String.valueOf(
-				workflowContext.get(WorkflowConstants.CONTEXT_USER_ID)));
-
-		jsonObject.put("notificationMessage", notificationMessage);
 
 		KaleoInstanceToken kaleoInstanceToken =
 			executionContext.getKaleoInstanceToken();
 
-		jsonObject.put(
-			"workflowInstanceId", kaleoInstanceToken.getKaleoInstanceId());
+		long userId = kaleoInstanceToken.getUserId();
 
 		KaleoTaskInstanceToken kaleoTaskInstanceToken =
 			executionContext.getKaleoTaskInstanceToken();
 
+		if (kaleoTaskInstanceToken != null) {
+			userId = kaleoTaskInstanceToken.getUserId();
+		}
+
 		jsonObject.put(
-			"workflowTaskId",
-			kaleoTaskInstanceToken.getKaleoTaskInstanceTokenId());
+			WorkflowConstants.CONTEXT_USER_ID, String.valueOf(userId));
+
+		jsonObject.put("notificationMessage", notificationMessage);
+
+		jsonObject.put(
+			"workflowInstanceId", kaleoInstanceToken.getKaleoInstanceId());
+
+		if (kaleoTaskInstanceToken != null) {
+			jsonObject.put(
+				"workflowTaskId",
+				kaleoTaskInstanceToken.getKaleoTaskInstanceTokenId());
+		}
 
 		return jsonObject;
 	}

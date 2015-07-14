@@ -20,6 +20,7 @@ import com.liferay.opensocial.shindig.util.ShindigUtil;
 import com.liferay.opensocial.util.WebKeys;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.servlet.SessionMessages;
+import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.util.PortalUtil;
 
@@ -29,9 +30,10 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletPreferences;
-import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.shindig.gadgets.spec.OAuthService;
 
@@ -40,6 +42,35 @@ import org.apache.shindig.gadgets.spec.OAuthService;
  * @author Dennis Ju
  */
 public class ConfigurationActionImpl extends BaseConfigurationAction {
+
+	@Override
+	public String getJspPath(HttpServletRequest request) {
+		return "/gadget/configuration.jsp";
+	}
+
+	@Override
+	public void include(
+			PortletConfig portletConfig, HttpServletRequest request,
+			HttpServletResponse response)
+		throws Exception {
+
+		if (hasUserPrefs(portletConfig, request)) {
+			doInclude(portletConfig, request, response);
+		}
+
+		try {
+			Gadget gadget = getGadget(portletConfig, request);
+
+			Map<String, OAuthService> oAuthServices =
+				ShindigUtil.getOAuthServices(gadget.getUrl());
+
+			request.setAttribute(WebKeys.OAUTH_SERVICES, oAuthServices);
+		}
+		catch (Exception e) {
+		}
+
+		super.include(portletConfig, request, response);
+	}
 
 	@Override
 	public void processAction(
@@ -86,38 +117,14 @@ public class ConfigurationActionImpl extends BaseConfigurationAction {
 	}
 
 	@Override
-	public String render(
-			PortletConfig portletConfig, RenderRequest renderRequest,
-			RenderResponse renderResponse)
-		throws Exception {
-
-		if (hasUserPrefs(portletConfig, renderRequest)) {
-			doRender(portletConfig, renderRequest, renderResponse);
-		}
-
-		try {
-			Gadget gadget = getGadget(portletConfig, renderRequest);
-
-			Map<String, OAuthService> oAuthServices =
-				ShindigUtil.getOAuthServices(gadget.getUrl());
-
-			renderRequest.setAttribute(WebKeys.OAUTH_SERVICES, oAuthServices);
-		}
-		catch (Exception e) {
-		}
-
-		return "/adhoc_gadget/configuration.jsp";
-	}
-
-	@Override
 	protected Gadget getGadget(
-			PortletConfig portletConfig, PortletRequest portletRequest)
+			PortletConfig portletConfig, HttpServletRequest request)
 		throws Exception {
 
-		String portletResource = ParamUtil.getString(
-			portletRequest, "portletResource");
+		RenderRequest renderRequest = (RenderRequest)request.getAttribute(
+			JavaConstants.JAVAX_PORTLET_REQUEST);
 
-		PortletPreferences portletPreferences = portletRequest.getPreferences();
+		PortletPreferences portletPreferences = renderRequest.getPreferences();
 
 		return ShindigUtil.getGadget(portletPreferences);
 	}

@@ -32,9 +32,9 @@ import java.util.Map;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
-import javax.portlet.PortletRequest;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.shindig.gadgets.spec.GadgetSpec;
 import org.apache.shindig.gadgets.spec.UserPref;
@@ -45,10 +45,23 @@ import org.apache.shindig.gadgets.spec.UserPref;
 public abstract class BaseConfigurationAction
 	extends DefaultConfigurationAction {
 
+	protected void doInclude(
+			PortletConfig portletConfig, HttpServletRequest request,
+			HttpServletResponse response)
+		throws Exception {
+
+		Map<String, UserPref> userPrefs = getUserPrefs(portletConfig, request);
+
+		request.setAttribute(WebKeys.USER_PREFS, userPrefs);
+	}
+
 	protected void doProcessAction(
 			PortletConfig portletConfig, ActionRequest actionRequest,
 			ActionResponse actionResponse)
 		throws Exception {
+
+		HttpServletRequest request =
+			PortalUtil.getHttpServletRequest(actionRequest);
 
 		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
@@ -58,7 +71,7 @@ public abstract class BaseConfigurationAction
 		JSONObject userPrefsJSONObject = JSONFactoryUtil.createJSONObject();
 
 		Map<String, UserPref> userPrefs = getUserPrefs(
-			portletConfig, actionRequest);
+			portletConfig, request);
 
 		for (UserPref userPref : userPrefs.values()) {
 			String name = userPref.getName();
@@ -94,26 +107,15 @@ public abstract class BaseConfigurationAction
 				SessionMessages.KEY_SUFFIX_UPDATED_CONFIGURATION);
 	}
 
-	protected void doRender(
-			PortletConfig portletConfig, RenderRequest renderRequest,
-			RenderResponse renderResponse)
-		throws Exception {
-
-		Map<String, UserPref> userPrefs = getUserPrefs(
-			portletConfig, renderRequest);
-
-		renderRequest.setAttribute(WebKeys.USER_PREFS, userPrefs);
-	}
-
 	protected abstract Gadget getGadget(
-			PortletConfig portletConfig, PortletRequest portletRequest)
+			PortletConfig portletConfig, HttpServletRequest request)
 		throws Exception;
 
 	protected Map<String, UserPref> getUserPrefs(
-			PortletConfig portletConfig, PortletRequest portletRequest)
+			PortletConfig portletConfig, HttpServletRequest request)
 		throws Exception {
 
-		Gadget gadget = getGadget(portletConfig, portletRequest);
+		Gadget gadget = getGadget(portletConfig, request);
 
 		GadgetSpec gadgetSpec = ShindigUtil.getGadgetSpec(gadget.getUrl());
 
@@ -121,11 +123,11 @@ public abstract class BaseConfigurationAction
 	}
 
 	protected boolean hasUserPrefs(
-		PortletConfig portletConfig, PortletRequest portletRequest) {
+		PortletConfig portletConfig, HttpServletRequest request) {
 
 		try {
 			Map<String, UserPref> userPrefs = getUserPrefs(
-				portletConfig, portletRequest);
+				portletConfig, request);
 
 			return ShindigUtil.hasUserPrefs(userPrefs);
 		}

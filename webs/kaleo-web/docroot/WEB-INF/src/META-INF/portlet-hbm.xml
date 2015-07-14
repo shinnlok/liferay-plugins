@@ -19,7 +19,6 @@
 	<import class="com.liferay.portal.workflow.kaleo.model.KaleoTimerInstanceToken" />
 	<import class="com.liferay.portal.workflow.kaleo.model.KaleoTransition" />
 	<class name="com.liferay.portal.workflow.kaleo.model.impl.KaleoActionImpl" table="KaleoAction">
-		<cache usage="read-write" />
 		<id name="kaleoActionId" type="long">
 			<generator class="assigned" />
 		</id>
@@ -36,13 +35,12 @@
 		<property name="name" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="description" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="executionType" type="com.liferay.portal.dao.orm.hibernate.StringType" />
-		<property name="script" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="script" type="com.liferay.portal.dao.orm.hibernate.StringClobType" />
 		<property name="scriptLanguage" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="scriptRequiredContexts" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="priority" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
 	</class>
 	<class name="com.liferay.portal.workflow.kaleo.model.impl.KaleoConditionImpl" table="KaleoCondition">
-		<cache usage="read-write" />
 		<id name="kaleoConditionId" type="long">
 			<generator class="assigned" />
 		</id>
@@ -54,12 +52,11 @@
 		<property name="modifiedDate" type="org.hibernate.type.TimestampType" />
 		<property name="kaleoDefinitionId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
 		<property name="kaleoNodeId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
-		<property name="script" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="script" type="com.liferay.portal.dao.orm.hibernate.StringClobType" />
 		<property name="scriptLanguage" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="scriptRequiredContexts" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 	</class>
 	<class name="com.liferay.portal.workflow.kaleo.model.impl.KaleoDefinitionImpl" table="KaleoDefinition">
-		<cache usage="read-write" />
 		<id name="kaleoDefinitionId" type="long">
 			<generator class="assigned" />
 		</id>
@@ -72,13 +69,12 @@
 		<property name="name" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="title" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="description" type="com.liferay.portal.dao.orm.hibernate.StringType" />
-		<property name="content" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="content" type="com.liferay.portal.dao.orm.hibernate.StringClobType" />
 		<property name="version" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
 		<property name="active" type="com.liferay.portal.dao.orm.hibernate.BooleanType" column="active_" />
 		<property name="startKaleoNodeId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
 	</class>
 	<class name="com.liferay.portal.workflow.kaleo.model.impl.KaleoInstanceImpl" table="KaleoInstance">
-		<cache usage="read-write" />
 		<id name="kaleoInstanceId" type="long">
 			<generator class="assigned" />
 		</id>
@@ -96,10 +92,9 @@
 		<property name="classPK" type="com.liferay.portal.dao.orm.hibernate.LongType" />
 		<property name="completed" type="com.liferay.portal.dao.orm.hibernate.BooleanType" />
 		<property name="completionDate" type="org.hibernate.type.TimestampType" />
-		<property name="workflowContext" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="workflowContext" type="com.liferay.portal.dao.orm.hibernate.StringClobType" />
 	</class>
 	<class name="com.liferay.portal.workflow.kaleo.model.impl.KaleoInstanceTokenImpl" table="KaleoInstanceToken">
-		<cache usage="read-write" />
 		<id name="kaleoInstanceTokenId" type="long">
 			<generator class="assigned" />
 		</id>
@@ -120,7 +115,6 @@
 		<property name="completionDate" type="org.hibernate.type.TimestampType" />
 	</class>
 	<class name="com.liferay.portal.workflow.kaleo.model.impl.KaleoLogImpl" table="KaleoLog">
-		<cache usage="read-write" />
 		<id name="kaleoLogId" type="long">
 			<generator class="assigned" />
 		</id>
@@ -148,14 +142,13 @@
 		<property name="currentAssigneeClassName" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="currentAssigneeClassPK" type="com.liferay.portal.dao.orm.hibernate.LongType" />
 		<property name="type" type="com.liferay.portal.dao.orm.hibernate.StringType" column="type_" />
-		<property name="comment" type="com.liferay.portal.dao.orm.hibernate.StringType" column="comment_" />
+		<property name="comment" type="com.liferay.portal.dao.orm.hibernate.StringClobType" column="comment_" />
 		<property name="startDate" type="org.hibernate.type.TimestampType" />
 		<property name="endDate" type="org.hibernate.type.TimestampType" />
 		<property name="duration" type="com.liferay.portal.dao.orm.hibernate.LongType" />
-		<property name="workflowContext" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="workflowContext" type="com.liferay.portal.dao.orm.hibernate.StringClobType" />
 	</class>
 	<class name="com.liferay.portal.workflow.kaleo.model.impl.KaleoNodeImpl" table="KaleoNode">
-		<cache usage="read-write" />
 		<id name="kaleoNodeId" type="long">
 			<generator class="assigned" />
 		</id>
@@ -174,7 +167,6 @@
 		<property name="terminal" type="com.liferay.portal.dao.orm.hibernate.BooleanType" />
 	</class>
 	<class name="com.liferay.portal.workflow.kaleo.model.impl.KaleoNotificationImpl" table="KaleoNotification">
-		<cache usage="read-write" />
 		<id name="kaleoNotificationId" type="long">
 			<generator class="assigned" />
 		</id>
@@ -191,12 +183,11 @@
 		<property name="name" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="description" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="executionType" type="com.liferay.portal.dao.orm.hibernate.StringType" />
-		<property name="template" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="template" type="com.liferay.portal.dao.orm.hibernate.StringClobType" />
 		<property name="templateLanguage" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="notificationTypes" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 	</class>
 	<class name="com.liferay.portal.workflow.kaleo.model.impl.KaleoNotificationRecipientImpl" table="KaleoNotificationRecipient">
-		<cache usage="read-write" />
 		<id name="kaleoNotificationRecipientId" type="long">
 			<generator class="assigned" />
 		</id>
@@ -211,10 +202,13 @@
 		<property name="recipientClassName" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="recipientClassPK" type="com.liferay.portal.dao.orm.hibernate.LongType" />
 		<property name="recipientRoleType" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
+		<property name="recipientScript" type="com.liferay.portal.dao.orm.hibernate.StringClobType" />
+		<property name="recipientScriptLanguage" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="recipientScriptRequiredContexts" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="address" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="notificationReceptionType" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 	</class>
 	<class name="com.liferay.portal.workflow.kaleo.model.impl.KaleoTaskImpl" table="KaleoTask">
-		<cache usage="read-write" />
 		<id name="kaleoTaskId" type="long">
 			<generator class="assigned" />
 		</id>
@@ -230,7 +224,6 @@
 		<property name="description" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 	</class>
 	<class name="com.liferay.portal.workflow.kaleo.model.impl.KaleoTaskAssignmentImpl" table="KaleoTaskAssignment">
-		<cache usage="read-write" />
 		<id name="kaleoTaskAssignmentId" type="long">
 			<generator class="assigned" />
 		</id>
@@ -247,12 +240,11 @@
 		<property name="assigneeClassName" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="assigneeClassPK" type="com.liferay.portal.dao.orm.hibernate.LongType" />
 		<property name="assigneeActionId" type="com.liferay.portal.dao.orm.hibernate.StringType" />
-		<property name="assigneeScript" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="assigneeScript" type="com.liferay.portal.dao.orm.hibernate.StringClobType" />
 		<property name="assigneeScriptLanguage" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="assigneeScriptRequiredContexts" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 	</class>
 	<class name="com.liferay.portal.workflow.kaleo.model.impl.KaleoTaskAssignmentInstanceImpl" table="KaleoTaskAssignmentInstance">
-		<cache usage="read-write" />
 		<id name="kaleoTaskAssignmentInstanceId" type="long">
 			<generator class="assigned" />
 		</id>
@@ -274,7 +266,6 @@
 		<property name="completionDate" type="org.hibernate.type.TimestampType" />
 	</class>
 	<class name="com.liferay.portal.workflow.kaleo.model.impl.KaleoTaskInstanceTokenImpl" table="KaleoTaskInstanceToken">
-		<cache usage="read-write" />
 		<id name="kaleoTaskInstanceTokenId" type="long">
 			<generator class="assigned" />
 		</id>
@@ -295,10 +286,9 @@
 		<property name="completed" type="com.liferay.portal.dao.orm.hibernate.BooleanType" />
 		<property name="completionDate" type="org.hibernate.type.TimestampType" />
 		<property name="dueDate" type="org.hibernate.type.TimestampType" />
-		<property name="workflowContext" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="workflowContext" type="com.liferay.portal.dao.orm.hibernate.StringClobType" />
 	</class>
 	<class name="com.liferay.portal.workflow.kaleo.model.impl.KaleoTimerImpl" table="KaleoTimer">
-		<cache usage="read-write" />
 		<id name="kaleoTimerId" type="long">
 			<generator class="assigned" />
 		</id>
@@ -320,7 +310,6 @@
 		<property name="recurrenceScale" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 	</class>
 	<class name="com.liferay.portal.workflow.kaleo.model.impl.KaleoTimerInstanceTokenImpl" table="KaleoTimerInstanceToken">
-		<cache usage="read-write" />
 		<id name="kaleoTimerInstanceTokenId" type="long">
 			<generator class="assigned" />
 		</id>
@@ -342,10 +331,9 @@
 		<property name="completionUserId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
 		<property name="completed" type="com.liferay.portal.dao.orm.hibernate.BooleanType" />
 		<property name="completionDate" type="org.hibernate.type.TimestampType" />
-		<property name="workflowContext" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="workflowContext" type="com.liferay.portal.dao.orm.hibernate.StringClobType" />
 	</class>
 	<class name="com.liferay.portal.workflow.kaleo.model.impl.KaleoTransitionImpl" table="KaleoTransition">
-		<cache usage="read-write" />
 		<id name="kaleoTransitionId" type="long">
 			<generator class="assigned" />
 		</id>
