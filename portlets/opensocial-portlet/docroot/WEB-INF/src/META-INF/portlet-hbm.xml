@@ -6,7 +6,6 @@
 	<import class="com.liferay.opensocial.model.OAuthConsumer" />
 	<import class="com.liferay.opensocial.model.OAuthToken" />
 	<class name="com.liferay.opensocial.model.impl.GadgetImpl" table="OpenSocial_Gadget">
-		<cache usage="read-write" />
 		<id name="gadgetId" type="long">
 			<generator class="assigned" />
 		</id>
@@ -17,9 +16,9 @@
 		<property name="name" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="url" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="portletCategoryNames" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="lastPublishDate" type="org.hibernate.type.TimestampType" />
 	</class>
 	<class name="com.liferay.opensocial.model.impl.OAuthConsumerImpl" table="OpenSocial_OAuthConsumer">
-		<cache usage="read-write" />
 		<id name="oAuthConsumerId" type="long" access="com.liferay.portal.dao.orm.hibernate.CamelCasePropertyAccessor">
 			<generator class="assigned" />
 		</id>
@@ -29,11 +28,10 @@
 		<property name="gadgetKey" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="serviceName" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="consumerKey" type="com.liferay.portal.dao.orm.hibernate.StringType" />
-		<property name="consumerSecret" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="consumerSecret" type="com.liferay.portal.dao.orm.hibernate.StringClobType" />
 		<property name="keyType" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 	</class>
 	<class name="com.liferay.opensocial.model.impl.OAuthTokenImpl" table="OpenSocial_OAuthToken">
-		<cache usage="read-write" />
 		<id name="oAuthTokenId" type="long" access="com.liferay.portal.dao.orm.hibernate.CamelCasePropertyAccessor">
 			<generator class="assigned" />
 		</id>

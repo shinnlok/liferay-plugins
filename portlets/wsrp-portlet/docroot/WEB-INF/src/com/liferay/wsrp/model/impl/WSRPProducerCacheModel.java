@@ -14,6 +14,9 @@
 
 package com.liferay.wsrp.model.impl;
 
+import aQute.bnd.annotation.ProviderType;
+
+import com.liferay.portal.kernel.util.HashUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CacheModel;
@@ -34,11 +37,36 @@ import java.util.Date;
  * @see WSRPProducer
  * @generated
  */
+@ProviderType
 public class WSRPProducerCacheModel implements CacheModel<WSRPProducer>,
 	Externalizable {
 	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+
+		if (!(obj instanceof WSRPProducerCacheModel)) {
+			return false;
+		}
+
+		WSRPProducerCacheModel wsrpProducerCacheModel = (WSRPProducerCacheModel)obj;
+
+		if (wsrpProducerId == wsrpProducerCacheModel.wsrpProducerId) {
+			return true;
+		}
+
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return HashUtil.hash(0, wsrpProducerId);
+	}
+
+	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(19);
+		StringBundler sb = new StringBundler(21);
 
 		sb.append("{uuid=");
 		sb.append(uuid);
@@ -58,6 +86,8 @@ public class WSRPProducerCacheModel implements CacheModel<WSRPProducer>,
 		sb.append(version);
 		sb.append(", portletIds=");
 		sb.append(portletIds);
+		sb.append(", lastPublishDate=");
+		sb.append(lastPublishDate);
 		sb.append("}");
 
 		return sb.toString();
@@ -113,6 +143,13 @@ public class WSRPProducerCacheModel implements CacheModel<WSRPProducer>,
 			wsrpProducerImpl.setPortletIds(portletIds);
 		}
 
+		if (lastPublishDate == Long.MIN_VALUE) {
+			wsrpProducerImpl.setLastPublishDate(null);
+		}
+		else {
+			wsrpProducerImpl.setLastPublishDate(new Date(lastPublishDate));
+		}
+
 		wsrpProducerImpl.resetOriginalValues();
 
 		return wsrpProducerImpl;
@@ -129,6 +166,7 @@ public class WSRPProducerCacheModel implements CacheModel<WSRPProducer>,
 		name = objectInput.readUTF();
 		version = objectInput.readUTF();
 		portletIds = objectInput.readUTF();
+		lastPublishDate = objectInput.readLong();
 	}
 
 	@Override
@@ -167,6 +205,8 @@ public class WSRPProducerCacheModel implements CacheModel<WSRPProducer>,
 		else {
 			objectOutput.writeUTF(portletIds);
 		}
+
+		objectOutput.writeLong(lastPublishDate);
 	}
 
 	public String uuid;
@@ -178,4 +218,5 @@ public class WSRPProducerCacheModel implements CacheModel<WSRPProducer>,
 	public String name;
 	public String version;
 	public String portletIds;
+	public long lastPublishDate;
 }

@@ -245,6 +245,11 @@ public class SyncDLObjectLocalServiceUtil {
 		return getService().getSyncDLObject(syncDLObjectId);
 	}
 
+	public static java.util.List<com.liferay.sync.model.SyncDLObject> getSyncDLObjects(
+		long repositoryId, long parentFolderId) {
+		return getService().getSyncDLObjects(repositoryId, parentFolderId);
+	}
+
 	/**
 	* Returns a range of all the sync d l objects.
 	*

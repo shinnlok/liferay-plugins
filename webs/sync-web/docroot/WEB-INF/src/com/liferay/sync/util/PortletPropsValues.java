@@ -29,6 +29,21 @@ public class PortletPropsValues {
 	public static final String SYNC_AUTH_VERIFIER_PIPELINE = PortletProps.get(
 		PortletPropsKeys.SYNC_AUTH_VERIFIER_PIPELINE);
 
+	public static final int SYNC_CLIENT_ANDROID_MIN_BUILD =
+		GetterUtil.getInteger(
+			PortletProps.get(PortletPropsKeys.SYNC_CLIENT_ANDROID_MIN_BUILD));
+
+	public static final int SYNC_CLIENT_BATCH_FILE_MAX_SIZE =
+		GetterUtil.getInteger(
+			PortletProps.get(PortletPropsKeys.SYNC_CLIENT_BATCH_FILE_MAX_SIZE));
+
+	public static final int SYNC_CLIENT_DESKTOP_MIN_BUILD =
+		GetterUtil.getInteger(
+			PortletProps.get(PortletPropsKeys.SYNC_CLIENT_DESKTOP_MIN_BUILD));
+
+	public static final int SYNC_CLIENT_IOS_MIN_BUILD = GetterUtil.getInteger(
+		PortletProps.get(PortletPropsKeys.SYNC_CLIENT_IOS_MIN_BUILD));
+
 	public static final int SYNC_CLIENT_MAX_CONNECTIONS = GetterUtil.getInteger(
 		PortletProps.get(PortletPropsKeys.SYNC_CLIENT_MAX_CONNECTIONS));
 
@@ -66,6 +81,9 @@ public class PortletPropsValues {
 
 	public static final boolean SYNC_OAUTH_ENABLED = GetterUtil.getBoolean(
 		PortletProps.get(PortletPropsKeys.SYNC_OAUTH_ENABLED));
+
+	public static final int SYNC_PAGINATION_DELTA = GetterUtil.getInteger(
+		PortletProps.get(PortletPropsKeys.SYNC_PAGINATION_DELTA));
 
 	public static final boolean SYNC_SERVICES_ENABLED = GetterUtil.getBoolean(
 		PortletProps.get(PortletPropsKeys.SYNC_SERVICES_ENABLED));

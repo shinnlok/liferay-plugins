@@ -89,22 +89,20 @@ public class SyncDLObjectServiceWrapper implements SyncDLObjectService,
 	}
 
 	@Override
-	public java.util.List<com.liferay.sync.model.SyncDLObject> getAllFolderSyncDLObjects(
-		long companyId, long repositoryId)
+	public com.liferay.sync.model.SyncDLObject copyFileEntry(
+		long sourceFileEntryId, long repositoryId, long folderId,
+		java.lang.String sourceFileName, java.lang.String title,
+		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
-		return _syncDLObjectService.getAllFolderSyncDLObjects(companyId,
-			repositoryId);
+		return _syncDLObjectService.copyFileEntry(sourceFileEntryId,
+			repositoryId, folderId, sourceFileName, title, serviceContext);
 	}
 
-	/**
-	* @deprecated As of 7.0.0, with no direct replacement
-	*/
-	@Deprecated
 	@Override
-	public com.liferay.sync.model.SyncDLObjectUpdate getAllSyncDLObjects(
-		long repositoryId, long folderId)
+	public java.util.List<com.liferay.sync.model.SyncDLObject> getAllFolderSyncDLObjects(
+		long repositoryId)
 		throws com.liferay.portal.kernel.exception.PortalException {
-		return _syncDLObjectService.getAllSyncDLObjects(repositoryId, folderId);
+		return _syncDLObjectService.getAllFolderSyncDLObjects(repositoryId);
 	}
 
 	/**
@@ -119,10 +117,10 @@ public class SyncDLObjectServiceWrapper implements SyncDLObjectService,
 
 	@Override
 	public com.liferay.sync.model.SyncDLObject getFileEntrySyncDLObject(
-		long groupId, long folderId, java.lang.String title)
+		long repositoryId, long folderId, java.lang.String title)
 		throws com.liferay.portal.kernel.exception.PortalException {
-		return _syncDLObjectService.getFileEntrySyncDLObject(groupId, folderId,
-			title);
+		return _syncDLObjectService.getFileEntrySyncDLObject(repositoryId,
+			folderId, title);
 	}
 
 	@Override
@@ -173,32 +171,20 @@ public class SyncDLObjectServiceWrapper implements SyncDLObjectService,
 		return _syncDLObjectService.getSyncContext();
 	}
 
-	/**
-	* @deprecated As of 7.0.0, replaced by {@link #getSyncContext()}
-	*/
-	@Deprecated
 	@Override
-	public com.liferay.sync.model.SyncContext getSyncContext(
-		java.lang.String uuid)
+	public java.lang.String getSyncDLObjectUpdate(long repositoryId,
+		long lastAccessTime, int max)
 		throws com.liferay.portal.kernel.exception.PortalException {
-		return _syncDLObjectService.getSyncContext(uuid);
+		return _syncDLObjectService.getSyncDLObjectUpdate(repositoryId,
+			lastAccessTime, max);
 	}
 
 	@Override
 	public com.liferay.sync.model.SyncDLObjectUpdate getSyncDLObjectUpdate(
-		long companyId, long repositoryId, long lastAccessTime)
+		long repositoryId, long parentFolderId, long lastAccessTime)
 		throws com.liferay.portal.kernel.exception.PortalException {
-		return _syncDLObjectService.getSyncDLObjectUpdate(companyId,
-			repositoryId, lastAccessTime);
-	}
-
-	@Override
-	public com.liferay.sync.model.SyncDLObjectUpdate getSyncDLObjectUpdate(
-		long companyId, long repositoryId, long parentFolderId,
-		long lastAccessTime)
-		throws com.liferay.portal.kernel.exception.PortalException {
-		return _syncDLObjectService.getSyncDLObjectUpdate(companyId,
-			repositoryId, parentFolderId, lastAccessTime);
+		return _syncDLObjectService.getSyncDLObjectUpdate(repositoryId,
+			parentFolderId, lastAccessTime);
 	}
 
 	@Override

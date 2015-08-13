@@ -212,7 +212,7 @@ public abstract class KBFolderServiceBaseImpl extends BaseServiceImpl
 	 *
 	 * @return the k b folder remote service
 	 */
-	public com.liferay.knowledgebase.service.KBFolderService getKBFolderService() {
+	public KBFolderService getKBFolderService() {
 		return kbFolderService;
 	}
 
@@ -221,8 +221,7 @@ public abstract class KBFolderServiceBaseImpl extends BaseServiceImpl
 	 *
 	 * @param kbFolderService the k b folder remote service
 	 */
-	public void setKBFolderService(
-		com.liferay.knowledgebase.service.KBFolderService kbFolderService) {
+	public void setKBFolderService(KBFolderService kbFolderService) {
 		this.kbFolderService = kbFolderService;
 	}
 
@@ -551,7 +550,7 @@ public abstract class KBFolderServiceBaseImpl extends BaseServiceImpl
 	@BeanReference(type = com.liferay.knowledgebase.service.KBFolderLocalService.class)
 	protected com.liferay.knowledgebase.service.KBFolderLocalService kbFolderLocalService;
 	@BeanReference(type = com.liferay.knowledgebase.service.KBFolderService.class)
-	protected com.liferay.knowledgebase.service.KBFolderService kbFolderService;
+	protected KBFolderService kbFolderService;
 	@BeanReference(type = KBFolderPersistence.class)
 	protected KBFolderPersistence kbFolderPersistence;
 	@BeanReference(type = com.liferay.knowledgebase.service.KBTemplateLocalService.class)
