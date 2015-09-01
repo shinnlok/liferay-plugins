@@ -14,6 +14,8 @@
 
 package com.liferay.sampleservicebuilder.service.base;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.bean.IdentifiableBean;
 import com.liferay.portal.kernel.dao.db.DB;
@@ -24,15 +26,9 @@ import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DefaultActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQueryFactoryUtil;
-import com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.Projection;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.lar.ExportImportHelperUtil;
-import com.liferay.portal.kernel.lar.ManifestSummary;
-import com.liferay.portal.kernel.lar.PortletDataContext;
-import com.liferay.portal.kernel.lar.StagedModelDataHandlerUtil;
-import com.liferay.portal.kernel.lar.StagedModelType;
 import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.util.OrderByComparator;
@@ -68,6 +64,7 @@ import javax.sql.DataSource;
  * @see com.liferay.sampleservicebuilder.service.FooLocalServiceUtil
  * @generated
  */
+@ProviderType
 public abstract class FooLocalServiceBaseImpl extends BaseLocalServiceImpl
 	implements FooLocalService, IdentifiableBean {
 	/*
@@ -184,10 +181,10 @@ public abstract class FooLocalServiceBaseImpl extends BaseLocalServiceImpl
 	}
 
 	/**
-	 * Returns the number of rows that match the dynamic query.
+	 * Returns the number of rows matching the dynamic query.
 	 *
 	 * @param dynamicQuery the dynamic query
-	 * @return the number of rows that match the dynamic query
+	 * @return the number of rows matching the dynamic query
 	 */
 	@Override
 	public long dynamicQueryCount(DynamicQuery dynamicQuery) {
@@ -195,11 +192,11 @@ public abstract class FooLocalServiceBaseImpl extends BaseLocalServiceImpl
 	}
 
 	/**
-	 * Returns the number of rows that match the dynamic query.
+	 * Returns the number of rows matching the dynamic query.
 	 *
 	 * @param dynamicQuery the dynamic query
 	 * @param projection the projection to apply to the query
-	 * @return the number of rows that match the dynamic query
+	 * @return the number of rows matching the dynamic query
 	 */
 	@Override
 	public long dynamicQueryCount(DynamicQuery dynamicQuery,
@@ -258,61 +255,6 @@ public abstract class FooLocalServiceBaseImpl extends BaseLocalServiceImpl
 		actionableDynamicQuery.setPrimaryKeyPropertyName("fooId");
 	}
 
-	@Override
-	public ExportActionableDynamicQuery getExportActionableDynamicQuery(
-		final PortletDataContext portletDataContext) {
-		final ExportActionableDynamicQuery exportActionableDynamicQuery = new ExportActionableDynamicQuery() {
-				@Override
-				public long performCount() throws PortalException {
-					ManifestSummary manifestSummary = portletDataContext.getManifestSummary();
-
-					StagedModelType stagedModelType = getStagedModelType();
-
-					long modelAdditionCount = super.performCount();
-
-					manifestSummary.addModelAdditionCount(stagedModelType.toString(),
-						modelAdditionCount);
-
-					long modelDeletionCount = ExportImportHelperUtil.getModelDeletionCount(portletDataContext,
-							stagedModelType);
-
-					manifestSummary.addModelDeletionCount(stagedModelType.toString(),
-						modelDeletionCount);
-
-					return modelAdditionCount;
-				}
-			};
-
-		initActionableDynamicQuery(exportActionableDynamicQuery);
-
-		exportActionableDynamicQuery.setAddCriteriaMethod(new ActionableDynamicQuery.AddCriteriaMethod() {
-				@Override
-				public void addCriteria(DynamicQuery dynamicQuery) {
-					portletDataContext.addDateRangeCriteria(dynamicQuery,
-						"modifiedDate");
-				}
-			});
-
-		exportActionableDynamicQuery.setCompanyId(portletDataContext.getCompanyId());
-
-		exportActionableDynamicQuery.setGroupId(portletDataContext.getScopeGroupId());
-
-		exportActionableDynamicQuery.setPerformActionMethod(new ActionableDynamicQuery.PerformActionMethod() {
-				@Override
-				public void performAction(Object object)
-					throws PortalException {
-					Foo stagedModel = (Foo)object;
-
-					StagedModelDataHandlerUtil.exportStagedModel(portletDataContext,
-						stagedModel);
-				}
-			});
-		exportActionableDynamicQuery.setStagedModelType(new StagedModelType(
-				PortalUtil.getClassNameId(Foo.class.getName())));
-
-		return exportActionableDynamicQuery;
-	}
-
 	/**
 	 * @throws PortalException
 	 */
@@ -328,11 +270,28 @@ public abstract class FooLocalServiceBaseImpl extends BaseLocalServiceImpl
 		return fooPersistence.findByPrimaryKey(primaryKeyObj);
 	}
 
+	/**
+	 * Returns all the foos matching the UUID and company.
+	 *
+	 * @param uuid the UUID of the foos
+	 * @param companyId the primary key of the company
+	 * @return the matching foos, or an empty list if no matches were found
+	 */
 	@Override
 	public List<Foo> getFoosByUuidAndCompanyId(String uuid, long companyId) {
 		return fooPersistence.findByUuid_C(uuid, companyId);
 	}
 
+	/**
+	 * Returns a range of foos matching the UUID and company.
+	 *
+	 * @param uuid the UUID of the foos
+	 * @param companyId the primary key of the company
+	 * @param start the lower bound of the range of foos
+	 * @param end the upper bound of the range of foos (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the range of matching foos, or an empty list if no matches were found
+	 */
 	@Override
 	public List<Foo> getFoosByUuidAndCompanyId(String uuid, long companyId,
 		int start, int end, OrderByComparator<Foo> orderByComparator) {
@@ -397,7 +356,7 @@ public abstract class FooLocalServiceBaseImpl extends BaseLocalServiceImpl
 	 *
 	 * @return the foo local service
 	 */
-	public com.liferay.sampleservicebuilder.service.FooLocalService getFooLocalService() {
+	public FooLocalService getFooLocalService() {
 		return fooLocalService;
 	}
 
@@ -406,8 +365,7 @@ public abstract class FooLocalServiceBaseImpl extends BaseLocalServiceImpl
 	 *
 	 * @param fooLocalService the foo local service
 	 */
-	public void setFooLocalService(
-		com.liferay.sampleservicebuilder.service.FooLocalService fooLocalService) {
+	public void setFooLocalService(FooLocalService fooLocalService) {
 		this.fooLocalService = fooLocalService;
 	}
 
@@ -800,7 +758,7 @@ public abstract class FooLocalServiceBaseImpl extends BaseLocalServiceImpl
 	}
 
 	@BeanReference(type = com.liferay.sampleservicebuilder.service.FooLocalService.class)
-	protected com.liferay.sampleservicebuilder.service.FooLocalService fooLocalService;
+	protected FooLocalService fooLocalService;
 	@BeanReference(type = com.liferay.sampleservicebuilder.service.FooService.class)
 	protected com.liferay.sampleservicebuilder.service.FooService fooService;
 	@BeanReference(type = FooPersistence.class)

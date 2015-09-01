@@ -50,14 +50,15 @@ public interface SyncDLObjectLocalService extends BaseLocalService,
 	 */
 	public com.liferay.sync.model.SyncDLObject addSyncDLObject(long companyId,
 		long userId, java.lang.String userName, long modifiedTime,
-		long repositoryId, long parentFolderId, java.lang.String name,
-		java.lang.String extension, java.lang.String mimeType,
-		java.lang.String description, java.lang.String changeLog,
-		java.lang.String extraSettings, java.lang.String version,
-		long versionId, long size, java.lang.String checksum,
-		java.lang.String event, java.util.Date lockExpirationDate,
-		long lockUserId, java.lang.String lockUserName, java.lang.String type,
-		long typePK, java.lang.String typeUuid) throws PortalException;
+		long repositoryId, long parentFolderId, java.lang.String treePath,
+		java.lang.String name, java.lang.String extension,
+		java.lang.String mimeType, java.lang.String description,
+		java.lang.String changeLog, java.lang.String extraSettings,
+		java.lang.String version, long versionId, long size,
+		java.lang.String checksum, java.lang.String event,
+		java.util.Date lockExpirationDate, long lockUserId,
+		java.lang.String lockUserName, java.lang.String type, long typePK,
+		java.lang.String typeUuid) throws PortalException;
 
 	/**
 	* Adds the sync d l object to the database. Also notifies the appropriate model listeners.
@@ -211,6 +212,10 @@ public interface SyncDLObjectLocalService extends BaseLocalService,
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public com.liferay.sync.model.SyncDLObject getSyncDLObject(
 		long syncDLObjectId) throws PortalException;
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public java.util.List<com.liferay.sync.model.SyncDLObject> getSyncDLObjects(
+		long repositoryId, long parentFolderId);
 
 	/**
 	* Returns a range of all the sync d l objects.

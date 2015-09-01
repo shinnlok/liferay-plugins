@@ -16,9 +16,10 @@ package com.liferay.knowledgebase.model;
 
 import aQute.bnd.annotation.ProviderType;
 
-import com.liferay.portal.kernel.lar.StagedModelType;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.ModelWrapper;
+
+import com.liferay.portlet.exportimport.lar.StagedModelType;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -65,6 +66,7 @@ public class KBCommentWrapper implements KBComment, ModelWrapper<KBComment> {
 		attributes.put("classPK", getClassPK());
 		attributes.put("content", getContent());
 		attributes.put("userRating", getUserRating());
+		attributes.put("lastPublishDate", getLastPublishDate());
 		attributes.put("status", getStatus());
 
 		return attributes;
@@ -144,6 +146,12 @@ public class KBCommentWrapper implements KBComment, ModelWrapper<KBComment> {
 			setUserRating(userRating);
 		}
 
+		Date lastPublishDate = (Date)attributes.get("lastPublishDate");
+
+		if (lastPublishDate != null) {
+			setLastPublishDate(lastPublishDate);
+		}
+
 		Integer status = (Integer)attributes.get("status");
 
 		if (status != null) {
@@ -217,7 +225,7 @@ public class KBCommentWrapper implements KBComment, ModelWrapper<KBComment> {
 	* @return the create date of this k b comment
 	*/
 	@Override
-	public java.util.Date getCreateDate() {
+	public Date getCreateDate() {
 		return _kbComment.getCreateDate();
 	}
 
@@ -247,12 +255,22 @@ public class KBCommentWrapper implements KBComment, ModelWrapper<KBComment> {
 	}
 
 	/**
+	* Returns the last publish date of this k b comment.
+	*
+	* @return the last publish date of this k b comment
+	*/
+	@Override
+	public Date getLastPublishDate() {
+		return _kbComment.getLastPublishDate();
+	}
+
+	/**
 	* Returns the modified date of this k b comment.
 	*
 	* @return the modified date of this k b comment
 	*/
 	@Override
-	public java.util.Date getModifiedDate() {
+	public Date getModifiedDate() {
 		return _kbComment.getModifiedDate();
 	}
 
@@ -412,7 +430,7 @@ public class KBCommentWrapper implements KBComment, ModelWrapper<KBComment> {
 	* @param createDate the create date of this k b comment
 	*/
 	@Override
-	public void setCreateDate(java.util.Date createDate) {
+	public void setCreateDate(Date createDate) {
 		_kbComment.setCreateDate(createDate);
 	}
 
@@ -455,12 +473,22 @@ public class KBCommentWrapper implements KBComment, ModelWrapper<KBComment> {
 	}
 
 	/**
+	* Sets the last publish date of this k b comment.
+	*
+	* @param lastPublishDate the last publish date of this k b comment
+	*/
+	@Override
+	public void setLastPublishDate(Date lastPublishDate) {
+		_kbComment.setLastPublishDate(lastPublishDate);
+	}
+
+	/**
 	* Sets the modified date of this k b comment.
 	*
 	* @param modifiedDate the modified date of this k b comment
 	*/
 	@Override
-	public void setModifiedDate(java.util.Date modifiedDate) {
+	public void setModifiedDate(Date modifiedDate) {
 		_kbComment.setModifiedDate(modifiedDate);
 	}
 

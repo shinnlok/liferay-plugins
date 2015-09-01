@@ -1,51 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <custom-sql>
-	<sql id="com.liferay.sync.service.persistence.SyncDLObjectFinder.findByDeleteEvent">
+	<sql id="com.liferay.sync.service.persistence.SyncDLObjectFinder.findByTypePKs">
 		<![CDATA[
 			SELECT
-				{SyncDLObject.*}
+				DISTINCT primKey
 			FROM
-				SyncDLObject
+				ResourcePermission
 			WHERE
-				(SyncDLObject.companyId = ?) AND
-				(SyncDLObject.modifiedTime > ?) AND
-				(SyncDLObject.repositoryId = ?) AND
-				(SyncDLObject.parentFolderId = ?) AND
-				(SyncDLObject.event = 'delete')
-		]]>
-	</sql>
-	<sql id="com.liferay.sync.service.persistence.SyncDLObjectFinder.findByFileOrPWCType">
-		<![CDATA[
-			SELECT
-				{SyncDLObject.*}
-			FROM
-				SyncDLObject
-			WHERE
-				(SyncDLObject.companyId = ?) AND
-				(SyncDLObject.modifiedTime > ?) AND
-				(SyncDLObject.repositoryId = ?) AND
-				(SyncDLObject.parentFolderId = ?) AND
-				(SyncDLObject.event != 'delete') AND
+				(companyId = ?) AND
 				(
-					(SyncDLObject.type_ = 'file') OR
-					((SyncDLObject.type_ = 'privateWorkingCopy') AND (SyncDLObject.lockUserId = ?))
-				)
-		]]>
-	</sql>
-	<sql id="com.liferay.sync.service.persistence.SyncDLObjectFinder.findByFolderType">
-		<![CDATA[
-			SELECT
-				{SyncDLObject.*}
-			FROM
-				SyncDLObject
-			WHERE
-				(SyncDLObject.companyId = ?) AND
-				(SyncDLObject.modifiedTime > ?) AND
-				(SyncDLObject.repositoryId = ?) AND
-				(SyncDLObject.parentFolderId = ?) AND
-				(SyncDLObject.event != 'delete') AND
-				(SyncDLObject.type_ = 'folder')
+					(name = CAST_TEXT('com.liferay.portlet.documentlibrary.model.DLFileEntry')) OR
+					(name = CAST_TEXT('com.liferay.portlet.documentlibrary.model.DLFolder'))
+				) AND
+				(scope = ?) AND
+				[$TYPE_PKS$] AND
+				(MOD(actionIds, 2) = 1) AND
+				[$ROLE_IDS_OR_OWNER_ID$]
 		]]>
 	</sql>
 </custom-sql>

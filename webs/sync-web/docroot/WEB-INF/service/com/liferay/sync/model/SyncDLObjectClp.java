@@ -89,6 +89,7 @@ public class SyncDLObjectClp extends BaseModelImpl<SyncDLObject>
 		attributes.put("modifiedTime", getModifiedTime());
 		attributes.put("repositoryId", getRepositoryId());
 		attributes.put("parentFolderId", getParentFolderId());
+		attributes.put("treePath", getTreePath());
 		attributes.put("name", getName());
 		attributes.put("extension", getExtension());
 		attributes.put("mimeType", getMimeType());
@@ -161,6 +162,12 @@ public class SyncDLObjectClp extends BaseModelImpl<SyncDLObject>
 
 		if (parentFolderId != null) {
 			setParentFolderId(parentFolderId);
+		}
+
+		String treePath = (String)attributes.get("treePath");
+
+		if (treePath != null) {
+			setTreePath(treePath);
 		}
 
 		String name = (String)attributes.get("name");
@@ -462,6 +469,29 @@ public class SyncDLObjectClp extends BaseModelImpl<SyncDLObject>
 				Method method = clazz.getMethod("setParentFolderId", long.class);
 
 				method.invoke(_syncDLObjectRemoteModel, parentFolderId);
+			}
+			catch (Exception e) {
+				throw new UnsupportedOperationException(e);
+			}
+		}
+	}
+
+	@Override
+	public String getTreePath() {
+		return _treePath;
+	}
+
+	@Override
+	public void setTreePath(String treePath) {
+		_treePath = treePath;
+
+		if (_syncDLObjectRemoteModel != null) {
+			try {
+				Class<?> clazz = _syncDLObjectRemoteModel.getClass();
+
+				Method method = clazz.getMethod("setTreePath", String.class);
+
+				method.invoke(_syncDLObjectRemoteModel, treePath);
 			}
 			catch (Exception e) {
 				throw new UnsupportedOperationException(e);
@@ -878,11 +908,30 @@ public class SyncDLObjectClp extends BaseModelImpl<SyncDLObject>
 	}
 
 	@Override
+	public java.lang.String buildTreePath() {
+		try {
+			String methodName = "buildTreePath";
+
+			Class<?>[] parameterTypes = new Class<?>[] {  };
+
+			Object[] parameterValues = new Object[] {  };
+
+			java.lang.String returnObj = (java.lang.String)invokeOnRemoteModel(methodName,
+					parameterTypes, parameterValues);
+
+			return returnObj;
+		}
+		catch (Exception e) {
+			throw new UnsupportedOperationException(e);
+		}
+	}
+
+	@Override
 	public void setCreateDate(Date createDate) {
 		try {
 			String methodName = "setCreateDate";
 
-			Class<?>[] parameterTypes = new Class<?>[] { Date.class };
+			Class<?>[] parameterTypes = new Class<?>[] { java.util.Date.class };
 
 			Object[] parameterValues = new Object[] { createDate };
 
@@ -898,11 +947,24 @@ public class SyncDLObjectClp extends BaseModelImpl<SyncDLObject>
 		try {
 			String methodName = "setModifiedDate";
 
-			Class<?>[] parameterTypes = new Class<?>[] { Date.class };
+			Class<?>[] parameterTypes = new Class<?>[] { java.util.Date.class };
 
 			Object[] parameterValues = new Object[] { modifiedDate };
 
 			invokeOnRemoteModel(methodName, parameterTypes, parameterValues);
+		}
+		catch (Exception e) {
+			throw new UnsupportedOperationException(e);
+		}
+	}
+
+	@Override
+	public void updateTreePath(String treePath) {
+		try {
+			_treePath = treePath;
+
+			invokeOnRemoteModel("updateTreePath",
+				new Class<?>[] { String.class }, new Object[] { treePath });
 		}
 		catch (Exception e) {
 			throw new UnsupportedOperationException(e);
@@ -986,6 +1048,7 @@ public class SyncDLObjectClp extends BaseModelImpl<SyncDLObject>
 		clone.setModifiedTime(getModifiedTime());
 		clone.setRepositoryId(getRepositoryId());
 		clone.setParentFolderId(getParentFolderId());
+		clone.setTreePath(getTreePath());
 		clone.setName(getName());
 		clone.setExtension(getExtension());
 		clone.setMimeType(getMimeType());
@@ -1010,20 +1073,6 @@ public class SyncDLObjectClp extends BaseModelImpl<SyncDLObject>
 	@Override
 	public int compareTo(SyncDLObject syncDLObject) {
 		int value = 0;
-
-		if (getCompanyId() < syncDLObject.getCompanyId()) {
-			value = -1;
-		}
-		else if (getCompanyId() > syncDLObject.getCompanyId()) {
-			value = 1;
-		}
-		else {
-			value = 0;
-		}
-
-		if (value != 0) {
-			return value;
-		}
 
 		if (getModifiedTime() < syncDLObject.getModifiedTime()) {
 			value = -1;
@@ -1099,7 +1148,7 @@ public class SyncDLObjectClp extends BaseModelImpl<SyncDLObject>
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(51);
+		StringBundler sb = new StringBundler(53);
 
 		sb.append("{syncDLObjectId=");
 		sb.append(getSyncDLObjectId());
@@ -1117,6 +1166,8 @@ public class SyncDLObjectClp extends BaseModelImpl<SyncDLObject>
 		sb.append(getRepositoryId());
 		sb.append(", parentFolderId=");
 		sb.append(getParentFolderId());
+		sb.append(", treePath=");
+		sb.append(getTreePath());
 		sb.append(", name=");
 		sb.append(getName());
 		sb.append(", extension=");
@@ -1158,7 +1209,7 @@ public class SyncDLObjectClp extends BaseModelImpl<SyncDLObject>
 
 	@Override
 	public String toXmlString() {
-		StringBundler sb = new StringBundler(79);
+		StringBundler sb = new StringBundler(82);
 
 		sb.append("<model><model-name>");
 		sb.append("com.liferay.sync.model.SyncDLObject");
@@ -1195,6 +1246,10 @@ public class SyncDLObjectClp extends BaseModelImpl<SyncDLObject>
 		sb.append(
 			"<column><column-name>parentFolderId</column-name><column-value><![CDATA[");
 		sb.append(getParentFolderId());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>treePath</column-name><column-value><![CDATA[");
+		sb.append(getTreePath());
 		sb.append("]]></column-value></column>");
 		sb.append(
 			"<column><column-name>name</column-name><column-value><![CDATA[");
@@ -1278,6 +1333,7 @@ public class SyncDLObjectClp extends BaseModelImpl<SyncDLObject>
 	private long _modifiedTime;
 	private long _repositoryId;
 	private long _parentFolderId;
+	private String _treePath;
 	private String _name;
 	private String _extension;
 	private String _mimeType;
@@ -1296,7 +1352,7 @@ public class SyncDLObjectClp extends BaseModelImpl<SyncDLObject>
 	private long _typePK;
 	private String _typeUuid;
 	private BaseModel<?> _syncDLObjectRemoteModel;
-	private Class<?> _clpSerializerClass = ClpSerializer.class;
+	private Class<?> _clpSerializerClass = com.liferay.sync.service.ClpSerializer.class;
 	private boolean _entityCacheEnabled;
 	private boolean _finderCacheEnabled;
 }

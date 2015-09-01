@@ -14,6 +14,8 @@
 
 package com.liferay.wsrp.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import java.io.Serializable;
 
 import java.util.ArrayList;
@@ -26,6 +28,7 @@ import java.util.List;
  * @author Brian Wing Shun Chan
  * @generated
  */
+@ProviderType
 public class WSRPConsumerSoap implements Serializable {
 	public static WSRPConsumerSoap toSoapModel(WSRPConsumer model) {
 		WSRPConsumerSoap soapModel = new WSRPConsumerSoap();
@@ -43,6 +46,7 @@ public class WSRPConsumerSoap implements Serializable {
 		soapModel.setForwardCookies(model.getForwardCookies());
 		soapModel.setForwardHeaders(model.getForwardHeaders());
 		soapModel.setMarkupCharacterSets(model.getMarkupCharacterSets());
+		soapModel.setLastPublishDate(model.getLastPublishDate());
 
 		return soapModel;
 	}
@@ -200,6 +204,14 @@ public class WSRPConsumerSoap implements Serializable {
 		_markupCharacterSets = markupCharacterSets;
 	}
 
+	public Date getLastPublishDate() {
+		return _lastPublishDate;
+	}
+
+	public void setLastPublishDate(Date lastPublishDate) {
+		_lastPublishDate = lastPublishDate;
+	}
+
 	private String _uuid;
 	private long _wsrpConsumerId;
 	private long _companyId;
@@ -213,4 +225,5 @@ public class WSRPConsumerSoap implements Serializable {
 	private String _forwardCookies;
 	private String _forwardHeaders;
 	private String _markupCharacterSets;
+	private Date _lastPublishDate;
 }

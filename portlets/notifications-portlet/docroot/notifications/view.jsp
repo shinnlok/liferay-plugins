@@ -28,7 +28,7 @@
 		boolean actionable = ParamUtil.getBoolean(request, "actionable");
 		%>
 
-		<div class="clearfix user-notifications-container <%= actionable ? "actionable" : "nonactionable" %>">
+		<aui:container cssClass='<%= "user-notifications-container " + (actionable ? "actionable" : "nonactionable") %>'>
 			<aui:row>
 				<aui:col cssClass="nav-bar user-notifications-sidebar" width="<%= 25 %>">
 					<div class="nav">
@@ -88,7 +88,7 @@
 					<div class="hide notifications-configurations"></div>
 				</aui:col>
 			</aui:row>
-		</div>
+		</aui:container>
 
 		<aui:script use="aui-base,liferay-plugin-notifications,liferay-plugin-notifications-list">
 			var notificationsCount = '.nonactionable .count';

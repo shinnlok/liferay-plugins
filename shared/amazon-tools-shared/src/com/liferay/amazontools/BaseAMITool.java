@@ -17,11 +17,14 @@ package com.liferay.amazontools;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.autoscaling.AmazonAutoScalingClient;
+import com.amazonaws.services.cloudwatch.AmazonCloudWatchClient;
 import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.amazonaws.services.ec2.model.DescribeImagesRequest;
 import com.amazonaws.services.ec2.model.DescribeImagesResult;
 import com.amazonaws.services.ec2.model.Filter;
 import com.amazonaws.services.ec2.model.Image;
+import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClient;
+import com.amazonaws.services.s3.AmazonS3Client;
 
 import com.liferay.jsonwebserviceclient.JSONWebServiceClient;
 import com.liferay.jsonwebserviceclient.JSONWebServiceClientImpl;
@@ -41,6 +44,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @author Ivica Cardic
+ * @author Mladen Cikara
  */
 public class BaseAMITool {
 
@@ -51,10 +55,19 @@ public class BaseAMITool {
 			properties.getProperty("access.key"),
 			properties.getProperty("secret.key"),
 			properties.getProperty("autoscaling.endpoint"));
+		amazonCloudWatchClient = getAmazonCloudWatchClient(
+			properties.getProperty("access.key"),
+			properties.getProperty("secret.key"));
 		amazonEC2Client = getAmazonEC2Client(
 			properties.getProperty("access.key"),
 			properties.getProperty("secret.key"),
 			properties.getProperty("ec2.endpoint"));
+		amazonIdentityManagementClient = getAmazonIdentityManagementClient(
+			properties.getProperty("access.key"),
+			properties.getProperty("secret.key"));
+		amazonS3Client = getAmazonS3Client(
+			properties.getProperty("access.key"),
+			properties.getProperty("secret.key"));
 	}
 
 	protected AmazonAutoScalingClient getAmazonAutoScalingClient(
@@ -71,6 +84,15 @@ public class BaseAMITool {
 		return amazonAutoScalingClient;
 	}
 
+	protected AmazonCloudWatchClient getAmazonCloudWatchClient(
+		String accessKey, String secretKey) {
+
+		AWSCredentials awsCredentials = new BasicAWSCredentials(
+			accessKey, secretKey);
+
+		return new AmazonCloudWatchClient(awsCredentials);
+	}
+
 	protected AmazonEC2Client getAmazonEC2Client(
 		String accessKey, String secretKey, String endpoint) {
 
@@ -82,6 +104,24 @@ public class BaseAMITool {
 		amazonEC2Client.setEndpoint(endpoint);
 
 		return amazonEC2Client;
+	}
+
+	protected AmazonIdentityManagementClient getAmazonIdentityManagementClient(
+		String accessKey, String secretKey) {
+
+		AWSCredentials awsCredentials = new BasicAWSCredentials(
+			accessKey, secretKey);
+
+		return new AmazonIdentityManagementClient(awsCredentials);
+	}
+
+	protected AmazonS3Client getAmazonS3Client(
+		String accessKey, String secretKey) {
+
+		AWSCredentials awsCredentials = new BasicAWSCredentials(
+			accessKey, secretKey);
+
+		return new AmazonS3Client(awsCredentials);
 	}
 
 	protected String getImageId(String imageName) {
@@ -215,7 +255,10 @@ public class BaseAMITool {
 	}
 
 	protected AmazonAutoScalingClient amazonAutoScalingClient;
+	protected AmazonCloudWatchClient amazonCloudWatchClient;
 	protected AmazonEC2Client amazonEC2Client;
+	protected AmazonIdentityManagementClient amazonIdentityManagementClient;
+	protected AmazonS3Client amazonS3Client;
 	protected Properties properties;
 
 }

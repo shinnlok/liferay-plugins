@@ -21,7 +21,6 @@ import com.liferay.knowledgebase.service.KBFolderLocalServiceUtil;
 
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.lar.StagedModelType;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
@@ -31,6 +30,8 @@ import com.liferay.portal.model.User;
 import com.liferay.portal.model.impl.BaseModelImpl;
 import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.util.PortalUtil;
+
+import com.liferay.portlet.exportimport.lar.StagedModelType;
 
 import java.io.Serializable;
 
@@ -94,6 +95,7 @@ public class KBFolderClp extends BaseModelImpl<KBFolder> implements KBFolder {
 		attributes.put("name", getName());
 		attributes.put("urlTitle", getUrlTitle());
 		attributes.put("description", getDescription());
+		attributes.put("lastPublishDate", getLastPublishDate());
 
 		attributes.put("entityCacheEnabled", isEntityCacheEnabled());
 		attributes.put("finderCacheEnabled", isFinderCacheEnabled());
@@ -173,6 +175,12 @@ public class KBFolderClp extends BaseModelImpl<KBFolder> implements KBFolder {
 
 		if (description != null) {
 			setDescription(description);
+		}
+
+		Date lastPublishDate = (Date)attributes.get("lastPublishDate");
+
+		if (lastPublishDate != null) {
+			setLastPublishDate(lastPublishDate);
 		}
 
 		_entityCacheEnabled = GetterUtil.getBoolean("entityCacheEnabled");
@@ -473,6 +481,29 @@ public class KBFolderClp extends BaseModelImpl<KBFolder> implements KBFolder {
 	}
 
 	@Override
+	public Date getLastPublishDate() {
+		return _lastPublishDate;
+	}
+
+	@Override
+	public void setLastPublishDate(Date lastPublishDate) {
+		_lastPublishDate = lastPublishDate;
+
+		if (_kbFolderRemoteModel != null) {
+			try {
+				Class<?> clazz = _kbFolderRemoteModel.getClass();
+
+				Method method = clazz.getMethod("setLastPublishDate", Date.class);
+
+				method.invoke(_kbFolderRemoteModel, lastPublishDate);
+			}
+			catch (Exception e) {
+				throw new UnsupportedOperationException(e);
+			}
+		}
+	}
+
+	@Override
 	public long getClassNameId() {
 		try {
 			String methodName = "getClassNameId";
@@ -616,6 +647,7 @@ public class KBFolderClp extends BaseModelImpl<KBFolder> implements KBFolder {
 		clone.setName(getName());
 		clone.setUrlTitle(getUrlTitle());
 		clone.setDescription(getDescription());
+		clone.setLastPublishDate(getLastPublishDate());
 
 		return clone;
 	}
@@ -678,7 +710,7 @@ public class KBFolderClp extends BaseModelImpl<KBFolder> implements KBFolder {
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(25);
+		StringBundler sb = new StringBundler(27);
 
 		sb.append("{uuid=");
 		sb.append(getUuid());
@@ -704,6 +736,8 @@ public class KBFolderClp extends BaseModelImpl<KBFolder> implements KBFolder {
 		sb.append(getUrlTitle());
 		sb.append(", description=");
 		sb.append(getDescription());
+		sb.append(", lastPublishDate=");
+		sb.append(getLastPublishDate());
 		sb.append("}");
 
 		return sb.toString();
@@ -711,7 +745,7 @@ public class KBFolderClp extends BaseModelImpl<KBFolder> implements KBFolder {
 
 	@Override
 	public String toXmlString() {
-		StringBundler sb = new StringBundler(40);
+		StringBundler sb = new StringBundler(43);
 
 		sb.append("<model><model-name>");
 		sb.append("com.liferay.knowledgebase.model.KBFolder");
@@ -765,6 +799,10 @@ public class KBFolderClp extends BaseModelImpl<KBFolder> implements KBFolder {
 			"<column><column-name>description</column-name><column-value><![CDATA[");
 		sb.append(getDescription());
 		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>lastPublishDate</column-name><column-value><![CDATA[");
+		sb.append(getLastPublishDate());
+		sb.append("]]></column-value></column>");
 
 		sb.append("</model>");
 
@@ -783,6 +821,7 @@ public class KBFolderClp extends BaseModelImpl<KBFolder> implements KBFolder {
 	private String _name;
 	private String _urlTitle;
 	private String _description;
+	private Date _lastPublishDate;
 	private BaseModel<?> _kbFolderRemoteModel;
 	private Class<?> _clpSerializerClass = com.liferay.knowledgebase.service.ClpSerializer.class;
 	private boolean _entityCacheEnabled;

@@ -14,9 +14,12 @@
 
 package com.liferay.opensocial.model;
 
-import com.liferay.portal.kernel.lar.StagedModelType;
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.ModelWrapper;
+
+import com.liferay.portlet.exportimport.lar.StagedModelType;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -31,6 +34,7 @@ import java.util.Map;
  * @see Gadget
  * @generated
  */
+@ProviderType
 public class GadgetWrapper implements Gadget, ModelWrapper<Gadget> {
 	public GadgetWrapper(Gadget gadget) {
 		_gadget = gadget;
@@ -58,6 +62,7 @@ public class GadgetWrapper implements Gadget, ModelWrapper<Gadget> {
 		attributes.put("name", getName());
 		attributes.put("url", getUrl());
 		attributes.put("portletCategoryNames", getPortletCategoryNames());
+		attributes.put("lastPublishDate", getLastPublishDate());
 
 		return attributes;
 	}
@@ -112,6 +117,12 @@ public class GadgetWrapper implements Gadget, ModelWrapper<Gadget> {
 		if (portletCategoryNames != null) {
 			setPortletCategoryNames(portletCategoryNames);
 		}
+
+		Date lastPublishDate = (Date)attributes.get("lastPublishDate");
+
+		if (lastPublishDate != null) {
+			setLastPublishDate(lastPublishDate);
+		}
 	}
 
 	@Override
@@ -140,7 +151,7 @@ public class GadgetWrapper implements Gadget, ModelWrapper<Gadget> {
 	* @return the create date of this gadget
 	*/
 	@Override
-	public java.util.Date getCreateDate() {
+	public Date getCreateDate() {
 		return _gadget.getCreateDate();
 	}
 
@@ -160,12 +171,22 @@ public class GadgetWrapper implements Gadget, ModelWrapper<Gadget> {
 	}
 
 	/**
+	* Returns the last publish date of this gadget.
+	*
+	* @return the last publish date of this gadget
+	*/
+	@Override
+	public Date getLastPublishDate() {
+		return _gadget.getLastPublishDate();
+	}
+
+	/**
 	* Returns the modified date of this gadget.
 	*
 	* @return the modified date of this gadget
 	*/
 	@Override
-	public java.util.Date getModifiedDate() {
+	public Date getModifiedDate() {
 		return _gadget.getModifiedDate();
 	}
 
@@ -270,7 +291,7 @@ public class GadgetWrapper implements Gadget, ModelWrapper<Gadget> {
 	* @param createDate the create date of this gadget
 	*/
 	@Override
-	public void setCreateDate(java.util.Date createDate) {
+	public void setCreateDate(Date createDate) {
 		_gadget.setCreateDate(createDate);
 	}
 
@@ -303,12 +324,22 @@ public class GadgetWrapper implements Gadget, ModelWrapper<Gadget> {
 	}
 
 	/**
+	* Sets the last publish date of this gadget.
+	*
+	* @param lastPublishDate the last publish date of this gadget
+	*/
+	@Override
+	public void setLastPublishDate(Date lastPublishDate) {
+		_gadget.setLastPublishDate(lastPublishDate);
+	}
+
+	/**
 	* Sets the modified date of this gadget.
 	*
 	* @param modifiedDate the modified date of this gadget
 	*/
 	@Override
-	public void setModifiedDate(java.util.Date modifiedDate) {
+	public void setModifiedDate(Date modifiedDate) {
 		_gadget.setModifiedDate(modifiedDate);
 	}
 
@@ -449,5 +480,5 @@ public class GadgetWrapper implements Gadget, ModelWrapper<Gadget> {
 		_gadget.resetOriginalValues();
 	}
 
-	private Gadget _gadget;
+	private final Gadget _gadget;
 }

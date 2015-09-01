@@ -23,14 +23,30 @@ import com.liferay.portal.theme.ThemeDisplay;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
-import javax.portlet.PortletRequest;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author Michael Young
  */
 public class ConfigurationActionImpl extends BaseConfigurationAction {
+
+	@Override
+	public String getJspPath(HttpServletRequest request) {
+		return "/gadget/configuration.jsp";
+	}
+
+	@Override
+	public void include(
+			PortletConfig portletConfig, HttpServletRequest request,
+			HttpServletResponse response)
+		throws Exception {
+
+		doInclude(portletConfig, request, response);
+
+		super.include(portletConfig, request, response);
+	}
 
 	@Override
 	public void processAction(
@@ -42,26 +58,15 @@ public class ConfigurationActionImpl extends BaseConfigurationAction {
 	}
 
 	@Override
-	public String render(
-			PortletConfig portletConfig, RenderRequest renderRequest,
-			RenderResponse renderResponse)
-		throws Exception {
-
-		doRender(portletConfig, renderRequest, renderResponse);
-
-		return "/gadget/configuration.jsp";
-	}
-
-	@Override
 	protected Gadget getGadget(
-			PortletConfig portletConfig, PortletRequest portletRequest)
+			PortletConfig portletConfig, HttpServletRequest request)
 		throws Exception {
 
-		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
+		ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
 		String portletResource = ParamUtil.getString(
-			portletRequest, "portletResource");
+			request, "portletResource");
 
 		return ShindigUtil.getGadget(
 			portletResource, themeDisplay.getCompanyId());

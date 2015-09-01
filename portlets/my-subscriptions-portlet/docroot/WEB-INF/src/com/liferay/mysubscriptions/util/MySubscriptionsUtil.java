@@ -15,9 +15,12 @@
 package com.liferay.mysubscriptions.util;
 
 import com.liferay.bookmarks.model.BookmarksFolder;
+import com.liferay.journal.model.JournalFolder;
 import com.liferay.knowledgebase.util.PortletKeys;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.portlet.PortletProvider;
+import com.liferay.portal.kernel.portlet.PortletProviderUtil;
 import com.liferay.portal.kernel.repository.model.Folder;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringBundler;
@@ -40,7 +43,6 @@ import com.liferay.portlet.blogs.model.BlogsEntry;
 import com.liferay.portlet.documentlibrary.model.DLFileEntryType;
 import com.liferay.portlet.documentlibrary.model.DLFolder;
 import com.liferay.portlet.documentlibrary.service.DLFileEntryTypeLocalServiceUtil;
-import com.liferay.portlet.journal.model.JournalFolder;
 import com.liferay.portlet.messageboards.model.MBCategory;
 import com.liferay.portlet.messageboards.model.MBMessage;
 import com.liferay.portlet.messageboards.model.MBThread;
@@ -93,8 +95,10 @@ public class MySubscriptionsUtil {
 		}
 
 		if (className.equals(MBCategory.class.getName())) {
-			return PortalUtil.getLayoutFullURL(
-				classPK, PortletKeys.MESSAGE_BOARDS);
+			String portletId = PortletProviderUtil.getPortletId(
+				MBMessage.class.getName(), PortletProvider.Action.VIEW);
+
+			return PortalUtil.getLayoutFullURL(classPK, portletId);
 		}
 
 		if (className.equals(WikiNode.class.getName())) {
