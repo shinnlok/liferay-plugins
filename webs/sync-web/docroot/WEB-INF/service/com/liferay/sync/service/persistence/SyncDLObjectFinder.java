@@ -22,10 +22,6 @@ import aQute.bnd.annotation.ProviderType;
  */
 @ProviderType
 public interface SyncDLObjectFinder {
-	public java.util.List<com.liferay.sync.model.SyncDLObject> filterFindByC_R(
-		long companyId, long repositoryId);
-
-	public java.util.List<com.liferay.sync.model.SyncDLObject> filterFindByC_M_R_P(
-		long companyId, long modifiedTime, long repositoryId,
-		long parentFolderId);
+	public java.util.List<java.lang.Long> filterFindByR_U_T(long groupId,
+		long userId, long[] typePKs);
 }

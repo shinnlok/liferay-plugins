@@ -14,8 +14,12 @@
 
 package com.liferay.pushnotifications.portlet;
 
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.servlet.SessionErrors;
+import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PrefsPropsUtil;
+import com.liferay.portal.util.PortalUtil;
 import com.liferay.pushnotifications.service.PushNotificationsDeviceLocalServiceUtil;
 import com.liferay.pushnotifications.util.PortletPropsKeys;
 import com.liferay.util.bridges.mvc.MVCPortlet;
@@ -29,7 +33,28 @@ import javax.portlet.PortletPreferences;
  */
 public class AdminPortlet extends MVCPortlet {
 
-	public void updatePortletPreferences(
+	public void deletePushNotificationsDevice(
+			ActionRequest actionRequest, ActionResponse actionResponse)
+		throws Exception {
+
+		long pushNotificationsDeviceId = ParamUtil.getLong(
+			actionRequest, "pushNotificationsDeviceId");
+
+		try {
+			PushNotificationsDeviceLocalServiceUtil.
+				deletePushNotificationsDevice(pushNotificationsDeviceId);
+
+			SessionMessages.add(
+				actionRequest, "pushNotificationsDeviceDeleted");
+		}
+		catch (PortalException pe) {
+			SessionErrors.add(actionRequest, pe.getClass());
+		}
+
+		sendRedirect(actionRequest, actionResponse);
+	}
+
+	public void updateAndroidPreferences(
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
@@ -46,6 +71,24 @@ public class AdminPortlet extends MVCPortlet {
 
 		portletPreferences.setValue(
 			PortletPropsKeys.ANDROID_RETRIES, String.valueOf(androidRetries));
+
+		portletPreferences.store();
+
+		PushNotificationsDeviceLocalServiceUtil.resetPushNotificationSenders();
+
+		SessionMessages.add(
+			actionRequest,
+			PortalUtil.getPortletId(actionRequest) +
+				SessionMessages.KEY_SUFFIX_UPDATED_PREFERENCES);
+
+		sendRedirect(actionRequest, actionResponse);
+	}
+
+	public void updateApplePreferences(
+			ActionRequest actionRequest, ActionResponse actionResponse)
+		throws Exception {
+
+		PortletPreferences portletPreferences = PrefsPropsUtil.getPreferences();
 
 		String appleCertificatePassword = ParamUtil.getString(
 			actionRequest, "appleCertificatePassword");
@@ -69,6 +112,13 @@ public class AdminPortlet extends MVCPortlet {
 		portletPreferences.store();
 
 		PushNotificationsDeviceLocalServiceUtil.resetPushNotificationSenders();
+
+		SessionMessages.add(
+			actionRequest,
+			PortalUtil.getPortletId(actionRequest) +
+				SessionMessages.KEY_SUFFIX_UPDATED_PREFERENCES);
+
+		sendRedirect(actionRequest, actionResponse);
 	}
 
 }

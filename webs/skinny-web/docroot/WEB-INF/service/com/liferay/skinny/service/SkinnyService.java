@@ -19,10 +19,10 @@ import aQute.bnd.annotation.ProviderType;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.jsonwebservice.JSONWebService;
+import com.liferay.portal.kernel.security.access.control.AccessControlled;
 import com.liferay.portal.kernel.transaction.Isolation;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.Transactional;
-import com.liferay.portal.security.ac.AccessControlled;
 import com.liferay.portal.service.BaseService;
 import com.liferay.portal.service.InvokableService;
 
@@ -56,12 +56,12 @@ public interface SkinnyService extends BaseService, InvokableService {
 	*/
 	public java.lang.String getBeanIdentifier();
 
-	@com.liferay.portal.security.ac.AccessControlled(guestAccessEnabled = true)
+	@AccessControlled(guestAccessEnabled = true)
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public java.util.List<com.liferay.skinny.model.SkinnyDDLRecord> getSkinnyDDLRecords(
 		long ddlRecordSetId) throws java.lang.Exception;
 
-	@com.liferay.portal.security.ac.AccessControlled(guestAccessEnabled = true)
+	@AccessControlled(guestAccessEnabled = true)
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public java.util.List<com.liferay.skinny.model.SkinnyJournalArticle> getSkinnyJournalArticles(
 		long companyId, java.lang.String groupName, long ddmStructureId,

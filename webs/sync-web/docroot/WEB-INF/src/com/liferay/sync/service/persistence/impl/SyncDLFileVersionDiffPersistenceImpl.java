@@ -16,7 +16,6 @@ package com.liferay.sync.service.persistence.impl;
 
 import aQute.bnd.annotation.ProviderType;
 
-import com.liferay.portal.kernel.cache.CacheRegistryUtil;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -26,10 +25,7 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
-import com.liferay.portal.kernel.util.PropsKeys;
-import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
@@ -1409,10 +1405,6 @@ public class SyncDLFileVersionDiffPersistenceImpl extends BasePersistenceImpl<Sy
 	 */
 	@Override
 	public void clearCache() {
-		if (_HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE) {
-			CacheRegistryUtil.clear(SyncDLFileVersionDiffImpl.class.getName());
-		}
-
 		EntityCacheUtil.clearCache(SyncDLFileVersionDiffImpl.class);
 
 		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_ENTITY);
@@ -1436,7 +1428,7 @@ public class SyncDLFileVersionDiffPersistenceImpl extends BasePersistenceImpl<Sy
 		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 
-		clearUniqueFindersCache(syncDLFileVersionDiff);
+		clearUniqueFindersCache((SyncDLFileVersionDiffModelImpl)syncDLFileVersionDiff);
 	}
 
 	@Override
@@ -1449,51 +1441,48 @@ public class SyncDLFileVersionDiffPersistenceImpl extends BasePersistenceImpl<Sy
 				SyncDLFileVersionDiffImpl.class,
 				syncDLFileVersionDiff.getPrimaryKey());
 
-			clearUniqueFindersCache(syncDLFileVersionDiff);
+			clearUniqueFindersCache((SyncDLFileVersionDiffModelImpl)syncDLFileVersionDiff);
 		}
 	}
 
 	protected void cacheUniqueFindersCache(
-		SyncDLFileVersionDiff syncDLFileVersionDiff) {
-		if (syncDLFileVersionDiff.isNew()) {
+		SyncDLFileVersionDiffModelImpl syncDLFileVersionDiffModelImpl,
+		boolean isNew) {
+		if (isNew) {
 			Object[] args = new Object[] {
-					syncDLFileVersionDiff.getFileEntryId(),
-					syncDLFileVersionDiff.getSourceFileVersionId(),
-					syncDLFileVersionDiff.getTargetFileVersionId()
+					syncDLFileVersionDiffModelImpl.getFileEntryId(),
+					syncDLFileVersionDiffModelImpl.getSourceFileVersionId(),
+					syncDLFileVersionDiffModelImpl.getTargetFileVersionId()
 				};
 
 			FinderCacheUtil.putResult(FINDER_PATH_COUNT_BY_F_S_T, args,
 				Long.valueOf(1));
 			FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_F_S_T, args,
-				syncDLFileVersionDiff);
+				syncDLFileVersionDiffModelImpl);
 		}
 		else {
-			SyncDLFileVersionDiffModelImpl syncDLFileVersionDiffModelImpl = (SyncDLFileVersionDiffModelImpl)syncDLFileVersionDiff;
-
 			if ((syncDLFileVersionDiffModelImpl.getColumnBitmask() &
 					FINDER_PATH_FETCH_BY_F_S_T.getColumnBitmask()) != 0) {
 				Object[] args = new Object[] {
-						syncDLFileVersionDiff.getFileEntryId(),
-						syncDLFileVersionDiff.getSourceFileVersionId(),
-						syncDLFileVersionDiff.getTargetFileVersionId()
+						syncDLFileVersionDiffModelImpl.getFileEntryId(),
+						syncDLFileVersionDiffModelImpl.getSourceFileVersionId(),
+						syncDLFileVersionDiffModelImpl.getTargetFileVersionId()
 					};
 
 				FinderCacheUtil.putResult(FINDER_PATH_COUNT_BY_F_S_T, args,
 					Long.valueOf(1));
 				FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_F_S_T, args,
-					syncDLFileVersionDiff);
+					syncDLFileVersionDiffModelImpl);
 			}
 		}
 	}
 
 	protected void clearUniqueFindersCache(
-		SyncDLFileVersionDiff syncDLFileVersionDiff) {
-		SyncDLFileVersionDiffModelImpl syncDLFileVersionDiffModelImpl = (SyncDLFileVersionDiffModelImpl)syncDLFileVersionDiff;
-
+		SyncDLFileVersionDiffModelImpl syncDLFileVersionDiffModelImpl) {
 		Object[] args = new Object[] {
-				syncDLFileVersionDiff.getFileEntryId(),
-				syncDLFileVersionDiff.getSourceFileVersionId(),
-				syncDLFileVersionDiff.getTargetFileVersionId()
+				syncDLFileVersionDiffModelImpl.getFileEntryId(),
+				syncDLFileVersionDiffModelImpl.getSourceFileVersionId(),
+				syncDLFileVersionDiffModelImpl.getTargetFileVersionId()
 			};
 
 		FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_F_S_T, args);
@@ -1634,7 +1623,7 @@ public class SyncDLFileVersionDiffPersistenceImpl extends BasePersistenceImpl<Sy
 				syncDLFileVersionDiff.setNew(false);
 			}
 			else {
-				session.merge(syncDLFileVersionDiff);
+				syncDLFileVersionDiff = (SyncDLFileVersionDiff)session.merge(syncDLFileVersionDiff);
 			}
 		}
 		catch (Exception e) {
@@ -1677,8 +1666,8 @@ public class SyncDLFileVersionDiffPersistenceImpl extends BasePersistenceImpl<Sy
 			SyncDLFileVersionDiffImpl.class,
 			syncDLFileVersionDiff.getPrimaryKey(), syncDLFileVersionDiff, false);
 
-		clearUniqueFindersCache(syncDLFileVersionDiff);
-		cacheUniqueFindersCache(syncDLFileVersionDiff);
+		clearUniqueFindersCache(syncDLFileVersionDiffModelImpl);
+		cacheUniqueFindersCache(syncDLFileVersionDiffModelImpl, isNew);
 
 		syncDLFileVersionDiff.resetOriginalValues();
 
@@ -2068,6 +2057,11 @@ public class SyncDLFileVersionDiffPersistenceImpl extends BasePersistenceImpl<Sy
 		return _badColumnNames;
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return SyncDLFileVersionDiffModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the sync d l file version diff persistence.
 	 */
@@ -2089,8 +2083,6 @@ public class SyncDLFileVersionDiffPersistenceImpl extends BasePersistenceImpl<Sy
 	private static final String _ORDER_BY_ENTITY_ALIAS = "syncDLFileVersionDiff.";
 	private static final String _NO_SUCH_ENTITY_WITH_PRIMARY_KEY = "No SyncDLFileVersionDiff exists with the primary key ";
 	private static final String _NO_SUCH_ENTITY_WITH_KEY = "No SyncDLFileVersionDiff exists with the key {";
-	private static final boolean _HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE = GetterUtil.getBoolean(PropsUtil.get(
-				PropsKeys.HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE));
 	private static final Log _log = LogFactoryUtil.getLog(SyncDLFileVersionDiffPersistenceImpl.class);
 	private static final Set<String> _badColumnNames = SetUtil.fromArray(new String[] {
 				"size"

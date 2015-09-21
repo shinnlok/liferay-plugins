@@ -18,11 +18,16 @@ import com.liferay.portal.ModelListenerException;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.model.BaseModelListener;
 import com.liferay.portal.model.ResourcePermission;
+import com.liferay.portal.security.permission.ActionKeys;
+import com.liferay.portal.service.ResourcePermissionLocalServiceUtil;
 import com.liferay.portlet.documentlibrary.model.DLFileEntry;
 import com.liferay.portlet.documentlibrary.model.DLFolder;
 import com.liferay.sync.model.SyncConstants;
 import com.liferay.sync.model.SyncDLObject;
 import com.liferay.sync.service.SyncDLObjectLocalServiceUtil;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author Shinn Lok
@@ -31,43 +36,69 @@ public class ResourcePermissionModelListener
 	extends BaseModelListener<ResourcePermission> {
 
 	@Override
-	public void onAfterUpdate(ResourcePermission resourcePermission)
+	public void onBeforeUpdate(ResourcePermission resourcePermission)
 		throws ModelListenerException {
 
-		String modelName = resourcePermission.getName();
-
 		try {
-			if (modelName.equals(DLFileEntry.class.getName())) {
-				SyncDLObject syncDLObject =
-					SyncDLObjectLocalServiceUtil.fetchSyncDLObject(
-						SyncConstants.TYPE_FILE,
-						GetterUtil.getLong(resourcePermission.getPrimKey()));
+			SyncDLObject syncDLObject = null;
 
-				if (syncDLObject == null) {
-					return;
-				}
+			String modelName = resourcePermission.getName();
+
+			if (modelName.equals(DLFileEntry.class.getName())) {
+				syncDLObject = SyncDLObjectLocalServiceUtil.fetchSyncDLObject(
+					SyncConstants.TYPE_FILE,
+					GetterUtil.getLong(resourcePermission.getPrimKey()));
+			}
+			else if (modelName.equals(DLFolder.class.getName())) {
+				syncDLObject = SyncDLObjectLocalServiceUtil.fetchSyncDLObject(
+					SyncConstants.TYPE_FOLDER,
+					GetterUtil.getLong(resourcePermission.getPrimKey()));
+			}
+
+			if (syncDLObject == null) {
+				return;
+			}
+
+			ResourcePermission originalResourcePermission =
+				ResourcePermissionLocalServiceUtil.fetchResourcePermission(
+					resourcePermission.getResourcePermissionId());
+
+			if (originalResourcePermission.hasActionId(ActionKeys.VIEW) &&
+				!resourcePermission.hasActionId(ActionKeys.VIEW)) {
 
 				syncDLObject.setModifiedTime(System.currentTimeMillis());
+				syncDLObject.setLastPermissionChangeDate(new Date());
 
 				SyncDLObjectLocalServiceUtil.updateSyncDLObject(syncDLObject);
 			}
-			else if (modelName.equals(DLFolder.class.getName())) {
-				SyncDLObject syncDLObject =
-					SyncDLObjectLocalServiceUtil.fetchSyncDLObject(
-						SyncConstants.TYPE_FOLDER,
-						GetterUtil.getLong(resourcePermission.getPrimKey()));
+			else if (!originalResourcePermission.hasActionId(ActionKeys.VIEW) &&
+					 resourcePermission.hasActionId(ActionKeys.VIEW)) {
 
-				if (syncDLObject == null) {
-					return;
-				}
-
-				syncDLObject.setModifiedTime(System.currentTimeMillis());
-
-				SyncDLObjectLocalServiceUtil.updateSyncDLObject(syncDLObject);
+				updateSyncDLObject(syncDLObject);
 			}
 		}
 		catch (Exception e) {
 			throw new ModelListenerException(e);
+		}
+	}
+
+	protected void updateSyncDLObject(SyncDLObject syncDLObject) {
+		syncDLObject.setModifiedTime(System.currentTimeMillis());
+
+		SyncDLObjectLocalServiceUtil.updateSyncDLObject(syncDLObject);
+
+		String type = syncDLObject.getType();
+
+		if (!type.equals(SyncConstants.TYPE_FOLDER)) {
+			return;
+		}
+
+		List<SyncDLObject> childSyncDLObjects =
+			SyncDLObjectLocalServiceUtil.getSyncDLObjects(
+				syncDLObject.getRepositoryId(), syncDLObject.getTypePK());
+
+		for (SyncDLObject childSyncDLObject : childSyncDLObjects) {
+			updateSyncDLObject(childSyncDLObject);
 		}
 	}
 

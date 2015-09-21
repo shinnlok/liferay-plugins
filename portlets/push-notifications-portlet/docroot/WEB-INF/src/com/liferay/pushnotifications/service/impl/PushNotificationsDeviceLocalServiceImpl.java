@@ -20,6 +20,7 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.pushnotifications.PushNotificationsException;
 import com.liferay.pushnotifications.model.PushNotificationsDevice;
 import com.liferay.pushnotifications.sender.PushNotificationsSender;
@@ -70,6 +71,14 @@ public class PushNotificationsDeviceLocalServiceImpl
 	}
 
 	@Override
+	public List<PushNotificationsDevice> getPushNotificationsDevices(
+		int start, int end, OrderByComparator orderByComparator) {
+
+		return pushNotificationsDevicePersistence.findAll(
+			start, end, orderByComparator);
+	}
+
+	@Override
 	public void resetPushNotificationSenders() {
 		for (Map.Entry<String, PushNotificationsSender> entry :
 				_pushNotificationsSenders.entrySet()) {
@@ -111,11 +120,25 @@ public class PushNotificationsDeviceLocalServiceImpl
 			String platform, List<String> tokens, JSONObject payloadJSONObject)
 		throws PortalException {
 
+		sendPushNotification(platform, tokens, payloadJSONObject, null);
+	}
+
+	@Override
+	public void sendPushNotification(
+			String platform, List<String> tokens, JSONObject payloadJSONObject,
+			Map<String, Object> configuration)
+		throws PortalException {
+
 		PushNotificationsSender pushNotificationsSender =
 			_pushNotificationsSenders.get(platform);
 
 		if (pushNotificationsSender == null) {
 			return;
+		}
+
+		if (configuration != null) {
+			pushNotificationsSender = pushNotificationsSender.create(
+				configuration);
 		}
 
 		try {
@@ -131,6 +154,23 @@ public class PushNotificationsDeviceLocalServiceImpl
 		}
 		catch (Exception e) {
 			throw new PortalException(e);
+		}
+	}
+
+	@Override
+	public void updateToken(String oldToken, String newToken)
+		throws PortalException {
+
+		PushNotificationsDevice oldPushNotificationsDevice =
+			deletePushNotificationsDevice(oldToken);
+
+		PushNotificationsDevice newPushNotificationsDevice =
+			pushNotificationsDevicePersistence.fetchByToken(newToken);
+
+		if (newPushNotificationsDevice == null) {
+			addPushNotificationsDevice(
+				oldPushNotificationsDevice.getUserId(),
+				oldPushNotificationsDevice.getPlatform(), newToken);
 		}
 	}
 

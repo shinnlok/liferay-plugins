@@ -38,11 +38,6 @@ import com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.Projection;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.lar.ExportImportHelperUtil;
-import com.liferay.portal.kernel.lar.ManifestSummary;
-import com.liferay.portal.kernel.lar.PortletDataContext;
-import com.liferay.portal.kernel.lar.StagedModelDataHandlerUtil;
-import com.liferay.portal.kernel.lar.StagedModelType;
 import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.util.OrderByComparator;
@@ -54,6 +49,11 @@ import com.liferay.portal.service.persistence.UserPersistence;
 import com.liferay.portal.util.PortalUtil;
 
 import com.liferay.portlet.asset.service.persistence.AssetEntryPersistence;
+import com.liferay.portlet.exportimport.lar.ExportImportHelperUtil;
+import com.liferay.portlet.exportimport.lar.ManifestSummary;
+import com.liferay.portlet.exportimport.lar.PortletDataContext;
+import com.liferay.portlet.exportimport.lar.StagedModelDataHandlerUtil;
+import com.liferay.portlet.exportimport.lar.StagedModelType;
 import com.liferay.portlet.social.service.persistence.SocialActivityPersistence;
 
 import java.io.Serializable;
@@ -618,7 +618,7 @@ public abstract class KBTemplateLocalServiceBaseImpl
 	 *
 	 * @return the k b template local service
 	 */
-	public com.liferay.knowledgebase.service.KBTemplateLocalService getKBTemplateLocalService() {
+	public KBTemplateLocalService getKBTemplateLocalService() {
 		return kbTemplateLocalService;
 	}
 
@@ -628,7 +628,7 @@ public abstract class KBTemplateLocalServiceBaseImpl
 	 * @param kbTemplateLocalService the k b template local service
 	 */
 	public void setKBTemplateLocalService(
-		com.liferay.knowledgebase.service.KBTemplateLocalService kbTemplateLocalService) {
+		KBTemplateLocalService kbTemplateLocalService) {
 		this.kbTemplateLocalService = kbTemplateLocalService;
 	}
 
@@ -1043,7 +1043,7 @@ public abstract class KBTemplateLocalServiceBaseImpl
 	@BeanReference(type = KBFolderPersistence.class)
 	protected KBFolderPersistence kbFolderPersistence;
 	@BeanReference(type = com.liferay.knowledgebase.service.KBTemplateLocalService.class)
-	protected com.liferay.knowledgebase.service.KBTemplateLocalService kbTemplateLocalService;
+	protected KBTemplateLocalService kbTemplateLocalService;
 	@BeanReference(type = com.liferay.knowledgebase.service.KBTemplateService.class)
 	protected com.liferay.knowledgebase.service.KBTemplateService kbTemplateService;
 	@BeanReference(type = KBTemplatePersistence.class)

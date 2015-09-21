@@ -148,11 +148,29 @@ public class SyncDLObjectServiceSoap {
 		}
 	}
 
-	public static com.liferay.sync.model.SyncDLObjectSoap[] getAllFolderSyncDLObjects(
-		long companyId, long repositoryId) throws RemoteException {
+	public static com.liferay.sync.model.SyncDLObjectSoap copyFileEntry(
+		long sourceFileEntryId, long repositoryId, long folderId,
+		java.lang.String sourceFileName, java.lang.String title,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws RemoteException {
 		try {
-			java.util.List<com.liferay.sync.model.SyncDLObject> returnValue = SyncDLObjectServiceUtil.getAllFolderSyncDLObjects(companyId,
-					repositoryId);
+			com.liferay.sync.model.SyncDLObject returnValue = SyncDLObjectServiceUtil.copyFileEntry(sourceFileEntryId,
+					repositoryId, folderId, sourceFileName, title,
+					serviceContext);
+
+			return com.liferay.sync.model.SyncDLObjectSoap.toSoapModel(returnValue);
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
+	public static com.liferay.sync.model.SyncDLObjectSoap[] getAllFolderSyncDLObjects(
+		long repositoryId) throws RemoteException {
+		try {
+			java.util.List<com.liferay.sync.model.SyncDLObject> returnValue = SyncDLObjectServiceUtil.getAllFolderSyncDLObjects(repositoryId);
 
 			return com.liferay.sync.model.SyncDLObjectSoap.toSoapModels(returnValue);
 		}
@@ -163,30 +181,11 @@ public class SyncDLObjectServiceSoap {
 		}
 	}
 
-	/**
-	* @deprecated As of 7.0.0, with no direct replacement
-	*/
-	@Deprecated
-	public static com.liferay.sync.model.SyncDLObjectUpdate getAllSyncDLObjects(
-		long repositoryId, long folderId) throws RemoteException {
-		try {
-			com.liferay.sync.model.SyncDLObjectUpdate returnValue = SyncDLObjectServiceUtil.getAllSyncDLObjects(repositoryId,
-					folderId);
-
-			return returnValue;
-		}
-		catch (Exception e) {
-			_log.error(e, e);
-
-			throw new RemoteException(e.getMessage());
-		}
-	}
-
 	public static com.liferay.sync.model.SyncDLObjectSoap getFileEntrySyncDLObject(
-		long groupId, long folderId, java.lang.String title)
+		long repositoryId, long folderId, java.lang.String title)
 		throws RemoteException {
 		try {
-			com.liferay.sync.model.SyncDLObject returnValue = SyncDLObjectServiceUtil.getFileEntrySyncDLObject(groupId,
+			com.liferay.sync.model.SyncDLObject returnValue = SyncDLObjectServiceUtil.getFileEntrySyncDLObject(repositoryId,
 					folderId, title);
 
 			return com.liferay.sync.model.SyncDLObjectSoap.toSoapModel(returnValue);
@@ -299,14 +298,11 @@ public class SyncDLObjectServiceSoap {
 		}
 	}
 
-	/**
-	* @deprecated As of 7.0.0, replaced by {@link #getSyncContext()}
-	*/
-	@Deprecated
-	public static com.liferay.sync.model.SyncContext getSyncContext(
-		java.lang.String uuid) throws RemoteException {
+	public static java.lang.String getSyncDLObjectUpdate(long repositoryId,
+		long lastAccessTime, int max) throws RemoteException {
 		try {
-			com.liferay.sync.model.SyncContext returnValue = SyncDLObjectServiceUtil.getSyncContext(uuid);
+			java.lang.String returnValue = SyncDLObjectServiceUtil.getSyncDLObjectUpdate(repositoryId,
+					lastAccessTime, max);
 
 			return returnValue;
 		}
@@ -318,27 +314,11 @@ public class SyncDLObjectServiceSoap {
 	}
 
 	public static com.liferay.sync.model.SyncDLObjectUpdate getSyncDLObjectUpdate(
-		long companyId, long repositoryId, long lastAccessTime)
+		long repositoryId, long parentFolderId, long lastAccessTime)
 		throws RemoteException {
 		try {
-			com.liferay.sync.model.SyncDLObjectUpdate returnValue = SyncDLObjectServiceUtil.getSyncDLObjectUpdate(companyId,
-					repositoryId, lastAccessTime);
-
-			return returnValue;
-		}
-		catch (Exception e) {
-			_log.error(e, e);
-
-			throw new RemoteException(e.getMessage());
-		}
-	}
-
-	public static com.liferay.sync.model.SyncDLObjectUpdate getSyncDLObjectUpdate(
-		long companyId, long repositoryId, long parentFolderId,
-		long lastAccessTime) throws RemoteException {
-		try {
-			com.liferay.sync.model.SyncDLObjectUpdate returnValue = SyncDLObjectServiceUtil.getSyncDLObjectUpdate(companyId,
-					repositoryId, parentFolderId, lastAccessTime);
+			com.liferay.sync.model.SyncDLObjectUpdate returnValue = SyncDLObjectServiceUtil.getSyncDLObjectUpdate(repositoryId,
+					parentFolderId, lastAccessTime);
 
 			return returnValue;
 		}

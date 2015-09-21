@@ -66,7 +66,7 @@ public class SyncDLObjectCacheModel implements CacheModel<SyncDLObject>,
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(51);
+		StringBundler sb = new StringBundler(55);
 
 		sb.append("{syncDLObjectId=");
 		sb.append(syncDLObjectId);
@@ -84,6 +84,8 @@ public class SyncDLObjectCacheModel implements CacheModel<SyncDLObject>,
 		sb.append(repositoryId);
 		sb.append(", parentFolderId=");
 		sb.append(parentFolderId);
+		sb.append(", treePath=");
+		sb.append(treePath);
 		sb.append(", name=");
 		sb.append(name);
 		sb.append(", extension=");
@@ -106,6 +108,8 @@ public class SyncDLObjectCacheModel implements CacheModel<SyncDLObject>,
 		sb.append(checksum);
 		sb.append(", event=");
 		sb.append(event);
+		sb.append(", lastPermissionChangeDate=");
+		sb.append(lastPermissionChangeDate);
 		sb.append(", lockExpirationDate=");
 		sb.append(lockExpirationDate);
 		sb.append(", lockUserId=");
@@ -142,6 +146,13 @@ public class SyncDLObjectCacheModel implements CacheModel<SyncDLObject>,
 		syncDLObjectImpl.setModifiedTime(modifiedTime);
 		syncDLObjectImpl.setRepositoryId(repositoryId);
 		syncDLObjectImpl.setParentFolderId(parentFolderId);
+
+		if (treePath == null) {
+			syncDLObjectImpl.setTreePath(StringPool.BLANK);
+		}
+		else {
+			syncDLObjectImpl.setTreePath(treePath);
+		}
 
 		if (name == null) {
 			syncDLObjectImpl.setName(StringPool.BLANK);
@@ -209,6 +220,14 @@ public class SyncDLObjectCacheModel implements CacheModel<SyncDLObject>,
 			syncDLObjectImpl.setEvent(event);
 		}
 
+		if (lastPermissionChangeDate == Long.MIN_VALUE) {
+			syncDLObjectImpl.setLastPermissionChangeDate(null);
+		}
+		else {
+			syncDLObjectImpl.setLastPermissionChangeDate(new Date(
+					lastPermissionChangeDate));
+		}
+
 		if (lockExpirationDate == Long.MIN_VALUE) {
 			syncDLObjectImpl.setLockExpirationDate(null);
 		}
@@ -256,6 +275,7 @@ public class SyncDLObjectCacheModel implements CacheModel<SyncDLObject>,
 		modifiedTime = objectInput.readLong();
 		repositoryId = objectInput.readLong();
 		parentFolderId = objectInput.readLong();
+		treePath = objectInput.readUTF();
 		name = objectInput.readUTF();
 		extension = objectInput.readUTF();
 		mimeType = objectInput.readUTF();
@@ -267,6 +287,7 @@ public class SyncDLObjectCacheModel implements CacheModel<SyncDLObject>,
 		size = objectInput.readLong();
 		checksum = objectInput.readUTF();
 		event = objectInput.readUTF();
+		lastPermissionChangeDate = objectInput.readLong();
 		lockExpirationDate = objectInput.readLong();
 		lockUserId = objectInput.readLong();
 		lockUserName = objectInput.readUTF();
@@ -293,6 +314,13 @@ public class SyncDLObjectCacheModel implements CacheModel<SyncDLObject>,
 		objectOutput.writeLong(modifiedTime);
 		objectOutput.writeLong(repositoryId);
 		objectOutput.writeLong(parentFolderId);
+
+		if (treePath == null) {
+			objectOutput.writeUTF(StringPool.BLANK);
+		}
+		else {
+			objectOutput.writeUTF(treePath);
+		}
 
 		if (name == null) {
 			objectOutput.writeUTF(StringPool.BLANK);
@@ -360,6 +388,7 @@ public class SyncDLObjectCacheModel implements CacheModel<SyncDLObject>,
 			objectOutput.writeUTF(event);
 		}
 
+		objectOutput.writeLong(lastPermissionChangeDate);
 		objectOutput.writeLong(lockExpirationDate);
 		objectOutput.writeLong(lockUserId);
 
@@ -395,6 +424,7 @@ public class SyncDLObjectCacheModel implements CacheModel<SyncDLObject>,
 	public long modifiedTime;
 	public long repositoryId;
 	public long parentFolderId;
+	public String treePath;
 	public String name;
 	public String extension;
 	public String mimeType;
@@ -406,6 +436,7 @@ public class SyncDLObjectCacheModel implements CacheModel<SyncDLObject>,
 	public long size;
 	public String checksum;
 	public String event;
+	public long lastPermissionChangeDate;
 	public long lockExpirationDate;
 	public long lockUserId;
 	public String lockUserName;

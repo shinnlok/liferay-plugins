@@ -44,16 +44,10 @@ import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.lar.ExportImportHelperUtil;
-import com.liferay.portal.kernel.lar.ManifestSummary;
-import com.liferay.portal.kernel.lar.PortletDataContext;
-import com.liferay.portal.kernel.lar.StagedModelDataHandler;
-import com.liferay.portal.kernel.lar.StagedModelDataHandlerRegistryUtil;
-import com.liferay.portal.kernel.lar.StagedModelDataHandlerUtil;
-import com.liferay.portal.kernel.lar.StagedModelType;
 import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.model.PersistedModel;
 import com.liferay.portal.service.BaseLocalServiceImpl;
 import com.liferay.portal.service.PersistedModelLocalServiceRegistryUtil;
@@ -70,6 +64,13 @@ import com.liferay.portal.util.PortalUtil;
 
 import com.liferay.portlet.asset.service.persistence.AssetEntryPersistence;
 import com.liferay.portlet.asset.service.persistence.AssetLinkPersistence;
+import com.liferay.portlet.exportimport.lar.ExportImportHelperUtil;
+import com.liferay.portlet.exportimport.lar.ManifestSummary;
+import com.liferay.portlet.exportimport.lar.PortletDataContext;
+import com.liferay.portlet.exportimport.lar.StagedModelDataHandler;
+import com.liferay.portlet.exportimport.lar.StagedModelDataHandlerRegistryUtil;
+import com.liferay.portlet.exportimport.lar.StagedModelDataHandlerUtil;
+import com.liferay.portlet.exportimport.lar.StagedModelType;
 import com.liferay.portlet.ratings.service.persistence.RatingsStatsPersistence;
 import com.liferay.portlet.social.service.persistence.SocialActivityPersistence;
 
@@ -323,8 +324,10 @@ public abstract class KBArticleLocalServiceBaseImpl extends BaseLocalServiceImpl
 		exportActionableDynamicQuery.setAddCriteriaMethod(new ActionableDynamicQuery.AddCriteriaMethod() {
 				@Override
 				public void addCriteria(DynamicQuery dynamicQuery) {
-					Criterion modifiedDateCriterion = portletDataContext.getDateRangeCriteria("modifiedDate");
-					Criterion statusDateCriterion = portletDataContext.getDateRangeCriteria("statusDate");
+					Criterion modifiedDateCriterion = portletDataContext.getDateRangeCriteria(
+							"modifiedDate");
+					Criterion statusDateCriterion = portletDataContext.getDateRangeCriteria(
+							"statusDate");
 
 					if ((modifiedDateCriterion != null) &&
 							(statusDateCriterion != null)) {
@@ -336,13 +339,19 @@ public abstract class KBArticleLocalServiceBaseImpl extends BaseLocalServiceImpl
 						dynamicQuery.add(disjunction);
 					}
 
-					StagedModelDataHandler<?> stagedModelDataHandler = StagedModelDataHandlerRegistryUtil.getStagedModelDataHandler(KBArticle.class.getName());
-
 					Property workflowStatusProperty = PropertyFactoryUtil.forName(
 							"status");
 
-					dynamicQuery.add(workflowStatusProperty.in(
-							stagedModelDataHandler.getExportableStatuses()));
+					if (portletDataContext.isInitialPublication()) {
+						dynamicQuery.add(workflowStatusProperty.ne(
+								WorkflowConstants.STATUS_IN_TRASH));
+					}
+					else {
+						StagedModelDataHandler<?> stagedModelDataHandler = StagedModelDataHandlerRegistryUtil.getStagedModelDataHandler(KBArticle.class.getName());
+
+						dynamicQuery.add(workflowStatusProperty.in(
+								stagedModelDataHandler.getExportableStatuses()));
+					}
 				}
 			});
 
@@ -469,7 +478,7 @@ public abstract class KBArticleLocalServiceBaseImpl extends BaseLocalServiceImpl
 	 *
 	 * @return the k b article local service
 	 */
-	public com.liferay.knowledgebase.service.KBArticleLocalService getKBArticleLocalService() {
+	public KBArticleLocalService getKBArticleLocalService() {
 		return kbArticleLocalService;
 	}
 
@@ -479,7 +488,7 @@ public abstract class KBArticleLocalServiceBaseImpl extends BaseLocalServiceImpl
 	 * @param kbArticleLocalService the k b article local service
 	 */
 	public void setKBArticleLocalService(
-		com.liferay.knowledgebase.service.KBArticleLocalService kbArticleLocalService) {
+		KBArticleLocalService kbArticleLocalService) {
 		this.kbArticleLocalService = kbArticleLocalService;
 	}
 
@@ -1476,7 +1485,7 @@ public abstract class KBArticleLocalServiceBaseImpl extends BaseLocalServiceImpl
 	}
 
 	@BeanReference(type = com.liferay.knowledgebase.service.KBArticleLocalService.class)
-	protected com.liferay.knowledgebase.service.KBArticleLocalService kbArticleLocalService;
+	protected KBArticleLocalService kbArticleLocalService;
 	@BeanReference(type = com.liferay.knowledgebase.service.KBArticleService.class)
 	protected com.liferay.knowledgebase.service.KBArticleService kbArticleService;
 	@BeanReference(type = KBArticlePersistence.class)

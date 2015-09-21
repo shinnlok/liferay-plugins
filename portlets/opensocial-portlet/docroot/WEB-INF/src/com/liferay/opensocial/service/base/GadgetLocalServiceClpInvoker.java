@@ -14,6 +14,8 @@
 
 package com.liferay.opensocial.service.base;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.opensocial.service.GadgetLocalServiceUtil;
 
 import java.util.Arrays;
@@ -22,6 +24,7 @@ import java.util.Arrays;
  * @author Brian Wing Shun Chan
  * @generated
  */
+@ProviderType
 public class GadgetLocalServiceClpInvoker {
 	public GadgetLocalServiceClpInvoker() {
 		_methodName0 = "addGadget";
@@ -99,7 +102,7 @@ public class GadgetLocalServiceClpInvoker {
 		_methodName15 = "getExportActionableDynamicQuery";
 
 		_methodParameterTypes15 = new String[] {
-				"com.liferay.portal.kernel.lar.PortletDataContext"
+				"com.liferay.portlet.exportimport.lar.PortletDataContext"
 			};
 
 		_methodName16 = "deletePersistedModel";
@@ -284,7 +287,7 @@ public class GadgetLocalServiceClpInvoker {
 
 		if (_methodName15.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes15, parameterTypes)) {
-			return GadgetLocalServiceUtil.getExportActionableDynamicQuery((com.liferay.portal.kernel.lar.PortletDataContext)arguments[0]);
+			return GadgetLocalServiceUtil.getExportActionableDynamicQuery((com.liferay.portlet.exportimport.lar.PortletDataContext)arguments[0]);
 		}
 
 		if (_methodName16.equals(name) &&

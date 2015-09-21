@@ -16,9 +16,10 @@ package com.liferay.knowledgebase.model;
 
 import aQute.bnd.annotation.ProviderType;
 
-import com.liferay.portal.kernel.lar.StagedModelType;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.ModelWrapper;
+
+import com.liferay.portlet.exportimport.lar.StagedModelType;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -65,6 +66,7 @@ public class KBFolderWrapper implements KBFolder, ModelWrapper<KBFolder> {
 		attributes.put("name", getName());
 		attributes.put("urlTitle", getUrlTitle());
 		attributes.put("description", getDescription());
+		attributes.put("lastPublishDate", getLastPublishDate());
 
 		return attributes;
 	}
@@ -142,6 +144,12 @@ public class KBFolderWrapper implements KBFolder, ModelWrapper<KBFolder> {
 		if (description != null) {
 			setDescription(description);
 		}
+
+		Date lastPublishDate = (Date)attributes.get("lastPublishDate");
+
+		if (lastPublishDate != null) {
+			setLastPublishDate(lastPublishDate);
+		}
 	}
 
 	@Override
@@ -175,7 +183,7 @@ public class KBFolderWrapper implements KBFolder, ModelWrapper<KBFolder> {
 	* @return the create date of this k b folder
 	*/
 	@Override
-	public java.util.Date getCreateDate() {
+	public Date getCreateDate() {
 		return _kbFolder.getCreateDate();
 	}
 
@@ -215,12 +223,22 @@ public class KBFolderWrapper implements KBFolder, ModelWrapper<KBFolder> {
 	}
 
 	/**
+	* Returns the last publish date of this k b folder.
+	*
+	* @return the last publish date of this k b folder
+	*/
+	@Override
+	public Date getLastPublishDate() {
+		return _kbFolder.getLastPublishDate();
+	}
+
+	/**
 	* Returns the modified date of this k b folder.
 	*
 	* @return the modified date of this k b folder
 	*/
 	@Override
-	public java.util.Date getModifiedDate() {
+	public Date getModifiedDate() {
 		return _kbFolder.getModifiedDate();
 	}
 
@@ -367,7 +385,7 @@ public class KBFolderWrapper implements KBFolder, ModelWrapper<KBFolder> {
 	* @param createDate the create date of this k b folder
 	*/
 	@Override
-	public void setCreateDate(java.util.Date createDate) {
+	public void setCreateDate(Date createDate) {
 		_kbFolder.setCreateDate(createDate);
 	}
 
@@ -420,12 +438,22 @@ public class KBFolderWrapper implements KBFolder, ModelWrapper<KBFolder> {
 	}
 
 	/**
+	* Sets the last publish date of this k b folder.
+	*
+	* @param lastPublishDate the last publish date of this k b folder
+	*/
+	@Override
+	public void setLastPublishDate(Date lastPublishDate) {
+		_kbFolder.setLastPublishDate(lastPublishDate);
+	}
+
+	/**
 	* Sets the modified date of this k b folder.
 	*
 	* @param modifiedDate the modified date of this k b folder
 	*/
 	@Override
-	public void setModifiedDate(java.util.Date modifiedDate) {
+	public void setModifiedDate(Date modifiedDate) {
 		_kbFolder.setModifiedDate(modifiedDate);
 	}
 

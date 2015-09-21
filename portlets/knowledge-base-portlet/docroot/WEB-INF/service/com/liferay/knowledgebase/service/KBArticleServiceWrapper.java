@@ -143,10 +143,11 @@ public class KBArticleServiceWrapper implements KBArticleService,
 	}
 
 	/**
-	* @deprecated As of 7.0.0, replaced by
-	{@link #getKBArticleAndAllDescendantKBArticles(long, long,
-	int, com.liferay.portal.kernel.util.OrderByComparator)}
+	* @deprecated As of 7.0.0, replaced by {@link
+	#getKBArticleAndAllDescendantKBArticles(long, long, int,
+	com.liferay.portal.kernel.util.OrderByComparator)}
 	*/
+	@Deprecated
 	@Override
 	public java.util.List<com.liferay.knowledgebase.model.KBArticle> getKBArticleAndAllDescendants(
 		long groupId, long resourcePrimKey, int status,
@@ -259,6 +260,7 @@ public class KBArticleServiceWrapper implements KBArticleService,
 	int, int, int,
 	com.liferay.portal.kernel.util.OrderByComparator)}
 	*/
+	@Deprecated
 	@Override
 	public java.util.List<com.liferay.knowledgebase.model.KBArticle> getSiblingKBArticles(
 		long groupId, long parentResourcePrimKey, int status, int start,
@@ -272,6 +274,7 @@ public class KBArticleServiceWrapper implements KBArticleService,
 	* @deprecated As of 7.0.0, replaced by {@link #getKBArticlesCount(long,
 	long, int)}
 	*/
+	@Deprecated
 	@Override
 	public int getSiblingKBArticlesCount(long groupId,
 		long parentResourcePrimKey, int status) {
@@ -300,6 +303,15 @@ public class KBArticleServiceWrapper implements KBArticleService,
 		throws com.liferay.portal.kernel.exception.PortalException {
 		_kbArticleService.moveKBArticle(resourcePrimKey,
 			parentResourceClassNameId, parentResourcePrimKey, priority);
+	}
+
+	@Override
+	public com.liferay.knowledgebase.model.KBArticle revertKBArticle(
+		long resourcePrimKey, int version,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _kbArticleService.revertKBArticle(resourcePrimKey, version,
+			serviceContext);
 	}
 
 	/**

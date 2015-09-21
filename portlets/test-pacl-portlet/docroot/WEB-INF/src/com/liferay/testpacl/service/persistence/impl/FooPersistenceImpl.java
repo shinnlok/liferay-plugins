@@ -14,7 +14,8 @@
 
 package com.liferay.testpacl.service.persistence.impl;
 
-import com.liferay.portal.kernel.cache.CacheRegistryUtil;
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
@@ -24,13 +25,12 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
-import com.liferay.portal.kernel.util.PropsKeys;
-import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CacheModel;
+import com.liferay.portal.service.ServiceContext;
+import com.liferay.portal.service.ServiceContextThreadLocal;
 import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
 
 import com.liferay.testpacl.NoSuchFooException;
@@ -42,6 +42,7 @@ import com.liferay.testpacl.service.persistence.FooPersistence;
 import java.io.Serializable;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -58,9 +59,10 @@ import java.util.Set;
  *
  * @author Brian Wing Shun Chan
  * @see FooPersistence
- * @see FooUtil
+ * @see com.liferay.testpacl.service.persistence.FooUtil
  * @generated
  */
+@ProviderType
 public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	implements FooPersistence {
 	/*
@@ -118,7 +120,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	 * Returns a range of all the foos where field2 = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.testpacl.model.impl.FooModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link FooModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param field2 the field2
@@ -135,7 +137,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	 * Returns an ordered range of all the foos where field2 = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.testpacl.model.impl.FooModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link FooModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param field2 the field2
@@ -247,7 +249,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	 * @param field2 the field2
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching foo
-	 * @throws com.liferay.testpacl.NoSuchFooException if a matching foo could not be found
+	 * @throws NoSuchFooException if a matching foo could not be found
 	 */
 	@Override
 	public Foo findByField2_First(boolean field2,
@@ -295,7 +297,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	 * @param field2 the field2
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching foo
-	 * @throws com.liferay.testpacl.NoSuchFooException if a matching foo could not be found
+	 * @throws NoSuchFooException if a matching foo could not be found
 	 */
 	@Override
 	public Foo findByField2_Last(boolean field2,
@@ -351,7 +353,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	 * @param field2 the field2
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next foo
-	 * @throws com.liferay.testpacl.NoSuchFooException if a foo with the primary key could not be found
+	 * @throws NoSuchFooException if a foo with the primary key could not be found
 	 */
 	@Override
 	public Foo[] findByField2_PrevAndNext(long fooId, boolean field2,
@@ -599,10 +601,6 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	 */
 	@Override
 	public void clearCache() {
-		if (_HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE) {
-			CacheRegistryUtil.clear(FooImpl.class.getName());
-		}
-
 		EntityCacheUtil.clearCache(FooImpl.class);
 
 		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_ENTITY);
@@ -658,7 +656,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	 *
 	 * @param fooId the primary key of the foo
 	 * @return the foo that was removed
-	 * @throws com.liferay.testpacl.NoSuchFooException if a foo with the primary key could not be found
+	 * @throws NoSuchFooException if a foo with the primary key could not be found
 	 */
 	@Override
 	public Foo remove(long fooId) throws NoSuchFooException {
@@ -670,7 +668,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	 *
 	 * @param primaryKey the primary key of the foo
 	 * @return the foo that was removed
-	 * @throws com.liferay.testpacl.NoSuchFooException if a foo with the primary key could not be found
+	 * @throws NoSuchFooException if a foo with the primary key could not be found
 	 */
 	@Override
 	public Foo remove(Serializable primaryKey) throws NoSuchFooException {
@@ -735,12 +733,34 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	}
 
 	@Override
-	public Foo updateImpl(com.liferay.testpacl.model.Foo foo) {
+	public Foo updateImpl(Foo foo) {
 		foo = toUnwrappedModel(foo);
 
 		boolean isNew = foo.isNew();
 
 		FooModelImpl fooModelImpl = (FooModelImpl)foo;
+
+		ServiceContext serviceContext = ServiceContextThreadLocal.getServiceContext();
+
+		Date now = new Date();
+
+		if (isNew && (foo.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				foo.setCreateDate(now);
+			}
+			else {
+				foo.setCreateDate(serviceContext.getCreateDate(now));
+			}
+		}
+
+		if (!fooModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				foo.setModifiedDate(now);
+			}
+			else {
+				foo.setModifiedDate(serviceContext.getModifiedDate(now));
+			}
+		}
 
 		Session session = null;
 
@@ -825,7 +845,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	 *
 	 * @param primaryKey the primary key of the foo
 	 * @return the foo
-	 * @throws com.liferay.testpacl.NoSuchFooException if a foo with the primary key could not be found
+	 * @throws NoSuchFooException if a foo with the primary key could not be found
 	 */
 	@Override
 	public Foo findByPrimaryKey(Serializable primaryKey)
@@ -845,11 +865,11 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	}
 
 	/**
-	 * Returns the foo with the primary key or throws a {@link com.liferay.testpacl.NoSuchFooException} if it could not be found.
+	 * Returns the foo with the primary key or throws a {@link NoSuchFooException} if it could not be found.
 	 *
 	 * @param fooId the primary key of the foo
 	 * @return the foo
-	 * @throws com.liferay.testpacl.NoSuchFooException if a foo with the primary key could not be found
+	 * @throws NoSuchFooException if a foo with the primary key could not be found
 	 */
 	@Override
 	public Foo findByPrimaryKey(long fooId) throws NoSuchFooException {
@@ -1018,7 +1038,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	 * Returns a range of all the foos.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.testpacl.model.impl.FooModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link FooModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of foos
@@ -1034,7 +1054,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	 * Returns an ordered range of all the foos.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.testpacl.model.impl.FooModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link FooModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of foos
@@ -1170,6 +1190,11 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return FooModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the foo persistence.
 	 */
@@ -1191,10 +1216,8 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	private static final String _ORDER_BY_ENTITY_ALIAS = "foo.";
 	private static final String _NO_SUCH_ENTITY_WITH_PRIMARY_KEY = "No Foo exists with the primary key ";
 	private static final String _NO_SUCH_ENTITY_WITH_KEY = "No Foo exists with the key {";
-	private static final boolean _HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE = GetterUtil.getBoolean(PropsUtil.get(
-				PropsKeys.HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE));
-	private static Log _log = LogFactoryUtil.getLog(FooPersistenceImpl.class);
-	private static Foo _nullFoo = new FooImpl() {
+	private static final Log _log = LogFactoryUtil.getLog(FooPersistenceImpl.class);
+	private static final Foo _nullFoo = new FooImpl() {
 			@Override
 			public Object clone() {
 				return this;
@@ -1206,7 +1229,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 			}
 		};
 
-	private static CacheModel<Foo> _nullFooCacheModel = new CacheModel<Foo>() {
+	private static final CacheModel<Foo> _nullFooCacheModel = new CacheModel<Foo>() {
 			@Override
 			public Foo toEntityModel() {
 				return _nullFoo;
