@@ -14,12 +14,15 @@
 
 package com.liferay.wsrp.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.service.InvokableLocalService;
 
 /**
  * @author Brian Wing Shun Chan
  * @generated
  */
+@ProviderType
 public class WSRPProducerLocalServiceClp implements WSRPProducerLocalService {
 	public WSRPProducerLocalServiceClp(
 		InvokableLocalService invokableLocalService) {
@@ -117,15 +120,15 @@ public class WSRPProducerLocalServiceClp implements WSRPProducerLocalService {
 
 		_methodParameterTypes16 = new String[] {  };
 
-		_methodName17 = "getBeanIdentifier";
+		_methodName17 = "getExportActionableDynamicQuery";
 
-		_methodParameterTypes17 = new String[] {  };
-
-		_methodName18 = "getExportActionableDynamicQuery";
-
-		_methodParameterTypes18 = new String[] {
-				"com.liferay.portal.kernel.lar.PortletDataContext"
+		_methodParameterTypes17 = new String[] {
+				"com.liferay.portlet.exportimport.lar.PortletDataContext"
 			};
+
+		_methodName18 = "getOSGiServiceIdentifier";
+
+		_methodParameterTypes18 = new String[] {  };
 
 		_methodName19 = "getPersistedModel";
 
@@ -170,19 +173,15 @@ public class WSRPProducerLocalServiceClp implements WSRPProducerLocalService {
 
 		_methodParameterTypes28 = new String[] { "long" };
 
-		_methodName30 = "setBeanIdentifier";
+		_methodName30 = "updateWSRPProducer";
 
-		_methodParameterTypes30 = new String[] { "java.lang.String" };
+		_methodParameterTypes30 = new String[] {
+				"com.liferay.wsrp.model.WSRPProducer"
+			};
 
 		_methodName31 = "updateWSRPProducer";
 
 		_methodParameterTypes31 = new String[] {
-				"com.liferay.wsrp.model.WSRPProducer"
-			};
-
-		_methodName32 = "updateWSRPProducer";
-
-		_methodParameterTypes32 = new String[] {
 				"long", "java.lang.String", "java.lang.String",
 				"java.lang.String"
 			};
@@ -679,36 +678,13 @@ public class WSRPProducerLocalServiceClp implements WSRPProducerLocalService {
 	}
 
 	@Override
-	public java.lang.String getBeanIdentifier() {
+	public com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery getExportActionableDynamicQuery(
+		com.liferay.portlet.exportimport.lar.PortletDataContext portletDataContext) {
 		Object returnObj = null;
 
 		try {
 			returnObj = _invokableLocalService.invokeMethod(_methodName17,
-					_methodParameterTypes17, new Object[] {  });
-		}
-		catch (Throwable t) {
-			t = ClpSerializer.translateThrowable(t);
-
-			if (t instanceof RuntimeException) {
-				throw (RuntimeException)t;
-			}
-			else {
-				throw new RuntimeException(t.getClass().getName() +
-					" is not a valid exception");
-			}
-		}
-
-		return (java.lang.String)ClpSerializer.translateOutput(returnObj);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery getExportActionableDynamicQuery(
-		com.liferay.portal.kernel.lar.PortletDataContext portletDataContext) {
-		Object returnObj = null;
-
-		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName18,
-					_methodParameterTypes18,
+					_methodParameterTypes17,
 					new Object[] {
 						ClpSerializer.translateInput(portletDataContext)
 					});
@@ -726,6 +702,29 @@ public class WSRPProducerLocalServiceClp implements WSRPProducerLocalService {
 		}
 
 		return (com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery)ClpSerializer.translateOutput(returnObj);
+	}
+
+	@Override
+	public java.lang.String getOSGiServiceIdentifier() {
+		Object returnObj = null;
+
+		try {
+			returnObj = _invokableLocalService.invokeMethod(_methodName18,
+					_methodParameterTypes18, new Object[] {  });
+		}
+		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
+			if (t instanceof RuntimeException) {
+				throw (RuntimeException)t;
+			}
+			else {
+				throw new RuntimeException(t.getClass().getName() +
+					" is not a valid exception");
+			}
+		}
+
+		return (java.lang.String)ClpSerializer.translateOutput(returnObj);
 	}
 
 	@Override
@@ -1012,33 +1011,13 @@ public class WSRPProducerLocalServiceClp implements WSRPProducerLocalService {
 	}
 
 	@Override
-	public void setBeanIdentifier(java.lang.String beanIdentifier) {
-		try {
-			_invokableLocalService.invokeMethod(_methodName30,
-				_methodParameterTypes30,
-				new Object[] { ClpSerializer.translateInput(beanIdentifier) });
-		}
-		catch (Throwable t) {
-			t = ClpSerializer.translateThrowable(t);
-
-			if (t instanceof RuntimeException) {
-				throw (RuntimeException)t;
-			}
-			else {
-				throw new RuntimeException(t.getClass().getName() +
-					" is not a valid exception");
-			}
-		}
-	}
-
-	@Override
 	public com.liferay.wsrp.model.WSRPProducer updateWSRPProducer(
 		com.liferay.wsrp.model.WSRPProducer wsrpProducer) {
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName31,
-					_methodParameterTypes31,
+			returnObj = _invokableLocalService.invokeMethod(_methodName30,
+					_methodParameterTypes30,
 					new Object[] { ClpSerializer.translateInput(wsrpProducer) });
 		}
 		catch (Throwable t) {
@@ -1064,8 +1043,8 @@ public class WSRPProducerLocalServiceClp implements WSRPProducerLocalService {
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName32,
-					_methodParameterTypes32,
+			returnObj = _invokableLocalService.invokeMethod(_methodName31,
+					_methodParameterTypes31,
 					new Object[] {
 						wsrpProducerId,
 						
@@ -1158,6 +1137,4 @@ public class WSRPProducerLocalServiceClp implements WSRPProducerLocalService {
 	private String[] _methodParameterTypes30;
 	private String _methodName31;
 	private String[] _methodParameterTypes31;
-	private String _methodName32;
-	private String[] _methodParameterTypes32;
 }

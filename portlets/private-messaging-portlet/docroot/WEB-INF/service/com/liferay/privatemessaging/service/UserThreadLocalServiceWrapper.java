@@ -14,6 +14,8 @@
 
 package com.liferay.privatemessaging.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.service.ServiceWrapper;
 
 /**
@@ -23,6 +25,7 @@ import com.liferay.portal.service.ServiceWrapper;
  * @see UserThreadLocalService
  * @generated
  */
+@ProviderType
 public class UserThreadLocalServiceWrapper implements UserThreadLocalService,
 	ServiceWrapper<UserThreadLocalService> {
 	public UserThreadLocalServiceWrapper(
@@ -190,10 +193,10 @@ public class UserThreadLocalServiceWrapper implements UserThreadLocalService,
 	}
 
 	/**
-	* Returns the number of rows that match the dynamic query.
+	* Returns the number of rows matching the dynamic query.
 	*
 	* @param dynamicQuery the dynamic query
-	* @return the number of rows that match the dynamic query
+	* @return the number of rows matching the dynamic query
 	*/
 	@Override
 	public long dynamicQueryCount(
@@ -202,11 +205,11 @@ public class UserThreadLocalServiceWrapper implements UserThreadLocalService,
 	}
 
 	/**
-	* Returns the number of rows that match the dynamic query.
+	* Returns the number of rows matching the dynamic query.
 	*
 	* @param dynamicQuery the dynamic query
 	* @param projection the projection to apply to the query
-	* @return the number of rows that match the dynamic query
+	* @return the number of rows matching the dynamic query
 	*/
 	@Override
 	public long dynamicQueryCount(
@@ -234,20 +237,20 @@ public class UserThreadLocalServiceWrapper implements UserThreadLocalService,
 		return _userThreadLocalService.getActionableDynamicQuery();
 	}
 
-	/**
-	* Returns the Spring bean ID for this bean.
-	*
-	* @return the Spring bean ID for this bean
-	*/
-	@Override
-	public java.lang.String getBeanIdentifier() {
-		return _userThreadLocalService.getBeanIdentifier();
-	}
-
 	@Override
 	public java.util.List<com.liferay.privatemessaging.model.UserThread> getMBThreadUserThreads(
 		long mbThreadId) {
 		return _userThreadLocalService.getMBThreadUserThreads(mbThreadId);
+	}
+
+	/**
+	* Returns the OSGi service identifier.
+	*
+	* @return the OSGi service identifier
+	*/
+	@Override
+	public java.lang.String getOSGiServiceIdentifier() {
+		return _userThreadLocalService.getOSGiServiceIdentifier();
 	}
 
 	@Override
@@ -353,16 +356,6 @@ public class UserThreadLocalServiceWrapper implements UserThreadLocalService,
 	public void markUserThreadAsUnread(long userId, long mbThreadId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		_userThreadLocalService.markUserThreadAsUnread(userId, mbThreadId);
-	}
-
-	/**
-	* Sets the Spring bean ID for this bean.
-	*
-	* @param beanIdentifier the Spring bean ID for this bean
-	*/
-	@Override
-	public void setBeanIdentifier(java.lang.String beanIdentifier) {
-		_userThreadLocalService.setBeanIdentifier(beanIdentifier);
 	}
 
 	@Override

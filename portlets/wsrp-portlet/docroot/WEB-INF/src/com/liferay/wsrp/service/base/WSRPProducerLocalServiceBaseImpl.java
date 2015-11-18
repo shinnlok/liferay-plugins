@@ -14,8 +14,9 @@
 
 package com.liferay.wsrp.service.base;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.bean.BeanReference;
-import com.liferay.portal.kernel.bean.IdentifiableBean;
 import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBFactoryUtil;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdate;
@@ -28,11 +29,7 @@ import com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.Projection;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.lar.ExportImportHelperUtil;
-import com.liferay.portal.kernel.lar.ManifestSummary;
-import com.liferay.portal.kernel.lar.PortletDataContext;
-import com.liferay.portal.kernel.lar.StagedModelDataHandlerUtil;
-import com.liferay.portal.kernel.lar.StagedModelType;
+import com.liferay.portal.kernel.module.framework.service.IdentifiableOSGiService;
 import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.util.OrderByComparator;
@@ -44,6 +41,12 @@ import com.liferay.portal.service.persistence.GroupPersistence;
 import com.liferay.portal.service.persistence.LayoutPersistence;
 import com.liferay.portal.service.persistence.UserPersistence;
 import com.liferay.portal.util.PortalUtil;
+
+import com.liferay.portlet.exportimport.lar.ExportImportHelperUtil;
+import com.liferay.portlet.exportimport.lar.ManifestSummary;
+import com.liferay.portlet.exportimport.lar.PortletDataContext;
+import com.liferay.portlet.exportimport.lar.StagedModelDataHandlerUtil;
+import com.liferay.portlet.exportimport.lar.StagedModelType;
 
 import com.liferay.wsrp.model.WSRPProducer;
 import com.liferay.wsrp.service.WSRPProducerLocalService;
@@ -69,9 +72,10 @@ import javax.sql.DataSource;
  * @see com.liferay.wsrp.service.WSRPProducerLocalServiceUtil
  * @generated
  */
+@ProviderType
 public abstract class WSRPProducerLocalServiceBaseImpl
 	extends BaseLocalServiceImpl implements WSRPProducerLocalService,
-		IdentifiableBean {
+		IdentifiableOSGiService {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
@@ -190,10 +194,10 @@ public abstract class WSRPProducerLocalServiceBaseImpl
 	}
 
 	/**
-	 * Returns the number of rows that match the dynamic query.
+	 * Returns the number of rows matching the dynamic query.
 	 *
 	 * @param dynamicQuery the dynamic query
-	 * @return the number of rows that match the dynamic query
+	 * @return the number of rows matching the dynamic query
 	 */
 	@Override
 	public long dynamicQueryCount(DynamicQuery dynamicQuery) {
@@ -201,11 +205,11 @@ public abstract class WSRPProducerLocalServiceBaseImpl
 	}
 
 	/**
-	 * Returns the number of rows that match the dynamic query.
+	 * Returns the number of rows matching the dynamic query.
 	 *
 	 * @param dynamicQuery the dynamic query
 	 * @param projection the projection to apply to the query
-	 * @return the number of rows that match the dynamic query
+	 * @return the number of rows matching the dynamic query
 	 */
 	@Override
 	public long dynamicQueryCount(DynamicQuery dynamicQuery,
@@ -279,13 +283,13 @@ public abstract class WSRPProducerLocalServiceBaseImpl
 
 					long modelAdditionCount = super.performCount();
 
-					manifestSummary.addModelAdditionCount(stagedModelType.toString(),
+					manifestSummary.addModelAdditionCount(stagedModelType,
 						modelAdditionCount);
 
 					long modelDeletionCount = ExportImportHelperUtil.getModelDeletionCount(portletDataContext,
 							stagedModelType);
 
-					manifestSummary.addModelDeletionCount(stagedModelType.toString(),
+					manifestSummary.addModelDeletionCount(stagedModelType,
 						modelDeletionCount);
 
 					return modelAdditionCount;
@@ -304,14 +308,12 @@ public abstract class WSRPProducerLocalServiceBaseImpl
 
 		exportActionableDynamicQuery.setCompanyId(portletDataContext.getCompanyId());
 
-		exportActionableDynamicQuery.setPerformActionMethod(new ActionableDynamicQuery.PerformActionMethod() {
+		exportActionableDynamicQuery.setPerformActionMethod(new ActionableDynamicQuery.PerformActionMethod<WSRPProducer>() {
 				@Override
-				public void performAction(Object object)
+				public void performAction(WSRPProducer wsrpProducer)
 					throws PortalException {
-					WSRPProducer stagedModel = (WSRPProducer)object;
-
 					StagedModelDataHandlerUtil.exportStagedModel(portletDataContext,
-						stagedModel);
+						wsrpProducer);
 				}
 			});
 		exportActionableDynamicQuery.setStagedModelType(new StagedModelType(
@@ -335,12 +337,29 @@ public abstract class WSRPProducerLocalServiceBaseImpl
 		return wsrpProducerPersistence.findByPrimaryKey(primaryKeyObj);
 	}
 
+	/**
+	 * Returns all the w s r p producers matching the UUID and company.
+	 *
+	 * @param uuid the UUID of the w s r p producers
+	 * @param companyId the primary key of the company
+	 * @return the matching w s r p producers, or an empty list if no matches were found
+	 */
 	@Override
 	public List<WSRPProducer> getWSRPProducersByUuidAndCompanyId(String uuid,
 		long companyId) {
 		return wsrpProducerPersistence.findByUuid_C(uuid, companyId);
 	}
 
+	/**
+	 * Returns a range of w s r p producers matching the UUID and company.
+	 *
+	 * @param uuid the UUID of the w s r p producers
+	 * @param companyId the primary key of the company
+	 * @param start the lower bound of the range of w s r p producers
+	 * @param end the upper bound of the range of w s r p producers (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the range of matching w s r p producers, or an empty list if no matches were found
+	 */
 	@Override
 	public List<WSRPProducer> getWSRPProducersByUuidAndCompanyId(String uuid,
 		long companyId, int start, int end,
@@ -482,7 +501,7 @@ public abstract class WSRPProducerLocalServiceBaseImpl
 	 *
 	 * @return the w s r p producer local service
 	 */
-	public com.liferay.wsrp.service.WSRPProducerLocalService getWSRPProducerLocalService() {
+	public WSRPProducerLocalService getWSRPProducerLocalService() {
 		return wsrpProducerLocalService;
 	}
 
@@ -492,7 +511,7 @@ public abstract class WSRPProducerLocalServiceBaseImpl
 	 * @param wsrpProducerLocalService the w s r p producer local service
 	 */
 	public void setWSRPProducerLocalService(
-		com.liferay.wsrp.service.WSRPProducerLocalService wsrpProducerLocalService) {
+		WSRPProducerLocalService wsrpProducerLocalService) {
 		this.wsrpProducerLocalService = wsrpProducerLocalService;
 	}
 
@@ -793,23 +812,13 @@ public abstract class WSRPProducerLocalServiceBaseImpl
 	}
 
 	/**
-	 * Returns the Spring bean ID for this bean.
+	 * Returns the OSGi service identifier.
 	 *
-	 * @return the Spring bean ID for this bean
+	 * @return the OSGi service identifier
 	 */
 	@Override
-	public String getBeanIdentifier() {
-		return _beanIdentifier;
-	}
-
-	/**
-	 * Sets the Spring bean ID for this bean.
-	 *
-	 * @param beanIdentifier the Spring bean ID for this bean
-	 */
-	@Override
-	public void setBeanIdentifier(String beanIdentifier) {
-		_beanIdentifier = beanIdentifier;
+	public String getOSGiServiceIdentifier() {
+		return WSRPProducerLocalService.class.getName();
 	}
 
 	@Override
@@ -874,7 +883,7 @@ public abstract class WSRPProducerLocalServiceBaseImpl
 	@BeanReference(type = WSRPConsumerPortletPersistence.class)
 	protected WSRPConsumerPortletPersistence wsrpConsumerPortletPersistence;
 	@BeanReference(type = com.liferay.wsrp.service.WSRPProducerLocalService.class)
-	protected com.liferay.wsrp.service.WSRPProducerLocalService wsrpProducerLocalService;
+	protected WSRPProducerLocalService wsrpProducerLocalService;
 	@BeanReference(type = WSRPProducerPersistence.class)
 	protected WSRPProducerPersistence wsrpProducerPersistence;
 	@BeanReference(type = com.liferay.counter.service.CounterLocalService.class)
@@ -905,7 +914,6 @@ public abstract class WSRPProducerLocalServiceBaseImpl
 	protected com.liferay.portal.service.UserService userService;
 	@BeanReference(type = UserPersistence.class)
 	protected UserPersistence userPersistence;
-	private String _beanIdentifier;
 	private ClassLoader _classLoader;
 	private WSRPProducerLocalServiceClpInvoker _clpInvoker = new WSRPProducerLocalServiceClpInvoker();
 }

@@ -19,6 +19,9 @@
 		<field name="modifiedTime" type="long" />
 		<field name="repositoryId" type="long" />
 		<field name="parentFolderId" type="long" />
+		<field name="treePath" type="String">
+			<hint name="max-length">4000</hint>
+		</field>
 		<field name="name" type="String">
 			<hint name="max-length">255</hint>
 		</field>
@@ -36,6 +39,7 @@
 		<field name="size" type="long" />
 		<field name="checksum" type="String" />
 		<field name="event" type="String" />
+		<field name="lastPermissionChangeDate" type="Date" />
 		<field name="lockExpirationDate" type="Date" />
 		<field name="lockUserId" type="long" />
 		<field name="lockUserName" type="String" />

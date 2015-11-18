@@ -17,7 +17,6 @@ package com.liferay.socialcoding.service.base;
 import aQute.bnd.annotation.ProviderType;
 
 import com.liferay.portal.kernel.bean.BeanReference;
-import com.liferay.portal.kernel.bean.IdentifiableBean;
 import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBFactoryUtil;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdate;
@@ -29,6 +28,7 @@ import com.liferay.portal.kernel.dao.orm.DynamicQueryFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.Projection;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.module.framework.service.IdentifiableOSGiService;
 import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.util.OrderByComparator;
@@ -73,7 +73,7 @@ import javax.sql.DataSource;
 @ProviderType
 public abstract class SVNRepositoryLocalServiceBaseImpl
 	extends BaseLocalServiceImpl implements SVNRepositoryLocalService,
-		IdentifiableBean {
+		IdentifiableOSGiService {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
@@ -190,10 +190,10 @@ public abstract class SVNRepositoryLocalServiceBaseImpl
 	}
 
 	/**
-	 * Returns the number of rows that match the dynamic query.
+	 * Returns the number of rows matching the dynamic query.
 	 *
 	 * @param dynamicQuery the dynamic query
-	 * @return the number of rows that match the dynamic query
+	 * @return the number of rows matching the dynamic query
 	 */
 	@Override
 	public long dynamicQueryCount(DynamicQuery dynamicQuery) {
@@ -201,11 +201,11 @@ public abstract class SVNRepositoryLocalServiceBaseImpl
 	}
 
 	/**
-	 * Returns the number of rows that match the dynamic query.
+	 * Returns the number of rows matching the dynamic query.
 	 *
 	 * @param dynamicQuery the dynamic query
 	 * @param projection the projection to apply to the query
-	 * @return the number of rows that match the dynamic query
+	 * @return the number of rows matching the dynamic query
 	 */
 	@Override
 	public long dynamicQueryCount(DynamicQuery dynamicQuery,
@@ -557,7 +557,7 @@ public abstract class SVNRepositoryLocalServiceBaseImpl
 	 *
 	 * @return the s v n repository local service
 	 */
-	public com.liferay.socialcoding.service.SVNRepositoryLocalService getSVNRepositoryLocalService() {
+	public SVNRepositoryLocalService getSVNRepositoryLocalService() {
 		return svnRepositoryLocalService;
 	}
 
@@ -567,7 +567,7 @@ public abstract class SVNRepositoryLocalServiceBaseImpl
 	 * @param svnRepositoryLocalService the s v n repository local service
 	 */
 	public void setSVNRepositoryLocalService(
-		com.liferay.socialcoding.service.SVNRepositoryLocalService svnRepositoryLocalService) {
+		SVNRepositoryLocalService svnRepositoryLocalService) {
 		this.svnRepositoryLocalService = svnRepositoryLocalService;
 	}
 
@@ -794,23 +794,13 @@ public abstract class SVNRepositoryLocalServiceBaseImpl
 	}
 
 	/**
-	 * Returns the Spring bean ID for this bean.
+	 * Returns the OSGi service identifier.
 	 *
-	 * @return the Spring bean ID for this bean
+	 * @return the OSGi service identifier
 	 */
 	@Override
-	public String getBeanIdentifier() {
-		return _beanIdentifier;
-	}
-
-	/**
-	 * Sets the Spring bean ID for this bean.
-	 *
-	 * @param beanIdentifier the Spring bean ID for this bean
-	 */
-	@Override
-	public void setBeanIdentifier(String beanIdentifier) {
-		_beanIdentifier = beanIdentifier;
+	public String getOSGiServiceIdentifier() {
+		return SVNRepositoryLocalService.class.getName();
 	}
 
 	@Override
@@ -893,7 +883,7 @@ public abstract class SVNRepositoryLocalServiceBaseImpl
 	@BeanReference(type = JIRAProjectPersistence.class)
 	protected JIRAProjectPersistence jiraProjectPersistence;
 	@BeanReference(type = com.liferay.socialcoding.service.SVNRepositoryLocalService.class)
-	protected com.liferay.socialcoding.service.SVNRepositoryLocalService svnRepositoryLocalService;
+	protected SVNRepositoryLocalService svnRepositoryLocalService;
 	@BeanReference(type = SVNRepositoryPersistence.class)
 	protected SVNRepositoryPersistence svnRepositoryPersistence;
 	@BeanReference(type = com.liferay.socialcoding.service.SVNRevisionLocalService.class)
@@ -916,7 +906,6 @@ public abstract class SVNRepositoryLocalServiceBaseImpl
 	protected com.liferay.portal.service.UserService userService;
 	@BeanReference(type = UserPersistence.class)
 	protected UserPersistence userPersistence;
-	private String _beanIdentifier;
 	private ClassLoader _classLoader;
 	private SVNRepositoryLocalServiceClpInvoker _clpInvoker = new SVNRepositoryLocalServiceClpInvoker();
 }

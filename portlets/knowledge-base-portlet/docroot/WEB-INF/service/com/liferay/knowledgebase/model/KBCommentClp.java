@@ -21,7 +21,6 @@ import com.liferay.knowledgebase.service.KBCommentLocalServiceUtil;
 
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.lar.StagedModelType;
 import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
@@ -33,6 +32,8 @@ import com.liferay.portal.model.User;
 import com.liferay.portal.model.impl.BaseModelImpl;
 import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.util.PortalUtil;
+
+import com.liferay.portlet.exportimport.lar.StagedModelType;
 
 import java.io.Serializable;
 
@@ -96,6 +97,7 @@ public class KBCommentClp extends BaseModelImpl<KBComment> implements KBComment 
 		attributes.put("classPK", getClassPK());
 		attributes.put("content", getContent());
 		attributes.put("userRating", getUserRating());
+		attributes.put("lastPublishDate", getLastPublishDate());
 		attributes.put("status", getStatus());
 
 		attributes.put("entityCacheEnabled", isEntityCacheEnabled());
@@ -176,6 +178,12 @@ public class KBCommentClp extends BaseModelImpl<KBComment> implements KBComment 
 
 		if (userRating != null) {
 			setUserRating(userRating);
+		}
+
+		Date lastPublishDate = (Date)attributes.get("lastPublishDate");
+
+		if (lastPublishDate != null) {
+			setLastPublishDate(lastPublishDate);
 		}
 
 		Integer status = (Integer)attributes.get("status");
@@ -501,6 +509,29 @@ public class KBCommentClp extends BaseModelImpl<KBComment> implements KBComment 
 	}
 
 	@Override
+	public Date getLastPublishDate() {
+		return _lastPublishDate;
+	}
+
+	@Override
+	public void setLastPublishDate(Date lastPublishDate) {
+		_lastPublishDate = lastPublishDate;
+
+		if (_kbCommentRemoteModel != null) {
+			try {
+				Class<?> clazz = _kbCommentRemoteModel.getClass();
+
+				Method method = clazz.getMethod("setLastPublishDate", Date.class);
+
+				method.invoke(_kbCommentRemoteModel, lastPublishDate);
+			}
+			catch (Exception e) {
+				throw new UnsupportedOperationException(e);
+			}
+		}
+	}
+
+	@Override
 	public int getStatus() {
 		return _status;
 	}
@@ -610,6 +641,7 @@ public class KBCommentClp extends BaseModelImpl<KBComment> implements KBComment 
 		clone.setClassPK(getClassPK());
 		clone.setContent(getContent());
 		clone.setUserRating(getUserRating());
+		clone.setLastPublishDate(getLastPublishDate());
 		clone.setStatus(getStatus());
 
 		return clone;
@@ -674,7 +706,7 @@ public class KBCommentClp extends BaseModelImpl<KBComment> implements KBComment 
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(27);
+		StringBundler sb = new StringBundler(29);
 
 		sb.append("{uuid=");
 		sb.append(getUuid());
@@ -700,6 +732,8 @@ public class KBCommentClp extends BaseModelImpl<KBComment> implements KBComment 
 		sb.append(getContent());
 		sb.append(", userRating=");
 		sb.append(getUserRating());
+		sb.append(", lastPublishDate=");
+		sb.append(getLastPublishDate());
 		sb.append(", status=");
 		sb.append(getStatus());
 		sb.append("}");
@@ -709,7 +743,7 @@ public class KBCommentClp extends BaseModelImpl<KBComment> implements KBComment 
 
 	@Override
 	public String toXmlString() {
-		StringBundler sb = new StringBundler(43);
+		StringBundler sb = new StringBundler(46);
 
 		sb.append("<model><model-name>");
 		sb.append("com.liferay.knowledgebase.model.KBComment");
@@ -764,6 +798,10 @@ public class KBCommentClp extends BaseModelImpl<KBComment> implements KBComment 
 		sb.append(getUserRating());
 		sb.append("]]></column-value></column>");
 		sb.append(
+			"<column><column-name>lastPublishDate</column-name><column-value><![CDATA[");
+		sb.append(getLastPublishDate());
+		sb.append("]]></column-value></column>");
+		sb.append(
 			"<column><column-name>status</column-name><column-value><![CDATA[");
 		sb.append(getStatus());
 		sb.append("]]></column-value></column>");
@@ -785,6 +823,7 @@ public class KBCommentClp extends BaseModelImpl<KBComment> implements KBComment 
 	private long _classPK;
 	private String _content;
 	private int _userRating;
+	private Date _lastPublishDate;
 	private int _status;
 	private BaseModel<?> _kbCommentRemoteModel;
 	private Class<?> _clpSerializerClass = com.liferay.knowledgebase.service.ClpSerializer.class;

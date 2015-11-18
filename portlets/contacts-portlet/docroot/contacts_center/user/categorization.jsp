@@ -53,6 +53,6 @@ User selUser = (User)request.getAttribute("user.selUser");
 		}
 		%>
 
-		return '<%= sb %>'
+		return '<%= HtmlUtil.escape(HtmlUtil.replaceNewLine(sb.toString())) %>'
 	}
 </aui:script>

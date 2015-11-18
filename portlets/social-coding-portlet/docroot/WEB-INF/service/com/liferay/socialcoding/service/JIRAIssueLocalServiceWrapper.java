@@ -152,10 +152,10 @@ public class JIRAIssueLocalServiceWrapper implements JIRAIssueLocalService,
 	}
 
 	/**
-	* Returns the number of rows that match the dynamic query.
+	* Returns the number of rows matching the dynamic query.
 	*
 	* @param dynamicQuery the dynamic query
-	* @return the number of rows that match the dynamic query
+	* @return the number of rows matching the dynamic query
 	*/
 	@Override
 	public long dynamicQueryCount(
@@ -164,11 +164,11 @@ public class JIRAIssueLocalServiceWrapper implements JIRAIssueLocalService,
 	}
 
 	/**
-	* Returns the number of rows that match the dynamic query.
+	* Returns the number of rows matching the dynamic query.
 	*
 	* @param dynamicQuery the dynamic query
 	* @param projection the projection to apply to the query
-	* @return the number of rows that match the dynamic query
+	* @return the number of rows matching the dynamic query
 	*/
 	@Override
 	public long dynamicQueryCount(
@@ -230,16 +230,6 @@ public class JIRAIssueLocalServiceWrapper implements JIRAIssueLocalService,
 		java.lang.String assigneeJiraUserId, java.lang.String status) {
 		return _jiraIssueLocalService.getAssigneeJIRAIssuesCount(projectId,
 			assigneeJiraUserId, status);
-	}
-
-	/**
-	* Returns the Spring bean ID for this bean.
-	*
-	* @return the Spring bean ID for this bean
-	*/
-	@Override
-	public java.lang.String getBeanIdentifier() {
-		return _jiraIssueLocalService.getBeanIdentifier();
 	}
 
 	@Override
@@ -322,6 +312,16 @@ public class JIRAIssueLocalServiceWrapper implements JIRAIssueLocalService,
 			reporterJiraUserId);
 	}
 
+	/**
+	* Returns the OSGi service identifier.
+	*
+	* @return the OSGi service identifier
+	*/
+	@Override
+	public java.lang.String getOSGiServiceIdentifier() {
+		return _jiraIssueLocalService.getOSGiServiceIdentifier();
+	}
+
 	@Override
 	public com.liferay.portal.model.PersistedModel getPersistedModel(
 		java.io.Serializable primaryKeyObj)
@@ -379,16 +379,6 @@ public class JIRAIssueLocalServiceWrapper implements JIRAIssueLocalService,
 		throws java.lang.Throwable {
 		return _jiraIssueLocalService.invokeMethod(name, parameterTypes,
 			arguments);
-	}
-
-	/**
-	* Sets the Spring bean ID for this bean.
-	*
-	* @param beanIdentifier the Spring bean ID for this bean
-	*/
-	@Override
-	public void setBeanIdentifier(java.lang.String beanIdentifier) {
-		_jiraIssueLocalService.setBeanIdentifier(beanIdentifier);
 	}
 
 	/**

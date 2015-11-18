@@ -14,6 +14,8 @@
 
 package com.liferay.tasks.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.service.ServiceWrapper;
 
 /**
@@ -23,6 +25,7 @@ import com.liferay.portal.service.ServiceWrapper;
  * @see TasksEntryService
  * @generated
  */
+@ProviderType
 public class TasksEntryServiceWrapper implements TasksEntryService,
 	ServiceWrapper<TasksEntryService> {
 	public TasksEntryServiceWrapper(TasksEntryService tasksEntryService) {
@@ -42,13 +45,13 @@ public class TasksEntryServiceWrapper implements TasksEntryService,
 	}
 
 	/**
-	* Returns the Spring bean ID for this bean.
+	* Returns the OSGi service identifier.
 	*
-	* @return the Spring bean ID for this bean
+	* @return the OSGi service identifier
 	*/
 	@Override
-	public java.lang.String getBeanIdentifier() {
-		return _tasksEntryService.getBeanIdentifier();
+	public java.lang.String getOSGiServiceIdentifier() {
+		return _tasksEntryService.getOSGiServiceIdentifier();
 	}
 
 	@Override
@@ -62,16 +65,6 @@ public class TasksEntryServiceWrapper implements TasksEntryService,
 		java.lang.String[] parameterTypes, java.lang.Object[] arguments)
 		throws java.lang.Throwable {
 		return _tasksEntryService.invokeMethod(name, parameterTypes, arguments);
-	}
-
-	/**
-	* Sets the Spring bean ID for this bean.
-	*
-	* @param beanIdentifier the Spring bean ID for this bean
-	*/
-	@Override
-	public void setBeanIdentifier(java.lang.String beanIdentifier) {
-		_tasksEntryService.setBeanIdentifier(beanIdentifier);
 	}
 
 	@Override

@@ -38,16 +38,18 @@ import javax.portlet.PortletURL;
 /**
  * @author Peter Shin
  */
-public class KBArticleAssetRendererFactory extends BaseAssetRendererFactory {
+public class KBArticleAssetRendererFactory
+	extends BaseAssetRendererFactory<KBArticle> {
 
 	public static final String TYPE = "article";
 
 	public KBArticleAssetRendererFactory() {
 		setLinkable(true);
+		setSearchable(true);
 	}
 
 	@Override
-	public AssetRenderer getAssetRenderer(long classPK, int type)
+	public AssetRenderer<KBArticle> getAssetRenderer(long classPK, int type)
 		throws PortalException {
 
 		KBArticle kbArticle = null;

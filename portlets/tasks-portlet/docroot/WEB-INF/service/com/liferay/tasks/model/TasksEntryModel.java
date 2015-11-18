@@ -14,10 +14,13 @@
 
 package com.liferay.tasks.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.bean.AutoEscape;
 import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.model.GroupedModel;
+import com.liferay.portal.model.ShardedModel;
 import com.liferay.portal.service.ServiceContext;
 
 import com.liferay.portlet.expando.model.ExpandoBridge;
@@ -39,7 +42,9 @@ import java.util.Date;
  * @see com.liferay.tasks.model.impl.TasksEntryModelImpl
  * @generated
  */
-public interface TasksEntryModel extends BaseModel<TasksEntry>, GroupedModel {
+@ProviderType
+public interface TasksEntryModel extends BaseModel<TasksEntry>, GroupedModel,
+	ShardedModel {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
@@ -351,19 +356,19 @@ public interface TasksEntryModel extends BaseModel<TasksEntry>, GroupedModel {
 	public Object clone();
 
 	@Override
-	public int compareTo(TasksEntry tasksEntry);
+	public int compareTo(com.liferay.tasks.model.TasksEntry tasksEntry);
 
 	@Override
 	public int hashCode();
 
 	@Override
-	public CacheModel<TasksEntry> toCacheModel();
+	public CacheModel<com.liferay.tasks.model.TasksEntry> toCacheModel();
 
 	@Override
-	public TasksEntry toEscapedModel();
+	public com.liferay.tasks.model.TasksEntry toEscapedModel();
 
 	@Override
-	public TasksEntry toUnescapedModel();
+	public com.liferay.tasks.model.TasksEntry toUnescapedModel();
 
 	@Override
 	public String toString();

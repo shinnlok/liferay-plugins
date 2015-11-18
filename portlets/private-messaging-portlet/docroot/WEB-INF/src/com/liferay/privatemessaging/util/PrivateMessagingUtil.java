@@ -24,6 +24,8 @@ import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.search.BaseModelSearchResult;
+import com.liferay.portal.kernel.search.Indexer;
+import com.liferay.portal.kernel.search.IndexerRegistryUtil;
 import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.search.SortFactoryUtil;
 import com.liferay.portal.kernel.util.CharPool;
@@ -92,7 +94,8 @@ public class PrivateMessagingUtil {
 			params.put(
 				"socialRelationType",
 				new Long[] {
-					userId, new Long(SocialRelationConstants.TYPE_BI_CONNECTION)
+					userId,
+					Long.valueOf(SocialRelationConstants.TYPE_BI_CONNECTION)
 				});
 		}
 
@@ -102,7 +105,7 @@ public class PrivateMessagingUtil {
 
 			if (role != null) {
 				params.put("inherit", Boolean.TRUE);
-				params.put("usersRoles", new Long(role.getRoleId()));
+				params.put("usersRoles", Long.valueOf(role.getRoleId()));
 			}
 		}
 		catch (NoSuchRoleException nsre) {
@@ -110,7 +113,9 @@ public class PrivateMessagingUtil {
 
 		List<User> users = new ArrayList<>();
 
-		if (_USERS_INDEXER_ENABLED && _USERS_SEARCH_WITH_INDEX) {
+		Indexer<?> indexer = IndexerRegistryUtil.nullSafeGetIndexer(User.class);
+
+		if (indexer.isIndexerEnabled() && _USERS_SEARCH_WITH_INDEX) {
 			Sort sort = SortFactoryUtil.getSort(User.class, "firstName", "asc");
 
 			BaseModelSearchResult<User> baseModelSearchResult =
@@ -266,9 +271,6 @@ public class PrivateMessagingUtil {
 			return false;
 		}
 	}
-
-	private static final boolean _USERS_INDEXER_ENABLED = GetterUtil.getBoolean(
-		PropsUtil.get(PropsKeys.USERS_INDEXER_ENABLED));
 
 	private static final boolean _USERS_SEARCH_WITH_INDEX =
 		GetterUtil.getBoolean(PropsUtil.get(PropsKeys.USERS_SEARCH_WITH_INDEX));

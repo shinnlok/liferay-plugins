@@ -14,8 +14,11 @@
 
 package com.liferay.so.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.CacheModel;
+import com.liferay.portal.model.ShardedModel;
 import com.liferay.portal.service.ServiceContext;
 
 import com.liferay.portlet.expando.model.ExpandoBridge;
@@ -35,7 +38,8 @@ import java.io.Serializable;
  * @see com.liferay.so.model.impl.FavoriteSiteModelImpl
  * @generated
  */
-public interface FavoriteSiteModel extends BaseModel<FavoriteSite> {
+@ProviderType
+public interface FavoriteSiteModel extends BaseModel<FavoriteSite>, ShardedModel {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
@@ -89,6 +93,7 @@ public interface FavoriteSiteModel extends BaseModel<FavoriteSite> {
 	 *
 	 * @return the company ID of this favorite site
 	 */
+	@Override
 	public long getCompanyId();
 
 	/**
@@ -96,6 +101,7 @@ public interface FavoriteSiteModel extends BaseModel<FavoriteSite> {
 	 *
 	 * @param companyId the company ID of this favorite site
 	 */
+	@Override
 	public void setCompanyId(long companyId);
 
 	/**
@@ -163,19 +169,19 @@ public interface FavoriteSiteModel extends BaseModel<FavoriteSite> {
 	public Object clone();
 
 	@Override
-	public int compareTo(FavoriteSite favoriteSite);
+	public int compareTo(com.liferay.so.model.FavoriteSite favoriteSite);
 
 	@Override
 	public int hashCode();
 
 	@Override
-	public CacheModel<FavoriteSite> toCacheModel();
+	public CacheModel<com.liferay.so.model.FavoriteSite> toCacheModel();
 
 	@Override
-	public FavoriteSite toEscapedModel();
+	public com.liferay.so.model.FavoriteSite toEscapedModel();
 
 	@Override
-	public FavoriteSite toUnescapedModel();
+	public com.liferay.so.model.FavoriteSite toUnescapedModel();
 
 	@Override
 	public String toString();

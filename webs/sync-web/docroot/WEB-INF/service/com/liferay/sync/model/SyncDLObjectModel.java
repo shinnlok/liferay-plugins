@@ -19,6 +19,7 @@ import aQute.bnd.annotation.ProviderType;
 import com.liferay.portal.kernel.bean.AutoEscape;
 import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.CacheModel;
+import com.liferay.portal.model.ShardedModel;
 import com.liferay.portal.service.ServiceContext;
 
 import com.liferay.portlet.expando.model.ExpandoBridge;
@@ -41,7 +42,7 @@ import java.util.Date;
  * @generated
  */
 @ProviderType
-public interface SyncDLObjectModel extends BaseModel<SyncDLObject> {
+public interface SyncDLObjectModel extends BaseModel<SyncDLObject>, ShardedModel {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
@@ -81,6 +82,7 @@ public interface SyncDLObjectModel extends BaseModel<SyncDLObject> {
 	 *
 	 * @return the company ID of this sync d l object
 	 */
+	@Override
 	public long getCompanyId();
 
 	/**
@@ -88,6 +90,7 @@ public interface SyncDLObjectModel extends BaseModel<SyncDLObject> {
 	 *
 	 * @param companyId the company ID of this sync d l object
 	 */
+	@Override
 	public void setCompanyId(long companyId);
 
 	/**
@@ -188,6 +191,21 @@ public interface SyncDLObjectModel extends BaseModel<SyncDLObject> {
 	 * @param parentFolderId the parent folder ID of this sync d l object
 	 */
 	public void setParentFolderId(long parentFolderId);
+
+	/**
+	 * Returns the tree path of this sync d l object.
+	 *
+	 * @return the tree path of this sync d l object
+	 */
+	@AutoEscape
+	public String getTreePath();
+
+	/**
+	 * Sets the tree path of this sync d l object.
+	 *
+	 * @param treePath the tree path of this sync d l object
+	 */
+	public void setTreePath(String treePath);
 
 	/**
 	 * Returns the name of this sync d l object.
@@ -351,6 +369,20 @@ public interface SyncDLObjectModel extends BaseModel<SyncDLObject> {
 	 * @param event the event of this sync d l object
 	 */
 	public void setEvent(String event);
+
+	/**
+	 * Returns the last permission change date of this sync d l object.
+	 *
+	 * @return the last permission change date of this sync d l object
+	 */
+	public Date getLastPermissionChangeDate();
+
+	/**
+	 * Sets the last permission change date of this sync d l object.
+	 *
+	 * @param lastPermissionChangeDate the last permission change date of this sync d l object
+	 */
+	public void setLastPermissionChangeDate(Date lastPermissionChangeDate);
 
 	/**
 	 * Returns the lock expiration date of this sync d l object.

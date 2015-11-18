@@ -119,72 +119,36 @@ if (emailAddresses.isEmpty()) {
 </c:if>
 
 <%
-String aim = contact2.getAimSn();
-String icq = contact2.getIcqSn();
-String jabber = contact2.getJabberSn();
-String msn = contact2.getMsnSn();
-String skype = contact2.getSkypeSn();
-String ym = contact2.getYmSn();
+String jabberSn = contact2.getJabberSn();
+String skypeSn = contact2.getSkypeSn();
 
-if (Validator.isNull(aim) && Validator.isNull(icq) && Validator.isNull(jabber) && Validator.isNull(msn) && Validator.isNull(skype) && Validator.isNull(ym)) {
+if (Validator.isNull(jabberSn) && Validator.isNull(skypeSn)) {
 	incompleteProfile = true;
 }
 %>
 
-<c:if test="<%= showInstantMessenger && (Validator.isNotNull(aim) || Validator.isNotNull(icq) || Validator.isNotNull(jabber) || Validator.isNotNull(msn) || Validator.isNotNull(skype) || Validator.isNotNull(ym)) %>">
+<c:if test="<%= showInstantMessenger && (Validator.isNotNull(jabberSn) || Validator.isNotNull(skypeSn)) %>">
 	<div class="field-group section" data-sectionId="instantMessenger" data-title="<%= LanguageUtil.get(request, "instant-messenger") %>">
 		<i class="icon-edit"></i>
 
 		<h3><liferay-ui:message key="instant-messenger" />:</h3>
 
 		<ul class="property-list">
-			<c:if test="<%= Validator.isNotNull(aim) %>">
-				<li>
-					<span class="property-type"><liferay-ui:message key="aim" /></span>
-
-					<span class="property"><%= HtmlUtil.escape(aim) %></span>
-				</li>
-			</c:if>
-
-			<c:if test="<%= Validator.isNotNull(icq) %>">
-				<li>
-					<span class="property-type"><liferay-ui:message key="icq" /></span>
-
-					<span class="property"><%= HtmlUtil.escape(icq) %></span>
-				</li>
-			</c:if>
-
-			<c:if test="<%= Validator.isNotNull(jabber) %>">
+			<c:if test="<%= Validator.isNotNull(jabberSn) %>">
 				<li>
 					<span class="property-type"><liferay-ui:message key="jabber" /></span>
 
-					<span class="property"><%= HtmlUtil.escape(jabber) %></span>
+					<span class="property"><%= HtmlUtil.escape(jabberSn) %></span>
 				</li>
 			</c:if>
 
-			<c:if test="<%= Validator.isNotNull(msn) %>">
-				<li>
-					<span class="property-type"><liferay-ui:message key="msn" /></span>
-
-					<span class="property"><%= HtmlUtil.escape(msn) %></span>
-				</li>
-			</c:if>
-
-			<c:if test="<%= Validator.isNotNull(skype) %>">
+			<c:if test="<%= Validator.isNotNull(skypeSn) %>">
 				<li>
 					<span class="property-type"><liferay-ui:message key="skype" /></span>
 
-					<span class="property"><%= HtmlUtil.escape(skype) %></span>
+					<span class="property"><%= HtmlUtil.escape(skypeSn) %></span>
 
 					<i class="icon-skype"></i>
-				</li>
-			</c:if>
-
-			<c:if test="<%= Validator.isNotNull(ym) %>">
-				<li>
-					<span class="property-type"><liferay-ui:message key="ym" /></span>
-
-					<span class="property"><%= HtmlUtil.escape(ym) %></span>
 				</li>
 			</c:if>
 		</ul>

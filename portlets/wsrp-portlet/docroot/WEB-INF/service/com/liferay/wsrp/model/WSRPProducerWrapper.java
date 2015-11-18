@@ -14,9 +14,12 @@
 
 package com.liferay.wsrp.model;
 
-import com.liferay.portal.kernel.lar.StagedModelType;
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.ModelWrapper;
+
+import com.liferay.portlet.exportimport.lar.StagedModelType;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -31,6 +34,7 @@ import java.util.Map;
  * @see WSRPProducer
  * @generated
  */
+@ProviderType
 public class WSRPProducerWrapper implements WSRPProducer,
 	ModelWrapper<WSRPProducer> {
 	public WSRPProducerWrapper(WSRPProducer wsrpProducer) {
@@ -60,6 +64,7 @@ public class WSRPProducerWrapper implements WSRPProducer,
 		attributes.put("name", getName());
 		attributes.put("version", getVersion());
 		attributes.put("portletIds", getPortletIds());
+		attributes.put("lastPublishDate", getLastPublishDate());
 
 		return attributes;
 	}
@@ -119,6 +124,12 @@ public class WSRPProducerWrapper implements WSRPProducer,
 		if (portletIds != null) {
 			setPortletIds(portletIds);
 		}
+
+		Date lastPublishDate = (Date)attributes.get("lastPublishDate");
+
+		if (lastPublishDate != null) {
+			setLastPublishDate(lastPublishDate);
+		}
 	}
 
 	@Override
@@ -147,7 +158,7 @@ public class WSRPProducerWrapper implements WSRPProducer,
 	* @return the create date of this w s r p producer
 	*/
 	@Override
-	public java.util.Date getCreateDate() {
+	public Date getCreateDate() {
 		return _wsrpProducer.getCreateDate();
 	}
 
@@ -167,12 +178,22 @@ public class WSRPProducerWrapper implements WSRPProducer,
 	}
 
 	/**
+	* Returns the last publish date of this w s r p producer.
+	*
+	* @return the last publish date of this w s r p producer
+	*/
+	@Override
+	public Date getLastPublishDate() {
+		return _wsrpProducer.getLastPublishDate();
+	}
+
+	/**
 	* Returns the modified date of this w s r p producer.
 	*
 	* @return the modified date of this w s r p producer
 	*/
 	@Override
-	public java.util.Date getModifiedDate() {
+	public Date getModifiedDate() {
 		return _wsrpProducer.getModifiedDate();
 	}
 
@@ -292,7 +313,7 @@ public class WSRPProducerWrapper implements WSRPProducer,
 	* @param createDate the create date of this w s r p producer
 	*/
 	@Override
-	public void setCreateDate(java.util.Date createDate) {
+	public void setCreateDate(Date createDate) {
 		_wsrpProducer.setCreateDate(createDate);
 	}
 
@@ -325,12 +346,22 @@ public class WSRPProducerWrapper implements WSRPProducer,
 	}
 
 	/**
+	* Sets the last publish date of this w s r p producer.
+	*
+	* @param lastPublishDate the last publish date of this w s r p producer
+	*/
+	@Override
+	public void setLastPublishDate(Date lastPublishDate) {
+		_wsrpProducer.setLastPublishDate(lastPublishDate);
+	}
+
+	/**
 	* Sets the modified date of this w s r p producer.
 	*
 	* @param modifiedDate the modified date of this w s r p producer
 	*/
 	@Override
-	public void setModifiedDate(java.util.Date modifiedDate) {
+	public void setModifiedDate(Date modifiedDate) {
 		_wsrpProducer.setModifiedDate(modifiedDate);
 	}
 
@@ -481,5 +512,5 @@ public class WSRPProducerWrapper implements WSRPProducer,
 		_wsrpProducer.resetOriginalValues();
 	}
 
-	private WSRPProducer _wsrpProducer;
+	private final WSRPProducer _wsrpProducer;
 }

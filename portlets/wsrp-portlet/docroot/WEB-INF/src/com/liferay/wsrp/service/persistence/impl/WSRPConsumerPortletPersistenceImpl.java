@@ -14,8 +14,11 @@
 
 package com.liferay.wsrp.service.persistence.impl;
 
-import com.liferay.portal.kernel.cache.CacheRegistryUtil;
+import aQute.bnd.annotation.ProviderType;
+
+import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
+import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
 import com.liferay.portal.kernel.dao.orm.Query;
@@ -24,10 +27,7 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
-import com.liferay.portal.kernel.util.PropsKeys;
-import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
@@ -35,6 +35,8 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
 import com.liferay.portal.model.CacheModel;
+import com.liferay.portal.service.ServiceContext;
+import com.liferay.portal.service.ServiceContextThreadLocal;
 import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
 
 import com.liferay.wsrp.NoSuchConsumerPortletException;
@@ -46,6 +48,7 @@ import com.liferay.wsrp.service.persistence.WSRPConsumerPortletPersistence;
 import java.io.Serializable;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -62,9 +65,10 @@ import java.util.Set;
  *
  * @author Brian Wing Shun Chan
  * @see WSRPConsumerPortletPersistence
- * @see WSRPConsumerPortletUtil
+ * @see com.liferay.wsrp.service.persistence.WSRPConsumerPortletUtil
  * @generated
  */
+@ProviderType
 public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRPConsumerPortlet>
 	implements WSRPConsumerPortletPersistence {
 	/*
@@ -125,7 +129,7 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 	 * Returns a range of all the w s r p consumer portlets where uuid = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.wsrp.model.impl.WSRPConsumerPortletModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link WSRPConsumerPortletModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param uuid the uuid
@@ -142,7 +146,7 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 	 * Returns an ordered range of all the w s r p consumer portlets where uuid = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.wsrp.model.impl.WSRPConsumerPortletModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link WSRPConsumerPortletModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param uuid the uuid
@@ -154,6 +158,27 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 	@Override
 	public List<WSRPConsumerPortlet> findByUuid(String uuid, int start,
 		int end, OrderByComparator<WSRPConsumerPortlet> orderByComparator) {
+		return findByUuid(uuid, start, end, orderByComparator, true);
+	}
+
+	/**
+	 * Returns an ordered range of all the w s r p consumer portlets where uuid = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link WSRPConsumerPortletModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param uuid the uuid
+	 * @param start the lower bound of the range of w s r p consumer portlets
+	 * @param end the upper bound of the range of w s r p consumer portlets (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the ordered range of matching w s r p consumer portlets
+	 */
+	@Override
+	public List<WSRPConsumerPortlet> findByUuid(String uuid, int start,
+		int end, OrderByComparator<WSRPConsumerPortlet> orderByComparator,
+		boolean retrieveFromCache) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -169,15 +194,19 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 			finderArgs = new Object[] { uuid, start, end, orderByComparator };
 		}
 
-		List<WSRPConsumerPortlet> list = (List<WSRPConsumerPortlet>)FinderCacheUtil.getResult(finderPath,
-				finderArgs, this);
+		List<WSRPConsumerPortlet> list = null;
 
-		if ((list != null) && !list.isEmpty()) {
-			for (WSRPConsumerPortlet wsrpConsumerPortlet : list) {
-				if (!Validator.equals(uuid, wsrpConsumerPortlet.getUuid())) {
-					list = null;
+		if (retrieveFromCache) {
+			list = (List<WSRPConsumerPortlet>)finderCache.getResult(finderPath,
+					finderArgs, this);
 
-					break;
+			if ((list != null) && !list.isEmpty()) {
+				for (WSRPConsumerPortlet wsrpConsumerPortlet : list) {
+					if (!Validator.equals(uuid, wsrpConsumerPortlet.getUuid())) {
+						list = null;
+
+						break;
+					}
 				}
 			}
 		}
@@ -248,10 +277,10 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 
 				cacheResult(list);
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, list);
+				finderCache.putResult(finderPath, finderArgs, list);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -269,7 +298,7 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 	 * @param uuid the uuid
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching w s r p consumer portlet
-	 * @throws com.liferay.wsrp.NoSuchConsumerPortletException if a matching w s r p consumer portlet could not be found
+	 * @throws NoSuchConsumerPortletException if a matching w s r p consumer portlet could not be found
 	 */
 	@Override
 	public WSRPConsumerPortlet findByUuid_First(String uuid,
@@ -320,7 +349,7 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 	 * @param uuid the uuid
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching w s r p consumer portlet
-	 * @throws com.liferay.wsrp.NoSuchConsumerPortletException if a matching w s r p consumer portlet could not be found
+	 * @throws NoSuchConsumerPortletException if a matching w s r p consumer portlet could not be found
 	 */
 	@Override
 	public WSRPConsumerPortlet findByUuid_Last(String uuid,
@@ -378,7 +407,7 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 	 * @param uuid the uuid
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next w s r p consumer portlet
-	 * @throws com.liferay.wsrp.NoSuchConsumerPortletException if a w s r p consumer portlet with the primary key could not be found
+	 * @throws NoSuchConsumerPortletException if a w s r p consumer portlet with the primary key could not be found
 	 */
 	@Override
 	public WSRPConsumerPortlet[] findByUuid_PrevAndNext(
@@ -557,8 +586,7 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 
 		Object[] finderArgs = new Object[] { uuid };
 
-		Long count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs,
-				this);
+		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler query = new StringBundler(2);
@@ -596,10 +624,10 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 
 				count = (Long)q.uniqueResult();
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, count);
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -655,7 +683,7 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 	 * Returns a range of all the w s r p consumer portlets where uuid = &#63; and companyId = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.wsrp.model.impl.WSRPConsumerPortletModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link WSRPConsumerPortletModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param uuid the uuid
@@ -674,7 +702,7 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 	 * Returns an ordered range of all the w s r p consumer portlets where uuid = &#63; and companyId = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.wsrp.model.impl.WSRPConsumerPortletModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link WSRPConsumerPortletModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param uuid the uuid
@@ -688,6 +716,29 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 	public List<WSRPConsumerPortlet> findByUuid_C(String uuid, long companyId,
 		int start, int end,
 		OrderByComparator<WSRPConsumerPortlet> orderByComparator) {
+		return findByUuid_C(uuid, companyId, start, end, orderByComparator, true);
+	}
+
+	/**
+	 * Returns an ordered range of all the w s r p consumer portlets where uuid = &#63; and companyId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link WSRPConsumerPortletModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param uuid the uuid
+	 * @param companyId the company ID
+	 * @param start the lower bound of the range of w s r p consumer portlets
+	 * @param end the upper bound of the range of w s r p consumer portlets (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the ordered range of matching w s r p consumer portlets
+	 */
+	@Override
+	public List<WSRPConsumerPortlet> findByUuid_C(String uuid, long companyId,
+		int start, int end,
+		OrderByComparator<WSRPConsumerPortlet> orderByComparator,
+		boolean retrieveFromCache) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -707,16 +758,20 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 				};
 		}
 
-		List<WSRPConsumerPortlet> list = (List<WSRPConsumerPortlet>)FinderCacheUtil.getResult(finderPath,
-				finderArgs, this);
+		List<WSRPConsumerPortlet> list = null;
 
-		if ((list != null) && !list.isEmpty()) {
-			for (WSRPConsumerPortlet wsrpConsumerPortlet : list) {
-				if (!Validator.equals(uuid, wsrpConsumerPortlet.getUuid()) ||
-						(companyId != wsrpConsumerPortlet.getCompanyId())) {
-					list = null;
+		if (retrieveFromCache) {
+			list = (List<WSRPConsumerPortlet>)finderCache.getResult(finderPath,
+					finderArgs, this);
 
-					break;
+			if ((list != null) && !list.isEmpty()) {
+				for (WSRPConsumerPortlet wsrpConsumerPortlet : list) {
+					if (!Validator.equals(uuid, wsrpConsumerPortlet.getUuid()) ||
+							(companyId != wsrpConsumerPortlet.getCompanyId())) {
+						list = null;
+
+						break;
+					}
 				}
 			}
 		}
@@ -791,10 +846,10 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 
 				cacheResult(list);
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, list);
+				finderCache.putResult(finderPath, finderArgs, list);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -813,7 +868,7 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 	 * @param companyId the company ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching w s r p consumer portlet
-	 * @throws com.liferay.wsrp.NoSuchConsumerPortletException if a matching w s r p consumer portlet could not be found
+	 * @throws NoSuchConsumerPortletException if a matching w s r p consumer portlet could not be found
 	 */
 	@Override
 	public WSRPConsumerPortlet findByUuid_C_First(String uuid, long companyId,
@@ -869,7 +924,7 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 	 * @param companyId the company ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching w s r p consumer portlet
-	 * @throws com.liferay.wsrp.NoSuchConsumerPortletException if a matching w s r p consumer portlet could not be found
+	 * @throws NoSuchConsumerPortletException if a matching w s r p consumer portlet could not be found
 	 */
 	@Override
 	public WSRPConsumerPortlet findByUuid_C_Last(String uuid, long companyId,
@@ -932,7 +987,7 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 	 * @param companyId the company ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next w s r p consumer portlet
-	 * @throws com.liferay.wsrp.NoSuchConsumerPortletException if a w s r p consumer portlet with the primary key could not be found
+	 * @throws NoSuchConsumerPortletException if a w s r p consumer portlet with the primary key could not be found
 	 */
 	@Override
 	public WSRPConsumerPortlet[] findByUuid_C_PrevAndNext(
@@ -1117,8 +1172,7 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 
 		Object[] finderArgs = new Object[] { uuid, companyId };
 
-		Long count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs,
-				this);
+		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler query = new StringBundler(3);
@@ -1160,10 +1214,10 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 
 				count = (Long)q.uniqueResult();
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, count);
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -1219,7 +1273,7 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 	 * Returns a range of all the w s r p consumer portlets where wsrpConsumerId = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.wsrp.model.impl.WSRPConsumerPortletModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link WSRPConsumerPortletModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param wsrpConsumerId the wsrp consumer ID
@@ -1237,7 +1291,7 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 	 * Returns an ordered range of all the w s r p consumer portlets where wsrpConsumerId = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.wsrp.model.impl.WSRPConsumerPortletModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link WSRPConsumerPortletModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param wsrpConsumerId the wsrp consumer ID
@@ -1250,6 +1304,29 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 	public List<WSRPConsumerPortlet> findByWsrpConsumerId(long wsrpConsumerId,
 		int start, int end,
 		OrderByComparator<WSRPConsumerPortlet> orderByComparator) {
+		return findByWsrpConsumerId(wsrpConsumerId, start, end,
+			orderByComparator, true);
+	}
+
+	/**
+	 * Returns an ordered range of all the w s r p consumer portlets where wsrpConsumerId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link WSRPConsumerPortletModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param wsrpConsumerId the wsrp consumer ID
+	 * @param start the lower bound of the range of w s r p consumer portlets
+	 * @param end the upper bound of the range of w s r p consumer portlets (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the ordered range of matching w s r p consumer portlets
+	 */
+	@Override
+	public List<WSRPConsumerPortlet> findByWsrpConsumerId(long wsrpConsumerId,
+		int start, int end,
+		OrderByComparator<WSRPConsumerPortlet> orderByComparator,
+		boolean retrieveFromCache) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -1269,15 +1346,19 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 				};
 		}
 
-		List<WSRPConsumerPortlet> list = (List<WSRPConsumerPortlet>)FinderCacheUtil.getResult(finderPath,
-				finderArgs, this);
+		List<WSRPConsumerPortlet> list = null;
 
-		if ((list != null) && !list.isEmpty()) {
-			for (WSRPConsumerPortlet wsrpConsumerPortlet : list) {
-				if ((wsrpConsumerId != wsrpConsumerPortlet.getWsrpConsumerId())) {
-					list = null;
+		if (retrieveFromCache) {
+			list = (List<WSRPConsumerPortlet>)finderCache.getResult(finderPath,
+					finderArgs, this);
 
-					break;
+			if ((list != null) && !list.isEmpty()) {
+				for (WSRPConsumerPortlet wsrpConsumerPortlet : list) {
+					if ((wsrpConsumerId != wsrpConsumerPortlet.getWsrpConsumerId())) {
+						list = null;
+
+						break;
+					}
 				}
 			}
 		}
@@ -1334,10 +1415,10 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 
 				cacheResult(list);
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, list);
+				finderCache.putResult(finderPath, finderArgs, list);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -1355,7 +1436,7 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 	 * @param wsrpConsumerId the wsrp consumer ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching w s r p consumer portlet
-	 * @throws com.liferay.wsrp.NoSuchConsumerPortletException if a matching w s r p consumer portlet could not be found
+	 * @throws NoSuchConsumerPortletException if a matching w s r p consumer portlet could not be found
 	 */
 	@Override
 	public WSRPConsumerPortlet findByWsrpConsumerId_First(long wsrpConsumerId,
@@ -1407,7 +1488,7 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 	 * @param wsrpConsumerId the wsrp consumer ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching w s r p consumer portlet
-	 * @throws com.liferay.wsrp.NoSuchConsumerPortletException if a matching w s r p consumer portlet could not be found
+	 * @throws NoSuchConsumerPortletException if a matching w s r p consumer portlet could not be found
 	 */
 	@Override
 	public WSRPConsumerPortlet findByWsrpConsumerId_Last(long wsrpConsumerId,
@@ -1465,7 +1546,7 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 	 * @param wsrpConsumerId the wsrp consumer ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next w s r p consumer portlet
-	 * @throws com.liferay.wsrp.NoSuchConsumerPortletException if a w s r p consumer portlet with the primary key could not be found
+	 * @throws NoSuchConsumerPortletException if a w s r p consumer portlet with the primary key could not be found
 	 */
 	@Override
 	public WSRPConsumerPortlet[] findByWsrpConsumerId_PrevAndNext(
@@ -1632,8 +1713,7 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 
 		Object[] finderArgs = new Object[] { wsrpConsumerId };
 
-		Long count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs,
-				this);
+		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler query = new StringBundler(2);
@@ -1657,10 +1737,10 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 
 				count = (Long)q.uniqueResult();
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, count);
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -1686,12 +1766,12 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 			new String[] { Long.class.getName(), String.class.getName() });
 
 	/**
-	 * Returns the w s r p consumer portlet where wsrpConsumerId = &#63; and portletHandle = &#63; or throws a {@link com.liferay.wsrp.NoSuchConsumerPortletException} if it could not be found.
+	 * Returns the w s r p consumer portlet where wsrpConsumerId = &#63; and portletHandle = &#63; or throws a {@link NoSuchConsumerPortletException} if it could not be found.
 	 *
 	 * @param wsrpConsumerId the wsrp consumer ID
 	 * @param portletHandle the portlet handle
 	 * @return the matching w s r p consumer portlet
-	 * @throws com.liferay.wsrp.NoSuchConsumerPortletException if a matching w s r p consumer portlet could not be found
+	 * @throws NoSuchConsumerPortletException if a matching w s r p consumer portlet could not be found
 	 */
 	@Override
 	public WSRPConsumerPortlet findByW_P(long wsrpConsumerId,
@@ -1740,7 +1820,7 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 	 *
 	 * @param wsrpConsumerId the wsrp consumer ID
 	 * @param portletHandle the portlet handle
-	 * @param retrieveFromCache whether to use the finder cache
+	 * @param retrieveFromCache whether to retrieve from the finder cache
 	 * @return the matching w s r p consumer portlet, or <code>null</code> if a matching w s r p consumer portlet could not be found
 	 */
 	@Override
@@ -1751,7 +1831,7 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 		Object result = null;
 
 		if (retrieveFromCache) {
-			result = FinderCacheUtil.getResult(FINDER_PATH_FETCH_BY_W_P,
+			result = finderCache.getResult(FINDER_PATH_FETCH_BY_W_P,
 					finderArgs, this);
 		}
 
@@ -1806,8 +1886,8 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 				List<WSRPConsumerPortlet> list = q.list();
 
 				if (list.isEmpty()) {
-					FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_W_P,
-						finderArgs, list);
+					finderCache.putResult(FINDER_PATH_FETCH_BY_W_P, finderArgs,
+						list);
 				}
 				else {
 					if ((list.size() > 1) && _log.isWarnEnabled()) {
@@ -1827,14 +1907,13 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 							(wsrpConsumerPortlet.getPortletHandle() == null) ||
 							!wsrpConsumerPortlet.getPortletHandle()
 													.equals(portletHandle)) {
-						FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_W_P,
+						finderCache.putResult(FINDER_PATH_FETCH_BY_W_P,
 							finderArgs, wsrpConsumerPortlet);
 					}
 				}
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_W_P,
-					finderArgs);
+				finderCache.removeResult(FINDER_PATH_FETCH_BY_W_P, finderArgs);
 
 				throw processException(e);
 			}
@@ -1880,8 +1959,7 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 
 		Object[] finderArgs = new Object[] { wsrpConsumerId, portletHandle };
 
-		Long count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs,
-				this);
+		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler query = new StringBundler(3);
@@ -1923,10 +2001,10 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 
 				count = (Long)q.uniqueResult();
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, count);
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -1954,11 +2032,11 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 	 */
 	@Override
 	public void cacheResult(WSRPConsumerPortlet wsrpConsumerPortlet) {
-		EntityCacheUtil.putResult(WSRPConsumerPortletModelImpl.ENTITY_CACHE_ENABLED,
+		entityCache.putResult(WSRPConsumerPortletModelImpl.ENTITY_CACHE_ENABLED,
 			WSRPConsumerPortletImpl.class, wsrpConsumerPortlet.getPrimaryKey(),
 			wsrpConsumerPortlet);
 
-		FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_W_P,
+		finderCache.putResult(FINDER_PATH_FETCH_BY_W_P,
 			new Object[] {
 				wsrpConsumerPortlet.getWsrpConsumerId(),
 				wsrpConsumerPortlet.getPortletHandle()
@@ -1975,7 +2053,7 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 	@Override
 	public void cacheResult(List<WSRPConsumerPortlet> wsrpConsumerPortlets) {
 		for (WSRPConsumerPortlet wsrpConsumerPortlet : wsrpConsumerPortlets) {
-			if (EntityCacheUtil.getResult(
+			if (entityCache.getResult(
 						WSRPConsumerPortletModelImpl.ENTITY_CACHE_ENABLED,
 						WSRPConsumerPortletImpl.class,
 						wsrpConsumerPortlet.getPrimaryKey()) == null) {
@@ -1991,96 +2069,88 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 	 * Clears the cache for all w s r p consumer portlets.
 	 *
 	 * <p>
-	 * The {@link com.liferay.portal.kernel.dao.orm.EntityCache} and {@link com.liferay.portal.kernel.dao.orm.FinderCache} are both cleared by this method.
+	 * The {@link EntityCache} and {@link FinderCache} are both cleared by this method.
 	 * </p>
 	 */
 	@Override
 	public void clearCache() {
-		if (_HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE) {
-			CacheRegistryUtil.clear(WSRPConsumerPortletImpl.class.getName());
-		}
+		entityCache.clearCache(WSRPConsumerPortletImpl.class);
 
-		EntityCacheUtil.clearCache(WSRPConsumerPortletImpl.class);
-
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_ENTITY);
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_ENTITY);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
 	/**
 	 * Clears the cache for the w s r p consumer portlet.
 	 *
 	 * <p>
-	 * The {@link com.liferay.portal.kernel.dao.orm.EntityCache} and {@link com.liferay.portal.kernel.dao.orm.FinderCache} are both cleared by this method.
+	 * The {@link EntityCache} and {@link FinderCache} are both cleared by this method.
 	 * </p>
 	 */
 	@Override
 	public void clearCache(WSRPConsumerPortlet wsrpConsumerPortlet) {
-		EntityCacheUtil.removeResult(WSRPConsumerPortletModelImpl.ENTITY_CACHE_ENABLED,
+		entityCache.removeResult(WSRPConsumerPortletModelImpl.ENTITY_CACHE_ENABLED,
 			WSRPConsumerPortletImpl.class, wsrpConsumerPortlet.getPrimaryKey());
 
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 
-		clearUniqueFindersCache(wsrpConsumerPortlet);
+		clearUniqueFindersCache((WSRPConsumerPortletModelImpl)wsrpConsumerPortlet);
 	}
 
 	@Override
 	public void clearCache(List<WSRPConsumerPortlet> wsrpConsumerPortlets) {
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 
 		for (WSRPConsumerPortlet wsrpConsumerPortlet : wsrpConsumerPortlets) {
-			EntityCacheUtil.removeResult(WSRPConsumerPortletModelImpl.ENTITY_CACHE_ENABLED,
+			entityCache.removeResult(WSRPConsumerPortletModelImpl.ENTITY_CACHE_ENABLED,
 				WSRPConsumerPortletImpl.class,
 				wsrpConsumerPortlet.getPrimaryKey());
 
-			clearUniqueFindersCache(wsrpConsumerPortlet);
+			clearUniqueFindersCache((WSRPConsumerPortletModelImpl)wsrpConsumerPortlet);
 		}
 	}
 
 	protected void cacheUniqueFindersCache(
-		WSRPConsumerPortlet wsrpConsumerPortlet) {
-		if (wsrpConsumerPortlet.isNew()) {
+		WSRPConsumerPortletModelImpl wsrpConsumerPortletModelImpl, boolean isNew) {
+		if (isNew) {
 			Object[] args = new Object[] {
-					wsrpConsumerPortlet.getWsrpConsumerId(),
-					wsrpConsumerPortlet.getPortletHandle()
+					wsrpConsumerPortletModelImpl.getWsrpConsumerId(),
+					wsrpConsumerPortletModelImpl.getPortletHandle()
 				};
 
-			FinderCacheUtil.putResult(FINDER_PATH_COUNT_BY_W_P, args,
+			finderCache.putResult(FINDER_PATH_COUNT_BY_W_P, args,
 				Long.valueOf(1));
-			FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_W_P, args,
-				wsrpConsumerPortlet);
+			finderCache.putResult(FINDER_PATH_FETCH_BY_W_P, args,
+				wsrpConsumerPortletModelImpl);
 		}
 		else {
-			WSRPConsumerPortletModelImpl wsrpConsumerPortletModelImpl = (WSRPConsumerPortletModelImpl)wsrpConsumerPortlet;
-
 			if ((wsrpConsumerPortletModelImpl.getColumnBitmask() &
 					FINDER_PATH_FETCH_BY_W_P.getColumnBitmask()) != 0) {
 				Object[] args = new Object[] {
-						wsrpConsumerPortlet.getWsrpConsumerId(),
-						wsrpConsumerPortlet.getPortletHandle()
+						wsrpConsumerPortletModelImpl.getWsrpConsumerId(),
+						wsrpConsumerPortletModelImpl.getPortletHandle()
 					};
 
-				FinderCacheUtil.putResult(FINDER_PATH_COUNT_BY_W_P, args,
+				finderCache.putResult(FINDER_PATH_COUNT_BY_W_P, args,
 					Long.valueOf(1));
-				FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_W_P, args,
-					wsrpConsumerPortlet);
+				finderCache.putResult(FINDER_PATH_FETCH_BY_W_P, args,
+					wsrpConsumerPortletModelImpl);
 			}
 		}
 	}
 
 	protected void clearUniqueFindersCache(
-		WSRPConsumerPortlet wsrpConsumerPortlet) {
-		WSRPConsumerPortletModelImpl wsrpConsumerPortletModelImpl = (WSRPConsumerPortletModelImpl)wsrpConsumerPortlet;
-
+		WSRPConsumerPortletModelImpl wsrpConsumerPortletModelImpl) {
 		Object[] args = new Object[] {
-				wsrpConsumerPortlet.getWsrpConsumerId(),
-				wsrpConsumerPortlet.getPortletHandle()
+				wsrpConsumerPortletModelImpl.getWsrpConsumerId(),
+				wsrpConsumerPortletModelImpl.getPortletHandle()
 			};
 
-		FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_W_P, args);
-		FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_W_P, args);
+		finderCache.removeResult(FINDER_PATH_COUNT_BY_W_P, args);
+		finderCache.removeResult(FINDER_PATH_FETCH_BY_W_P, args);
 
 		if ((wsrpConsumerPortletModelImpl.getColumnBitmask() &
 				FINDER_PATH_FETCH_BY_W_P.getColumnBitmask()) != 0) {
@@ -2089,8 +2159,8 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 					wsrpConsumerPortletModelImpl.getOriginalPortletHandle()
 				};
 
-			FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_W_P, args);
-			FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_W_P, args);
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_W_P, args);
+			finderCache.removeResult(FINDER_PATH_FETCH_BY_W_P, args);
 		}
 	}
 
@@ -2119,7 +2189,7 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 	 *
 	 * @param wsrpConsumerPortletId the primary key of the w s r p consumer portlet
 	 * @return the w s r p consumer portlet that was removed
-	 * @throws com.liferay.wsrp.NoSuchConsumerPortletException if a w s r p consumer portlet with the primary key could not be found
+	 * @throws NoSuchConsumerPortletException if a w s r p consumer portlet with the primary key could not be found
 	 */
 	@Override
 	public WSRPConsumerPortlet remove(long wsrpConsumerPortletId)
@@ -2132,7 +2202,7 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 	 *
 	 * @param primaryKey the primary key of the w s r p consumer portlet
 	 * @return the w s r p consumer portlet that was removed
-	 * @throws com.liferay.wsrp.NoSuchConsumerPortletException if a w s r p consumer portlet with the primary key could not be found
+	 * @throws NoSuchConsumerPortletException if a w s r p consumer portlet with the primary key could not be found
 	 */
 	@Override
 	public WSRPConsumerPortlet remove(Serializable primaryKey)
@@ -2202,7 +2272,7 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 
 	@Override
 	public WSRPConsumerPortlet updateImpl(
-		com.liferay.wsrp.model.WSRPConsumerPortlet wsrpConsumerPortlet) {
+		WSRPConsumerPortlet wsrpConsumerPortlet) {
 		wsrpConsumerPortlet = toUnwrappedModel(wsrpConsumerPortlet);
 
 		boolean isNew = wsrpConsumerPortlet.isNew();
@@ -2213,6 +2283,30 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 			String uuid = PortalUUIDUtil.generate();
 
 			wsrpConsumerPortlet.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext = ServiceContextThreadLocal.getServiceContext();
+
+		Date now = new Date();
+
+		if (isNew && (wsrpConsumerPortlet.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				wsrpConsumerPortlet.setCreateDate(now);
+			}
+			else {
+				wsrpConsumerPortlet.setCreateDate(serviceContext.getCreateDate(
+						now));
+			}
+		}
+
+		if (!wsrpConsumerPortletModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				wsrpConsumerPortlet.setModifiedDate(now);
+			}
+			else {
+				wsrpConsumerPortlet.setModifiedDate(serviceContext.getModifiedDate(
+						now));
+			}
 		}
 
 		Session session = null;
@@ -2226,7 +2320,7 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 				wsrpConsumerPortlet.setNew(false);
 			}
 			else {
-				session.merge(wsrpConsumerPortlet);
+				wsrpConsumerPortlet = (WSRPConsumerPortlet)session.merge(wsrpConsumerPortlet);
 			}
 		}
 		catch (Exception e) {
@@ -2236,10 +2330,10 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 			closeSession(session);
 		}
 
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 
 		if (isNew || !WSRPConsumerPortletModelImpl.COLUMN_BITMASK_ENABLED) {
-			FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 		}
 
 		else {
@@ -2249,14 +2343,14 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 						wsrpConsumerPortletModelImpl.getOriginalUuid()
 					};
 
-				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_UUID, args);
-				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID,
+				finderCache.removeResult(FINDER_PATH_COUNT_BY_UUID, args);
+				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID,
 					args);
 
 				args = new Object[] { wsrpConsumerPortletModelImpl.getUuid() };
 
-				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_UUID, args);
-				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID,
+				finderCache.removeResult(FINDER_PATH_COUNT_BY_UUID, args);
+				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID,
 					args);
 			}
 
@@ -2267,8 +2361,8 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 						wsrpConsumerPortletModelImpl.getOriginalCompanyId()
 					};
 
-				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_UUID_C, args);
-				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID_C,
+				finderCache.removeResult(FINDER_PATH_COUNT_BY_UUID_C, args);
+				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID_C,
 					args);
 
 				args = new Object[] {
@@ -2276,8 +2370,8 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 						wsrpConsumerPortletModelImpl.getCompanyId()
 					};
 
-				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_UUID_C, args);
-				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID_C,
+				finderCache.removeResult(FINDER_PATH_COUNT_BY_UUID_C, args);
+				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID_C,
 					args);
 			}
 
@@ -2287,28 +2381,28 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 						wsrpConsumerPortletModelImpl.getOriginalWsrpConsumerId()
 					};
 
-				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_WSRPCONSUMERID,
+				finderCache.removeResult(FINDER_PATH_COUNT_BY_WSRPCONSUMERID,
 					args);
-				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_WSRPCONSUMERID,
+				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_WSRPCONSUMERID,
 					args);
 
 				args = new Object[] {
 						wsrpConsumerPortletModelImpl.getWsrpConsumerId()
 					};
 
-				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_WSRPCONSUMERID,
+				finderCache.removeResult(FINDER_PATH_COUNT_BY_WSRPCONSUMERID,
 					args);
-				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_WSRPCONSUMERID,
+				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_WSRPCONSUMERID,
 					args);
 			}
 		}
 
-		EntityCacheUtil.putResult(WSRPConsumerPortletModelImpl.ENTITY_CACHE_ENABLED,
+		entityCache.putResult(WSRPConsumerPortletModelImpl.ENTITY_CACHE_ENABLED,
 			WSRPConsumerPortletImpl.class, wsrpConsumerPortlet.getPrimaryKey(),
 			wsrpConsumerPortlet, false);
 
-		clearUniqueFindersCache(wsrpConsumerPortlet);
-		cacheUniqueFindersCache(wsrpConsumerPortlet);
+		clearUniqueFindersCache(wsrpConsumerPortletModelImpl);
+		cacheUniqueFindersCache(wsrpConsumerPortletModelImpl, isNew);
 
 		wsrpConsumerPortlet.resetOriginalValues();
 
@@ -2334,6 +2428,7 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 		wsrpConsumerPortletImpl.setWsrpConsumerId(wsrpConsumerPortlet.getWsrpConsumerId());
 		wsrpConsumerPortletImpl.setName(wsrpConsumerPortlet.getName());
 		wsrpConsumerPortletImpl.setPortletHandle(wsrpConsumerPortlet.getPortletHandle());
+		wsrpConsumerPortletImpl.setLastPublishDate(wsrpConsumerPortlet.getLastPublishDate());
 
 		return wsrpConsumerPortletImpl;
 	}
@@ -2343,7 +2438,7 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 	 *
 	 * @param primaryKey the primary key of the w s r p consumer portlet
 	 * @return the w s r p consumer portlet
-	 * @throws com.liferay.wsrp.NoSuchConsumerPortletException if a w s r p consumer portlet with the primary key could not be found
+	 * @throws NoSuchConsumerPortletException if a w s r p consumer portlet with the primary key could not be found
 	 */
 	@Override
 	public WSRPConsumerPortlet findByPrimaryKey(Serializable primaryKey)
@@ -2363,11 +2458,11 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 	}
 
 	/**
-	 * Returns the w s r p consumer portlet with the primary key or throws a {@link com.liferay.wsrp.NoSuchConsumerPortletException} if it could not be found.
+	 * Returns the w s r p consumer portlet with the primary key or throws a {@link NoSuchConsumerPortletException} if it could not be found.
 	 *
 	 * @param wsrpConsumerPortletId the primary key of the w s r p consumer portlet
 	 * @return the w s r p consumer portlet
-	 * @throws com.liferay.wsrp.NoSuchConsumerPortletException if a w s r p consumer portlet with the primary key could not be found
+	 * @throws NoSuchConsumerPortletException if a w s r p consumer portlet with the primary key could not be found
 	 */
 	@Override
 	public WSRPConsumerPortlet findByPrimaryKey(long wsrpConsumerPortletId)
@@ -2383,7 +2478,7 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 	 */
 	@Override
 	public WSRPConsumerPortlet fetchByPrimaryKey(Serializable primaryKey) {
-		WSRPConsumerPortlet wsrpConsumerPortlet = (WSRPConsumerPortlet)EntityCacheUtil.getResult(WSRPConsumerPortletModelImpl.ENTITY_CACHE_ENABLED,
+		WSRPConsumerPortlet wsrpConsumerPortlet = (WSRPConsumerPortlet)entityCache.getResult(WSRPConsumerPortletModelImpl.ENTITY_CACHE_ENABLED,
 				WSRPConsumerPortletImpl.class, primaryKey);
 
 		if (wsrpConsumerPortlet == _nullWSRPConsumerPortlet) {
@@ -2403,13 +2498,13 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 					cacheResult(wsrpConsumerPortlet);
 				}
 				else {
-					EntityCacheUtil.putResult(WSRPConsumerPortletModelImpl.ENTITY_CACHE_ENABLED,
+					entityCache.putResult(WSRPConsumerPortletModelImpl.ENTITY_CACHE_ENABLED,
 						WSRPConsumerPortletImpl.class, primaryKey,
 						_nullWSRPConsumerPortlet);
 				}
 			}
 			catch (Exception e) {
-				EntityCacheUtil.removeResult(WSRPConsumerPortletModelImpl.ENTITY_CACHE_ENABLED,
+				entityCache.removeResult(WSRPConsumerPortletModelImpl.ENTITY_CACHE_ENABLED,
 					WSRPConsumerPortletImpl.class, primaryKey);
 
 				throw processException(e);
@@ -2459,7 +2554,7 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			WSRPConsumerPortlet wsrpConsumerPortlet = (WSRPConsumerPortlet)EntityCacheUtil.getResult(WSRPConsumerPortletModelImpl.ENTITY_CACHE_ENABLED,
+			WSRPConsumerPortlet wsrpConsumerPortlet = (WSRPConsumerPortlet)entityCache.getResult(WSRPConsumerPortletModelImpl.ENTITY_CACHE_ENABLED,
 					WSRPConsumerPortletImpl.class, primaryKey);
 
 			if (wsrpConsumerPortlet == null) {
@@ -2512,7 +2607,7 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 			}
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
-				EntityCacheUtil.putResult(WSRPConsumerPortletModelImpl.ENTITY_CACHE_ENABLED,
+				entityCache.putResult(WSRPConsumerPortletModelImpl.ENTITY_CACHE_ENABLED,
 					WSRPConsumerPortletImpl.class, primaryKey,
 					_nullWSRPConsumerPortlet);
 			}
@@ -2541,7 +2636,7 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 	 * Returns a range of all the w s r p consumer portlets.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.wsrp.model.impl.WSRPConsumerPortletModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link WSRPConsumerPortletModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of w s r p consumer portlets
@@ -2557,7 +2652,7 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 	 * Returns an ordered range of all the w s r p consumer portlets.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.wsrp.model.impl.WSRPConsumerPortletModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link WSRPConsumerPortletModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of w s r p consumer portlets
@@ -2568,6 +2663,26 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 	@Override
 	public List<WSRPConsumerPortlet> findAll(int start, int end,
 		OrderByComparator<WSRPConsumerPortlet> orderByComparator) {
+		return findAll(start, end, orderByComparator, true);
+	}
+
+	/**
+	 * Returns an ordered range of all the w s r p consumer portlets.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link WSRPConsumerPortletModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param start the lower bound of the range of w s r p consumer portlets
+	 * @param end the upper bound of the range of w s r p consumer portlets (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the ordered range of w s r p consumer portlets
+	 */
+	@Override
+	public List<WSRPConsumerPortlet> findAll(int start, int end,
+		OrderByComparator<WSRPConsumerPortlet> orderByComparator,
+		boolean retrieveFromCache) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -2583,8 +2698,12 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 			finderArgs = new Object[] { start, end, orderByComparator };
 		}
 
-		List<WSRPConsumerPortlet> list = (List<WSRPConsumerPortlet>)FinderCacheUtil.getResult(finderPath,
-				finderArgs, this);
+		List<WSRPConsumerPortlet> list = null;
+
+		if (retrieveFromCache) {
+			list = (List<WSRPConsumerPortlet>)finderCache.getResult(finderPath,
+					finderArgs, this);
+		}
 
 		if (list == null) {
 			StringBundler query = null;
@@ -2631,10 +2750,10 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 
 				cacheResult(list);
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, list);
+				finderCache.putResult(finderPath, finderArgs, list);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -2664,7 +2783,7 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)FinderCacheUtil.getResult(FINDER_PATH_COUNT_ALL,
+		Long count = (Long)finderCache.getResult(FINDER_PATH_COUNT_ALL,
 				FINDER_ARGS_EMPTY, this);
 
 		if (count == null) {
@@ -2677,11 +2796,11 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 
 				count = (Long)q.uniqueResult();
 
-				FinderCacheUtil.putResult(FINDER_PATH_COUNT_ALL,
-					FINDER_ARGS_EMPTY, count);
+				finderCache.putResult(FINDER_PATH_COUNT_ALL, FINDER_ARGS_EMPTY,
+					count);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_ALL,
+				finderCache.removeResult(FINDER_PATH_COUNT_ALL,
 					FINDER_ARGS_EMPTY);
 
 				throw processException(e);
@@ -2695,8 +2814,13 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 	}
 
 	@Override
-	protected Set<String> getBadColumnNames() {
+	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return WSRPConsumerPortletModelImpl.TABLE_COLUMNS_MAP;
 	}
 
 	/**
@@ -2706,12 +2830,14 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 	}
 
 	public void destroy() {
-		EntityCacheUtil.removeCache(WSRPConsumerPortletImpl.class.getName());
-		FinderCacheUtil.removeCache(FINDER_CLASS_NAME_ENTITY);
-		FinderCacheUtil.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		FinderCacheUtil.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		entityCache.removeCache(WSRPConsumerPortletImpl.class.getName());
+		finderCache.removeCache(FINDER_CLASS_NAME_ENTITY);
+		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
+	protected EntityCache entityCache = EntityCacheUtil.getEntityCache();
+	protected FinderCache finderCache = FinderCacheUtil.getFinderCache();
 	private static final String _SQL_SELECT_WSRPCONSUMERPORTLET = "SELECT wsrpConsumerPortlet FROM WSRPConsumerPortlet wsrpConsumerPortlet";
 	private static final String _SQL_SELECT_WSRPCONSUMERPORTLET_WHERE_PKS_IN = "SELECT wsrpConsumerPortlet FROM WSRPConsumerPortlet wsrpConsumerPortlet WHERE wsrpConsumerPortletId IN (";
 	private static final String _SQL_SELECT_WSRPCONSUMERPORTLET_WHERE = "SELECT wsrpConsumerPortlet FROM WSRPConsumerPortlet wsrpConsumerPortlet WHERE ";
@@ -2720,13 +2846,11 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 	private static final String _ORDER_BY_ENTITY_ALIAS = "wsrpConsumerPortlet.";
 	private static final String _NO_SUCH_ENTITY_WITH_PRIMARY_KEY = "No WSRPConsumerPortlet exists with the primary key ";
 	private static final String _NO_SUCH_ENTITY_WITH_KEY = "No WSRPConsumerPortlet exists with the key {";
-	private static final boolean _HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE = GetterUtil.getBoolean(PropsUtil.get(
-				PropsKeys.HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE));
-	private static Log _log = LogFactoryUtil.getLog(WSRPConsumerPortletPersistenceImpl.class);
-	private static Set<String> _badColumnNames = SetUtil.fromArray(new String[] {
+	private static final Log _log = LogFactoryUtil.getLog(WSRPConsumerPortletPersistenceImpl.class);
+	private static final Set<String> _badColumnNames = SetUtil.fromArray(new String[] {
 				"uuid"
 			});
-	private static WSRPConsumerPortlet _nullWSRPConsumerPortlet = new WSRPConsumerPortletImpl() {
+	private static final WSRPConsumerPortlet _nullWSRPConsumerPortlet = new WSRPConsumerPortletImpl() {
 			@Override
 			public Object clone() {
 				return this;
@@ -2738,7 +2862,7 @@ public class WSRPConsumerPortletPersistenceImpl extends BasePersistenceImpl<WSRP
 			}
 		};
 
-	private static CacheModel<WSRPConsumerPortlet> _nullWSRPConsumerPortletCacheModel =
+	private static final CacheModel<WSRPConsumerPortlet> _nullWSRPConsumerPortletCacheModel =
 		new CacheModel<WSRPConsumerPortlet>() {
 			@Override
 			public WSRPConsumerPortlet toEntityModel() {

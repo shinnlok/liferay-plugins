@@ -14,6 +14,8 @@
 
 package com.liferay.chat.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.service.ServiceWrapper;
 
 /**
@@ -23,6 +25,7 @@ import com.liferay.portal.service.ServiceWrapper;
  * @see StatusLocalService
  * @generated
  */
+@ProviderType
 public class StatusLocalServiceWrapper implements StatusLocalService,
 	ServiceWrapper<StatusLocalService> {
 	public StatusLocalServiceWrapper(StatusLocalService statusLocalService) {
@@ -146,10 +149,10 @@ public class StatusLocalServiceWrapper implements StatusLocalService,
 	}
 
 	/**
-	* Returns the number of rows that match the dynamic query.
+	* Returns the number of rows matching the dynamic query.
 	*
 	* @param dynamicQuery the dynamic query
-	* @return the number of rows that match the dynamic query
+	* @return the number of rows matching the dynamic query
 	*/
 	@Override
 	public long dynamicQueryCount(
@@ -158,11 +161,11 @@ public class StatusLocalServiceWrapper implements StatusLocalService,
 	}
 
 	/**
-	* Returns the number of rows that match the dynamic query.
+	* Returns the number of rows matching the dynamic query.
 	*
 	* @param dynamicQuery the dynamic query
 	* @param projection the projection to apply to the query
-	* @return the number of rows that match the dynamic query
+	* @return the number of rows matching the dynamic query
 	*/
 	@Override
 	public long dynamicQueryCount(
@@ -188,21 +191,21 @@ public class StatusLocalServiceWrapper implements StatusLocalService,
 			modifiedDate, start, end);
 	}
 
-	/**
-	* Returns the Spring bean ID for this bean.
-	*
-	* @return the Spring bean ID for this bean
-	*/
-	@Override
-	public java.lang.String getBeanIdentifier() {
-		return _statusLocalService.getBeanIdentifier();
-	}
-
 	@Override
 	public java.util.List<java.lang.Object[]> getGroupStatuses(long userId,
 		long modifiedDate, java.lang.String[] groupNames, int start, int end) {
 		return _statusLocalService.getGroupStatuses(userId, modifiedDate,
 			groupNames, start, end);
+	}
+
+	/**
+	* Returns the OSGi service identifier.
+	*
+	* @return the OSGi service identifier
+	*/
+	@Override
+	public java.lang.String getOSGiServiceIdentifier() {
+		return _statusLocalService.getOSGiServiceIdentifier();
 	}
 
 	@Override
@@ -276,16 +279,6 @@ public class StatusLocalServiceWrapper implements StatusLocalService,
 		java.lang.String[] parameterTypes, java.lang.Object[] arguments)
 		throws java.lang.Throwable {
 		return _statusLocalService.invokeMethod(name, parameterTypes, arguments);
-	}
-
-	/**
-	* Sets the Spring bean ID for this bean.
-	*
-	* @param beanIdentifier the Spring bean ID for this bean
-	*/
-	@Override
-	public void setBeanIdentifier(java.lang.String beanIdentifier) {
-		_statusLocalService.setBeanIdentifier(beanIdentifier);
 	}
 
 	/**

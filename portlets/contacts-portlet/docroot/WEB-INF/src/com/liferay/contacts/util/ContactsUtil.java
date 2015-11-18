@@ -291,39 +291,15 @@ public class ContactsUtil {
 	private static String _getInstantMessaging(Contact contact) {
 		StringBundler sb = new StringBundler(18);
 
-		if (Validator.isNotNull(contact.getAimSn())) {
-			sb.append("X-AIM;type=OTHER;type=pref:");
-			sb.append(contact.getAimSn());
-			sb.append(StringPool.NEW_LINE);
-		}
-
-		if (Validator.isNotNull(contact.getIcqSn())) {
-			sb.append("X-ICQ;type=OTHER;type=pref:");
-			sb.append(contact.getAimSn());
-			sb.append(StringPool.NEW_LINE);
-		}
-
 		if (Validator.isNotNull(contact.getJabberSn())) {
 			sb.append("X-JABBER;type=OTHER;type=pref:");
 			sb.append(contact.getJabberSn());
 			sb.append(StringPool.NEW_LINE);
 		}
 
-		if (Validator.isNotNull(contact.getMsnSn())) {
-			sb.append("X-MSN;type=OTHER;type=pref:");
-			sb.append(contact.getMsnSn());
-			sb.append(StringPool.NEW_LINE);
-		}
-
 		if (Validator.isNotNull(contact.getSkypeSn())) {
 			sb.append("X-SKYPE;type=OTHER;type=pref:");
 			sb.append(contact.getSkypeSn());
-			sb.append(StringPool.NEW_LINE);
-		}
-
-		if (Validator.isNotNull(contact.getYmSn())) {
-			sb.append("X-YM;type=OTHER;type=pref:");
-			sb.append(contact.getYmSn());
 			sb.append(StringPool.NEW_LINE);
 		}
 

@@ -14,6 +14,9 @@
 
 package com.liferay.ams.model;
 
+import aQute.bnd.annotation.ProviderType;
+
+import com.liferay.portal.kernel.util.Accessor;
 import com.liferay.portal.model.PersistedModel;
 
 /**
@@ -25,10 +28,27 @@ import com.liferay.portal.model.PersistedModel;
  * @see com.liferay.ams.model.impl.CheckoutModelImpl
  * @generated
  */
+@ProviderType
 public interface Checkout extends CheckoutModel, PersistedModel {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
 	 * Never modify this interface directly. Add methods to {@link com.liferay.ams.model.impl.CheckoutImpl} and rerun ServiceBuilder to automatically copy the method declarations to this interface.
 	 */
+	public static final Accessor<Checkout, Long> CHECKOUT_ID_ACCESSOR = new Accessor<Checkout, Long>() {
+			@Override
+			public Long get(Checkout checkout) {
+				return checkout.getCheckoutId();
+			}
+
+			@Override
+			public Class<Long> getAttributeClass() {
+				return Long.class;
+			}
+
+			@Override
+			public Class<Checkout> getTypeClass() {
+				return Checkout.class;
+			}
+		};
 }

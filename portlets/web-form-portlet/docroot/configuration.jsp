@@ -89,7 +89,7 @@ if (WebFormUtil.getTableRowsCount(company.getCompanyId(), databaseTableName) > 0
 			</aui:fieldset>
 
 			<aui:fieldset cssClass="handle-data" label="database">
-				<aui:input name="preferences--saveToDatabase--" type="checkbox" value="<%= saveToDatabase %>" />
+				<aui:input helpMessage="export-functionality-will-only-be-available-for-data-saved-to-the-database" name="preferences--saveToDatabase--" type="checkbox" value="<%= saveToDatabase %>" />
 			</aui:fieldset>
 
 			<aui:fieldset cssClass="handle-data" label="file">
@@ -135,7 +135,7 @@ if (WebFormUtil.getTableRowsCount(company.getCompanyId(), databaseTableName) > 0
 				<aui:input name="updateFields" type="hidden" value="<%= !fieldsEditingDisabled %>" />
 
 				<%
-				String formFieldsIndexesParam = ParamUtil.getString(renderRequest, "formFieldsIndexes") ;
+				String formFieldsIndexesParam = ParamUtil.getString(renderRequest, "formFieldsIndexes");
 
 				int[] formFieldsIndexes = null;
 

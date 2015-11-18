@@ -14,10 +14,13 @@
 
 package com.liferay.twitter.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.bean.AutoEscape;
 import com.liferay.portal.model.AuditedModel;
 import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.CacheModel;
+import com.liferay.portal.model.ShardedModel;
 import com.liferay.portal.service.ServiceContext;
 
 import com.liferay.portlet.expando.model.ExpandoBridge;
@@ -39,7 +42,8 @@ import java.util.Date;
  * @see com.liferay.twitter.model.impl.FeedModelImpl
  * @generated
  */
-public interface FeedModel extends AuditedModel, BaseModel<Feed> {
+@ProviderType
+public interface FeedModel extends AuditedModel, BaseModel<Feed>, ShardedModel {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
@@ -265,19 +269,19 @@ public interface FeedModel extends AuditedModel, BaseModel<Feed> {
 	public Object clone();
 
 	@Override
-	public int compareTo(Feed feed);
+	public int compareTo(com.liferay.twitter.model.Feed feed);
 
 	@Override
 	public int hashCode();
 
 	@Override
-	public CacheModel<Feed> toCacheModel();
+	public CacheModel<com.liferay.twitter.model.Feed> toCacheModel();
 
 	@Override
-	public Feed toEscapedModel();
+	public com.liferay.twitter.model.Feed toEscapedModel();
 
 	@Override
-	public Feed toUnescapedModel();
+	public com.liferay.twitter.model.Feed toUnescapedModel();
 
 	@Override
 	public String toString();

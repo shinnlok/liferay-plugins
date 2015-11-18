@@ -21,10 +21,23 @@ public class PushNotificationsConstants {
 
 	public static final String KEY_BODY = "body";
 
+	public static final String KEY_BODY_LOCALIZED = "bodyLocalizedKey";
+
+	public static final String KEY_BODY_LOCALIZED_ARGUMENTS =
+		"bodyLocalizedArguments";
+
+	public static final String KEY_FROM = "from";
+
 	public static final String KEY_PAYLOAD = "payload";
 
-	public static final String KEY_TO_USER = "toUser";
+	public static final String KEY_SOUND = "sound";
 
-	public static final String KEY_USER_ID = "userId";
+	public static final String KEY_TO_USER_IDS = "toUserIds";
+
+	public static final String PLATFORM_ANDROID = "android";
+
+	public static final String PLATFORM_APPLE = "apple";
+
+	public static final String PLATFORM_SMS = "sms";
 
 }

@@ -14,8 +14,9 @@
 
 package com.liferay.so.service.base;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.bean.BeanReference;
-import com.liferay.portal.kernel.bean.IdentifiableBean;
 import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBFactoryUtil;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdate;
@@ -27,6 +28,7 @@ import com.liferay.portal.kernel.dao.orm.DynamicQueryFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.Projection;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.module.framework.service.IdentifiableOSGiService;
 import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.util.OrderByComparator;
@@ -65,9 +67,10 @@ import javax.sql.DataSource;
  * @see com.liferay.so.service.MemberRequestLocalServiceUtil
  * @generated
  */
+@ProviderType
 public abstract class MemberRequestLocalServiceBaseImpl
 	extends BaseLocalServiceImpl implements MemberRequestLocalService,
-		IdentifiableBean {
+		IdentifiableOSGiService {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
@@ -184,10 +187,10 @@ public abstract class MemberRequestLocalServiceBaseImpl
 	}
 
 	/**
-	 * Returns the number of rows that match the dynamic query.
+	 * Returns the number of rows matching the dynamic query.
 	 *
 	 * @param dynamicQuery the dynamic query
-	 * @return the number of rows that match the dynamic query
+	 * @return the number of rows matching the dynamic query
 	 */
 	@Override
 	public long dynamicQueryCount(DynamicQuery dynamicQuery) {
@@ -195,11 +198,11 @@ public abstract class MemberRequestLocalServiceBaseImpl
 	}
 
 	/**
-	 * Returns the number of rows that match the dynamic query.
+	 * Returns the number of rows matching the dynamic query.
 	 *
 	 * @param dynamicQuery the dynamic query
 	 * @param projection the projection to apply to the query
-	 * @return the number of rows that match the dynamic query
+	 * @return the number of rows matching the dynamic query
 	 */
 	@Override
 	public long dynamicQueryCount(DynamicQuery dynamicQuery,
@@ -362,7 +365,7 @@ public abstract class MemberRequestLocalServiceBaseImpl
 	 *
 	 * @return the member request local service
 	 */
-	public com.liferay.so.service.MemberRequestLocalService getMemberRequestLocalService() {
+	public MemberRequestLocalService getMemberRequestLocalService() {
 		return memberRequestLocalService;
 	}
 
@@ -372,7 +375,7 @@ public abstract class MemberRequestLocalServiceBaseImpl
 	 * @param memberRequestLocalService the member request local service
 	 */
 	public void setMemberRequestLocalService(
-		com.liferay.so.service.MemberRequestLocalService memberRequestLocalService) {
+		MemberRequestLocalService memberRequestLocalService) {
 		this.memberRequestLocalService = memberRequestLocalService;
 	}
 
@@ -787,23 +790,13 @@ public abstract class MemberRequestLocalServiceBaseImpl
 	}
 
 	/**
-	 * Returns the Spring bean ID for this bean.
+	 * Returns the OSGi service identifier.
 	 *
-	 * @return the Spring bean ID for this bean
+	 * @return the OSGi service identifier
 	 */
 	@Override
-	public String getBeanIdentifier() {
-		return _beanIdentifier;
-	}
-
-	/**
-	 * Sets the Spring bean ID for this bean.
-	 *
-	 * @param beanIdentifier the Spring bean ID for this bean
-	 */
-	@Override
-	public void setBeanIdentifier(String beanIdentifier) {
-		_beanIdentifier = beanIdentifier;
+	public String getOSGiServiceIdentifier() {
+		return MemberRequestLocalService.class.getName();
 	}
 
 	@Override
@@ -866,7 +859,7 @@ public abstract class MemberRequestLocalServiceBaseImpl
 	@BeanReference(type = FavoriteSiteFinder.class)
 	protected FavoriteSiteFinder favoriteSiteFinder;
 	@BeanReference(type = com.liferay.so.service.MemberRequestLocalService.class)
-	protected com.liferay.so.service.MemberRequestLocalService memberRequestLocalService;
+	protected MemberRequestLocalService memberRequestLocalService;
 	@BeanReference(type = MemberRequestPersistence.class)
 	protected MemberRequestPersistence memberRequestPersistence;
 	@BeanReference(type = com.liferay.so.service.ProjectsEntryLocalService.class)
@@ -909,7 +902,6 @@ public abstract class MemberRequestLocalServiceBaseImpl
 	protected com.liferay.portal.service.UserGroupRoleService userGroupRoleService;
 	@BeanReference(type = UserGroupRolePersistence.class)
 	protected UserGroupRolePersistence userGroupRolePersistence;
-	private String _beanIdentifier;
 	private ClassLoader _classLoader;
 	private MemberRequestLocalServiceClpInvoker _clpInvoker = new MemberRequestLocalServiceClpInvoker();
 }

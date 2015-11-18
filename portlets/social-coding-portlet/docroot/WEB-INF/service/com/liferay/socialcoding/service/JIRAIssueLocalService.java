@@ -87,8 +87,7 @@ public interface JIRAIssueLocalService extends BaseLocalService,
 	*/
 	@com.liferay.portal.kernel.search.Indexable(type = IndexableType.DELETE)
 	public com.liferay.socialcoding.model.JIRAIssue deleteJIRAIssue(
-		long jiraIssueId)
-		throws com.liferay.portal.kernel.exception.PortalException;
+		long jiraIssueId) throws PortalException;
 
 	/**
 	* @throws PortalException
@@ -96,7 +95,7 @@ public interface JIRAIssueLocalService extends BaseLocalService,
 	@Override
 	public com.liferay.portal.model.PersistedModel deletePersistedModel(
 		com.liferay.portal.model.PersistedModel persistedModel)
-		throws com.liferay.portal.kernel.exception.PortalException;
+		throws PortalException;
 
 	public com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery();
 
@@ -144,20 +143,20 @@ public interface JIRAIssueLocalService extends BaseLocalService,
 		com.liferay.portal.kernel.util.OrderByComparator<T> orderByComparator);
 
 	/**
-	* Returns the number of rows that match the dynamic query.
+	* Returns the number of rows matching the dynamic query.
 	*
 	* @param dynamicQuery the dynamic query
-	* @return the number of rows that match the dynamic query
+	* @return the number of rows matching the dynamic query
 	*/
 	public long dynamicQueryCount(
 		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery);
 
 	/**
-	* Returns the number of rows that match the dynamic query.
+	* Returns the number of rows matching the dynamic query.
 	*
 	* @param dynamicQuery the dynamic query
 	* @param projection the projection to apply to the query
-	* @return the number of rows that match the dynamic query
+	* @return the number of rows matching the dynamic query
 	*/
 	public long dynamicQueryCount(
 		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery,
@@ -196,22 +195,15 @@ public interface JIRAIssueLocalService extends BaseLocalService,
 	public int getAssigneeJIRAIssuesCount(long projectId,
 		java.lang.String assigneeJiraUserId, java.lang.String status);
 
-	/**
-	* Returns the Spring bean ID for this bean.
-	*
-	* @return the Spring bean ID for this bean
-	*/
-	public java.lang.String getBeanIdentifier();
-
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public com.liferay.socialcoding.model.JIRAIssue getFirstAssigneeJIRAIssue(
 		long projectId, java.lang.String assigneeJiraUserId)
-		throws com.liferay.portal.kernel.exception.PortalException;
+		throws PortalException;
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public com.liferay.socialcoding.model.JIRAIssue getFirstReporterJIRAIssue(
 		long projectId, java.lang.String reporterJiraUserId)
-		throws com.liferay.portal.kernel.exception.PortalException;
+		throws PortalException;
 
 	/**
 	* Returns the j i r a issue with the primary key.
@@ -222,13 +214,11 @@ public interface JIRAIssueLocalService extends BaseLocalService,
 	*/
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public com.liferay.socialcoding.model.JIRAIssue getJIRAIssue(
-		long jiraIssueId)
-		throws com.liferay.portal.kernel.exception.PortalException;
+		long jiraIssueId) throws PortalException;
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public com.liferay.socialcoding.model.JIRAIssue getJIRAIssue(
-		java.lang.String key)
-		throws com.liferay.portal.kernel.exception.PortalException;
+		java.lang.String key) throws PortalException;
 
 	/**
 	* Returns a range of all the j i r a issues.
@@ -256,18 +246,24 @@ public interface JIRAIssueLocalService extends BaseLocalService,
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public com.liferay.socialcoding.model.JIRAIssue getLastAssigneeJIRAIssue(
 		long projectId, java.lang.String assigneeJiraUserId)
-		throws com.liferay.portal.kernel.exception.PortalException;
+		throws PortalException;
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public com.liferay.socialcoding.model.JIRAIssue getLastreporterJIRAIssue(
 		long projectId, java.lang.String reporterJiraUserId)
-		throws com.liferay.portal.kernel.exception.PortalException;
+		throws PortalException;
+
+	/**
+	* Returns the OSGi service identifier.
+	*
+	* @return the OSGi service identifier
+	*/
+	public java.lang.String getOSGiServiceIdentifier();
 
 	@Override
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public com.liferay.portal.model.PersistedModel getPersistedModel(
-		java.io.Serializable primaryKeyObj)
-		throws com.liferay.portal.kernel.exception.PortalException;
+		java.io.Serializable primaryKeyObj) throws PortalException;
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public java.util.List<com.liferay.socialcoding.model.JIRAIssue> getReporterJIRAIssues(
@@ -301,13 +297,6 @@ public interface JIRAIssueLocalService extends BaseLocalService,
 		throws java.lang.Throwable;
 
 	/**
-	* Sets the Spring bean ID for this bean.
-	*
-	* @param beanIdentifier the Spring bean ID for this bean
-	*/
-	public void setBeanIdentifier(java.lang.String beanIdentifier);
-
-	/**
 	* Updates the j i r a issue in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
 	*
 	* @param jiraIssue the j i r a issue
@@ -317,6 +306,5 @@ public interface JIRAIssueLocalService extends BaseLocalService,
 	public com.liferay.socialcoding.model.JIRAIssue updateJIRAIssue(
 		com.liferay.socialcoding.model.JIRAIssue jiraIssue);
 
-	public void updateJIRAIssues(long projectId)
-		throws com.liferay.portal.kernel.exception.PortalException;
+	public void updateJIRAIssues(long projectId) throws PortalException;
 }

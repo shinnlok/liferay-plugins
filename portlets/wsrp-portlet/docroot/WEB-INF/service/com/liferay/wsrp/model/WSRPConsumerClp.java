@@ -14,14 +14,17 @@
 
 package com.liferay.wsrp.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
-import com.liferay.portal.kernel.lar.StagedModelType;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.impl.BaseModelImpl;
 import com.liferay.portal.util.PortalUtil;
+
+import com.liferay.portlet.exportimport.lar.StagedModelType;
 
 import com.liferay.wsrp.service.ClpSerializer;
 import com.liferay.wsrp.service.WSRPConsumerLocalServiceUtil;
@@ -37,6 +40,7 @@ import java.util.Map;
 /**
  * @author Brian Wing Shun Chan
  */
+@ProviderType
 public class WSRPConsumerClp extends BaseModelImpl<WSRPConsumer>
 	implements WSRPConsumer {
 	public WSRPConsumerClp() {
@@ -91,6 +95,7 @@ public class WSRPConsumerClp extends BaseModelImpl<WSRPConsumer>
 		attributes.put("forwardCookies", getForwardCookies());
 		attributes.put("forwardHeaders", getForwardHeaders());
 		attributes.put("markupCharacterSets", getMarkupCharacterSets());
+		attributes.put("lastPublishDate", getLastPublishDate());
 
 		attributes.put("entityCacheEnabled", isEntityCacheEnabled());
 		attributes.put("finderCacheEnabled", isFinderCacheEnabled());
@@ -179,6 +184,12 @@ public class WSRPConsumerClp extends BaseModelImpl<WSRPConsumer>
 
 		if (markupCharacterSets != null) {
 			setMarkupCharacterSets(markupCharacterSets);
+		}
+
+		Date lastPublishDate = (Date)attributes.get("lastPublishDate");
+
+		if (lastPublishDate != null) {
+			setLastPublishDate(lastPublishDate);
 		}
 
 		_entityCacheEnabled = GetterUtil.getBoolean("entityCacheEnabled");
@@ -493,6 +504,29 @@ public class WSRPConsumerClp extends BaseModelImpl<WSRPConsumer>
 	}
 
 	@Override
+	public Date getLastPublishDate() {
+		return _lastPublishDate;
+	}
+
+	@Override
+	public void setLastPublishDate(Date lastPublishDate) {
+		_lastPublishDate = lastPublishDate;
+
+		if (_wsrpConsumerRemoteModel != null) {
+			try {
+				Class<?> clazz = _wsrpConsumerRemoteModel.getClass();
+
+				Method method = clazz.getMethod("setLastPublishDate", Date.class);
+
+				method.invoke(_wsrpConsumerRemoteModel, lastPublishDate);
+			}
+			catch (Exception e) {
+				throw new UnsupportedOperationException(e);
+			}
+		}
+	}
+
+	@Override
 	public void setRegistrationContext(
 		oasis.names.tc.wsrp.v2.types.RegistrationContext registrationContext) {
 		try {
@@ -656,6 +690,7 @@ public class WSRPConsumerClp extends BaseModelImpl<WSRPConsumer>
 		clone.setForwardCookies(getForwardCookies());
 		clone.setForwardHeaders(getForwardHeaders());
 		clone.setMarkupCharacterSets(getMarkupCharacterSets());
+		clone.setLastPublishDate(getLastPublishDate());
 
 		return clone;
 	}
@@ -716,7 +751,7 @@ public class WSRPConsumerClp extends BaseModelImpl<WSRPConsumer>
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(27);
+		StringBundler sb = new StringBundler(29);
 
 		sb.append("{uuid=");
 		sb.append(getUuid());
@@ -744,6 +779,8 @@ public class WSRPConsumerClp extends BaseModelImpl<WSRPConsumer>
 		sb.append(getForwardHeaders());
 		sb.append(", markupCharacterSets=");
 		sb.append(getMarkupCharacterSets());
+		sb.append(", lastPublishDate=");
+		sb.append(getLastPublishDate());
 		sb.append("}");
 
 		return sb.toString();
@@ -751,7 +788,7 @@ public class WSRPConsumerClp extends BaseModelImpl<WSRPConsumer>
 
 	@Override
 	public String toXmlString() {
-		StringBundler sb = new StringBundler(43);
+		StringBundler sb = new StringBundler(46);
 
 		sb.append("<model><model-name>");
 		sb.append("com.liferay.wsrp.model.WSRPConsumer");
@@ -809,6 +846,10 @@ public class WSRPConsumerClp extends BaseModelImpl<WSRPConsumer>
 			"<column><column-name>markupCharacterSets</column-name><column-value><![CDATA[");
 		sb.append(getMarkupCharacterSets());
 		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>lastPublishDate</column-name><column-value><![CDATA[");
+		sb.append(getLastPublishDate());
+		sb.append("]]></column-value></column>");
 
 		sb.append("</model>");
 
@@ -828,6 +869,7 @@ public class WSRPConsumerClp extends BaseModelImpl<WSRPConsumer>
 	private String _forwardCookies;
 	private String _forwardHeaders;
 	private String _markupCharacterSets;
+	private Date _lastPublishDate;
 	private BaseModel<?> _wsrpConsumerRemoteModel;
 	private Class<?> _clpSerializerClass = com.liferay.wsrp.service.ClpSerializer.class;
 	private boolean _entityCacheEnabled;

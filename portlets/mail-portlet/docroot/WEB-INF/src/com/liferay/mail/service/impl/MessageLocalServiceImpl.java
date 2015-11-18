@@ -82,7 +82,8 @@ public class MessageLocalServiceImpl extends MessageLocalServiceBaseImpl {
 
 		// Indexer
 
-		Indexer indexer = IndexerRegistryUtil.getIndexer(Message.class);
+		Indexer<Message> indexer = IndexerRegistryUtil.getIndexer(
+			Message.class);
 
 		indexer.reindex(message);
 
@@ -110,7 +111,8 @@ public class MessageLocalServiceImpl extends MessageLocalServiceBaseImpl {
 
 		// Indexer
 
-		Indexer indexer = IndexerRegistryUtil.getIndexer(Message.class);
+		Indexer<Message> indexer = IndexerRegistryUtil.getIndexer(
+			Message.class);
 
 		indexer.delete(message);
 
@@ -183,7 +185,7 @@ public class MessageLocalServiceImpl extends MessageLocalServiceBaseImpl {
 
 		dynamicQuery.add(RestrictionsFactoryUtil.eq("folderId", folderId));
 		dynamicQuery.add(
-			RestrictionsFactoryUtil.gt("remoteMessageId", new Long(0)));
+			RestrictionsFactoryUtil.gt("remoteMessageId", Long.valueOf(0)));
 
 		if (oldest) {
 			dynamicQuery.addOrder(OrderFactoryUtil.asc("remoteMessageId"));
@@ -310,7 +312,8 @@ public class MessageLocalServiceImpl extends MessageLocalServiceBaseImpl {
 
 		// Indexer
 
-		Indexer indexer = IndexerRegistryUtil.getIndexer(Message.class);
+		Indexer<Message> indexer = IndexerRegistryUtil.getIndexer(
+			Message.class);
 
 		indexer.reindex(message);
 

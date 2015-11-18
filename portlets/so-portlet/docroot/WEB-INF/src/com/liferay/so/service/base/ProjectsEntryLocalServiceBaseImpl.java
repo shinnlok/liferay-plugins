@@ -14,8 +14,9 @@
 
 package com.liferay.so.service.base;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.bean.BeanReference;
-import com.liferay.portal.kernel.bean.IdentifiableBean;
 import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBFactoryUtil;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdate;
@@ -27,6 +28,7 @@ import com.liferay.portal.kernel.dao.orm.DynamicQueryFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.Projection;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.module.framework.service.IdentifiableOSGiService;
 import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.util.OrderByComparator;
@@ -62,9 +64,10 @@ import javax.sql.DataSource;
  * @see com.liferay.so.service.ProjectsEntryLocalServiceUtil
  * @generated
  */
+@ProviderType
 public abstract class ProjectsEntryLocalServiceBaseImpl
 	extends BaseLocalServiceImpl implements ProjectsEntryLocalService,
-		IdentifiableBean {
+		IdentifiableOSGiService {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
@@ -181,10 +184,10 @@ public abstract class ProjectsEntryLocalServiceBaseImpl
 	}
 
 	/**
-	 * Returns the number of rows that match the dynamic query.
+	 * Returns the number of rows matching the dynamic query.
 	 *
 	 * @param dynamicQuery the dynamic query
-	 * @return the number of rows that match the dynamic query
+	 * @return the number of rows matching the dynamic query
 	 */
 	@Override
 	public long dynamicQueryCount(DynamicQuery dynamicQuery) {
@@ -192,11 +195,11 @@ public abstract class ProjectsEntryLocalServiceBaseImpl
 	}
 
 	/**
-	 * Returns the number of rows that match the dynamic query.
+	 * Returns the number of rows matching the dynamic query.
 	 *
 	 * @param dynamicQuery the dynamic query
 	 * @param projection the projection to apply to the query
-	 * @return the number of rows that match the dynamic query
+	 * @return the number of rows matching the dynamic query
 	 */
 	@Override
 	public long dynamicQueryCount(DynamicQuery dynamicQuery,
@@ -397,7 +400,7 @@ public abstract class ProjectsEntryLocalServiceBaseImpl
 	 *
 	 * @return the projects entry local service
 	 */
-	public com.liferay.so.service.ProjectsEntryLocalService getProjectsEntryLocalService() {
+	public ProjectsEntryLocalService getProjectsEntryLocalService() {
 		return projectsEntryLocalService;
 	}
 
@@ -407,7 +410,7 @@ public abstract class ProjectsEntryLocalServiceBaseImpl
 	 * @param projectsEntryLocalService the projects entry local service
 	 */
 	public void setProjectsEntryLocalService(
-		com.liferay.so.service.ProjectsEntryLocalService projectsEntryLocalService) {
+		ProjectsEntryLocalService projectsEntryLocalService) {
 		this.projectsEntryLocalService = projectsEntryLocalService;
 	}
 
@@ -615,23 +618,13 @@ public abstract class ProjectsEntryLocalServiceBaseImpl
 	}
 
 	/**
-	 * Returns the Spring bean ID for this bean.
+	 * Returns the OSGi service identifier.
 	 *
-	 * @return the Spring bean ID for this bean
+	 * @return the OSGi service identifier
 	 */
 	@Override
-	public String getBeanIdentifier() {
-		return _beanIdentifier;
-	}
-
-	/**
-	 * Sets the Spring bean ID for this bean.
-	 *
-	 * @param beanIdentifier the Spring bean ID for this bean
-	 */
-	@Override
-	public void setBeanIdentifier(String beanIdentifier) {
-		_beanIdentifier = beanIdentifier;
+	public String getOSGiServiceIdentifier() {
+		return ProjectsEntryLocalService.class.getName();
 	}
 
 	@Override
@@ -698,7 +691,7 @@ public abstract class ProjectsEntryLocalServiceBaseImpl
 	@BeanReference(type = MemberRequestPersistence.class)
 	protected MemberRequestPersistence memberRequestPersistence;
 	@BeanReference(type = com.liferay.so.service.ProjectsEntryLocalService.class)
-	protected com.liferay.so.service.ProjectsEntryLocalService projectsEntryLocalService;
+	protected ProjectsEntryLocalService projectsEntryLocalService;
 	@BeanReference(type = ProjectsEntryPersistence.class)
 	protected ProjectsEntryPersistence projectsEntryPersistence;
 	@BeanReference(type = com.liferay.so.service.SocialOfficeService.class)
@@ -719,7 +712,6 @@ public abstract class ProjectsEntryLocalServiceBaseImpl
 	protected com.liferay.portal.service.UserService userService;
 	@BeanReference(type = UserPersistence.class)
 	protected UserPersistence userPersistence;
-	private String _beanIdentifier;
 	private ClassLoader _classLoader;
 	private ProjectsEntryLocalServiceClpInvoker _clpInvoker = new ProjectsEntryLocalServiceClpInvoker();
 }

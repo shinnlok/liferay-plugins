@@ -18,9 +18,9 @@
 
 <%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
 
-<%@ taglib uri="http://liferay.com/tld/theme" prefix="liferay-theme" %>
-<%@ taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %>
-<%@ taglib uri="http://liferay.com/tld/util" prefix="liferay-util" %>
+<%@ taglib uri="http://liferay.com/tld/theme" prefix="liferay-theme" %><%@
+taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %><%@
+taglib uri="http://liferay.com/tld/util" prefix="liferay-util" %>
 
 <%@ page import="com.liferay.chat.NoSuchEntryException" %><%@
 page import="com.liferay.chat.model.Entry" %><%@
@@ -28,19 +28,16 @@ page import="com.liferay.chat.model.EntryClp" %><%@
 page import="com.liferay.chat.service.EntryLocalService" %><%@
 page import="com.liferay.chat.service.EntryLocalServiceUtil" %><%@
 page import="com.liferay.chat.service.StatusLocalServiceUtil" %><%@
+page import="com.liferay.journal.util.JournalContentUtil" %><%@
+page import="com.liferay.portal.kernel.concurrent.ThreadPoolExecutor" %><%@
 page import="com.liferay.portal.kernel.dao.db.DB" %><%@
 page import="com.liferay.portal.kernel.dao.db.DBFactoryUtil" %><%@
 page import="com.liferay.portal.kernel.dao.jdbc.DataAccess" %><%@
 page import="com.liferay.portal.kernel.dao.orm.DynamicQueryFactoryUtil" %><%@
-page import="com.liferay.portal.kernel.dao.orm.EntityCache" %><%@
-page import="com.liferay.portal.kernel.dao.orm.EntityCacheUtil" %><%@
-page import="com.liferay.portal.kernel.dao.orm.FinderCache" %><%@
-page import="com.liferay.portal.kernel.dao.orm.FinderCacheUtil" %><%@
 page import="com.liferay.portal.kernel.dao.orm.PortalCustomSQL" %><%@
 page import="com.liferay.portal.kernel.dao.orm.PortalCustomSQLUtil" %><%@
 page import="com.liferay.portal.kernel.dao.orm.QueryUtil" %><%@
 page import="com.liferay.portal.kernel.executor.PortalExecutorManagerUtil" %><%@
-page import="com.liferay.portal.kernel.concurrent.ThreadPoolExecutor" %><%@
 page import="com.liferay.portal.kernel.format.PhoneNumberFormatUtil" %><%@
 page import="com.liferay.portal.kernel.language.LanguageUtil" %><%@
 page import="com.liferay.portal.kernel.messaging.Message" %><%@
@@ -70,7 +67,6 @@ page import="com.liferay.portal.util.PortalUtil" %><%@
 page import="com.liferay.portlet.blogs.service.BlogsEntryLocalService" %><%@
 page import="com.liferay.portlet.blogs.service.BlogsEntryLocalServiceUtil" %><%@
 page import="com.liferay.portlet.blogs.service.BlogsStatsUserLocalServiceUtil" %><%@
-page import="com.liferay.portlet.journal.util.JournalContentUtil" %><%@
 page import="com.liferay.testpacl.hook.action.FailureStrutsAction" %><%@
 page import="com.liferay.testpacl.hook.action.SuccessStrutsAction" %><%@
 page import="com.liferay.testpacl.hook.indexer.OrganizationIndexerPostProcessor" %><%@

@@ -14,8 +14,9 @@
 
 package com.liferay.samplelar.service.base;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.bean.BeanReference;
-import com.liferay.portal.kernel.bean.IdentifiableBean;
 import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBFactoryUtil;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdate;
@@ -28,11 +29,7 @@ import com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.Projection;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.lar.ExportImportHelperUtil;
-import com.liferay.portal.kernel.lar.ManifestSummary;
-import com.liferay.portal.kernel.lar.PortletDataContext;
-import com.liferay.portal.kernel.lar.StagedModelDataHandlerUtil;
-import com.liferay.portal.kernel.lar.StagedModelType;
+import com.liferay.portal.kernel.module.framework.service.IdentifiableOSGiService;
 import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.util.OrderByComparator;
@@ -42,6 +39,12 @@ import com.liferay.portal.service.PersistedModelLocalServiceRegistryUtil;
 import com.liferay.portal.service.persistence.ClassNamePersistence;
 import com.liferay.portal.service.persistence.UserPersistence;
 import com.liferay.portal.util.PortalUtil;
+
+import com.liferay.portlet.exportimport.lar.ExportImportHelperUtil;
+import com.liferay.portlet.exportimport.lar.ManifestSummary;
+import com.liferay.portlet.exportimport.lar.PortletDataContext;
+import com.liferay.portlet.exportimport.lar.StagedModelDataHandlerUtil;
+import com.liferay.portlet.exportimport.lar.StagedModelType;
 
 import com.liferay.samplelar.model.SampleLARBooking;
 import com.liferay.samplelar.service.SampleLARBookingLocalService;
@@ -65,9 +68,10 @@ import javax.sql.DataSource;
  * @see com.liferay.samplelar.service.SampleLARBookingLocalServiceUtil
  * @generated
  */
+@ProviderType
 public abstract class SampleLARBookingLocalServiceBaseImpl
 	extends BaseLocalServiceImpl implements SampleLARBookingLocalService,
-		IdentifiableBean {
+		IdentifiableOSGiService {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
@@ -186,10 +190,10 @@ public abstract class SampleLARBookingLocalServiceBaseImpl
 	}
 
 	/**
-	 * Returns the number of rows that match the dynamic query.
+	 * Returns the number of rows matching the dynamic query.
 	 *
 	 * @param dynamicQuery the dynamic query
-	 * @return the number of rows that match the dynamic query
+	 * @return the number of rows matching the dynamic query
 	 */
 	@Override
 	public long dynamicQueryCount(DynamicQuery dynamicQuery) {
@@ -197,11 +201,11 @@ public abstract class SampleLARBookingLocalServiceBaseImpl
 	}
 
 	/**
-	 * Returns the number of rows that match the dynamic query.
+	 * Returns the number of rows matching the dynamic query.
 	 *
 	 * @param dynamicQuery the dynamic query
 	 * @param projection the projection to apply to the query
-	 * @return the number of rows that match the dynamic query
+	 * @return the number of rows matching the dynamic query
 	 */
 	@Override
 	public long dynamicQueryCount(DynamicQuery dynamicQuery,
@@ -275,13 +279,13 @@ public abstract class SampleLARBookingLocalServiceBaseImpl
 
 					long modelAdditionCount = super.performCount();
 
-					manifestSummary.addModelAdditionCount(stagedModelType.toString(),
+					manifestSummary.addModelAdditionCount(stagedModelType,
 						modelAdditionCount);
 
 					long modelDeletionCount = ExportImportHelperUtil.getModelDeletionCount(portletDataContext,
 							stagedModelType);
 
-					manifestSummary.addModelDeletionCount(stagedModelType.toString(),
+					manifestSummary.addModelDeletionCount(stagedModelType,
 						modelDeletionCount);
 
 					return modelAdditionCount;
@@ -302,14 +306,12 @@ public abstract class SampleLARBookingLocalServiceBaseImpl
 
 		exportActionableDynamicQuery.setGroupId(portletDataContext.getScopeGroupId());
 
-		exportActionableDynamicQuery.setPerformActionMethod(new ActionableDynamicQuery.PerformActionMethod() {
+		exportActionableDynamicQuery.setPerformActionMethod(new ActionableDynamicQuery.PerformActionMethod<SampleLARBooking>() {
 				@Override
-				public void performAction(Object object)
+				public void performAction(SampleLARBooking sampleLARBooking)
 					throws PortalException {
-					SampleLARBooking stagedModel = (SampleLARBooking)object;
-
 					StagedModelDataHandlerUtil.exportStagedModel(portletDataContext,
-						stagedModel);
+						sampleLARBooking);
 				}
 			});
 		exportActionableDynamicQuery.setStagedModelType(new StagedModelType(
@@ -333,12 +335,29 @@ public abstract class SampleLARBookingLocalServiceBaseImpl
 		return sampleLARBookingPersistence.findByPrimaryKey(primaryKeyObj);
 	}
 
+	/**
+	 * Returns all the sample l a r bookings matching the UUID and company.
+	 *
+	 * @param uuid the UUID of the sample l a r bookings
+	 * @param companyId the primary key of the company
+	 * @return the matching sample l a r bookings, or an empty list if no matches were found
+	 */
 	@Override
 	public List<SampleLARBooking> getSampleLARBookingsByUuidAndCompanyId(
 		String uuid, long companyId) {
 		return sampleLARBookingPersistence.findByUuid_C(uuid, companyId);
 	}
 
+	/**
+	 * Returns a range of sample l a r bookings matching the UUID and company.
+	 *
+	 * @param uuid the UUID of the sample l a r bookings
+	 * @param companyId the primary key of the company
+	 * @param start the lower bound of the range of sample l a r bookings
+	 * @param end the upper bound of the range of sample l a r bookings (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the range of matching sample l a r bookings, or an empty list if no matches were found
+	 */
 	@Override
 	public List<SampleLARBooking> getSampleLARBookingsByUuidAndCompanyId(
 		String uuid, long companyId, int start, int end,
@@ -405,7 +424,7 @@ public abstract class SampleLARBookingLocalServiceBaseImpl
 	 *
 	 * @return the sample l a r booking local service
 	 */
-	public com.liferay.samplelar.service.SampleLARBookingLocalService getSampleLARBookingLocalService() {
+	public SampleLARBookingLocalService getSampleLARBookingLocalService() {
 		return sampleLARBookingLocalService;
 	}
 
@@ -415,7 +434,7 @@ public abstract class SampleLARBookingLocalServiceBaseImpl
 	 * @param sampleLARBookingLocalService the sample l a r booking local service
 	 */
 	public void setSampleLARBookingLocalService(
-		com.liferay.samplelar.service.SampleLARBookingLocalService sampleLARBookingLocalService) {
+		SampleLARBookingLocalService sampleLARBookingLocalService) {
 		this.sampleLARBookingLocalService = sampleLARBookingLocalService;
 	}
 
@@ -604,23 +623,13 @@ public abstract class SampleLARBookingLocalServiceBaseImpl
 	}
 
 	/**
-	 * Returns the Spring bean ID for this bean.
+	 * Returns the OSGi service identifier.
 	 *
-	 * @return the Spring bean ID for this bean
+	 * @return the OSGi service identifier
 	 */
 	@Override
-	public String getBeanIdentifier() {
-		return _beanIdentifier;
-	}
-
-	/**
-	 * Sets the Spring bean ID for this bean.
-	 *
-	 * @param beanIdentifier the Spring bean ID for this bean
-	 */
-	@Override
-	public void setBeanIdentifier(String beanIdentifier) {
-		_beanIdentifier = beanIdentifier;
+	public String getOSGiServiceIdentifier() {
+		return SampleLARBookingLocalService.class.getName();
 	}
 
 	@Override
@@ -677,7 +686,7 @@ public abstract class SampleLARBookingLocalServiceBaseImpl
 	}
 
 	@BeanReference(type = com.liferay.samplelar.service.SampleLARBookingLocalService.class)
-	protected com.liferay.samplelar.service.SampleLARBookingLocalService sampleLARBookingLocalService;
+	protected SampleLARBookingLocalService sampleLARBookingLocalService;
 	@BeanReference(type = SampleLARBookingPersistence.class)
 	protected SampleLARBookingPersistence sampleLARBookingPersistence;
 	@BeanReference(type = com.liferay.counter.service.CounterLocalService.class)
@@ -696,7 +705,6 @@ public abstract class SampleLARBookingLocalServiceBaseImpl
 	protected com.liferay.portal.service.UserService userService;
 	@BeanReference(type = UserPersistence.class)
 	protected UserPersistence userPersistence;
-	private String _beanIdentifier;
 	private ClassLoader _classLoader;
 	private SampleLARBookingLocalServiceClpInvoker _clpInvoker = new SampleLARBookingLocalServiceClpInvoker();
 }

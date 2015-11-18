@@ -34,9 +34,10 @@ public class SyncDLObjectLocalServiceClp implements SyncDLObjectLocalService {
 				"long", "long", "java.lang.String", "long", "long", "long",
 				"java.lang.String", "java.lang.String", "java.lang.String",
 				"java.lang.String", "java.lang.String", "java.lang.String",
-				"java.lang.String", "long", "long", "java.lang.String",
-				"java.lang.String", "java.util.Date", "long", "java.lang.String",
-				"java.lang.String", "long", "java.lang.String"
+				"java.lang.String", "java.lang.String", "long", "long",
+				"java.lang.String", "java.lang.String", "java.util.Date", "long",
+				"java.lang.String", "java.lang.String", "long",
+				"java.lang.String"
 			};
 
 		_methodName1 = "addSyncDLObject";
@@ -119,11 +120,11 @@ public class SyncDLObjectLocalServiceClp implements SyncDLObjectLocalService {
 
 		_methodParameterTypes15 = new String[] {  };
 
-		_methodName16 = "getBeanIdentifier";
+		_methodName16 = "getLatestModifiedTime";
 
 		_methodParameterTypes16 = new String[] {  };
 
-		_methodName17 = "getLatestModifiedTime";
+		_methodName17 = "getOSGiServiceIdentifier";
 
 		_methodParameterTypes17 = new String[] {  };
 
@@ -137,15 +138,15 @@ public class SyncDLObjectLocalServiceClp implements SyncDLObjectLocalService {
 
 		_methodName20 = "getSyncDLObjects";
 
-		_methodParameterTypes20 = new String[] { "int", "int" };
+		_methodParameterTypes20 = new String[] { "long", "long" };
 
-		_methodName21 = "getSyncDLObjectsCount";
+		_methodName21 = "getSyncDLObjects";
 
-		_methodParameterTypes21 = new String[] {  };
+		_methodParameterTypes21 = new String[] { "int", "int" };
 
-		_methodName23 = "setBeanIdentifier";
+		_methodName22 = "getSyncDLObjectsCount";
 
-		_methodParameterTypes23 = new String[] { "java.lang.String" };
+		_methodParameterTypes22 = new String[] {  };
 
 		_methodName24 = "updateSyncDLObject";
 
@@ -157,14 +158,15 @@ public class SyncDLObjectLocalServiceClp implements SyncDLObjectLocalService {
 	@Override
 	public com.liferay.sync.model.SyncDLObject addSyncDLObject(long companyId,
 		long userId, java.lang.String userName, long modifiedTime,
-		long repositoryId, long parentFolderId, java.lang.String name,
-		java.lang.String extension, java.lang.String mimeType,
-		java.lang.String description, java.lang.String changeLog,
-		java.lang.String extraSettings, java.lang.String version,
-		long versionId, long size, java.lang.String checksum,
-		java.lang.String event, java.util.Date lockExpirationDate,
-		long lockUserId, java.lang.String lockUserName, java.lang.String type,
-		long typePK, java.lang.String typeUuid)
+		long repositoryId, long parentFolderId, java.lang.String treePath,
+		java.lang.String name, java.lang.String extension,
+		java.lang.String mimeType, java.lang.String description,
+		java.lang.String changeLog, java.lang.String extraSettings,
+		java.lang.String version, long versionId, long size,
+		java.lang.String checksum, java.lang.String event,
+		java.util.Date lockExpirationDate, long lockUserId,
+		java.lang.String lockUserName, java.lang.String type, long typePK,
+		java.lang.String typeUuid)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		Object returnObj = null;
 
@@ -183,6 +185,8 @@ public class SyncDLObjectLocalServiceClp implements SyncDLObjectLocalService {
 					repositoryId,
 						
 					parentFolderId,
+						
+					ClpSerializer.translateInput(treePath),
 						
 					ClpSerializer.translateInput(name),
 						
@@ -639,7 +643,7 @@ public class SyncDLObjectLocalServiceClp implements SyncDLObjectLocalService {
 	}
 
 	@Override
-	public java.lang.String getBeanIdentifier() {
+	public long getLatestModifiedTime() {
 		Object returnObj = null;
 
 		try {
@@ -658,11 +662,11 @@ public class SyncDLObjectLocalServiceClp implements SyncDLObjectLocalService {
 			}
 		}
 
-		return (java.lang.String)ClpSerializer.translateOutput(returnObj);
+		return ((Long)returnObj).longValue();
 	}
 
 	@Override
-	public long getLatestModifiedTime() {
+	public java.lang.String getOSGiServiceIdentifier() {
 		Object returnObj = null;
 
 		try {
@@ -681,7 +685,7 @@ public class SyncDLObjectLocalServiceClp implements SyncDLObjectLocalService {
 			}
 		}
 
-		return ((Long)returnObj).longValue();
+		return (java.lang.String)ClpSerializer.translateOutput(returnObj);
 	}
 
 	@Override
@@ -745,12 +749,37 @@ public class SyncDLObjectLocalServiceClp implements SyncDLObjectLocalService {
 
 	@Override
 	public java.util.List<com.liferay.sync.model.SyncDLObject> getSyncDLObjects(
-		int start, int end) {
+		long repositoryId, long parentFolderId) {
 		Object returnObj = null;
 
 		try {
 			returnObj = _invokableLocalService.invokeMethod(_methodName20,
-					_methodParameterTypes20, new Object[] { start, end });
+					_methodParameterTypes20,
+					new Object[] { repositoryId, parentFolderId });
+		}
+		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
+			if (t instanceof RuntimeException) {
+				throw (RuntimeException)t;
+			}
+			else {
+				throw new RuntimeException(t.getClass().getName() +
+					" is not a valid exception");
+			}
+		}
+
+		return (java.util.List<com.liferay.sync.model.SyncDLObject>)ClpSerializer.translateOutput(returnObj);
+	}
+
+	@Override
+	public java.util.List<com.liferay.sync.model.SyncDLObject> getSyncDLObjects(
+		int start, int end) {
+		Object returnObj = null;
+
+		try {
+			returnObj = _invokableLocalService.invokeMethod(_methodName21,
+					_methodParameterTypes21, new Object[] { start, end });
 		}
 		catch (Throwable t) {
 			t = ClpSerializer.translateThrowable(t);
@@ -772,8 +801,8 @@ public class SyncDLObjectLocalServiceClp implements SyncDLObjectLocalService {
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName21,
-					_methodParameterTypes21, new Object[] {  });
+			returnObj = _invokableLocalService.invokeMethod(_methodName22,
+					_methodParameterTypes22, new Object[] {  });
 		}
 		catch (Throwable t) {
 			t = ClpSerializer.translateThrowable(t);
@@ -795,26 +824,6 @@ public class SyncDLObjectLocalServiceClp implements SyncDLObjectLocalService {
 		java.lang.String[] parameterTypes, java.lang.Object[] arguments)
 		throws java.lang.Throwable {
 		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void setBeanIdentifier(java.lang.String beanIdentifier) {
-		try {
-			_invokableLocalService.invokeMethod(_methodName23,
-				_methodParameterTypes23,
-				new Object[] { ClpSerializer.translateInput(beanIdentifier) });
-		}
-		catch (Throwable t) {
-			t = ClpSerializer.translateThrowable(t);
-
-			if (t instanceof RuntimeException) {
-				throw (RuntimeException)t;
-			}
-			else {
-				throw new RuntimeException(t.getClass().getName() +
-					" is not a valid exception");
-			}
-		}
 	}
 
 	@Override
@@ -887,8 +896,8 @@ public class SyncDLObjectLocalServiceClp implements SyncDLObjectLocalService {
 	private String[] _methodParameterTypes20;
 	private String _methodName21;
 	private String[] _methodParameterTypes21;
-	private String _methodName23;
-	private String[] _methodParameterTypes23;
+	private String _methodName22;
+	private String[] _methodParameterTypes22;
 	private String _methodName24;
 	private String[] _methodParameterTypes24;
 }

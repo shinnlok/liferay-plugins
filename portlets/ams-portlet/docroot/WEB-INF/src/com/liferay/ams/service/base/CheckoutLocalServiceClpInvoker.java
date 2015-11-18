@@ -14,6 +14,8 @@
 
 package com.liferay.ams.service.base;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.ams.service.CheckoutLocalServiceUtil;
 
 import java.util.Arrays;
@@ -22,6 +24,7 @@ import java.util.Arrays;
  * @author Brian Wing Shun Chan
  * @generated
  */
+@ProviderType
 public class CheckoutLocalServiceClpInvoker {
 	public CheckoutLocalServiceClpInvoker() {
 		_methodName0 = "addCheckout";
@@ -110,13 +113,9 @@ public class CheckoutLocalServiceClpInvoker {
 
 		_methodParameterTypes18 = new String[] { "com.liferay.ams.model.Checkout" };
 
-		_methodName53 = "getBeanIdentifier";
+		_methodName53 = "getOSGiServiceIdentifier";
 
 		_methodParameterTypes53 = new String[] {  };
-
-		_methodName54 = "setBeanIdentifier";
-
-		_methodParameterTypes54 = new String[] { "java.lang.String" };
 	}
 
 	public Object invokeMethod(String name, String[] parameterTypes,
@@ -220,14 +219,7 @@ public class CheckoutLocalServiceClpInvoker {
 
 		if (_methodName53.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes53, parameterTypes)) {
-			return CheckoutLocalServiceUtil.getBeanIdentifier();
-		}
-
-		if (_methodName54.equals(name) &&
-				Arrays.deepEquals(_methodParameterTypes54, parameterTypes)) {
-			CheckoutLocalServiceUtil.setBeanIdentifier((java.lang.String)arguments[0]);
-
-			return null;
+			return CheckoutLocalServiceUtil.getOSGiServiceIdentifier();
 		}
 
 		throw new UnsupportedOperationException();
@@ -271,6 +263,4 @@ public class CheckoutLocalServiceClpInvoker {
 	private String[] _methodParameterTypes18;
 	private String _methodName53;
 	private String[] _methodParameterTypes53;
-	private String _methodName54;
-	private String[] _methodParameterTypes54;
 }

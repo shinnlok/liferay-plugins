@@ -14,6 +14,8 @@
 
 package com.liferay.opensocial.service.base;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.opensocial.model.Gadget;
 import com.liferay.opensocial.service.GadgetLocalService;
 import com.liferay.opensocial.service.persistence.GadgetPersistence;
@@ -21,7 +23,6 @@ import com.liferay.opensocial.service.persistence.OAuthConsumerPersistence;
 import com.liferay.opensocial.service.persistence.OAuthTokenPersistence;
 
 import com.liferay.portal.kernel.bean.BeanReference;
-import com.liferay.portal.kernel.bean.IdentifiableBean;
 import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBFactoryUtil;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdate;
@@ -34,11 +35,7 @@ import com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.Projection;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.lar.ExportImportHelperUtil;
-import com.liferay.portal.kernel.lar.ManifestSummary;
-import com.liferay.portal.kernel.lar.PortletDataContext;
-import com.liferay.portal.kernel.lar.StagedModelDataHandlerUtil;
-import com.liferay.portal.kernel.lar.StagedModelType;
+import com.liferay.portal.kernel.module.framework.service.IdentifiableOSGiService;
 import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.util.OrderByComparator;
@@ -48,6 +45,12 @@ import com.liferay.portal.service.PersistedModelLocalServiceRegistryUtil;
 import com.liferay.portal.service.persistence.ClassNamePersistence;
 import com.liferay.portal.service.persistence.UserPersistence;
 import com.liferay.portal.util.PortalUtil;
+
+import com.liferay.portlet.exportimport.lar.ExportImportHelperUtil;
+import com.liferay.portlet.exportimport.lar.ManifestSummary;
+import com.liferay.portlet.exportimport.lar.PortletDataContext;
+import com.liferay.portlet.exportimport.lar.StagedModelDataHandlerUtil;
+import com.liferay.portlet.exportimport.lar.StagedModelType;
 
 import java.io.Serializable;
 
@@ -67,8 +70,9 @@ import javax.sql.DataSource;
  * @see com.liferay.opensocial.service.GadgetLocalServiceUtil
  * @generated
  */
+@ProviderType
 public abstract class GadgetLocalServiceBaseImpl extends BaseLocalServiceImpl
-	implements GadgetLocalService, IdentifiableBean {
+	implements GadgetLocalService, IdentifiableOSGiService {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
@@ -183,10 +187,10 @@ public abstract class GadgetLocalServiceBaseImpl extends BaseLocalServiceImpl
 	}
 
 	/**
-	 * Returns the number of rows that match the dynamic query.
+	 * Returns the number of rows matching the dynamic query.
 	 *
 	 * @param dynamicQuery the dynamic query
-	 * @return the number of rows that match the dynamic query
+	 * @return the number of rows matching the dynamic query
 	 */
 	@Override
 	public long dynamicQueryCount(DynamicQuery dynamicQuery) {
@@ -194,11 +198,11 @@ public abstract class GadgetLocalServiceBaseImpl extends BaseLocalServiceImpl
 	}
 
 	/**
-	 * Returns the number of rows that match the dynamic query.
+	 * Returns the number of rows matching the dynamic query.
 	 *
 	 * @param dynamicQuery the dynamic query
 	 * @param projection the projection to apply to the query
-	 * @return the number of rows that match the dynamic query
+	 * @return the number of rows matching the dynamic query
 	 */
 	@Override
 	public long dynamicQueryCount(DynamicQuery dynamicQuery,
@@ -215,7 +219,7 @@ public abstract class GadgetLocalServiceBaseImpl extends BaseLocalServiceImpl
 	 * Returns the gadget with the matching UUID and company.
 	 *
 	 * @param uuid the gadget's UUID
-	 * @param  companyId the primary key of the company
+	 * @param companyId the primary key of the company
 	 * @return the matching gadget, or <code>null</code> if a matching gadget could not be found
 	 */
 	@Override
@@ -269,13 +273,13 @@ public abstract class GadgetLocalServiceBaseImpl extends BaseLocalServiceImpl
 
 					long modelAdditionCount = super.performCount();
 
-					manifestSummary.addModelAdditionCount(stagedModelType.toString(),
+					manifestSummary.addModelAdditionCount(stagedModelType,
 						modelAdditionCount);
 
 					long modelDeletionCount = ExportImportHelperUtil.getModelDeletionCount(portletDataContext,
 							stagedModelType);
 
-					manifestSummary.addModelDeletionCount(stagedModelType.toString(),
+					manifestSummary.addModelDeletionCount(stagedModelType,
 						modelDeletionCount);
 
 					return modelAdditionCount;
@@ -294,14 +298,12 @@ public abstract class GadgetLocalServiceBaseImpl extends BaseLocalServiceImpl
 
 		exportActionableDynamicQuery.setCompanyId(portletDataContext.getCompanyId());
 
-		exportActionableDynamicQuery.setPerformActionMethod(new ActionableDynamicQuery.PerformActionMethod() {
+		exportActionableDynamicQuery.setPerformActionMethod(new ActionableDynamicQuery.PerformActionMethod<Gadget>() {
 				@Override
-				public void performAction(Object object)
+				public void performAction(Gadget gadget)
 					throws PortalException {
-					Gadget stagedModel = (Gadget)object;
-
 					StagedModelDataHandlerUtil.exportStagedModel(portletDataContext,
-						stagedModel);
+						gadget);
 				}
 			});
 		exportActionableDynamicQuery.setStagedModelType(new StagedModelType(
@@ -329,7 +331,7 @@ public abstract class GadgetLocalServiceBaseImpl extends BaseLocalServiceImpl
 	 * Returns the gadget with the matching UUID and company.
 	 *
 	 * @param uuid the gadget's UUID
-	 * @param  companyId the primary key of the company
+	 * @param companyId the primary key of the company
 	 * @return the matching gadget
 	 * @throws PortalException if a matching gadget could not be found
 	 */
@@ -382,7 +384,7 @@ public abstract class GadgetLocalServiceBaseImpl extends BaseLocalServiceImpl
 	 *
 	 * @return the gadget local service
 	 */
-	public com.liferay.opensocial.service.GadgetLocalService getGadgetLocalService() {
+	public GadgetLocalService getGadgetLocalService() {
 		return gadgetLocalService;
 	}
 
@@ -391,8 +393,7 @@ public abstract class GadgetLocalServiceBaseImpl extends BaseLocalServiceImpl
 	 *
 	 * @param gadgetLocalService the gadget local service
 	 */
-	public void setGadgetLocalService(
-		com.liferay.opensocial.service.GadgetLocalService gadgetLocalService) {
+	public void setGadgetLocalService(GadgetLocalService gadgetLocalService) {
 		this.gadgetLocalService = gadgetLocalService;
 	}
 
@@ -675,23 +676,13 @@ public abstract class GadgetLocalServiceBaseImpl extends BaseLocalServiceImpl
 	}
 
 	/**
-	 * Returns the Spring bean ID for this bean.
+	 * Returns the OSGi service identifier.
 	 *
-	 * @return the Spring bean ID for this bean
+	 * @return the OSGi service identifier
 	 */
 	@Override
-	public String getBeanIdentifier() {
-		return _beanIdentifier;
-	}
-
-	/**
-	 * Sets the Spring bean ID for this bean.
-	 *
-	 * @param beanIdentifier the Spring bean ID for this bean
-	 */
-	@Override
-	public void setBeanIdentifier(String beanIdentifier) {
-		_beanIdentifier = beanIdentifier;
+	public String getOSGiServiceIdentifier() {
+		return GadgetLocalService.class.getName();
 	}
 
 	@Override
@@ -748,7 +739,7 @@ public abstract class GadgetLocalServiceBaseImpl extends BaseLocalServiceImpl
 	}
 
 	@BeanReference(type = com.liferay.opensocial.service.GadgetLocalService.class)
-	protected com.liferay.opensocial.service.GadgetLocalService gadgetLocalService;
+	protected GadgetLocalService gadgetLocalService;
 	@BeanReference(type = com.liferay.opensocial.service.GadgetService.class)
 	protected com.liferay.opensocial.service.GadgetService gadgetService;
 	@BeanReference(type = GadgetPersistence.class)
@@ -777,7 +768,6 @@ public abstract class GadgetLocalServiceBaseImpl extends BaseLocalServiceImpl
 	protected com.liferay.portal.service.UserService userService;
 	@BeanReference(type = UserPersistence.class)
 	protected UserPersistence userPersistence;
-	private String _beanIdentifier;
 	private ClassLoader _classLoader;
 	private GadgetLocalServiceClpInvoker _clpInvoker = new GadgetLocalServiceClpInvoker();
 }

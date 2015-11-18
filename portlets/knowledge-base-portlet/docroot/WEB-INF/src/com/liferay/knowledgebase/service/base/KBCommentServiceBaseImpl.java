@@ -23,12 +23,12 @@ import com.liferay.knowledgebase.service.persistence.KBFolderPersistence;
 import com.liferay.knowledgebase.service.persistence.KBTemplatePersistence;
 
 import com.liferay.portal.kernel.bean.BeanReference;
-import com.liferay.portal.kernel.bean.IdentifiableBean;
 import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBFactoryUtil;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdate;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdateFactoryUtil;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.module.framework.service.IdentifiableOSGiService;
 import com.liferay.portal.service.BaseServiceImpl;
 import com.liferay.portal.service.persistence.ClassNamePersistence;
 import com.liferay.portal.service.persistence.PortletPreferencesPersistence;
@@ -53,7 +53,7 @@ import javax.sql.DataSource;
  * @generated
  */
 public abstract class KBCommentServiceBaseImpl extends BaseServiceImpl
-	implements KBCommentService, IdentifiableBean {
+	implements KBCommentService, IdentifiableOSGiService {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
@@ -159,7 +159,7 @@ public abstract class KBCommentServiceBaseImpl extends BaseServiceImpl
 	 *
 	 * @return the k b comment remote service
 	 */
-	public com.liferay.knowledgebase.service.KBCommentService getKBCommentService() {
+	public KBCommentService getKBCommentService() {
 		return kbCommentService;
 	}
 
@@ -168,8 +168,7 @@ public abstract class KBCommentServiceBaseImpl extends BaseServiceImpl
 	 *
 	 * @param kbCommentService the k b comment remote service
 	 */
-	public void setKBCommentService(
-		com.liferay.knowledgebase.service.KBCommentService kbCommentService) {
+	public void setKBCommentService(KBCommentService kbCommentService) {
 		this.kbCommentService = kbCommentService;
 	}
 
@@ -637,23 +636,13 @@ public abstract class KBCommentServiceBaseImpl extends BaseServiceImpl
 	}
 
 	/**
-	 * Returns the Spring bean ID for this bean.
+	 * Returns the OSGi service identifier.
 	 *
-	 * @return the Spring bean ID for this bean
+	 * @return the OSGi service identifier
 	 */
 	@Override
-	public String getBeanIdentifier() {
-		return _beanIdentifier;
-	}
-
-	/**
-	 * Sets the Spring bean ID for this bean.
-	 *
-	 * @param beanIdentifier the Spring bean ID for this bean
-	 */
-	@Override
-	public void setBeanIdentifier(String beanIdentifier) {
-		_beanIdentifier = beanIdentifier;
+	public String getOSGiServiceIdentifier() {
+		return KBCommentService.class.getName();
 	}
 
 	@Override
@@ -720,7 +709,7 @@ public abstract class KBCommentServiceBaseImpl extends BaseServiceImpl
 	@BeanReference(type = com.liferay.knowledgebase.service.KBCommentLocalService.class)
 	protected com.liferay.knowledgebase.service.KBCommentLocalService kbCommentLocalService;
 	@BeanReference(type = com.liferay.knowledgebase.service.KBCommentService.class)
-	protected com.liferay.knowledgebase.service.KBCommentService kbCommentService;
+	protected KBCommentService kbCommentService;
 	@BeanReference(type = KBCommentPersistence.class)
 	protected KBCommentPersistence kbCommentPersistence;
 	@BeanReference(type = com.liferay.knowledgebase.service.KBFolderLocalService.class)
@@ -769,7 +758,6 @@ public abstract class KBCommentServiceBaseImpl extends BaseServiceImpl
 	protected com.liferay.portlet.social.service.SocialActivityService socialActivityService;
 	@BeanReference(type = SocialActivityPersistence.class)
 	protected SocialActivityPersistence socialActivityPersistence;
-	private String _beanIdentifier;
 	private ClassLoader _classLoader;
 	private KBCommentServiceClpInvoker _clpInvoker = new KBCommentServiceClpInvoker();
 }

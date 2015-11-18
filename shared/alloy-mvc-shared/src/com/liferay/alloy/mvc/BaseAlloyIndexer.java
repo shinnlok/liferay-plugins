@@ -15,13 +15,13 @@
 package com.liferay.alloy.mvc;
 
 import com.liferay.portal.kernel.search.BaseIndexer;
-import com.liferay.portal.kernel.search.BooleanQuery;
 import com.liferay.portal.kernel.search.Document;
 import com.liferay.portal.kernel.search.DocumentImpl;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.search.SearchEngineUtil;
+import com.liferay.portal.kernel.search.filter.BooleanFilter;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.model.AuditedModel;
@@ -34,7 +34,7 @@ import java.util.List;
 /**
  * @author Brian Wing Shun Chan
  */
-public abstract class BaseAlloyIndexer extends BaseIndexer {
+public abstract class BaseAlloyIndexer extends BaseIndexer<BaseModel<?>> {
 
 	public AlloyServiceInvoker getAlloyServiceInvoker() {
 		return alloyServiceInvoker;
@@ -46,8 +46,8 @@ public abstract class BaseAlloyIndexer extends BaseIndexer {
 	}
 
 	@Override
-	public void postProcessContextQuery(
-			BooleanQuery contextQuery, SearchContext searchContext)
+	public void postProcessContextBooleanFilter(
+			BooleanFilter booleanFilter, SearchContext searchContext)
 		throws Exception {
 
 		int status = GetterUtil.getInteger(
@@ -55,20 +55,18 @@ public abstract class BaseAlloyIndexer extends BaseIndexer {
 			WorkflowConstants.STATUS_ANY);
 
 		if (status != WorkflowConstants.STATUS_ANY) {
-			contextQuery.addRequiredTerm(Field.STATUS, status);
+			booleanFilter.addRequiredTerm(Field.STATUS, status);
 		}
 	}
 
 	@Override
-	protected void doDelete(Object obj) throws Exception {
-		BaseModel<?> baseModel = (BaseModel<?>)obj;
-
+	protected void doDelete(BaseModel<?> baseModel) throws Exception {
 		Document document = new DocumentImpl();
 
 		document.addUID(
 			className, String.valueOf(baseModel.getPrimaryKeyObj()));
 
-		AuditedModel auditedModel = (AuditedModel)obj;
+		AuditedModel auditedModel = (AuditedModel)baseModel;
 
 		SearchEngineUtil.deleteDocument(
 			getSearchEngineId(), auditedModel.getCompanyId(),
@@ -76,10 +74,10 @@ public abstract class BaseAlloyIndexer extends BaseIndexer {
 	}
 
 	@Override
-	protected void doReindex(Object obj) throws Exception {
-		Document document = getDocument(obj);
+	protected void doReindex(BaseModel<?> baseModel) throws Exception {
+		Document document = getDocument(baseModel);
 
-		AuditedModel auditedModel = (AuditedModel)obj;
+		AuditedModel auditedModel = (AuditedModel)baseModel;
 
 		SearchEngineUtil.updateDocument(
 			getSearchEngineId(), auditedModel.getCompanyId(), document);
@@ -87,10 +85,10 @@ public abstract class BaseAlloyIndexer extends BaseIndexer {
 
 	@Override
 	protected void doReindex(String className, long classPK) throws Exception {
-		Object model = alloyServiceInvoker.fetchModel(classPK);
+		BaseModel<?> baseModel = alloyServiceInvoker.fetchModel(classPK);
 
-		if (model != null) {
-			doReindex(model);
+		if (baseModel != null) {
+			doReindex(baseModel);
 		}
 	}
 
@@ -130,17 +128,17 @@ public abstract class BaseAlloyIndexer extends BaseIndexer {
 	protected void reindexModels(long companyId, int start, int end)
 		throws Exception {
 
-		List<Object> models = alloyServiceInvoker.executeDynamicQuery(
+		List<BaseModel<?>> baseModels = alloyServiceInvoker.executeDynamicQuery(
 			new Object[] {"companyId", companyId}, start, end);
 
-		if (models.isEmpty()) {
+		if (baseModels.isEmpty()) {
 			return;
 		}
 
-		Collection<Document> documents = new ArrayList<>(models.size());
+		Collection<Document> documents = new ArrayList<>(baseModels.size());
 
-		for (Object model : models) {
-			Document document = getDocument(model);
+		for (BaseModel<?> baseModel : baseModels) {
+			Document document = getDocument(baseModel);
 
 			documents.add(document);
 		}

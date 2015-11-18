@@ -61,6 +61,7 @@ public class SyncDLObjectWrapper implements SyncDLObject,
 		attributes.put("modifiedTime", getModifiedTime());
 		attributes.put("repositoryId", getRepositoryId());
 		attributes.put("parentFolderId", getParentFolderId());
+		attributes.put("treePath", getTreePath());
 		attributes.put("name", getName());
 		attributes.put("extension", getExtension());
 		attributes.put("mimeType", getMimeType());
@@ -72,6 +73,7 @@ public class SyncDLObjectWrapper implements SyncDLObject,
 		attributes.put("size", getSize());
 		attributes.put("checksum", getChecksum());
 		attributes.put("event", getEvent());
+		attributes.put("lastPermissionChangeDate", getLastPermissionChangeDate());
 		attributes.put("lockExpirationDate", getLockExpirationDate());
 		attributes.put("lockUserId", getLockUserId());
 		attributes.put("lockUserName", getLockUserName());
@@ -130,6 +132,12 @@ public class SyncDLObjectWrapper implements SyncDLObject,
 
 		if (parentFolderId != null) {
 			setParentFolderId(parentFolderId);
+		}
+
+		String treePath = (String)attributes.get("treePath");
+
+		if (treePath != null) {
+			setTreePath(treePath);
 		}
 
 		String name = (String)attributes.get("name");
@@ -198,6 +206,13 @@ public class SyncDLObjectWrapper implements SyncDLObject,
 			setEvent(event);
 		}
 
+		Date lastPermissionChangeDate = (Date)attributes.get(
+				"lastPermissionChangeDate");
+
+		if (lastPermissionChangeDate != null) {
+			setLastPermissionChangeDate(lastPermissionChangeDate);
+		}
+
 		Date lockExpirationDate = (Date)attributes.get("lockExpirationDate");
 
 		if (lockExpirationDate != null) {
@@ -233,6 +248,11 @@ public class SyncDLObjectWrapper implements SyncDLObject,
 		if (typeUuid != null) {
 			setTypeUuid(typeUuid);
 		}
+	}
+
+	@Override
+	public java.lang.String buildTreePath() {
+		return _syncDLObject.buildTreePath();
 	}
 
 	@Override
@@ -328,6 +348,16 @@ public class SyncDLObjectWrapper implements SyncDLObject,
 	@Override
 	public java.lang.String getExtraSettings() {
 		return _syncDLObject.getExtraSettings();
+	}
+
+	/**
+	* Returns the last permission change date of this sync d l object.
+	*
+	* @return the last permission change date of this sync d l object
+	*/
+	@Override
+	public Date getLastPermissionChangeDate() {
+		return _syncDLObject.getLastPermissionChangeDate();
 	}
 
 	/**
@@ -453,6 +483,16 @@ public class SyncDLObjectWrapper implements SyncDLObject,
 	@Override
 	public long getSyncDLObjectId() {
 		return _syncDLObject.getSyncDLObjectId();
+	}
+
+	/**
+	* Returns the tree path of this sync d l object.
+	*
+	* @return the tree path of this sync d l object
+	*/
+	@Override
+	public java.lang.String getTreePath() {
+		return _syncDLObject.getTreePath();
 	}
 
 	/**
@@ -669,6 +709,16 @@ public class SyncDLObjectWrapper implements SyncDLObject,
 	}
 
 	/**
+	* Sets the last permission change date of this sync d l object.
+	*
+	* @param lastPermissionChangeDate the last permission change date of this sync d l object
+	*/
+	@Override
+	public void setLastPermissionChangeDate(Date lastPermissionChangeDate) {
+		_syncDLObject.setLastPermissionChangeDate(lastPermissionChangeDate);
+	}
+
+	/**
 	* Sets the lock expiration date of this sync d l object.
 	*
 	* @param lockExpirationDate the lock expiration date of this sync d l object
@@ -804,6 +854,16 @@ public class SyncDLObjectWrapper implements SyncDLObject,
 	}
 
 	/**
+	* Sets the tree path of this sync d l object.
+	*
+	* @param treePath the tree path of this sync d l object
+	*/
+	@Override
+	public void setTreePath(java.lang.String treePath) {
+		_syncDLObject.setTreePath(treePath);
+	}
+
+	/**
 	* Sets the type of this sync d l object.
 	*
 	* @param type the type of this sync d l object
@@ -906,6 +966,11 @@ public class SyncDLObjectWrapper implements SyncDLObject,
 	@Override
 	public java.lang.String toXmlString() {
 		return _syncDLObject.toXmlString();
+	}
+
+	@Override
+	public void updateTreePath(java.lang.String treePath) {
+		_syncDLObject.updateTreePath(treePath);
 	}
 
 	@Override

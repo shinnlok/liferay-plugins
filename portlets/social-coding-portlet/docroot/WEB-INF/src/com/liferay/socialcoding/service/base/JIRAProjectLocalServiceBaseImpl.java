@@ -17,7 +17,6 @@ package com.liferay.socialcoding.service.base;
 import aQute.bnd.annotation.ProviderType;
 
 import com.liferay.portal.kernel.bean.BeanReference;
-import com.liferay.portal.kernel.bean.IdentifiableBean;
 import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBFactoryUtil;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdate;
@@ -29,6 +28,7 @@ import com.liferay.portal.kernel.dao.orm.DynamicQueryFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.Projection;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.module.framework.service.IdentifiableOSGiService;
 import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.util.OrderByComparator;
@@ -73,7 +73,7 @@ import javax.sql.DataSource;
 @ProviderType
 public abstract class JIRAProjectLocalServiceBaseImpl
 	extends BaseLocalServiceImpl implements JIRAProjectLocalService,
-		IdentifiableBean {
+		IdentifiableOSGiService {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
@@ -190,10 +190,10 @@ public abstract class JIRAProjectLocalServiceBaseImpl
 	}
 
 	/**
-	 * Returns the number of rows that match the dynamic query.
+	 * Returns the number of rows matching the dynamic query.
 	 *
 	 * @param dynamicQuery the dynamic query
-	 * @return the number of rows that match the dynamic query
+	 * @return the number of rows matching the dynamic query
 	 */
 	@Override
 	public long dynamicQueryCount(DynamicQuery dynamicQuery) {
@@ -201,11 +201,11 @@ public abstract class JIRAProjectLocalServiceBaseImpl
 	}
 
 	/**
-	 * Returns the number of rows that match the dynamic query.
+	 * Returns the number of rows matching the dynamic query.
 	 *
 	 * @param dynamicQuery the dynamic query
 	 * @param projection the projection to apply to the query
-	 * @return the number of rows that match the dynamic query
+	 * @return the number of rows matching the dynamic query
 	 */
 	@Override
 	public long dynamicQueryCount(DynamicQuery dynamicQuery,
@@ -519,7 +519,7 @@ public abstract class JIRAProjectLocalServiceBaseImpl
 	 *
 	 * @return the j i r a project local service
 	 */
-	public com.liferay.socialcoding.service.JIRAProjectLocalService getJIRAProjectLocalService() {
+	public JIRAProjectLocalService getJIRAProjectLocalService() {
 		return jiraProjectLocalService;
 	}
 
@@ -529,7 +529,7 @@ public abstract class JIRAProjectLocalServiceBaseImpl
 	 * @param jiraProjectLocalService the j i r a project local service
 	 */
 	public void setJIRAProjectLocalService(
-		com.liferay.socialcoding.service.JIRAProjectLocalService jiraProjectLocalService) {
+		JIRAProjectLocalService jiraProjectLocalService) {
 		this.jiraProjectLocalService = jiraProjectLocalService;
 	}
 
@@ -794,23 +794,13 @@ public abstract class JIRAProjectLocalServiceBaseImpl
 	}
 
 	/**
-	 * Returns the Spring bean ID for this bean.
+	 * Returns the OSGi service identifier.
 	 *
-	 * @return the Spring bean ID for this bean
+	 * @return the OSGi service identifier
 	 */
 	@Override
-	public String getBeanIdentifier() {
-		return _beanIdentifier;
-	}
-
-	/**
-	 * Sets the Spring bean ID for this bean.
-	 *
-	 * @param beanIdentifier the Spring bean ID for this bean
-	 */
-	@Override
-	public void setBeanIdentifier(String beanIdentifier) {
-		_beanIdentifier = beanIdentifier;
+	public String getOSGiServiceIdentifier() {
+		return JIRAProjectLocalService.class.getName();
 	}
 
 	@Override
@@ -889,7 +879,7 @@ public abstract class JIRAProjectLocalServiceBaseImpl
 	@BeanReference(type = JIRAIssueFinder.class)
 	protected JIRAIssueFinder jiraIssueFinder;
 	@BeanReference(type = com.liferay.socialcoding.service.JIRAProjectLocalService.class)
-	protected com.liferay.socialcoding.service.JIRAProjectLocalService jiraProjectLocalService;
+	protected JIRAProjectLocalService jiraProjectLocalService;
 	@BeanReference(type = JIRAProjectPersistence.class)
 	protected JIRAProjectPersistence jiraProjectPersistence;
 	@BeanReference(type = com.liferay.socialcoding.service.SVNRepositoryLocalService.class)
@@ -916,7 +906,6 @@ public abstract class JIRAProjectLocalServiceBaseImpl
 	protected com.liferay.portal.service.UserService userService;
 	@BeanReference(type = UserPersistence.class)
 	protected UserPersistence userPersistence;
-	private String _beanIdentifier;
 	private ClassLoader _classLoader;
 	private JIRAProjectLocalServiceClpInvoker _clpInvoker = new JIRAProjectLocalServiceClpInvoker();
 }

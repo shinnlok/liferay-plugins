@@ -14,12 +14,15 @@
 
 package com.liferay.akismet.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.service.InvokableLocalService;
 
 /**
  * @author Brian Wing Shun Chan
  * @generated
  */
+@ProviderType
 public class AkismetDataLocalServiceClp implements AkismetDataLocalService {
 	public AkismetDataLocalServiceClp(
 		InvokableLocalService invokableLocalService) {
@@ -119,7 +122,7 @@ public class AkismetDataLocalServiceClp implements AkismetDataLocalService {
 
 		_methodParameterTypes18 = new String[] {  };
 
-		_methodName19 = "getBeanIdentifier";
+		_methodName19 = "getOSGiServiceIdentifier";
 
 		_methodParameterTypes19 = new String[] {  };
 
@@ -127,19 +130,15 @@ public class AkismetDataLocalServiceClp implements AkismetDataLocalService {
 
 		_methodParameterTypes20 = new String[] { "java.io.Serializable" };
 
-		_methodName22 = "setBeanIdentifier";
+		_methodName22 = "updateAkismetData";
 
-		_methodParameterTypes22 = new String[] { "java.lang.String" };
+		_methodParameterTypes22 = new String[] {
+				"com.liferay.akismet.model.AkismetData"
+			};
 
 		_methodName23 = "updateAkismetData";
 
 		_methodParameterTypes23 = new String[] {
-				"com.liferay.akismet.model.AkismetData"
-			};
-
-		_methodName24 = "updateAkismetData";
-
-		_methodParameterTypes24 = new String[] {
 				"java.lang.String", "long", "java.lang.String",
 				"java.lang.String", "java.lang.String", "java.lang.String",
 				"java.lang.String", "java.lang.String"
@@ -647,7 +646,7 @@ public class AkismetDataLocalServiceClp implements AkismetDataLocalService {
 	}
 
 	@Override
-	public java.lang.String getBeanIdentifier() {
+	public java.lang.String getOSGiServiceIdentifier() {
 		Object returnObj = null;
 
 		try {
@@ -707,33 +706,13 @@ public class AkismetDataLocalServiceClp implements AkismetDataLocalService {
 	}
 
 	@Override
-	public void setBeanIdentifier(java.lang.String beanIdentifier) {
-		try {
-			_invokableLocalService.invokeMethod(_methodName22,
-				_methodParameterTypes22,
-				new Object[] { ClpSerializer.translateInput(beanIdentifier) });
-		}
-		catch (Throwable t) {
-			t = ClpSerializer.translateThrowable(t);
-
-			if (t instanceof RuntimeException) {
-				throw (RuntimeException)t;
-			}
-			else {
-				throw new RuntimeException(t.getClass().getName() +
-					" is not a valid exception");
-			}
-		}
-	}
-
-	@Override
 	public com.liferay.akismet.model.AkismetData updateAkismetData(
 		com.liferay.akismet.model.AkismetData akismetData) {
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName23,
-					_methodParameterTypes23,
+			returnObj = _invokableLocalService.invokeMethod(_methodName22,
+					_methodParameterTypes22,
 					new Object[] { ClpSerializer.translateInput(akismetData) });
 		}
 		catch (Throwable t) {
@@ -760,8 +739,8 @@ public class AkismetDataLocalServiceClp implements AkismetDataLocalService {
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName24,
-					_methodParameterTypes24,
+			returnObj = _invokableLocalService.invokeMethod(_methodName23,
+					_methodParameterTypes23,
 					new Object[] {
 						ClpSerializer.translateInput(className),
 						
@@ -842,6 +821,4 @@ public class AkismetDataLocalServiceClp implements AkismetDataLocalService {
 	private String[] _methodParameterTypes22;
 	private String _methodName23;
 	private String[] _methodParameterTypes23;
-	private String _methodName24;
-	private String[] _methodParameterTypes24;
 }

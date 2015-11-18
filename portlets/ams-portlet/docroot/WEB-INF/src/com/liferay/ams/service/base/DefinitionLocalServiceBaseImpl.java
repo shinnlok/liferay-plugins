@@ -14,6 +14,8 @@
 
 package com.liferay.ams.service.base;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.ams.model.Definition;
 import com.liferay.ams.service.DefinitionLocalService;
 import com.liferay.ams.service.persistence.AssetPersistence;
@@ -22,7 +24,6 @@ import com.liferay.ams.service.persistence.DefinitionPersistence;
 import com.liferay.ams.service.persistence.TypePersistence;
 
 import com.liferay.portal.kernel.bean.BeanReference;
-import com.liferay.portal.kernel.bean.IdentifiableBean;
 import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBFactoryUtil;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdate;
@@ -34,6 +35,7 @@ import com.liferay.portal.kernel.dao.orm.DynamicQueryFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.Projection;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.module.framework.service.IdentifiableOSGiService;
 import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.util.OrderByComparator;
@@ -62,9 +64,10 @@ import javax.sql.DataSource;
  * @see com.liferay.ams.service.DefinitionLocalServiceUtil
  * @generated
  */
+@ProviderType
 public abstract class DefinitionLocalServiceBaseImpl
 	extends BaseLocalServiceImpl implements DefinitionLocalService,
-		IdentifiableBean {
+		IdentifiableOSGiService {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
@@ -181,10 +184,10 @@ public abstract class DefinitionLocalServiceBaseImpl
 	}
 
 	/**
-	 * Returns the number of rows that match the dynamic query.
+	 * Returns the number of rows matching the dynamic query.
 	 *
 	 * @param dynamicQuery the dynamic query
-	 * @return the number of rows that match the dynamic query
+	 * @return the number of rows matching the dynamic query
 	 */
 	@Override
 	public long dynamicQueryCount(DynamicQuery dynamicQuery) {
@@ -192,11 +195,11 @@ public abstract class DefinitionLocalServiceBaseImpl
 	}
 
 	/**
-	 * Returns the number of rows that match the dynamic query.
+	 * Returns the number of rows matching the dynamic query.
 	 *
 	 * @param dynamicQuery the dynamic query
 	 * @param projection the projection to apply to the query
-	 * @return the number of rows that match the dynamic query
+	 * @return the number of rows matching the dynamic query
 	 */
 	@Override
 	public long dynamicQueryCount(DynamicQuery dynamicQuery,
@@ -377,7 +380,7 @@ public abstract class DefinitionLocalServiceBaseImpl
 	 *
 	 * @return the definition local service
 	 */
-	public com.liferay.ams.service.DefinitionLocalService getDefinitionLocalService() {
+	public DefinitionLocalService getDefinitionLocalService() {
 		return definitionLocalService;
 	}
 
@@ -387,7 +390,7 @@ public abstract class DefinitionLocalServiceBaseImpl
 	 * @param definitionLocalService the definition local service
 	 */
 	public void setDefinitionLocalService(
-		com.liferay.ams.service.DefinitionLocalService definitionLocalService) {
+		DefinitionLocalService definitionLocalService) {
 		this.definitionLocalService = definitionLocalService;
 	}
 
@@ -613,23 +616,13 @@ public abstract class DefinitionLocalServiceBaseImpl
 	}
 
 	/**
-	 * Returns the Spring bean ID for this bean.
+	 * Returns the OSGi service identifier.
 	 *
-	 * @return the Spring bean ID for this bean
+	 * @return the OSGi service identifier
 	 */
 	@Override
-	public String getBeanIdentifier() {
-		return _beanIdentifier;
-	}
-
-	/**
-	 * Sets the Spring bean ID for this bean.
-	 *
-	 * @param beanIdentifier the Spring bean ID for this bean
-	 */
-	@Override
-	public void setBeanIdentifier(String beanIdentifier) {
-		_beanIdentifier = beanIdentifier;
+	public String getOSGiServiceIdentifier() {
+		return DefinitionLocalService.class.getName();
 	}
 
 	@Override
@@ -694,7 +687,7 @@ public abstract class DefinitionLocalServiceBaseImpl
 	@BeanReference(type = CheckoutPersistence.class)
 	protected CheckoutPersistence checkoutPersistence;
 	@BeanReference(type = com.liferay.ams.service.DefinitionLocalService.class)
-	protected com.liferay.ams.service.DefinitionLocalService definitionLocalService;
+	protected DefinitionLocalService definitionLocalService;
 	@BeanReference(type = DefinitionPersistence.class)
 	protected DefinitionPersistence definitionPersistence;
 	@BeanReference(type = com.liferay.ams.service.TypeLocalService.class)
@@ -717,7 +710,6 @@ public abstract class DefinitionLocalServiceBaseImpl
 	protected com.liferay.portal.service.UserService userService;
 	@BeanReference(type = UserPersistence.class)
 	protected UserPersistence userPersistence;
-	private String _beanIdentifier;
 	private ClassLoader _classLoader;
 	private DefinitionLocalServiceClpInvoker _clpInvoker = new DefinitionLocalServiceClpInvoker();
 }

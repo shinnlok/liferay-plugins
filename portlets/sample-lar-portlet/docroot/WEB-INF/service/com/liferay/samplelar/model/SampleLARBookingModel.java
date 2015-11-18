@@ -14,9 +14,12 @@
 
 package com.liferay.samplelar.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.bean.AutoEscape;
 import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.CacheModel;
+import com.liferay.portal.model.ShardedModel;
 import com.liferay.portal.model.StagedGroupedModel;
 import com.liferay.portal.service.ServiceContext;
 
@@ -39,8 +42,9 @@ import java.util.Date;
  * @see com.liferay.samplelar.model.impl.SampleLARBookingModelImpl
  * @generated
  */
+@ProviderType
 public interface SampleLARBookingModel extends BaseModel<SampleLARBooking>,
-	StagedGroupedModel {
+	ShardedModel, StagedGroupedModel {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
@@ -220,6 +224,22 @@ public interface SampleLARBookingModel extends BaseModel<SampleLARBooking>,
 	 */
 	public void setBookingNumber(String bookingNumber);
 
+	/**
+	 * Returns the last publish date of this sample l a r booking.
+	 *
+	 * @return the last publish date of this sample l a r booking
+	 */
+	@Override
+	public Date getLastPublishDate();
+
+	/**
+	 * Sets the last publish date of this sample l a r booking.
+	 *
+	 * @param lastPublishDate the last publish date of this sample l a r booking
+	 */
+	@Override
+	public void setLastPublishDate(Date lastPublishDate);
+
 	@Override
 	public boolean isNew();
 
@@ -257,19 +277,20 @@ public interface SampleLARBookingModel extends BaseModel<SampleLARBooking>,
 	public Object clone();
 
 	@Override
-	public int compareTo(SampleLARBooking sampleLARBooking);
+	public int compareTo(
+		com.liferay.samplelar.model.SampleLARBooking sampleLARBooking);
 
 	@Override
 	public int hashCode();
 
 	@Override
-	public CacheModel<SampleLARBooking> toCacheModel();
+	public CacheModel<com.liferay.samplelar.model.SampleLARBooking> toCacheModel();
 
 	@Override
-	public SampleLARBooking toEscapedModel();
+	public com.liferay.samplelar.model.SampleLARBooking toEscapedModel();
 
 	@Override
-	public SampleLARBooking toUnescapedModel();
+	public com.liferay.samplelar.model.SampleLARBooking toUnescapedModel();
 
 	@Override
 	public String toString();

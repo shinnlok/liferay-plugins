@@ -14,6 +14,8 @@
 
 package com.liferay.opensocial.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.opensocial.service.ClpSerializer;
 import com.liferay.opensocial.service.OAuthConsumerLocalServiceUtil;
 
@@ -35,6 +37,7 @@ import java.util.Map;
 /**
  * @author Brian Wing Shun Chan
  */
+@ProviderType
 public class OAuthConsumerClp extends BaseModelImpl<OAuthConsumer>
 	implements OAuthConsumer {
 	public OAuthConsumerClp() {

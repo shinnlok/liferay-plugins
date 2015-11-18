@@ -14,14 +14,17 @@
 
 package com.liferay.ams.service.persistence.impl;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.ams.NoSuchCheckoutException;
 import com.liferay.ams.model.Checkout;
 import com.liferay.ams.model.impl.CheckoutImpl;
 import com.liferay.ams.model.impl.CheckoutModelImpl;
 import com.liferay.ams.service.persistence.CheckoutPersistence;
 
-import com.liferay.portal.kernel.cache.CacheRegistryUtil;
+import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
+import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
 import com.liferay.portal.kernel.dao.orm.Query;
@@ -29,18 +32,18 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
-import com.liferay.portal.kernel.util.PropsKeys;
-import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CacheModel;
+import com.liferay.portal.service.ServiceContext;
+import com.liferay.portal.service.ServiceContextThreadLocal;
 import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
 
 import java.io.Serializable;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -57,9 +60,10 @@ import java.util.Set;
  *
  * @author Brian Wing Shun Chan
  * @see CheckoutPersistence
- * @see CheckoutUtil
+ * @see com.liferay.ams.service.persistence.CheckoutUtil
  * @generated
  */
+@ProviderType
 public class CheckoutPersistenceImpl extends BasePersistenceImpl<Checkout>
 	implements CheckoutPersistence {
 	/*
@@ -93,7 +97,7 @@ public class CheckoutPersistenceImpl extends BasePersistenceImpl<Checkout>
 	 */
 	@Override
 	public void cacheResult(Checkout checkout) {
-		EntityCacheUtil.putResult(CheckoutModelImpl.ENTITY_CACHE_ENABLED,
+		entityCache.putResult(CheckoutModelImpl.ENTITY_CACHE_ENABLED,
 			CheckoutImpl.class, checkout.getPrimaryKey(), checkout);
 
 		checkout.resetOriginalValues();
@@ -107,8 +111,7 @@ public class CheckoutPersistenceImpl extends BasePersistenceImpl<Checkout>
 	@Override
 	public void cacheResult(List<Checkout> checkouts) {
 		for (Checkout checkout : checkouts) {
-			if (EntityCacheUtil.getResult(
-						CheckoutModelImpl.ENTITY_CACHE_ENABLED,
+			if (entityCache.getResult(CheckoutModelImpl.ENTITY_CACHE_ENABLED,
 						CheckoutImpl.class, checkout.getPrimaryKey()) == null) {
 				cacheResult(checkout);
 			}
@@ -122,45 +125,41 @@ public class CheckoutPersistenceImpl extends BasePersistenceImpl<Checkout>
 	 * Clears the cache for all checkouts.
 	 *
 	 * <p>
-	 * The {@link com.liferay.portal.kernel.dao.orm.EntityCache} and {@link com.liferay.portal.kernel.dao.orm.FinderCache} are both cleared by this method.
+	 * The {@link EntityCache} and {@link FinderCache} are both cleared by this method.
 	 * </p>
 	 */
 	@Override
 	public void clearCache() {
-		if (_HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE) {
-			CacheRegistryUtil.clear(CheckoutImpl.class.getName());
-		}
+		entityCache.clearCache(CheckoutImpl.class);
 
-		EntityCacheUtil.clearCache(CheckoutImpl.class);
-
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_ENTITY);
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_ENTITY);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
 	/**
 	 * Clears the cache for the checkout.
 	 *
 	 * <p>
-	 * The {@link com.liferay.portal.kernel.dao.orm.EntityCache} and {@link com.liferay.portal.kernel.dao.orm.FinderCache} are both cleared by this method.
+	 * The {@link EntityCache} and {@link FinderCache} are both cleared by this method.
 	 * </p>
 	 */
 	@Override
 	public void clearCache(Checkout checkout) {
-		EntityCacheUtil.removeResult(CheckoutModelImpl.ENTITY_CACHE_ENABLED,
+		entityCache.removeResult(CheckoutModelImpl.ENTITY_CACHE_ENABLED,
 			CheckoutImpl.class, checkout.getPrimaryKey());
 
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
 	@Override
 	public void clearCache(List<Checkout> checkouts) {
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 
 		for (Checkout checkout : checkouts) {
-			EntityCacheUtil.removeResult(CheckoutModelImpl.ENTITY_CACHE_ENABLED,
+			entityCache.removeResult(CheckoutModelImpl.ENTITY_CACHE_ENABLED,
 				CheckoutImpl.class, checkout.getPrimaryKey());
 		}
 	}
@@ -186,7 +185,7 @@ public class CheckoutPersistenceImpl extends BasePersistenceImpl<Checkout>
 	 *
 	 * @param checkoutId the primary key of the checkout
 	 * @return the checkout that was removed
-	 * @throws com.liferay.ams.NoSuchCheckoutException if a checkout with the primary key could not be found
+	 * @throws NoSuchCheckoutException if a checkout with the primary key could not be found
 	 */
 	@Override
 	public Checkout remove(long checkoutId) throws NoSuchCheckoutException {
@@ -198,7 +197,7 @@ public class CheckoutPersistenceImpl extends BasePersistenceImpl<Checkout>
 	 *
 	 * @param primaryKey the primary key of the checkout
 	 * @return the checkout that was removed
-	 * @throws com.liferay.ams.NoSuchCheckoutException if a checkout with the primary key could not be found
+	 * @throws NoSuchCheckoutException if a checkout with the primary key could not be found
 	 */
 	@Override
 	public Checkout remove(Serializable primaryKey)
@@ -266,10 +265,34 @@ public class CheckoutPersistenceImpl extends BasePersistenceImpl<Checkout>
 	}
 
 	@Override
-	public Checkout updateImpl(com.liferay.ams.model.Checkout checkout) {
+	public Checkout updateImpl(Checkout checkout) {
 		checkout = toUnwrappedModel(checkout);
 
 		boolean isNew = checkout.isNew();
+
+		CheckoutModelImpl checkoutModelImpl = (CheckoutModelImpl)checkout;
+
+		ServiceContext serviceContext = ServiceContextThreadLocal.getServiceContext();
+
+		Date now = new Date();
+
+		if (isNew && (checkout.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				checkout.setCreateDate(now);
+			}
+			else {
+				checkout.setCreateDate(serviceContext.getCreateDate(now));
+			}
+		}
+
+		if (!checkoutModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				checkout.setModifiedDate(now);
+			}
+			else {
+				checkout.setModifiedDate(serviceContext.getModifiedDate(now));
+			}
+		}
 
 		Session session = null;
 
@@ -282,7 +305,7 @@ public class CheckoutPersistenceImpl extends BasePersistenceImpl<Checkout>
 				checkout.setNew(false);
 			}
 			else {
-				session.merge(checkout);
+				checkout = (Checkout)session.merge(checkout);
 			}
 		}
 		catch (Exception e) {
@@ -292,13 +315,13 @@ public class CheckoutPersistenceImpl extends BasePersistenceImpl<Checkout>
 			closeSession(session);
 		}
 
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 
 		if (isNew) {
-			FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 		}
 
-		EntityCacheUtil.putResult(CheckoutModelImpl.ENTITY_CACHE_ENABLED,
+		entityCache.putResult(CheckoutModelImpl.ENTITY_CACHE_ENABLED,
 			CheckoutImpl.class, checkout.getPrimaryKey(), checkout, false);
 
 		checkout.resetOriginalValues();
@@ -335,7 +358,7 @@ public class CheckoutPersistenceImpl extends BasePersistenceImpl<Checkout>
 	 *
 	 * @param primaryKey the primary key of the checkout
 	 * @return the checkout
-	 * @throws com.liferay.ams.NoSuchCheckoutException if a checkout with the primary key could not be found
+	 * @throws NoSuchCheckoutException if a checkout with the primary key could not be found
 	 */
 	@Override
 	public Checkout findByPrimaryKey(Serializable primaryKey)
@@ -355,11 +378,11 @@ public class CheckoutPersistenceImpl extends BasePersistenceImpl<Checkout>
 	}
 
 	/**
-	 * Returns the checkout with the primary key or throws a {@link com.liferay.ams.NoSuchCheckoutException} if it could not be found.
+	 * Returns the checkout with the primary key or throws a {@link NoSuchCheckoutException} if it could not be found.
 	 *
 	 * @param checkoutId the primary key of the checkout
 	 * @return the checkout
-	 * @throws com.liferay.ams.NoSuchCheckoutException if a checkout with the primary key could not be found
+	 * @throws NoSuchCheckoutException if a checkout with the primary key could not be found
 	 */
 	@Override
 	public Checkout findByPrimaryKey(long checkoutId)
@@ -375,7 +398,7 @@ public class CheckoutPersistenceImpl extends BasePersistenceImpl<Checkout>
 	 */
 	@Override
 	public Checkout fetchByPrimaryKey(Serializable primaryKey) {
-		Checkout checkout = (Checkout)EntityCacheUtil.getResult(CheckoutModelImpl.ENTITY_CACHE_ENABLED,
+		Checkout checkout = (Checkout)entityCache.getResult(CheckoutModelImpl.ENTITY_CACHE_ENABLED,
 				CheckoutImpl.class, primaryKey);
 
 		if (checkout == _nullCheckout) {
@@ -394,12 +417,12 @@ public class CheckoutPersistenceImpl extends BasePersistenceImpl<Checkout>
 					cacheResult(checkout);
 				}
 				else {
-					EntityCacheUtil.putResult(CheckoutModelImpl.ENTITY_CACHE_ENABLED,
+					entityCache.putResult(CheckoutModelImpl.ENTITY_CACHE_ENABLED,
 						CheckoutImpl.class, primaryKey, _nullCheckout);
 				}
 			}
 			catch (Exception e) {
-				EntityCacheUtil.removeResult(CheckoutModelImpl.ENTITY_CACHE_ENABLED,
+				entityCache.removeResult(CheckoutModelImpl.ENTITY_CACHE_ENABLED,
 					CheckoutImpl.class, primaryKey);
 
 				throw processException(e);
@@ -449,7 +472,7 @@ public class CheckoutPersistenceImpl extends BasePersistenceImpl<Checkout>
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			Checkout checkout = (Checkout)EntityCacheUtil.getResult(CheckoutModelImpl.ENTITY_CACHE_ENABLED,
+			Checkout checkout = (Checkout)entityCache.getResult(CheckoutModelImpl.ENTITY_CACHE_ENABLED,
 					CheckoutImpl.class, primaryKey);
 
 			if (checkout == null) {
@@ -501,7 +524,7 @@ public class CheckoutPersistenceImpl extends BasePersistenceImpl<Checkout>
 			}
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
-				EntityCacheUtil.putResult(CheckoutModelImpl.ENTITY_CACHE_ENABLED,
+				entityCache.putResult(CheckoutModelImpl.ENTITY_CACHE_ENABLED,
 					CheckoutImpl.class, primaryKey, _nullCheckout);
 			}
 		}
@@ -529,7 +552,7 @@ public class CheckoutPersistenceImpl extends BasePersistenceImpl<Checkout>
 	 * Returns a range of all the checkouts.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.ams.model.impl.CheckoutModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link CheckoutModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of checkouts
@@ -545,7 +568,7 @@ public class CheckoutPersistenceImpl extends BasePersistenceImpl<Checkout>
 	 * Returns an ordered range of all the checkouts.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.ams.model.impl.CheckoutModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link CheckoutModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of checkouts
@@ -556,6 +579,25 @@ public class CheckoutPersistenceImpl extends BasePersistenceImpl<Checkout>
 	@Override
 	public List<Checkout> findAll(int start, int end,
 		OrderByComparator<Checkout> orderByComparator) {
+		return findAll(start, end, orderByComparator, true);
+	}
+
+	/**
+	 * Returns an ordered range of all the checkouts.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link CheckoutModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param start the lower bound of the range of checkouts
+	 * @param end the upper bound of the range of checkouts (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the ordered range of checkouts
+	 */
+	@Override
+	public List<Checkout> findAll(int start, int end,
+		OrderByComparator<Checkout> orderByComparator, boolean retrieveFromCache) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -571,8 +613,12 @@ public class CheckoutPersistenceImpl extends BasePersistenceImpl<Checkout>
 			finderArgs = new Object[] { start, end, orderByComparator };
 		}
 
-		List<Checkout> list = (List<Checkout>)FinderCacheUtil.getResult(finderPath,
-				finderArgs, this);
+		List<Checkout> list = null;
+
+		if (retrieveFromCache) {
+			list = (List<Checkout>)finderCache.getResult(finderPath,
+					finderArgs, this);
+		}
 
 		if (list == null) {
 			StringBundler query = null;
@@ -619,10 +665,10 @@ public class CheckoutPersistenceImpl extends BasePersistenceImpl<Checkout>
 
 				cacheResult(list);
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, list);
+				finderCache.putResult(finderPath, finderArgs, list);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -652,7 +698,7 @@ public class CheckoutPersistenceImpl extends BasePersistenceImpl<Checkout>
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)FinderCacheUtil.getResult(FINDER_PATH_COUNT_ALL,
+		Long count = (Long)finderCache.getResult(FINDER_PATH_COUNT_ALL,
 				FINDER_ARGS_EMPTY, this);
 
 		if (count == null) {
@@ -665,11 +711,11 @@ public class CheckoutPersistenceImpl extends BasePersistenceImpl<Checkout>
 
 				count = (Long)q.uniqueResult();
 
-				FinderCacheUtil.putResult(FINDER_PATH_COUNT_ALL,
-					FINDER_ARGS_EMPTY, count);
+				finderCache.putResult(FINDER_PATH_COUNT_ALL, FINDER_ARGS_EMPTY,
+					count);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_ALL,
+				finderCache.removeResult(FINDER_PATH_COUNT_ALL,
 					FINDER_ARGS_EMPTY);
 
 				throw processException(e);
@@ -682,6 +728,11 @@ public class CheckoutPersistenceImpl extends BasePersistenceImpl<Checkout>
 		return count.intValue();
 	}
 
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return CheckoutModelImpl.TABLE_COLUMNS_MAP;
+	}
+
 	/**
 	 * Initializes the checkout persistence.
 	 */
@@ -689,21 +740,21 @@ public class CheckoutPersistenceImpl extends BasePersistenceImpl<Checkout>
 	}
 
 	public void destroy() {
-		EntityCacheUtil.removeCache(CheckoutImpl.class.getName());
-		FinderCacheUtil.removeCache(FINDER_CLASS_NAME_ENTITY);
-		FinderCacheUtil.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		FinderCacheUtil.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		entityCache.removeCache(CheckoutImpl.class.getName());
+		finderCache.removeCache(FINDER_CLASS_NAME_ENTITY);
+		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
+	protected EntityCache entityCache = EntityCacheUtil.getEntityCache();
+	protected FinderCache finderCache = FinderCacheUtil.getFinderCache();
 	private static final String _SQL_SELECT_CHECKOUT = "SELECT checkout FROM Checkout checkout";
 	private static final String _SQL_SELECT_CHECKOUT_WHERE_PKS_IN = "SELECT checkout FROM Checkout checkout WHERE checkoutId IN (";
 	private static final String _SQL_COUNT_CHECKOUT = "SELECT COUNT(checkout) FROM Checkout checkout";
 	private static final String _ORDER_BY_ENTITY_ALIAS = "checkout.";
 	private static final String _NO_SUCH_ENTITY_WITH_PRIMARY_KEY = "No Checkout exists with the primary key ";
-	private static final boolean _HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE = GetterUtil.getBoolean(PropsUtil.get(
-				PropsKeys.HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE));
-	private static Log _log = LogFactoryUtil.getLog(CheckoutPersistenceImpl.class);
-	private static Checkout _nullCheckout = new CheckoutImpl() {
+	private static final Log _log = LogFactoryUtil.getLog(CheckoutPersistenceImpl.class);
+	private static final Checkout _nullCheckout = new CheckoutImpl() {
 			@Override
 			public Object clone() {
 				return this;
@@ -715,7 +766,7 @@ public class CheckoutPersistenceImpl extends BasePersistenceImpl<Checkout>
 			}
 		};
 
-	private static CacheModel<Checkout> _nullCheckoutCacheModel = new CacheModel<Checkout>() {
+	private static final CacheModel<Checkout> _nullCheckoutCacheModel = new CacheModel<Checkout>() {
 			@Override
 			public Checkout toEntityModel() {
 				return _nullCheckout;

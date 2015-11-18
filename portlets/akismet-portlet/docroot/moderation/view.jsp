@@ -33,10 +33,11 @@ request.setAttribute("view.jsp-portletURL", portletURL);
 
 <liferay-ui:error exception="<%= NoSuchMessageException.class %>" message="the-message-could-not-be-found" />
 <liferay-ui:error exception="<%= NoSuchPageException.class %>" message="the-page-could-not-be-found" />
-<liferay-ui:error exception="<%= PrincipalException.class %>" message="you-do-not-have-the-required-permissions" />
 <liferay-ui:error exception="<%= RequiredMessageException.class %>" message="you-cannot-delete-a-root-message-that-has-more-than-one-immediate-reply" />
 
-<c:if test='<%= SessionMessages.contains(portletSession, "anotherUserHasMadeChangesToThesePages") %>'>
+<liferay-ui:error-principal />
+
+<c:if test='<%= SessionMessages.contains(renderRequest, "anotherUserHasMadeChangesToThesePages") %>'>
 
 	<%
 	String wikiPageLinks = (String)SessionMessages.get(renderRequest, "anotherUserHasMadeChangesToThesePages");

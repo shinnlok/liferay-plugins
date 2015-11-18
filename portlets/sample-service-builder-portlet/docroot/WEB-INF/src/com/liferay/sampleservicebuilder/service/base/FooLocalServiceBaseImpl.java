@@ -14,8 +14,9 @@
 
 package com.liferay.sampleservicebuilder.service.base;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.bean.BeanReference;
-import com.liferay.portal.kernel.bean.IdentifiableBean;
 import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBFactoryUtil;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdate;
@@ -28,11 +29,7 @@ import com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.Projection;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.lar.ExportImportHelperUtil;
-import com.liferay.portal.kernel.lar.ManifestSummary;
-import com.liferay.portal.kernel.lar.PortletDataContext;
-import com.liferay.portal.kernel.lar.StagedModelDataHandlerUtil;
-import com.liferay.portal.kernel.lar.StagedModelType;
+import com.liferay.portal.kernel.module.framework.service.IdentifiableOSGiService;
 import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.util.OrderByComparator;
@@ -45,6 +42,11 @@ import com.liferay.portal.util.PortalUtil;
 
 import com.liferay.portlet.asset.service.persistence.AssetEntryPersistence;
 import com.liferay.portlet.asset.service.persistence.AssetTagPersistence;
+import com.liferay.portlet.exportimport.lar.ExportImportHelperUtil;
+import com.liferay.portlet.exportimport.lar.ManifestSummary;
+import com.liferay.portlet.exportimport.lar.PortletDataContext;
+import com.liferay.portlet.exportimport.lar.StagedModelDataHandlerUtil;
+import com.liferay.portlet.exportimport.lar.StagedModelType;
 
 import com.liferay.sampleservicebuilder.model.Foo;
 import com.liferay.sampleservicebuilder.service.FooLocalService;
@@ -68,8 +70,9 @@ import javax.sql.DataSource;
  * @see com.liferay.sampleservicebuilder.service.FooLocalServiceUtil
  * @generated
  */
+@ProviderType
 public abstract class FooLocalServiceBaseImpl extends BaseLocalServiceImpl
-	implements FooLocalService, IdentifiableBean {
+	implements FooLocalService, IdentifiableOSGiService {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
@@ -184,10 +187,10 @@ public abstract class FooLocalServiceBaseImpl extends BaseLocalServiceImpl
 	}
 
 	/**
-	 * Returns the number of rows that match the dynamic query.
+	 * Returns the number of rows matching the dynamic query.
 	 *
 	 * @param dynamicQuery the dynamic query
-	 * @return the number of rows that match the dynamic query
+	 * @return the number of rows matching the dynamic query
 	 */
 	@Override
 	public long dynamicQueryCount(DynamicQuery dynamicQuery) {
@@ -195,11 +198,11 @@ public abstract class FooLocalServiceBaseImpl extends BaseLocalServiceImpl
 	}
 
 	/**
-	 * Returns the number of rows that match the dynamic query.
+	 * Returns the number of rows matching the dynamic query.
 	 *
 	 * @param dynamicQuery the dynamic query
 	 * @param projection the projection to apply to the query
-	 * @return the number of rows that match the dynamic query
+	 * @return the number of rows matching the dynamic query
 	 */
 	@Override
 	public long dynamicQueryCount(DynamicQuery dynamicQuery,
@@ -270,13 +273,13 @@ public abstract class FooLocalServiceBaseImpl extends BaseLocalServiceImpl
 
 					long modelAdditionCount = super.performCount();
 
-					manifestSummary.addModelAdditionCount(stagedModelType.toString(),
+					manifestSummary.addModelAdditionCount(stagedModelType,
 						modelAdditionCount);
 
 					long modelDeletionCount = ExportImportHelperUtil.getModelDeletionCount(portletDataContext,
 							stagedModelType);
 
-					manifestSummary.addModelDeletionCount(stagedModelType.toString(),
+					manifestSummary.addModelDeletionCount(stagedModelType,
 						modelDeletionCount);
 
 					return modelAdditionCount;
@@ -295,16 +298,11 @@ public abstract class FooLocalServiceBaseImpl extends BaseLocalServiceImpl
 
 		exportActionableDynamicQuery.setCompanyId(portletDataContext.getCompanyId());
 
-		exportActionableDynamicQuery.setGroupId(portletDataContext.getScopeGroupId());
-
-		exportActionableDynamicQuery.setPerformActionMethod(new ActionableDynamicQuery.PerformActionMethod() {
+		exportActionableDynamicQuery.setPerformActionMethod(new ActionableDynamicQuery.PerformActionMethod<Foo>() {
 				@Override
-				public void performAction(Object object)
-					throws PortalException {
-					Foo stagedModel = (Foo)object;
-
+				public void performAction(Foo foo) throws PortalException {
 					StagedModelDataHandlerUtil.exportStagedModel(portletDataContext,
-						stagedModel);
+						foo);
 				}
 			});
 		exportActionableDynamicQuery.setStagedModelType(new StagedModelType(
@@ -328,11 +326,28 @@ public abstract class FooLocalServiceBaseImpl extends BaseLocalServiceImpl
 		return fooPersistence.findByPrimaryKey(primaryKeyObj);
 	}
 
+	/**
+	 * Returns all the foos matching the UUID and company.
+	 *
+	 * @param uuid the UUID of the foos
+	 * @param companyId the primary key of the company
+	 * @return the matching foos, or an empty list if no matches were found
+	 */
 	@Override
 	public List<Foo> getFoosByUuidAndCompanyId(String uuid, long companyId) {
 		return fooPersistence.findByUuid_C(uuid, companyId);
 	}
 
+	/**
+	 * Returns a range of foos matching the UUID and company.
+	 *
+	 * @param uuid the UUID of the foos
+	 * @param companyId the primary key of the company
+	 * @param start the lower bound of the range of foos
+	 * @param end the upper bound of the range of foos (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the range of matching foos, or an empty list if no matches were found
+	 */
 	@Override
 	public List<Foo> getFoosByUuidAndCompanyId(String uuid, long companyId,
 		int start, int end, OrderByComparator<Foo> orderByComparator) {
@@ -397,7 +412,7 @@ public abstract class FooLocalServiceBaseImpl extends BaseLocalServiceImpl
 	 *
 	 * @return the foo local service
 	 */
-	public com.liferay.sampleservicebuilder.service.FooLocalService getFooLocalService() {
+	public FooLocalService getFooLocalService() {
 		return fooLocalService;
 	}
 
@@ -406,8 +421,7 @@ public abstract class FooLocalServiceBaseImpl extends BaseLocalServiceImpl
 	 *
 	 * @param fooLocalService the foo local service
 	 */
-	public void setFooLocalService(
-		com.liferay.sampleservicebuilder.service.FooLocalService fooLocalService) {
+	public void setFooLocalService(FooLocalService fooLocalService) {
 		this.fooLocalService = fooLocalService;
 	}
 
@@ -727,23 +741,13 @@ public abstract class FooLocalServiceBaseImpl extends BaseLocalServiceImpl
 	}
 
 	/**
-	 * Returns the Spring bean ID for this bean.
+	 * Returns the OSGi service identifier.
 	 *
-	 * @return the Spring bean ID for this bean
+	 * @return the OSGi service identifier
 	 */
 	@Override
-	public String getBeanIdentifier() {
-		return _beanIdentifier;
-	}
-
-	/**
-	 * Sets the Spring bean ID for this bean.
-	 *
-	 * @param beanIdentifier the Spring bean ID for this bean
-	 */
-	@Override
-	public void setBeanIdentifier(String beanIdentifier) {
-		_beanIdentifier = beanIdentifier;
+	public String getOSGiServiceIdentifier() {
+		return FooLocalService.class.getName();
 	}
 
 	@Override
@@ -800,7 +804,7 @@ public abstract class FooLocalServiceBaseImpl extends BaseLocalServiceImpl
 	}
 
 	@BeanReference(type = com.liferay.sampleservicebuilder.service.FooLocalService.class)
-	protected com.liferay.sampleservicebuilder.service.FooLocalService fooLocalService;
+	protected FooLocalService fooLocalService;
 	@BeanReference(type = com.liferay.sampleservicebuilder.service.FooService.class)
 	protected com.liferay.sampleservicebuilder.service.FooService fooService;
 	@BeanReference(type = FooPersistence.class)
@@ -833,7 +837,6 @@ public abstract class FooLocalServiceBaseImpl extends BaseLocalServiceImpl
 	protected com.liferay.portlet.asset.service.AssetTagService assetTagService;
 	@BeanReference(type = AssetTagPersistence.class)
 	protected AssetTagPersistence assetTagPersistence;
-	private String _beanIdentifier;
 	private ClassLoader _classLoader;
 	private FooLocalServiceClpInvoker _clpInvoker = new FooLocalServiceClpInvoker();
 }
