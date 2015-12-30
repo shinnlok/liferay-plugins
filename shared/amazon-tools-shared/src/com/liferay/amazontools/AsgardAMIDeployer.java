@@ -135,12 +135,20 @@ public class AsgardAMIDeployer extends BaseAMITool {
 	}
 
 	protected void associateElasticIpAddresses(List<String> instanceIds) {
+		System.out.println("Associating Elastic IP addresses");
+
 		if (!properties.containsKey("elastic.ip.addresses")) {
 			return;
 		}
 
 		String elasticIpAddressesString = properties.getProperty(
 			"elastic.ip.addresses");
+
+		if ((elasticIpAddressesString == null) ||
+			(elasticIpAddressesString.length() == 0)) {
+
+			return;
+		}
 
 		String[] elasticIpAddresses = elasticIpAddressesString.split(",");
 
@@ -172,7 +180,7 @@ public class AsgardAMIDeployer extends BaseAMITool {
 		boolean deployed = false;
 		JSONObject loadBalancerJSONObject = null;
 
-		for (int i = 1; i < 50; i++) {
+		for (int i = 1;; i++) {
 			String json = _jsonWebServiceClient.doGet(
 				"/" + availabilityZone + "/loadBalancer/show/" +
 					asgardClusterName + ".json",
@@ -186,6 +194,9 @@ public class AsgardAMIDeployer extends BaseAMITool {
 
 			if (size != -1) {
 				if (instanceStateJSONObjects.size() < size) {
+					System.out.println(
+						"Not enough instances started. Waiting " + i + "...");
+
 					sleep(15);
 
 					continue;
@@ -193,6 +204,9 @@ public class AsgardAMIDeployer extends BaseAMITool {
 			}
 
 			if (!isInService(loadBalancerJSONObject, autoScalingGroupName)) {
+				System.out.println(
+					"Instances not in service. Waiting " + i + "...");
+
 				sleep(15);
 			}
 			else {

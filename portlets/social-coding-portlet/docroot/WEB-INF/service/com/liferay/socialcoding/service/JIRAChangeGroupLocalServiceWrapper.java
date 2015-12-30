@@ -154,10 +154,10 @@ public class JIRAChangeGroupLocalServiceWrapper
 	}
 
 	/**
-	* Returns the number of rows that match the dynamic query.
+	* Returns the number of rows matching the dynamic query.
 	*
 	* @param dynamicQuery the dynamic query
-	* @return the number of rows that match the dynamic query
+	* @return the number of rows matching the dynamic query
 	*/
 	@Override
 	public long dynamicQueryCount(
@@ -166,11 +166,11 @@ public class JIRAChangeGroupLocalServiceWrapper
 	}
 
 	/**
-	* Returns the number of rows that match the dynamic query.
+	* Returns the number of rows matching the dynamic query.
 	*
 	* @param dynamicQuery the dynamic query
 	* @param projection the projection to apply to the query
-	* @return the number of rows that match the dynamic query
+	* @return the number of rows matching the dynamic query
 	*/
 	@Override
 	public long dynamicQueryCount(
@@ -191,14 +191,9 @@ public class JIRAChangeGroupLocalServiceWrapper
 		return _jiraChangeGroupLocalService.getActionableDynamicQuery();
 	}
 
-	/**
-	* Returns the Spring bean ID for this bean.
-	*
-	* @return the Spring bean ID for this bean
-	*/
 	@Override
-	public java.lang.String getBeanIdentifier() {
-		return _jiraChangeGroupLocalService.getBeanIdentifier();
+	public com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery getIndexableActionableDynamicQuery() {
+		return _jiraChangeGroupLocalService.getIndexableActionableDynamicQuery();
 	}
 
 	/**
@@ -242,6 +237,16 @@ public class JIRAChangeGroupLocalServiceWrapper
 		return _jiraChangeGroupLocalService.getJIRAChangeGroupsCount();
 	}
 
+	/**
+	* Returns the OSGi service identifier.
+	*
+	* @return the OSGi service identifier
+	*/
+	@Override
+	public java.lang.String getOSGiServiceIdentifier() {
+		return _jiraChangeGroupLocalService.getOSGiServiceIdentifier();
+	}
+
 	@Override
 	public com.liferay.portal.model.PersistedModel getPersistedModel(
 		java.io.Serializable primaryKeyObj)
@@ -258,16 +263,6 @@ public class JIRAChangeGroupLocalServiceWrapper
 	}
 
 	/**
-	* Sets the Spring bean ID for this bean.
-	*
-	* @param beanIdentifier the Spring bean ID for this bean
-	*/
-	@Override
-	public void setBeanIdentifier(java.lang.String beanIdentifier) {
-		_jiraChangeGroupLocalService.setBeanIdentifier(beanIdentifier);
-	}
-
-	/**
 	* Updates the j i r a change group in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
 	*
 	* @param jiraChangeGroup the j i r a change group
@@ -277,23 +272,6 @@ public class JIRAChangeGroupLocalServiceWrapper
 	public com.liferay.socialcoding.model.JIRAChangeGroup updateJIRAChangeGroup(
 		com.liferay.socialcoding.model.JIRAChangeGroup jiraChangeGroup) {
 		return _jiraChangeGroupLocalService.updateJIRAChangeGroup(jiraChangeGroup);
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedService}
-	 */
-	@Deprecated
-	public JIRAChangeGroupLocalService getWrappedJIRAChangeGroupLocalService() {
-		return _jiraChangeGroupLocalService;
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #setWrappedService}
-	 */
-	@Deprecated
-	public void setWrappedJIRAChangeGroupLocalService(
-		JIRAChangeGroupLocalService jiraChangeGroupLocalService) {
-		_jiraChangeGroupLocalService = jiraChangeGroupLocalService;
 	}
 
 	@Override

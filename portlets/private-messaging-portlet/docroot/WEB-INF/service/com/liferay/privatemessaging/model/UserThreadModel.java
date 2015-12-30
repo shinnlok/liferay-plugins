@@ -14,10 +14,13 @@
 
 package com.liferay.privatemessaging.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.bean.AutoEscape;
 import com.liferay.portal.model.AuditedModel;
 import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.CacheModel;
+import com.liferay.portal.model.ShardedModel;
 import com.liferay.portal.service.ServiceContext;
 
 import com.liferay.portlet.expando.model.ExpandoBridge;
@@ -39,7 +42,9 @@ import java.util.Date;
  * @see com.liferay.privatemessaging.model.impl.UserThreadModelImpl
  * @generated
  */
-public interface UserThreadModel extends AuditedModel, BaseModel<UserThread> {
+@ProviderType
+public interface UserThreadModel extends AuditedModel, BaseModel<UserThread>,
+	ShardedModel {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
@@ -278,19 +283,20 @@ public interface UserThreadModel extends AuditedModel, BaseModel<UserThread> {
 	public Object clone();
 
 	@Override
-	public int compareTo(UserThread userThread);
+	public int compareTo(
+		com.liferay.privatemessaging.model.UserThread userThread);
 
 	@Override
 	public int hashCode();
 
 	@Override
-	public CacheModel<UserThread> toCacheModel();
+	public CacheModel<com.liferay.privatemessaging.model.UserThread> toCacheModel();
 
 	@Override
-	public UserThread toEscapedModel();
+	public com.liferay.privatemessaging.model.UserThread toEscapedModel();
 
 	@Override
-	public UserThread toUnescapedModel();
+	public com.liferay.privatemessaging.model.UserThread toUnescapedModel();
 
 	@Override
 	public String toString();

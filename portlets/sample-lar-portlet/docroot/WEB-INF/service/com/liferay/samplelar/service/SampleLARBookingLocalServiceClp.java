@@ -14,12 +14,15 @@
 
 package com.liferay.samplelar.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.service.InvokableLocalService;
 
 /**
  * @author Mate Thurzo
  * @generated
  */
+@ProviderType
 public class SampleLARBookingLocalServiceClp
 	implements SampleLARBookingLocalService {
 	public SampleLARBookingLocalServiceClp(
@@ -111,58 +114,58 @@ public class SampleLARBookingLocalServiceClp
 
 		_methodParameterTypes15 = new String[] {  };
 
-		_methodName16 = "getBeanIdentifier";
+		_methodName16 = "getExportActionableDynamicQuery";
 
-		_methodParameterTypes16 = new String[] {  };
-
-		_methodName17 = "getExportActionableDynamicQuery";
-
-		_methodParameterTypes17 = new String[] {
-				"com.liferay.portal.kernel.lar.PortletDataContext"
+		_methodParameterTypes16 = new String[] {
+				"com.liferay.portlet.exportimport.lar.PortletDataContext"
 			};
 
-		_methodName18 = "getPersistedModel";
+		_methodName17 = "getIndexableActionableDynamicQuery";
 
-		_methodParameterTypes18 = new String[] { "java.io.Serializable" };
+		_methodParameterTypes17 = new String[] {  };
 
-		_methodName19 = "getSampleLARBooking";
+		_methodName18 = "getOSGiServiceIdentifier";
 
-		_methodParameterTypes19 = new String[] { "long" };
+		_methodParameterTypes18 = new String[] {  };
 
-		_methodName20 = "getSampleLARBookingByUuidAndGroupId";
+		_methodName19 = "getPersistedModel";
 
-		_methodParameterTypes20 = new String[] { "java.lang.String", "long" };
+		_methodParameterTypes19 = new String[] { "java.io.Serializable" };
 
-		_methodName21 = "getSampleLARBookings";
+		_methodName20 = "getSampleLARBooking";
 
-		_methodParameterTypes21 = new String[] { "long", "int", "int" };
+		_methodParameterTypes20 = new String[] { "long" };
+
+		_methodName21 = "getSampleLARBookingByUuidAndGroupId";
+
+		_methodParameterTypes21 = new String[] { "java.lang.String", "long" };
 
 		_methodName22 = "getSampleLARBookings";
 
-		_methodParameterTypes22 = new String[] { "int", "int" };
+		_methodParameterTypes22 = new String[] { "long", "int", "int" };
 
-		_methodName23 = "getSampleLARBookingsByUuidAndCompanyId";
+		_methodName23 = "getSampleLARBookings";
 
-		_methodParameterTypes23 = new String[] { "java.lang.String", "long" };
+		_methodParameterTypes23 = new String[] { "int", "int" };
 
 		_methodName24 = "getSampleLARBookingsByUuidAndCompanyId";
 
-		_methodParameterTypes24 = new String[] {
+		_methodParameterTypes24 = new String[] { "java.lang.String", "long" };
+
+		_methodName25 = "getSampleLARBookingsByUuidAndCompanyId";
+
+		_methodParameterTypes25 = new String[] {
 				"java.lang.String", "long", "int", "int",
 				"com.liferay.portal.kernel.util.OrderByComparator"
 			};
 
-		_methodName25 = "getSampleLARBookingsCount";
-
-		_methodParameterTypes25 = new String[] {  };
-
 		_methodName26 = "getSampleLARBookingsCount";
 
-		_methodParameterTypes26 = new String[] { "long" };
+		_methodParameterTypes26 = new String[] {  };
 
-		_methodName28 = "setBeanIdentifier";
+		_methodName27 = "getSampleLARBookingsCount";
 
-		_methodParameterTypes28 = new String[] { "java.lang.String" };
+		_methodParameterTypes27 = new String[] { "long" };
 
 		_methodName29 = "updateSampleLARBooking";
 
@@ -614,36 +617,13 @@ public class SampleLARBookingLocalServiceClp
 	}
 
 	@Override
-	public java.lang.String getBeanIdentifier() {
+	public com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery getExportActionableDynamicQuery(
+		com.liferay.portlet.exportimport.lar.PortletDataContext portletDataContext) {
 		Object returnObj = null;
 
 		try {
 			returnObj = _invokableLocalService.invokeMethod(_methodName16,
-					_methodParameterTypes16, new Object[] {  });
-		}
-		catch (Throwable t) {
-			t = ClpSerializer.translateThrowable(t);
-
-			if (t instanceof RuntimeException) {
-				throw (RuntimeException)t;
-			}
-			else {
-				throw new RuntimeException(t.getClass().getName() +
-					" is not a valid exception");
-			}
-		}
-
-		return (java.lang.String)ClpSerializer.translateOutput(returnObj);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery getExportActionableDynamicQuery(
-		com.liferay.portal.kernel.lar.PortletDataContext portletDataContext) {
-		Object returnObj = null;
-
-		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName17,
-					_methodParameterTypes17,
+					_methodParameterTypes16,
 					new Object[] {
 						ClpSerializer.translateInput(portletDataContext)
 					});
@@ -664,14 +644,60 @@ public class SampleLARBookingLocalServiceClp
 	}
 
 	@Override
+	public com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery getIndexableActionableDynamicQuery() {
+		Object returnObj = null;
+
+		try {
+			returnObj = _invokableLocalService.invokeMethod(_methodName17,
+					_methodParameterTypes17, new Object[] {  });
+		}
+		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
+			if (t instanceof RuntimeException) {
+				throw (RuntimeException)t;
+			}
+			else {
+				throw new RuntimeException(t.getClass().getName() +
+					" is not a valid exception");
+			}
+		}
+
+		return (com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery)ClpSerializer.translateOutput(returnObj);
+	}
+
+	@Override
+	public java.lang.String getOSGiServiceIdentifier() {
+		Object returnObj = null;
+
+		try {
+			returnObj = _invokableLocalService.invokeMethod(_methodName18,
+					_methodParameterTypes18, new Object[] {  });
+		}
+		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
+			if (t instanceof RuntimeException) {
+				throw (RuntimeException)t;
+			}
+			else {
+				throw new RuntimeException(t.getClass().getName() +
+					" is not a valid exception");
+			}
+		}
+
+		return (java.lang.String)ClpSerializer.translateOutput(returnObj);
+	}
+
+	@Override
 	public com.liferay.portal.model.PersistedModel getPersistedModel(
 		java.io.Serializable primaryKeyObj)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName18,
-					_methodParameterTypes18,
+			returnObj = _invokableLocalService.invokeMethod(_methodName19,
+					_methodParameterTypes19,
 					new Object[] { ClpSerializer.translateInput(primaryKeyObj) });
 		}
 		catch (Throwable t) {
@@ -700,8 +726,8 @@ public class SampleLARBookingLocalServiceClp
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName19,
-					_methodParameterTypes19, new Object[] { sampleLARBookingId });
+			returnObj = _invokableLocalService.invokeMethod(_methodName20,
+					_methodParameterTypes20, new Object[] { sampleLARBookingId });
 		}
 		catch (Throwable t) {
 			t = ClpSerializer.translateThrowable(t);
@@ -729,8 +755,8 @@ public class SampleLARBookingLocalServiceClp
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName20,
-					_methodParameterTypes20,
+			returnObj = _invokableLocalService.invokeMethod(_methodName21,
+					_methodParameterTypes21,
 					new Object[] { ClpSerializer.translateInput(uuid), groupId });
 		}
 		catch (Throwable t) {
@@ -758,8 +784,8 @@ public class SampleLARBookingLocalServiceClp
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName21,
-					_methodParameterTypes21,
+			returnObj = _invokableLocalService.invokeMethod(_methodName22,
+					_methodParameterTypes22,
 					new Object[] { groupId, start, end });
 		}
 		catch (Throwable t) {
@@ -783,8 +809,8 @@ public class SampleLARBookingLocalServiceClp
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName22,
-					_methodParameterTypes22, new Object[] { start, end });
+			returnObj = _invokableLocalService.invokeMethod(_methodName23,
+					_methodParameterTypes23, new Object[] { start, end });
 		}
 		catch (Throwable t) {
 			t = ClpSerializer.translateThrowable(t);
@@ -807,8 +833,8 @@ public class SampleLARBookingLocalServiceClp
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName23,
-					_methodParameterTypes23,
+			returnObj = _invokableLocalService.invokeMethod(_methodName24,
+					_methodParameterTypes24,
 					new Object[] { ClpSerializer.translateInput(uuid), companyId });
 		}
 		catch (Throwable t) {
@@ -833,8 +859,8 @@ public class SampleLARBookingLocalServiceClp
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName24,
-					_methodParameterTypes24,
+			returnObj = _invokableLocalService.invokeMethod(_methodName25,
+					_methodParameterTypes25,
 					new Object[] {
 						ClpSerializer.translateInput(uuid),
 						
@@ -867,8 +893,8 @@ public class SampleLARBookingLocalServiceClp
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName25,
-					_methodParameterTypes25, new Object[] {  });
+			returnObj = _invokableLocalService.invokeMethod(_methodName26,
+					_methodParameterTypes26, new Object[] {  });
 		}
 		catch (Throwable t) {
 			t = ClpSerializer.translateThrowable(t);
@@ -890,8 +916,8 @@ public class SampleLARBookingLocalServiceClp
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName26,
-					_methodParameterTypes26, new Object[] { groupId });
+			returnObj = _invokableLocalService.invokeMethod(_methodName27,
+					_methodParameterTypes27, new Object[] { groupId });
 		}
 		catch (Throwable t) {
 			t = ClpSerializer.translateThrowable(t);
@@ -913,26 +939,6 @@ public class SampleLARBookingLocalServiceClp
 		java.lang.String[] parameterTypes, java.lang.Object[] arguments)
 		throws java.lang.Throwable {
 		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void setBeanIdentifier(java.lang.String beanIdentifier) {
-		try {
-			_invokableLocalService.invokeMethod(_methodName28,
-				_methodParameterTypes28,
-				new Object[] { ClpSerializer.translateInput(beanIdentifier) });
-		}
-		catch (Throwable t) {
-			t = ClpSerializer.translateThrowable(t);
-
-			if (t instanceof RuntimeException) {
-				throw (RuntimeException)t;
-			}
-			else {
-				throw new RuntimeException(t.getClass().getName() +
-					" is not a valid exception");
-			}
-		}
 	}
 
 	@Override
@@ -1055,8 +1061,8 @@ public class SampleLARBookingLocalServiceClp
 	private String[] _methodParameterTypes25;
 	private String _methodName26;
 	private String[] _methodParameterTypes26;
-	private String _methodName28;
-	private String[] _methodParameterTypes28;
+	private String _methodName27;
+	private String[] _methodParameterTypes27;
 	private String _methodName29;
 	private String[] _methodParameterTypes29;
 	private String _methodName30;

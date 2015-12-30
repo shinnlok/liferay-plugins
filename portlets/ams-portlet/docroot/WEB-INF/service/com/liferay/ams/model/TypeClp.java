@@ -14,6 +14,8 @@
 
 package com.liferay.ams.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.ams.service.ClpSerializer;
 import com.liferay.ams.service.TypeLocalServiceUtil;
 
@@ -34,6 +36,7 @@ import java.util.Map;
 /**
  * @author Brian Wing Shun Chan
  */
+@ProviderType
 public class TypeClp extends BaseModelImpl<Type> implements Type {
 	public TypeClp() {
 	}

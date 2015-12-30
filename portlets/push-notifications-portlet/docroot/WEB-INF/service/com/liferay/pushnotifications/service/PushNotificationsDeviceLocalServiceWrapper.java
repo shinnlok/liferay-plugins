@@ -205,14 +205,19 @@ public class PushNotificationsDeviceLocalServiceWrapper
 		return _pushNotificationsDeviceLocalService.getActionableDynamicQuery();
 	}
 
+	@Override
+	public com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery getIndexableActionableDynamicQuery() {
+		return _pushNotificationsDeviceLocalService.getIndexableActionableDynamicQuery();
+	}
+
 	/**
-	* Returns the Spring bean ID for this bean.
+	* Returns the OSGi service identifier.
 	*
-	* @return the Spring bean ID for this bean
+	* @return the OSGi service identifier
 	*/
 	@Override
-	public java.lang.String getBeanIdentifier() {
-		return _pushNotificationsDeviceLocalService.getBeanIdentifier();
+	public java.lang.String getOSGiServiceIdentifier() {
+		return _pushNotificationsDeviceLocalService.getOSGiServiceIdentifier();
 	}
 
 	@Override
@@ -254,6 +259,14 @@ public class PushNotificationsDeviceLocalServiceWrapper
 			end);
 	}
 
+	@Override
+	public java.util.List<com.liferay.pushnotifications.model.PushNotificationsDevice> getPushNotificationsDevices(
+		int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator) {
+		return _pushNotificationsDeviceLocalService.getPushNotificationsDevices(start,
+			end, orderByComparator);
+	}
+
 	/**
 	* Returns the number of push notifications devices.
 	*
@@ -287,21 +300,21 @@ public class PushNotificationsDeviceLocalServiceWrapper
 	}
 
 	@Override
+	public void sendPushNotification(java.lang.String platform,
+		java.util.List<java.lang.String> tokens,
+		com.liferay.portal.kernel.json.JSONObject payloadJSONObject,
+		java.util.Map<java.lang.String, java.lang.Object> configuration)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		_pushNotificationsDeviceLocalService.sendPushNotification(platform,
+			tokens, payloadJSONObject, configuration);
+	}
+
+	@Override
 	public void sendPushNotification(long[] toUserIds,
 		com.liferay.portal.kernel.json.JSONObject payloadJSONObject)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		_pushNotificationsDeviceLocalService.sendPushNotification(toUserIds,
 			payloadJSONObject);
-	}
-
-	/**
-	* Sets the Spring bean ID for this bean.
-	*
-	* @param beanIdentifier the Spring bean ID for this bean
-	*/
-	@Override
-	public void setBeanIdentifier(java.lang.String beanIdentifier) {
-		_pushNotificationsDeviceLocalService.setBeanIdentifier(beanIdentifier);
 	}
 
 	/**
@@ -316,21 +329,10 @@ public class PushNotificationsDeviceLocalServiceWrapper
 		return _pushNotificationsDeviceLocalService.updatePushNotificationsDevice(pushNotificationsDevice);
 	}
 
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedService}
-	 */
-	@Deprecated
-	public PushNotificationsDeviceLocalService getWrappedPushNotificationsDeviceLocalService() {
-		return _pushNotificationsDeviceLocalService;
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #setWrappedService}
-	 */
-	@Deprecated
-	public void setWrappedPushNotificationsDeviceLocalService(
-		PushNotificationsDeviceLocalService pushNotificationsDeviceLocalService) {
-		_pushNotificationsDeviceLocalService = pushNotificationsDeviceLocalService;
+	@Override
+	public void updateToken(java.lang.String oldToken, java.lang.String newToken)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		_pushNotificationsDeviceLocalService.updateToken(oldToken, newToken);
 	}
 
 	@Override

@@ -127,17 +127,17 @@ public class AccountLocalServiceClp implements AccountLocalService {
 
 		_methodParameterTypes19 = new String[] {  };
 
-		_methodName20 = "getBeanIdentifier";
+		_methodName20 = "getIndexableActionableDynamicQuery";
 
 		_methodParameterTypes20 = new String[] {  };
 
-		_methodName21 = "getPersistedModel";
+		_methodName21 = "getOSGiServiceIdentifier";
 
-		_methodParameterTypes21 = new String[] { "java.io.Serializable" };
+		_methodParameterTypes21 = new String[] {  };
 
-		_methodName23 = "setBeanIdentifier";
+		_methodName22 = "getPersistedModel";
 
-		_methodParameterTypes23 = new String[] { "java.lang.String" };
+		_methodParameterTypes22 = new String[] { "java.io.Serializable" };
 
 		_methodName24 = "updateAccount";
 
@@ -743,12 +743,35 @@ public class AccountLocalServiceClp implements AccountLocalService {
 	}
 
 	@Override
-	public java.lang.String getBeanIdentifier() {
+	public com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery getIndexableActionableDynamicQuery() {
 		Object returnObj = null;
 
 		try {
 			returnObj = _invokableLocalService.invokeMethod(_methodName20,
 					_methodParameterTypes20, new Object[] {  });
+		}
+		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
+			if (t instanceof RuntimeException) {
+				throw (RuntimeException)t;
+			}
+			else {
+				throw new RuntimeException(t.getClass().getName() +
+					" is not a valid exception");
+			}
+		}
+
+		return (com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery)ClpSerializer.translateOutput(returnObj);
+	}
+
+	@Override
+	public java.lang.String getOSGiServiceIdentifier() {
+		Object returnObj = null;
+
+		try {
+			returnObj = _invokableLocalService.invokeMethod(_methodName21,
+					_methodParameterTypes21, new Object[] {  });
 		}
 		catch (Throwable t) {
 			t = ClpSerializer.translateThrowable(t);
@@ -772,8 +795,8 @@ public class AccountLocalServiceClp implements AccountLocalService {
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName21,
-					_methodParameterTypes21,
+			returnObj = _invokableLocalService.invokeMethod(_methodName22,
+					_methodParameterTypes22,
 					new Object[] { ClpSerializer.translateInput(primaryKeyObj) });
 		}
 		catch (Throwable t) {
@@ -800,26 +823,6 @@ public class AccountLocalServiceClp implements AccountLocalService {
 		java.lang.String[] parameterTypes, java.lang.Object[] arguments)
 		throws java.lang.Throwable {
 		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void setBeanIdentifier(java.lang.String beanIdentifier) {
-		try {
-			_invokableLocalService.invokeMethod(_methodName23,
-				_methodParameterTypes23,
-				new Object[] { ClpSerializer.translateInput(beanIdentifier) });
-		}
-		catch (Throwable t) {
-			t = ClpSerializer.translateThrowable(t);
-
-			if (t instanceof RuntimeException) {
-				throw (RuntimeException)t;
-			}
-			else {
-				throw new RuntimeException(t.getClass().getName() +
-					" is not a valid exception");
-			}
-		}
 	}
 
 	@Override
@@ -981,8 +984,8 @@ public class AccountLocalServiceClp implements AccountLocalService {
 	private String[] _methodParameterTypes20;
 	private String _methodName21;
 	private String[] _methodParameterTypes21;
-	private String _methodName23;
-	private String[] _methodParameterTypes23;
+	private String _methodName22;
+	private String[] _methodParameterTypes22;
 	private String _methodName24;
 	private String[] _methodParameterTypes24;
 	private String _methodName25;

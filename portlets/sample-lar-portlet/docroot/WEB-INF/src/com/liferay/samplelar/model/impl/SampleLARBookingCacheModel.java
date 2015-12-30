@@ -14,6 +14,9 @@
 
 package com.liferay.samplelar.model.impl;
 
+import aQute.bnd.annotation.ProviderType;
+
+import com.liferay.portal.kernel.util.HashUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CacheModel;
@@ -34,11 +37,36 @@ import java.util.Date;
  * @see SampleLARBooking
  * @generated
  */
+@ProviderType
 public class SampleLARBookingCacheModel implements CacheModel<SampleLARBooking>,
 	Externalizable {
 	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+
+		if (!(obj instanceof SampleLARBookingCacheModel)) {
+			return false;
+		}
+
+		SampleLARBookingCacheModel sampleLARBookingCacheModel = (SampleLARBookingCacheModel)obj;
+
+		if (sampleLARBookingId == sampleLARBookingCacheModel.sampleLARBookingId) {
+			return true;
+		}
+
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return HashUtil.hash(0, sampleLARBookingId);
+	}
+
+	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(19);
+		StringBundler sb = new StringBundler(21);
 
 		sb.append("{uuid=");
 		sb.append(uuid);
@@ -58,6 +86,8 @@ public class SampleLARBookingCacheModel implements CacheModel<SampleLARBooking>,
 		sb.append(modifiedDate);
 		sb.append(", bookingNumber=");
 		sb.append(bookingNumber);
+		sb.append(", lastPublishDate=");
+		sb.append(lastPublishDate);
 		sb.append("}");
 
 		return sb.toString();
@@ -107,6 +137,13 @@ public class SampleLARBookingCacheModel implements CacheModel<SampleLARBooking>,
 			sampleLARBookingImpl.setBookingNumber(bookingNumber);
 		}
 
+		if (lastPublishDate == Long.MIN_VALUE) {
+			sampleLARBookingImpl.setLastPublishDate(null);
+		}
+		else {
+			sampleLARBookingImpl.setLastPublishDate(new Date(lastPublishDate));
+		}
+
 		sampleLARBookingImpl.resetOriginalValues();
 
 		return sampleLARBookingImpl;
@@ -123,6 +160,7 @@ public class SampleLARBookingCacheModel implements CacheModel<SampleLARBooking>,
 		createDate = objectInput.readLong();
 		modifiedDate = objectInput.readLong();
 		bookingNumber = objectInput.readUTF();
+		lastPublishDate = objectInput.readLong();
 	}
 
 	@Override
@@ -156,6 +194,8 @@ public class SampleLARBookingCacheModel implements CacheModel<SampleLARBooking>,
 		else {
 			objectOutput.writeUTF(bookingNumber);
 		}
+
+		objectOutput.writeLong(lastPublishDate);
 	}
 
 	public String uuid;
@@ -167,4 +207,5 @@ public class SampleLARBookingCacheModel implements CacheModel<SampleLARBooking>,
 	public long createDate;
 	public long modifiedDate;
 	public String bookingNumber;
+	public long lastPublishDate;
 }

@@ -14,10 +14,13 @@
 
 package com.liferay.opensocial.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.bean.AutoEscape;
 import com.liferay.portal.model.AuditedModel;
 import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.CacheModel;
+import com.liferay.portal.model.ShardedModel;
 import com.liferay.portal.service.ServiceContext;
 
 import com.liferay.portlet.expando.model.ExpandoBridge;
@@ -39,7 +42,9 @@ import java.util.Date;
  * @see com.liferay.opensocial.model.impl.OAuthTokenModelImpl
  * @generated
  */
-public interface OAuthTokenModel extends AuditedModel, BaseModel<OAuthToken> {
+@ProviderType
+public interface OAuthTokenModel extends AuditedModel, BaseModel<OAuthToken>,
+	ShardedModel {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
@@ -326,19 +331,19 @@ public interface OAuthTokenModel extends AuditedModel, BaseModel<OAuthToken> {
 	public Object clone();
 
 	@Override
-	public int compareTo(OAuthToken oAuthToken);
+	public int compareTo(com.liferay.opensocial.model.OAuthToken oAuthToken);
 
 	@Override
 	public int hashCode();
 
 	@Override
-	public CacheModel<OAuthToken> toCacheModel();
+	public CacheModel<com.liferay.opensocial.model.OAuthToken> toCacheModel();
 
 	@Override
-	public OAuthToken toEscapedModel();
+	public com.liferay.opensocial.model.OAuthToken toEscapedModel();
 
 	@Override
-	public OAuthToken toUnescapedModel();
+	public com.liferay.opensocial.model.OAuthToken toUnescapedModel();
 
 	@Override
 	public String toString();

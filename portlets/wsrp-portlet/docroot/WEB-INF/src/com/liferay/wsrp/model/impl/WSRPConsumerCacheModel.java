@@ -14,6 +14,9 @@
 
 package com.liferay.wsrp.model.impl;
 
+import aQute.bnd.annotation.ProviderType;
+
+import com.liferay.portal.kernel.util.HashUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CacheModel;
@@ -34,11 +37,36 @@ import java.util.Date;
  * @see WSRPConsumer
  * @generated
  */
+@ProviderType
 public class WSRPConsumerCacheModel implements CacheModel<WSRPConsumer>,
 	Externalizable {
 	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+
+		if (!(obj instanceof WSRPConsumerCacheModel)) {
+			return false;
+		}
+
+		WSRPConsumerCacheModel wsrpConsumerCacheModel = (WSRPConsumerCacheModel)obj;
+
+		if (wsrpConsumerId == wsrpConsumerCacheModel.wsrpConsumerId) {
+			return true;
+		}
+
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return HashUtil.hash(0, wsrpConsumerId);
+	}
+
+	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(27);
+		StringBundler sb = new StringBundler(29);
 
 		sb.append("{uuid=");
 		sb.append(uuid);
@@ -66,6 +94,8 @@ public class WSRPConsumerCacheModel implements CacheModel<WSRPConsumer>,
 		sb.append(forwardHeaders);
 		sb.append(", markupCharacterSets=");
 		sb.append(markupCharacterSets);
+		sb.append(", lastPublishDate=");
+		sb.append(lastPublishDate);
 		sb.append("}");
 
 		return sb.toString();
@@ -155,6 +185,13 @@ public class WSRPConsumerCacheModel implements CacheModel<WSRPConsumer>,
 			wsrpConsumerImpl.setMarkupCharacterSets(markupCharacterSets);
 		}
 
+		if (lastPublishDate == Long.MIN_VALUE) {
+			wsrpConsumerImpl.setLastPublishDate(null);
+		}
+		else {
+			wsrpConsumerImpl.setLastPublishDate(new Date(lastPublishDate));
+		}
+
 		wsrpConsumerImpl.resetOriginalValues();
 
 		return wsrpConsumerImpl;
@@ -175,6 +212,7 @@ public class WSRPConsumerCacheModel implements CacheModel<WSRPConsumer>,
 		forwardCookies = objectInput.readUTF();
 		forwardHeaders = objectInput.readUTF();
 		markupCharacterSets = objectInput.readUTF();
+		lastPublishDate = objectInput.readLong();
 	}
 
 	@Override
@@ -247,6 +285,8 @@ public class WSRPConsumerCacheModel implements CacheModel<WSRPConsumer>,
 		else {
 			objectOutput.writeUTF(markupCharacterSets);
 		}
+
+		objectOutput.writeLong(lastPublishDate);
 	}
 
 	public String uuid;
@@ -262,4 +302,5 @@ public class WSRPConsumerCacheModel implements CacheModel<WSRPConsumer>,
 	public String forwardCookies;
 	public String forwardHeaders;
 	public String markupCharacterSets;
+	public long lastPublishDate;
 }

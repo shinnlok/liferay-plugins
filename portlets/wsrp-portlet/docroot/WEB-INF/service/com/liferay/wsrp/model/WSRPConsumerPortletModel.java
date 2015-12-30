@@ -14,9 +14,12 @@
 
 package com.liferay.wsrp.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.bean.AutoEscape;
 import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.CacheModel;
+import com.liferay.portal.model.ShardedModel;
 import com.liferay.portal.model.StagedModel;
 import com.liferay.portal.service.ServiceContext;
 
@@ -39,8 +42,9 @@ import java.util.Date;
  * @see com.liferay.wsrp.model.impl.WSRPConsumerPortletModelImpl
  * @generated
  */
+@ProviderType
 public interface WSRPConsumerPortletModel extends BaseModel<WSRPConsumerPortlet>,
-	StagedModel {
+	ShardedModel, StagedModel {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
@@ -184,6 +188,20 @@ public interface WSRPConsumerPortletModel extends BaseModel<WSRPConsumerPortlet>
 	 */
 	public void setPortletHandle(String portletHandle);
 
+	/**
+	 * Returns the last publish date of this w s r p consumer portlet.
+	 *
+	 * @return the last publish date of this w s r p consumer portlet
+	 */
+	public Date getLastPublishDate();
+
+	/**
+	 * Sets the last publish date of this w s r p consumer portlet.
+	 *
+	 * @param lastPublishDate the last publish date of this w s r p consumer portlet
+	 */
+	public void setLastPublishDate(Date lastPublishDate);
+
 	@Override
 	public boolean isNew();
 
@@ -221,19 +239,20 @@ public interface WSRPConsumerPortletModel extends BaseModel<WSRPConsumerPortlet>
 	public Object clone();
 
 	@Override
-	public int compareTo(WSRPConsumerPortlet wsrpConsumerPortlet);
+	public int compareTo(
+		com.liferay.wsrp.model.WSRPConsumerPortlet wsrpConsumerPortlet);
 
 	@Override
 	public int hashCode();
 
 	@Override
-	public CacheModel<WSRPConsumerPortlet> toCacheModel();
+	public CacheModel<com.liferay.wsrp.model.WSRPConsumerPortlet> toCacheModel();
 
 	@Override
-	public WSRPConsumerPortlet toEscapedModel();
+	public com.liferay.wsrp.model.WSRPConsumerPortlet toEscapedModel();
 
 	@Override
-	public WSRPConsumerPortlet toUnescapedModel();
+	public com.liferay.wsrp.model.WSRPConsumerPortlet toUnescapedModel();
 
 	@Override
 	public String toString();

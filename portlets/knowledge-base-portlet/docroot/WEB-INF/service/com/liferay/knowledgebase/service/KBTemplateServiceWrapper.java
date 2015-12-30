@@ -55,16 +55,6 @@ public class KBTemplateServiceWrapper implements KBTemplateService,
 		_kbTemplateService.deleteKBTemplates(groupId, kbTemplateIds);
 	}
 
-	/**
-	* Returns the Spring bean ID for this bean.
-	*
-	* @return the Spring bean ID for this bean
-	*/
-	@Override
-	public java.lang.String getBeanIdentifier() {
-		return _kbTemplateService.getBeanIdentifier();
-	}
-
 	@Override
 	public java.util.List<com.liferay.knowledgebase.model.KBTemplate> getGroupKBTemplates(
 		long groupId, int start, int end,
@@ -97,21 +87,21 @@ public class KBTemplateServiceWrapper implements KBTemplateService,
 			delta, orderByComparator);
 	}
 
+	/**
+	* Returns the OSGi service identifier.
+	*
+	* @return the OSGi service identifier
+	*/
+	@Override
+	public java.lang.String getOSGiServiceIdentifier() {
+		return _kbTemplateService.getOSGiServiceIdentifier();
+	}
+
 	@Override
 	public java.lang.Object invokeMethod(java.lang.String name,
 		java.lang.String[] parameterTypes, java.lang.Object[] arguments)
 		throws java.lang.Throwable {
 		return _kbTemplateService.invokeMethod(name, parameterTypes, arguments);
-	}
-
-	/**
-	* Sets the Spring bean ID for this bean.
-	*
-	* @param beanIdentifier the Spring bean ID for this bean
-	*/
-	@Override
-	public void setBeanIdentifier(java.lang.String beanIdentifier) {
-		_kbTemplateService.setBeanIdentifier(beanIdentifier);
 	}
 
 	@Override
@@ -121,22 +111,6 @@ public class KBTemplateServiceWrapper implements KBTemplateService,
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _kbTemplateService.updateKBTemplate(kbTemplateId, title,
 			content, serviceContext);
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedService}
-	 */
-	@Deprecated
-	public KBTemplateService getWrappedKBTemplateService() {
-		return _kbTemplateService;
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #setWrappedService}
-	 */
-	@Deprecated
-	public void setWrappedKBTemplateService(KBTemplateService kbTemplateService) {
-		_kbTemplateService = kbTemplateService;
 	}
 
 	@Override

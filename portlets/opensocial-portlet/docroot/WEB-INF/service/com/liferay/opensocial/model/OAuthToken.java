@@ -14,6 +14,9 @@
 
 package com.liferay.opensocial.model;
 
+import aQute.bnd.annotation.ProviderType;
+
+import com.liferay.portal.kernel.util.Accessor;
 import com.liferay.portal.model.PersistedModel;
 
 /**
@@ -25,10 +28,27 @@ import com.liferay.portal.model.PersistedModel;
  * @see com.liferay.opensocial.model.impl.OAuthTokenModelImpl
  * @generated
  */
+@ProviderType
 public interface OAuthToken extends OAuthTokenModel, PersistedModel {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
 	 * Never modify this interface directly. Add methods to {@link com.liferay.opensocial.model.impl.OAuthTokenImpl} and rerun ServiceBuilder to automatically copy the method declarations to this interface.
 	 */
+	public static final Accessor<OAuthToken, Long> O_AUTH_TOKEN_ID_ACCESSOR = new Accessor<OAuthToken, Long>() {
+			@Override
+			public Long get(OAuthToken oAuthToken) {
+				return oAuthToken.getOAuthTokenId();
+			}
+
+			@Override
+			public Class<Long> getAttributeClass() {
+				return Long.class;
+			}
+
+			@Override
+			public Class<OAuthToken> getTypeClass() {
+				return OAuthToken.class;
+			}
+		};
 }

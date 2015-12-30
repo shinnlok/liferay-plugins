@@ -115,7 +115,7 @@ public class PushNotificationsDeviceWrapper implements PushNotificationsDevice,
 	* @return the create date of this push notifications device
 	*/
 	@Override
-	public java.util.Date getCreateDate() {
+	public Date getCreateDate() {
 		return _pushNotificationsDevice.getCreateDate();
 	}
 
@@ -225,7 +225,7 @@ public class PushNotificationsDeviceWrapper implements PushNotificationsDevice,
 	* @param createDate the create date of this push notifications device
 	*/
 	@Override
-	public void setCreateDate(java.util.Date createDate) {
+	public void setCreateDate(Date createDate) {
 		_pushNotificationsDevice.setCreateDate(createDate);
 	}
 
@@ -360,14 +360,6 @@ public class PushNotificationsDeviceWrapper implements PushNotificationsDevice,
 		}
 
 		return false;
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedModel}
-	 */
-	@Deprecated
-	public PushNotificationsDevice getWrappedPushNotificationsDevice() {
-		return _pushNotificationsDevice;
 	}
 
 	@Override

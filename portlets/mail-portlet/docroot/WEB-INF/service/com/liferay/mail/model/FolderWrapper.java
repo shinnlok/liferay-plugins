@@ -166,7 +166,7 @@ public class FolderWrapper implements Folder, ModelWrapper<Folder> {
 	* @return the create date of this folder
 	*/
 	@Override
-	public java.util.Date getCreateDate() {
+	public Date getCreateDate() {
 		return _folder.getCreateDate();
 	}
 
@@ -211,7 +211,7 @@ public class FolderWrapper implements Folder, ModelWrapper<Folder> {
 	* @return the modified date of this folder
 	*/
 	@Override
-	public java.util.Date getModifiedDate() {
+	public Date getModifiedDate() {
 		return _folder.getModifiedDate();
 	}
 
@@ -326,7 +326,7 @@ public class FolderWrapper implements Folder, ModelWrapper<Folder> {
 	* @param createDate the create date of this folder
 	*/
 	@Override
-	public void setCreateDate(java.util.Date createDate) {
+	public void setCreateDate(Date createDate) {
 		_folder.setCreateDate(createDate);
 	}
 
@@ -384,7 +384,7 @@ public class FolderWrapper implements Folder, ModelWrapper<Folder> {
 	* @param modifiedDate the modified date of this folder
 	*/
 	@Override
-	public void setModifiedDate(java.util.Date modifiedDate) {
+	public void setModifiedDate(Date modifiedDate) {
 		_folder.setModifiedDate(modifiedDate);
 	}
 
@@ -490,14 +490,6 @@ public class FolderWrapper implements Folder, ModelWrapper<Folder> {
 		}
 
 		return false;
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedModel}
-	 */
-	@Deprecated
-	public Folder getWrappedFolder() {
-		return _folder;
 	}
 
 	@Override

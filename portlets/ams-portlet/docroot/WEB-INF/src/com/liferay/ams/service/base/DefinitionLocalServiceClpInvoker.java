@@ -14,6 +14,8 @@
 
 package com.liferay.ams.service.base;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.ams.service.DefinitionLocalServiceUtil;
 
 import java.util.Arrays;
@@ -22,6 +24,7 @@ import java.util.Arrays;
  * @author Brian Wing Shun Chan
  * @generated
  */
+@ProviderType
 public class DefinitionLocalServiceClpInvoker {
 	public DefinitionLocalServiceClpInvoker() {
 		_methodName0 = "addDefinition";
@@ -88,37 +91,37 @@ public class DefinitionLocalServiceClpInvoker {
 
 		_methodParameterTypes12 = new String[] {  };
 
-		_methodName14 = "deletePersistedModel";
+		_methodName13 = "getIndexableActionableDynamicQuery";
 
-		_methodParameterTypes14 = new String[] {
+		_methodParameterTypes13 = new String[] {  };
+
+		_methodName15 = "deletePersistedModel";
+
+		_methodParameterTypes15 = new String[] {
 				"com.liferay.portal.model.PersistedModel"
 			};
 
-		_methodName15 = "getPersistedModel";
+		_methodName16 = "getPersistedModel";
 
-		_methodParameterTypes15 = new String[] { "java.io.Serializable" };
+		_methodParameterTypes16 = new String[] { "java.io.Serializable" };
 
-		_methodName16 = "getDefinitions";
+		_methodName17 = "getDefinitions";
 
-		_methodParameterTypes16 = new String[] { "int", "int" };
+		_methodParameterTypes17 = new String[] { "int", "int" };
 
-		_methodName17 = "getDefinitionsCount";
+		_methodName18 = "getDefinitionsCount";
 
-		_methodParameterTypes17 = new String[] {  };
+		_methodParameterTypes18 = new String[] {  };
 
-		_methodName18 = "updateDefinition";
+		_methodName19 = "updateDefinition";
 
-		_methodParameterTypes18 = new String[] {
+		_methodParameterTypes19 = new String[] {
 				"com.liferay.ams.model.Definition"
 			};
 
-		_methodName53 = "getBeanIdentifier";
+		_methodName50 = "getOSGiServiceIdentifier";
 
-		_methodParameterTypes53 = new String[] {  };
-
-		_methodName54 = "setBeanIdentifier";
-
-		_methodParameterTypes54 = new String[] { "java.lang.String" };
+		_methodParameterTypes50 = new String[] {  };
 	}
 
 	public Object invokeMethod(String name, String[] parameterTypes,
@@ -194,42 +197,40 @@ public class DefinitionLocalServiceClpInvoker {
 			return DefinitionLocalServiceUtil.getActionableDynamicQuery();
 		}
 
-		if (_methodName14.equals(name) &&
-				Arrays.deepEquals(_methodParameterTypes14, parameterTypes)) {
-			return DefinitionLocalServiceUtil.deletePersistedModel((com.liferay.portal.model.PersistedModel)arguments[0]);
+		if (_methodName13.equals(name) &&
+				Arrays.deepEquals(_methodParameterTypes13, parameterTypes)) {
+			return DefinitionLocalServiceUtil.getIndexableActionableDynamicQuery();
 		}
 
 		if (_methodName15.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes15, parameterTypes)) {
-			return DefinitionLocalServiceUtil.getPersistedModel((java.io.Serializable)arguments[0]);
+			return DefinitionLocalServiceUtil.deletePersistedModel((com.liferay.portal.model.PersistedModel)arguments[0]);
 		}
 
 		if (_methodName16.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes16, parameterTypes)) {
-			return DefinitionLocalServiceUtil.getDefinitions(((Integer)arguments[0]).intValue(),
-				((Integer)arguments[1]).intValue());
+			return DefinitionLocalServiceUtil.getPersistedModel((java.io.Serializable)arguments[0]);
 		}
 
 		if (_methodName17.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes17, parameterTypes)) {
-			return DefinitionLocalServiceUtil.getDefinitionsCount();
+			return DefinitionLocalServiceUtil.getDefinitions(((Integer)arguments[0]).intValue(),
+				((Integer)arguments[1]).intValue());
 		}
 
 		if (_methodName18.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes18, parameterTypes)) {
+			return DefinitionLocalServiceUtil.getDefinitionsCount();
+		}
+
+		if (_methodName19.equals(name) &&
+				Arrays.deepEquals(_methodParameterTypes19, parameterTypes)) {
 			return DefinitionLocalServiceUtil.updateDefinition((com.liferay.ams.model.Definition)arguments[0]);
 		}
 
-		if (_methodName53.equals(name) &&
-				Arrays.deepEquals(_methodParameterTypes53, parameterTypes)) {
-			return DefinitionLocalServiceUtil.getBeanIdentifier();
-		}
-
-		if (_methodName54.equals(name) &&
-				Arrays.deepEquals(_methodParameterTypes54, parameterTypes)) {
-			DefinitionLocalServiceUtil.setBeanIdentifier((java.lang.String)arguments[0]);
-
-			return null;
+		if (_methodName50.equals(name) &&
+				Arrays.deepEquals(_methodParameterTypes50, parameterTypes)) {
+			return DefinitionLocalServiceUtil.getOSGiServiceIdentifier();
 		}
 
 		throw new UnsupportedOperationException();
@@ -261,8 +262,8 @@ public class DefinitionLocalServiceClpInvoker {
 	private String[] _methodParameterTypes11;
 	private String _methodName12;
 	private String[] _methodParameterTypes12;
-	private String _methodName14;
-	private String[] _methodParameterTypes14;
+	private String _methodName13;
+	private String[] _methodParameterTypes13;
 	private String _methodName15;
 	private String[] _methodParameterTypes15;
 	private String _methodName16;
@@ -271,8 +272,8 @@ public class DefinitionLocalServiceClpInvoker {
 	private String[] _methodParameterTypes17;
 	private String _methodName18;
 	private String[] _methodParameterTypes18;
-	private String _methodName53;
-	private String[] _methodParameterTypes53;
-	private String _methodName54;
-	private String[] _methodParameterTypes54;
+	private String _methodName19;
+	private String[] _methodParameterTypes19;
+	private String _methodName50;
+	private String[] _methodParameterTypes50;
 }

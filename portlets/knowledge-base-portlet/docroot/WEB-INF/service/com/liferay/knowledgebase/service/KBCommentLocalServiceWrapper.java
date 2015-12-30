@@ -228,20 +228,15 @@ public class KBCommentLocalServiceWrapper implements KBCommentLocalService,
 		return _kbCommentLocalService.getActionableDynamicQuery();
 	}
 
-	/**
-	* Returns the Spring bean ID for this bean.
-	*
-	* @return the Spring bean ID for this bean
-	*/
 	@Override
-	public java.lang.String getBeanIdentifier() {
-		return _kbCommentLocalService.getBeanIdentifier();
+	public com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery getExportActionableDynamicQuery(
+		com.liferay.portlet.exportimport.lar.PortletDataContext portletDataContext) {
+		return _kbCommentLocalService.getExportActionableDynamicQuery(portletDataContext);
 	}
 
 	@Override
-	public com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery getExportActionableDynamicQuery(
-		com.liferay.portal.kernel.lar.PortletDataContext portletDataContext) {
-		return _kbCommentLocalService.getExportActionableDynamicQuery(portletDataContext);
+	public com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery getIndexableActionableDynamicQuery() {
+		return _kbCommentLocalService.getIndexableActionableDynamicQuery();
 	}
 
 	/**
@@ -408,6 +403,16 @@ public class KBCommentLocalServiceWrapper implements KBCommentLocalService,
 			classPK);
 	}
 
+	/**
+	* Returns the OSGi service identifier.
+	*
+	* @return the OSGi service identifier
+	*/
+	@Override
+	public java.lang.String getOSGiServiceIdentifier() {
+		return _kbCommentLocalService.getOSGiServiceIdentifier();
+	}
+
 	@Override
 	public com.liferay.portal.model.PersistedModel getPersistedModel(
 		java.io.Serializable primaryKeyObj)
@@ -421,16 +426,6 @@ public class KBCommentLocalServiceWrapper implements KBCommentLocalService,
 		throws java.lang.Throwable {
 		return _kbCommentLocalService.invokeMethod(name, parameterTypes,
 			arguments);
-	}
-
-	/**
-	* Sets the Spring bean ID for this bean.
-	*
-	* @param beanIdentifier the Spring bean ID for this bean
-	*/
-	@Override
-	public void setBeanIdentifier(java.lang.String beanIdentifier) {
-		_kbCommentLocalService.setBeanIdentifier(beanIdentifier);
 	}
 
 	/**
@@ -472,23 +467,6 @@ public class KBCommentLocalServiceWrapper implements KBCommentLocalService,
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _kbCommentLocalService.updateStatus(userId, kbCommentId, status,
 			serviceContext);
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedService}
-	 */
-	@Deprecated
-	public KBCommentLocalService getWrappedKBCommentLocalService() {
-		return _kbCommentLocalService;
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #setWrappedService}
-	 */
-	@Deprecated
-	public void setWrappedKBCommentLocalService(
-		KBCommentLocalService kbCommentLocalService) {
-		_kbCommentLocalService = kbCommentLocalService;
 	}
 
 	@Override

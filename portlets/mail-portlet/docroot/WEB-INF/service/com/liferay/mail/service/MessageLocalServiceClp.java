@@ -110,29 +110,29 @@ public class MessageLocalServiceClp implements MessageLocalService {
 
 		_methodParameterTypes15 = new String[] {  };
 
-		_methodName16 = "getBeanIdentifier";
+		_methodName16 = "getCompanyMessages";
 
-		_methodParameterTypes16 = new String[] {  };
+		_methodParameterTypes16 = new String[] { "long", "int", "int" };
 
-		_methodName17 = "getCompanyMessages";
+		_methodName17 = "getCompanyMessagesCount";
 
-		_methodParameterTypes17 = new String[] { "long", "int", "int" };
+		_methodParameterTypes17 = new String[] { "long" };
 
-		_methodName18 = "getCompanyMessagesCount";
+		_methodName18 = "getFolderMessages";
 
 		_methodParameterTypes18 = new String[] { "long" };
 
-		_methodName19 = "getFolderMessages";
+		_methodName19 = "getFolderMessagesCount";
 
 		_methodParameterTypes19 = new String[] { "long" };
 
-		_methodName20 = "getFolderMessagesCount";
+		_methodName20 = "getFolderUnreadMessagesCount";
 
 		_methodParameterTypes20 = new String[] { "long" };
 
-		_methodName21 = "getFolderUnreadMessagesCount";
+		_methodName21 = "getIndexableActionableDynamicQuery";
 
-		_methodParameterTypes21 = new String[] { "long" };
+		_methodParameterTypes21 = new String[] {  };
 
 		_methodName22 = "getMessage";
 
@@ -150,24 +150,24 @@ public class MessageLocalServiceClp implements MessageLocalService {
 
 		_methodParameterTypes25 = new String[] {  };
 
-		_methodName26 = "getPersistedModel";
+		_methodName26 = "getOSGiServiceIdentifier";
 
-		_methodParameterTypes26 = new String[] { "java.io.Serializable" };
+		_methodParameterTypes26 = new String[] {  };
 
-		_methodName27 = "getRemoteMessage";
+		_methodName27 = "getPersistedModel";
 
-		_methodParameterTypes27 = new String[] { "long", "boolean" };
+		_methodParameterTypes27 = new String[] { "java.io.Serializable" };
 
-		_methodName29 = "populateMessages";
+		_methodName28 = "getRemoteMessage";
 
-		_methodParameterTypes29 = new String[] {
+		_methodParameterTypes28 = new String[] { "long", "boolean" };
+
+		_methodName30 = "populateMessages";
+
+		_methodParameterTypes30 = new String[] {
 				"java.util.List", "long", "java.lang.String", "int", "int",
 				"java.lang.String", "java.lang.String"
 			};
-
-		_methodName30 = "setBeanIdentifier";
-
-		_methodParameterTypes30 = new String[] { "java.lang.String" };
 
 		_methodName31 = "updateContent";
 
@@ -651,36 +651,13 @@ public class MessageLocalServiceClp implements MessageLocalService {
 	}
 
 	@Override
-	public java.lang.String getBeanIdentifier() {
-		Object returnObj = null;
-
-		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName16,
-					_methodParameterTypes16, new Object[] {  });
-		}
-		catch (Throwable t) {
-			t = ClpSerializer.translateThrowable(t);
-
-			if (t instanceof RuntimeException) {
-				throw (RuntimeException)t;
-			}
-			else {
-				throw new RuntimeException(t.getClass().getName() +
-					" is not a valid exception");
-			}
-		}
-
-		return (java.lang.String)ClpSerializer.translateOutput(returnObj);
-	}
-
-	@Override
 	public java.util.List<com.liferay.mail.model.Message> getCompanyMessages(
 		long companyId, int start, int end) {
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName17,
-					_methodParameterTypes17,
+			returnObj = _invokableLocalService.invokeMethod(_methodName16,
+					_methodParameterTypes16,
 					new Object[] { companyId, start, end });
 		}
 		catch (Throwable t) {
@@ -703,8 +680,8 @@ public class MessageLocalServiceClp implements MessageLocalService {
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName18,
-					_methodParameterTypes18, new Object[] { companyId });
+			returnObj = _invokableLocalService.invokeMethod(_methodName17,
+					_methodParameterTypes17, new Object[] { companyId });
 		}
 		catch (Throwable t) {
 			t = ClpSerializer.translateThrowable(t);
@@ -727,8 +704,8 @@ public class MessageLocalServiceClp implements MessageLocalService {
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName19,
-					_methodParameterTypes19, new Object[] { folderId });
+			returnObj = _invokableLocalService.invokeMethod(_methodName18,
+					_methodParameterTypes18, new Object[] { folderId });
 		}
 		catch (Throwable t) {
 			t = ClpSerializer.translateThrowable(t);
@@ -747,6 +724,29 @@ public class MessageLocalServiceClp implements MessageLocalService {
 
 	@Override
 	public int getFolderMessagesCount(long folderId) {
+		Object returnObj = null;
+
+		try {
+			returnObj = _invokableLocalService.invokeMethod(_methodName19,
+					_methodParameterTypes19, new Object[] { folderId });
+		}
+		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
+			if (t instanceof RuntimeException) {
+				throw (RuntimeException)t;
+			}
+			else {
+				throw new RuntimeException(t.getClass().getName() +
+					" is not a valid exception");
+			}
+		}
+
+		return ((Integer)returnObj).intValue();
+	}
+
+	@Override
+	public int getFolderUnreadMessagesCount(long folderId) {
 		Object returnObj = null;
 
 		try {
@@ -769,12 +769,12 @@ public class MessageLocalServiceClp implements MessageLocalService {
 	}
 
 	@Override
-	public int getFolderUnreadMessagesCount(long folderId) {
+	public com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery getIndexableActionableDynamicQuery() {
 		Object returnObj = null;
 
 		try {
 			returnObj = _invokableLocalService.invokeMethod(_methodName21,
-					_methodParameterTypes21, new Object[] { folderId });
+					_methodParameterTypes21, new Object[] {  });
 		}
 		catch (Throwable t) {
 			t = ClpSerializer.translateThrowable(t);
@@ -788,7 +788,7 @@ public class MessageLocalServiceClp implements MessageLocalService {
 			}
 		}
 
-		return ((Integer)returnObj).intValue();
+		return (com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery)ClpSerializer.translateOutput(returnObj);
 	}
 
 	@Override
@@ -897,14 +897,37 @@ public class MessageLocalServiceClp implements MessageLocalService {
 	}
 
 	@Override
+	public java.lang.String getOSGiServiceIdentifier() {
+		Object returnObj = null;
+
+		try {
+			returnObj = _invokableLocalService.invokeMethod(_methodName26,
+					_methodParameterTypes26, new Object[] {  });
+		}
+		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
+			if (t instanceof RuntimeException) {
+				throw (RuntimeException)t;
+			}
+			else {
+				throw new RuntimeException(t.getClass().getName() +
+					" is not a valid exception");
+			}
+		}
+
+		return (java.lang.String)ClpSerializer.translateOutput(returnObj);
+	}
+
+	@Override
 	public com.liferay.portal.model.PersistedModel getPersistedModel(
 		java.io.Serializable primaryKeyObj)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName26,
-					_methodParameterTypes26,
+			returnObj = _invokableLocalService.invokeMethod(_methodName27,
+					_methodParameterTypes27,
 					new Object[] { ClpSerializer.translateInput(primaryKeyObj) });
 		}
 		catch (Throwable t) {
@@ -933,8 +956,8 @@ public class MessageLocalServiceClp implements MessageLocalService {
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName27,
-					_methodParameterTypes27, new Object[] { folderId, oldest });
+			returnObj = _invokableLocalService.invokeMethod(_methodName28,
+					_methodParameterTypes28, new Object[] { folderId, oldest });
 		}
 		catch (Throwable t) {
 			t = ClpSerializer.translateThrowable(t);
@@ -970,8 +993,8 @@ public class MessageLocalServiceClp implements MessageLocalService {
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName29,
-					_methodParameterTypes29,
+			returnObj = _invokableLocalService.invokeMethod(_methodName30,
+					_methodParameterTypes30,
 					new Object[] {
 						ClpSerializer.translateInput(messages),
 						
@@ -1001,26 +1024,6 @@ public class MessageLocalServiceClp implements MessageLocalService {
 		}
 
 		return ((Integer)returnObj).intValue();
-	}
-
-	@Override
-	public void setBeanIdentifier(java.lang.String beanIdentifier) {
-		try {
-			_invokableLocalService.invokeMethod(_methodName30,
-				_methodParameterTypes30,
-				new Object[] { ClpSerializer.translateInput(beanIdentifier) });
-		}
-		catch (Throwable t) {
-			t = ClpSerializer.translateThrowable(t);
-
-			if (t instanceof RuntimeException) {
-				throw (RuntimeException)t;
-			}
-			else {
-				throw new RuntimeException(t.getClass().getName() +
-					" is not a valid exception");
-			}
-		}
 	}
 
 	@Override
@@ -1226,8 +1229,8 @@ public class MessageLocalServiceClp implements MessageLocalService {
 	private String[] _methodParameterTypes26;
 	private String _methodName27;
 	private String[] _methodParameterTypes27;
-	private String _methodName29;
-	private String[] _methodParameterTypes29;
+	private String _methodName28;
+	private String[] _methodParameterTypes28;
 	private String _methodName30;
 	private String[] _methodParameterTypes30;
 	private String _methodName31;

@@ -14,6 +14,8 @@
 
 package com.liferay.so.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.ModelWrapper;
 
@@ -29,6 +31,7 @@ import java.util.Map;
  * @see FavoriteSite
  * @generated
  */
+@ProviderType
 public class FavoriteSiteWrapper implements FavoriteSite,
 	ModelWrapper<FavoriteSite> {
 	public FavoriteSiteWrapper(FavoriteSite favoriteSite) {
@@ -326,14 +329,6 @@ public class FavoriteSiteWrapper implements FavoriteSite,
 		return false;
 	}
 
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedModel}
-	 */
-	@Deprecated
-	public FavoriteSite getWrappedFavoriteSite() {
-		return _favoriteSite;
-	}
-
 	@Override
 	public FavoriteSite getWrappedModel() {
 		return _favoriteSite;
@@ -354,5 +349,5 @@ public class FavoriteSiteWrapper implements FavoriteSite,
 		_favoriteSite.resetOriginalValues();
 	}
 
-	private FavoriteSite _favoriteSite;
+	private final FavoriteSite _favoriteSite;
 }

@@ -14,6 +14,8 @@
 
 package com.liferay.tasks.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.util.DateUtil;
@@ -40,6 +42,7 @@ import java.util.Map;
 /**
  * @author Ryan Park
  */
+@ProviderType
 public class TasksEntryClp extends BaseModelImpl<TasksEntry>
 	implements TasksEntry {
 	public TasksEntryClp() {

@@ -14,6 +14,8 @@
 
 package com.liferay.akismet.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.ModelWrapper;
 
@@ -30,6 +32,7 @@ import java.util.Map;
  * @see AkismetData
  * @generated
  */
+@ProviderType
 public class AkismetDataWrapper implements AkismetData,
 	ModelWrapper<AkismetData> {
 	public AkismetDataWrapper(AkismetData akismetData) {
@@ -188,7 +191,7 @@ public class AkismetDataWrapper implements AkismetData,
 	* @return the modified date of this akismet data
 	*/
 	@Override
-	public java.util.Date getModifiedDate() {
+	public Date getModifiedDate() {
 		return _akismetData.getModifiedDate();
 	}
 
@@ -356,7 +359,7 @@ public class AkismetDataWrapper implements AkismetData,
 	* @param modifiedDate the modified date of this akismet data
 	*/
 	@Override
-	public void setModifiedDate(java.util.Date modifiedDate) {
+	public void setModifiedDate(Date modifiedDate) {
 		_akismetData.setModifiedDate(modifiedDate);
 	}
 
@@ -484,14 +487,6 @@ public class AkismetDataWrapper implements AkismetData,
 		return false;
 	}
 
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedModel}
-	 */
-	@Deprecated
-	public AkismetData getWrappedAkismetData() {
-		return _akismetData;
-	}
-
 	@Override
 	public AkismetData getWrappedModel() {
 		return _akismetData;
@@ -512,5 +507,5 @@ public class AkismetDataWrapper implements AkismetData,
 		_akismetData.resetOriginalValues();
 	}
 
-	private AkismetData _akismetData;
+	private final AkismetData _akismetData;
 }

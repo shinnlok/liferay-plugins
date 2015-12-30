@@ -48,7 +48,7 @@ boolean ignoreRequestValue = (index != formFieldsIndex);
 				<span class="field-label"><liferay-ui:message key="paragraph" /></span>
 			</c:when>
 			<c:when test="<%= Validator.isNotNull(fieldLabel) %>">
-				<span class="field-label"><%= fieldLabel %></span>
+				<span class="field-label"><%= HtmlUtil.escape(fieldLabel) %></span>
 			</c:when>
 			<c:otherwise>
 				<liferay-ui:message key="new-item" />
@@ -70,7 +70,7 @@ boolean ignoreRequestValue = (index != formFieldsIndex);
 					<liferay-ui:message key="name" />
 				</dt>
 				<dd>
-					<%= fieldLabel %>
+					<%= HtmlUtil.escape(fieldLabel) %>
 				</dd>
 		</c:otherwise>
 	</c:choose>
@@ -121,7 +121,7 @@ boolean ignoreRequestValue = (index != formFieldsIndex);
 					<liferay-ui:message key="options" />
 				</dt>
 				<dd>
-					<%= fieldOptions %>
+					<%= HtmlUtil.escape(fieldOptions) %>
 				</dd>
 		</c:when>
 	</c:choose>
@@ -137,7 +137,7 @@ boolean ignoreRequestValue = (index != formFieldsIndex);
 					<liferay-ui:message key="paragraph" />
 				</dt>
 				<dd>
-					<%= fieldParagraph %>
+					<%= HtmlUtil.escape(fieldParagraph) %>
 				</dd>
 		</c:when>
 	</c:choose>

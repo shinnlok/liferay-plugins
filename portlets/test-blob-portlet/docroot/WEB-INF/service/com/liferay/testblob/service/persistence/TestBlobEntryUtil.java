@@ -14,6 +14,8 @@
 
 package com.liferay.testblob.service.persistence;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.bean.PortletBeanLocatorUtil;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.util.OrderByComparator;
@@ -25,7 +27,7 @@ import com.liferay.testblob.model.TestBlobEntry;
 import java.util.List;
 
 /**
- * The persistence utility for the test blob entry service. This utility wraps {@link TestBlobEntryPersistenceImpl} and provides direct access to the database for CRUD operations. This utility should only be used by the service layer, as it must operate within a transaction. Never access this utility in a JSP, controller, model, or other front-end class.
+ * The persistence utility for the test blob entry service. This utility wraps {@link com.liferay.testblob.service.persistence.impl.TestBlobEntryPersistenceImpl} and provides direct access to the database for CRUD operations. This utility should only be used by the service layer, as it must operate within a transaction. Never access this utility in a JSP, controller, model, or other front-end class.
  *
  * <p>
  * Caching information and settings can be found in <code>portal.properties</code>
@@ -33,9 +35,10 @@ import java.util.List;
  *
  * @author Brian Wing Shun Chan
  * @see TestBlobEntryPersistence
- * @see TestBlobEntryPersistenceImpl
+ * @see com.liferay.testblob.service.persistence.impl.TestBlobEntryPersistenceImpl
  * @generated
  */
+@ProviderType
 public class TestBlobEntryUtil {
 	/*
 	 * NOTE FOR DEVELOPERS:
@@ -112,8 +115,7 @@ public class TestBlobEntryUtil {
 	* @param uuid the uuid
 	* @return the matching test blob entries
 	*/
-	public static java.util.List<com.liferay.testblob.model.TestBlobEntry> findByUuid(
-		java.lang.String uuid) {
+	public static List<TestBlobEntry> findByUuid(java.lang.String uuid) {
 		return getPersistence().findByUuid(uuid);
 	}
 
@@ -121,7 +123,7 @@ public class TestBlobEntryUtil {
 	* Returns a range of all the test blob entries where uuid = &#63;.
 	*
 	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.testblob.model.impl.TestBlobEntryModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link TestBlobEntryModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	* </p>
 	*
 	* @param uuid the uuid
@@ -129,8 +131,8 @@ public class TestBlobEntryUtil {
 	* @param end the upper bound of the range of test blob entries (not inclusive)
 	* @return the range of matching test blob entries
 	*/
-	public static java.util.List<com.liferay.testblob.model.TestBlobEntry> findByUuid(
-		java.lang.String uuid, int start, int end) {
+	public static List<TestBlobEntry> findByUuid(java.lang.String uuid,
+		int start, int end) {
 		return getPersistence().findByUuid(uuid, start, end);
 	}
 
@@ -138,7 +140,7 @@ public class TestBlobEntryUtil {
 	* Returns an ordered range of all the test blob entries where uuid = &#63;.
 	*
 	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.testblob.model.impl.TestBlobEntryModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link TestBlobEntryModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	* </p>
 	*
 	* @param uuid the uuid
@@ -147,10 +149,31 @@ public class TestBlobEntryUtil {
 	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	* @return the ordered range of matching test blob entries
 	*/
-	public static java.util.List<com.liferay.testblob.model.TestBlobEntry> findByUuid(
-		java.lang.String uuid, int start, int end,
-		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.testblob.model.TestBlobEntry> orderByComparator) {
+	public static List<TestBlobEntry> findByUuid(java.lang.String uuid,
+		int start, int end, OrderByComparator<TestBlobEntry> orderByComparator) {
 		return getPersistence().findByUuid(uuid, start, end, orderByComparator);
+	}
+
+	/**
+	* Returns an ordered range of all the test blob entries where uuid = &#63;.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link TestBlobEntryModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	* </p>
+	*
+	* @param uuid the uuid
+	* @param start the lower bound of the range of test blob entries
+	* @param end the upper bound of the range of test blob entries (not inclusive)
+	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	* @param retrieveFromCache whether to retrieve from the finder cache
+	* @return the ordered range of matching test blob entries
+	*/
+	public static List<TestBlobEntry> findByUuid(java.lang.String uuid,
+		int start, int end, OrderByComparator<TestBlobEntry> orderByComparator,
+		boolean retrieveFromCache) {
+		return getPersistence()
+				   .findByUuid(uuid, start, end, orderByComparator,
+			retrieveFromCache);
 	}
 
 	/**
@@ -159,11 +182,10 @@ public class TestBlobEntryUtil {
 	* @param uuid the uuid
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the first matching test blob entry
-	* @throws com.liferay.testblob.NoSuchEntryException if a matching test blob entry could not be found
+	* @throws NoSuchEntryException if a matching test blob entry could not be found
 	*/
-	public static com.liferay.testblob.model.TestBlobEntry findByUuid_First(
-		java.lang.String uuid,
-		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.testblob.model.TestBlobEntry> orderByComparator)
+	public static TestBlobEntry findByUuid_First(java.lang.String uuid,
+		OrderByComparator<TestBlobEntry> orderByComparator)
 		throws com.liferay.testblob.NoSuchEntryException {
 		return getPersistence().findByUuid_First(uuid, orderByComparator);
 	}
@@ -175,9 +197,8 @@ public class TestBlobEntryUtil {
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the first matching test blob entry, or <code>null</code> if a matching test blob entry could not be found
 	*/
-	public static com.liferay.testblob.model.TestBlobEntry fetchByUuid_First(
-		java.lang.String uuid,
-		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.testblob.model.TestBlobEntry> orderByComparator) {
+	public static TestBlobEntry fetchByUuid_First(java.lang.String uuid,
+		OrderByComparator<TestBlobEntry> orderByComparator) {
 		return getPersistence().fetchByUuid_First(uuid, orderByComparator);
 	}
 
@@ -187,11 +208,10 @@ public class TestBlobEntryUtil {
 	* @param uuid the uuid
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the last matching test blob entry
-	* @throws com.liferay.testblob.NoSuchEntryException if a matching test blob entry could not be found
+	* @throws NoSuchEntryException if a matching test blob entry could not be found
 	*/
-	public static com.liferay.testblob.model.TestBlobEntry findByUuid_Last(
-		java.lang.String uuid,
-		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.testblob.model.TestBlobEntry> orderByComparator)
+	public static TestBlobEntry findByUuid_Last(java.lang.String uuid,
+		OrderByComparator<TestBlobEntry> orderByComparator)
 		throws com.liferay.testblob.NoSuchEntryException {
 		return getPersistence().findByUuid_Last(uuid, orderByComparator);
 	}
@@ -203,9 +223,8 @@ public class TestBlobEntryUtil {
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the last matching test blob entry, or <code>null</code> if a matching test blob entry could not be found
 	*/
-	public static com.liferay.testblob.model.TestBlobEntry fetchByUuid_Last(
-		java.lang.String uuid,
-		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.testblob.model.TestBlobEntry> orderByComparator) {
+	public static TestBlobEntry fetchByUuid_Last(java.lang.String uuid,
+		OrderByComparator<TestBlobEntry> orderByComparator) {
 		return getPersistence().fetchByUuid_Last(uuid, orderByComparator);
 	}
 
@@ -216,11 +235,11 @@ public class TestBlobEntryUtil {
 	* @param uuid the uuid
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the previous, current, and next test blob entry
-	* @throws com.liferay.testblob.NoSuchEntryException if a test blob entry with the primary key could not be found
+	* @throws NoSuchEntryException if a test blob entry with the primary key could not be found
 	*/
-	public static com.liferay.testblob.model.TestBlobEntry[] findByUuid_PrevAndNext(
-		long testBlobEntryId, java.lang.String uuid,
-		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.testblob.model.TestBlobEntry> orderByComparator)
+	public static TestBlobEntry[] findByUuid_PrevAndNext(long testBlobEntryId,
+		java.lang.String uuid,
+		OrderByComparator<TestBlobEntry> orderByComparator)
 		throws com.liferay.testblob.NoSuchEntryException {
 		return getPersistence()
 				   .findByUuid_PrevAndNext(testBlobEntryId, uuid,
@@ -251,8 +270,7 @@ public class TestBlobEntryUtil {
 	*
 	* @param testBlobEntry the test blob entry
 	*/
-	public static void cacheResult(
-		com.liferay.testblob.model.TestBlobEntry testBlobEntry) {
+	public static void cacheResult(TestBlobEntry testBlobEntry) {
 		getPersistence().cacheResult(testBlobEntry);
 	}
 
@@ -261,8 +279,7 @@ public class TestBlobEntryUtil {
 	*
 	* @param testBlobEntries the test blob entries
 	*/
-	public static void cacheResult(
-		java.util.List<com.liferay.testblob.model.TestBlobEntry> testBlobEntries) {
+	public static void cacheResult(List<TestBlobEntry> testBlobEntries) {
 		getPersistence().cacheResult(testBlobEntries);
 	}
 
@@ -272,8 +289,7 @@ public class TestBlobEntryUtil {
 	* @param testBlobEntryId the primary key for the new test blob entry
 	* @return the new test blob entry
 	*/
-	public static com.liferay.testblob.model.TestBlobEntry create(
-		long testBlobEntryId) {
+	public static TestBlobEntry create(long testBlobEntryId) {
 		return getPersistence().create(testBlobEntryId);
 	}
 
@@ -282,27 +298,26 @@ public class TestBlobEntryUtil {
 	*
 	* @param testBlobEntryId the primary key of the test blob entry
 	* @return the test blob entry that was removed
-	* @throws com.liferay.testblob.NoSuchEntryException if a test blob entry with the primary key could not be found
+	* @throws NoSuchEntryException if a test blob entry with the primary key could not be found
 	*/
-	public static com.liferay.testblob.model.TestBlobEntry remove(
-		long testBlobEntryId) throws com.liferay.testblob.NoSuchEntryException {
+	public static TestBlobEntry remove(long testBlobEntryId)
+		throws com.liferay.testblob.NoSuchEntryException {
 		return getPersistence().remove(testBlobEntryId);
 	}
 
-	public static com.liferay.testblob.model.TestBlobEntry updateImpl(
-		com.liferay.testblob.model.TestBlobEntry testBlobEntry) {
+	public static TestBlobEntry updateImpl(TestBlobEntry testBlobEntry) {
 		return getPersistence().updateImpl(testBlobEntry);
 	}
 
 	/**
-	* Returns the test blob entry with the primary key or throws a {@link com.liferay.testblob.NoSuchEntryException} if it could not be found.
+	* Returns the test blob entry with the primary key or throws a {@link NoSuchEntryException} if it could not be found.
 	*
 	* @param testBlobEntryId the primary key of the test blob entry
 	* @return the test blob entry
-	* @throws com.liferay.testblob.NoSuchEntryException if a test blob entry with the primary key could not be found
+	* @throws NoSuchEntryException if a test blob entry with the primary key could not be found
 	*/
-	public static com.liferay.testblob.model.TestBlobEntry findByPrimaryKey(
-		long testBlobEntryId) throws com.liferay.testblob.NoSuchEntryException {
+	public static TestBlobEntry findByPrimaryKey(long testBlobEntryId)
+		throws com.liferay.testblob.NoSuchEntryException {
 		return getPersistence().findByPrimaryKey(testBlobEntryId);
 	}
 
@@ -312,12 +327,11 @@ public class TestBlobEntryUtil {
 	* @param testBlobEntryId the primary key of the test blob entry
 	* @return the test blob entry, or <code>null</code> if a test blob entry with the primary key could not be found
 	*/
-	public static com.liferay.testblob.model.TestBlobEntry fetchByPrimaryKey(
-		long testBlobEntryId) {
+	public static TestBlobEntry fetchByPrimaryKey(long testBlobEntryId) {
 		return getPersistence().fetchByPrimaryKey(testBlobEntryId);
 	}
 
-	public static java.util.Map<java.io.Serializable, com.liferay.testblob.model.TestBlobEntry> fetchByPrimaryKeys(
+	public static java.util.Map<java.io.Serializable, TestBlobEntry> fetchByPrimaryKeys(
 		java.util.Set<java.io.Serializable> primaryKeys) {
 		return getPersistence().fetchByPrimaryKeys(primaryKeys);
 	}
@@ -327,7 +341,7 @@ public class TestBlobEntryUtil {
 	*
 	* @return the test blob entries
 	*/
-	public static java.util.List<com.liferay.testblob.model.TestBlobEntry> findAll() {
+	public static List<TestBlobEntry> findAll() {
 		return getPersistence().findAll();
 	}
 
@@ -335,15 +349,14 @@ public class TestBlobEntryUtil {
 	* Returns a range of all the test blob entries.
 	*
 	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.testblob.model.impl.TestBlobEntryModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link TestBlobEntryModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	* </p>
 	*
 	* @param start the lower bound of the range of test blob entries
 	* @param end the upper bound of the range of test blob entries (not inclusive)
 	* @return the range of test blob entries
 	*/
-	public static java.util.List<com.liferay.testblob.model.TestBlobEntry> findAll(
-		int start, int end) {
+	public static List<TestBlobEntry> findAll(int start, int end) {
 		return getPersistence().findAll(start, end);
 	}
 
@@ -351,7 +364,7 @@ public class TestBlobEntryUtil {
 	* Returns an ordered range of all the test blob entries.
 	*
 	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.testblob.model.impl.TestBlobEntryModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link TestBlobEntryModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	* </p>
 	*
 	* @param start the lower bound of the range of test blob entries
@@ -359,10 +372,29 @@ public class TestBlobEntryUtil {
 	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	* @return the ordered range of test blob entries
 	*/
-	public static java.util.List<com.liferay.testblob.model.TestBlobEntry> findAll(
-		int start, int end,
-		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.testblob.model.TestBlobEntry> orderByComparator) {
+	public static List<TestBlobEntry> findAll(int start, int end,
+		OrderByComparator<TestBlobEntry> orderByComparator) {
 		return getPersistence().findAll(start, end, orderByComparator);
+	}
+
+	/**
+	* Returns an ordered range of all the test blob entries.
+	*
+	* <p>
+	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link TestBlobEntryModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	* </p>
+	*
+	* @param start the lower bound of the range of test blob entries
+	* @param end the upper bound of the range of test blob entries (not inclusive)
+	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	* @param retrieveFromCache whether to retrieve from the finder cache
+	* @return the ordered range of test blob entries
+	*/
+	public static List<TestBlobEntry> findAll(int start, int end,
+		OrderByComparator<TestBlobEntry> orderByComparator,
+		boolean retrieveFromCache) {
+		return getPersistence()
+				   .findAll(start, end, orderByComparator, retrieveFromCache);
 	}
 
 	/**
@@ -381,6 +413,10 @@ public class TestBlobEntryUtil {
 		return getPersistence().countAll();
 	}
 
+	public static java.util.Set<java.lang.String> getBadColumnNames() {
+		return getPersistence().getBadColumnNames();
+	}
+
 	public static TestBlobEntryPersistence getPersistence() {
 		if (_persistence == null) {
 			_persistence = (TestBlobEntryPersistence)PortletBeanLocatorUtil.locate(com.liferay.testblob.service.ClpSerializer.getServletContextName(),
@@ -391,13 +427,6 @@ public class TestBlobEntryUtil {
 		}
 
 		return _persistence;
-	}
-
-	/**
-	 * @deprecated As of 6.2.0
-	 */
-	@Deprecated
-	public void setPersistence(TestBlobEntryPersistence persistence) {
 	}
 
 	private static TestBlobEntryPersistence _persistence;

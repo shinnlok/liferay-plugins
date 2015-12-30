@@ -14,14 +14,18 @@
 
 package com.liferay.opensocial.service.persistence.impl;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.opensocial.NoSuchGadgetException;
 import com.liferay.opensocial.model.Gadget;
 import com.liferay.opensocial.model.impl.GadgetImpl;
 import com.liferay.opensocial.model.impl.GadgetModelImpl;
 import com.liferay.opensocial.service.persistence.GadgetPersistence;
 
-import com.liferay.portal.kernel.cache.CacheRegistryUtil;
+import com.liferay.portal.kernel.bean.BeanReference;
+import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
+import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
 import com.liferay.portal.kernel.dao.orm.Query;
@@ -31,10 +35,7 @@ import com.liferay.portal.kernel.dao.orm.SQLQuery;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
-import com.liferay.portal.kernel.util.PropsKeys;
-import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
@@ -42,11 +43,16 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
 import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.security.permission.InlineSQLHelperUtil;
+import com.liferay.portal.service.ServiceContext;
+import com.liferay.portal.service.ServiceContextThreadLocal;
+import com.liferay.portal.service.persistence.CompanyProvider;
+import com.liferay.portal.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
 
 import java.io.Serializable;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -63,9 +69,10 @@ import java.util.Set;
  *
  * @author Brian Wing Shun Chan
  * @see GadgetPersistence
- * @see GadgetUtil
+ * @see com.liferay.opensocial.service.persistence.GadgetUtil
  * @generated
  */
+@ProviderType
 public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	implements GadgetPersistence {
 	/*
@@ -122,7 +129,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	 * Returns a range of all the gadgets where uuid = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.opensocial.model.impl.GadgetModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link GadgetModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param uuid the uuid
@@ -139,7 +146,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	 * Returns an ordered range of all the gadgets where uuid = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.opensocial.model.impl.GadgetModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link GadgetModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param uuid the uuid
@@ -151,6 +158,26 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	@Override
 	public List<Gadget> findByUuid(String uuid, int start, int end,
 		OrderByComparator<Gadget> orderByComparator) {
+		return findByUuid(uuid, start, end, orderByComparator, true);
+	}
+
+	/**
+	 * Returns an ordered range of all the gadgets where uuid = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link GadgetModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param uuid the uuid
+	 * @param start the lower bound of the range of gadgets
+	 * @param end the upper bound of the range of gadgets (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the ordered range of matching gadgets
+	 */
+	@Override
+	public List<Gadget> findByUuid(String uuid, int start, int end,
+		OrderByComparator<Gadget> orderByComparator, boolean retrieveFromCache) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -166,15 +193,19 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 			finderArgs = new Object[] { uuid, start, end, orderByComparator };
 		}
 
-		List<Gadget> list = (List<Gadget>)FinderCacheUtil.getResult(finderPath,
-				finderArgs, this);
+		List<Gadget> list = null;
 
-		if ((list != null) && !list.isEmpty()) {
-			for (Gadget gadget : list) {
-				if (!Validator.equals(uuid, gadget.getUuid())) {
-					list = null;
+		if (retrieveFromCache) {
+			list = (List<Gadget>)finderCache.getResult(finderPath, finderArgs,
+					this);
 
-					break;
+			if ((list != null) && !list.isEmpty()) {
+				for (Gadget gadget : list) {
+					if (!Validator.equals(uuid, gadget.getUuid())) {
+						list = null;
+
+						break;
+					}
 				}
 			}
 		}
@@ -245,10 +276,10 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 
 				cacheResult(list);
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, list);
+				finderCache.putResult(finderPath, finderArgs, list);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -266,7 +297,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	 * @param uuid the uuid
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching gadget
-	 * @throws com.liferay.opensocial.NoSuchGadgetException if a matching gadget could not be found
+	 * @throws NoSuchGadgetException if a matching gadget could not be found
 	 */
 	@Override
 	public Gadget findByUuid_First(String uuid,
@@ -315,7 +346,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	 * @param uuid the uuid
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching gadget
-	 * @throws com.liferay.opensocial.NoSuchGadgetException if a matching gadget could not be found
+	 * @throws NoSuchGadgetException if a matching gadget could not be found
 	 */
 	@Override
 	public Gadget findByUuid_Last(String uuid,
@@ -371,7 +402,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	 * @param uuid the uuid
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next gadget
-	 * @throws com.liferay.opensocial.NoSuchGadgetException if a gadget with the primary key could not be found
+	 * @throws NoSuchGadgetException if a gadget with the primary key could not be found
 	 */
 	@Override
 	public Gadget[] findByUuid_PrevAndNext(long gadgetId, String uuid,
@@ -538,7 +569,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	 * Returns a range of all the gadgets that the user has permission to view where uuid = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.opensocial.model.impl.GadgetModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link GadgetModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param uuid the uuid
@@ -555,7 +586,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	 * Returns an ordered range of all the gadgets that the user has permissions to view where uuid = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.opensocial.model.impl.GadgetModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link GadgetModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param uuid the uuid
@@ -665,7 +696,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	 * @param uuid the uuid
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next gadget
-	 * @throws com.liferay.opensocial.NoSuchGadgetException if a gadget with the primary key could not be found
+	 * @throws NoSuchGadgetException if a gadget with the primary key could not be found
 	 */
 	@Override
 	public Gadget[] filterFindByUuid_PrevAndNext(long gadgetId, String uuid,
@@ -880,8 +911,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 
 		Object[] finderArgs = new Object[] { uuid };
 
-		Long count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs,
-				this);
+		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler query = new StringBundler(2);
@@ -919,10 +949,10 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 
 				count = (Long)q.uniqueResult();
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, count);
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -1040,7 +1070,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	 * Returns a range of all the gadgets where uuid = &#63; and companyId = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.opensocial.model.impl.GadgetModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link GadgetModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param uuid the uuid
@@ -1059,7 +1089,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	 * Returns an ordered range of all the gadgets where uuid = &#63; and companyId = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.opensocial.model.impl.GadgetModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link GadgetModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param uuid the uuid
@@ -1072,6 +1102,28 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	@Override
 	public List<Gadget> findByUuid_C(String uuid, long companyId, int start,
 		int end, OrderByComparator<Gadget> orderByComparator) {
+		return findByUuid_C(uuid, companyId, start, end, orderByComparator, true);
+	}
+
+	/**
+	 * Returns an ordered range of all the gadgets where uuid = &#63; and companyId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link GadgetModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param uuid the uuid
+	 * @param companyId the company ID
+	 * @param start the lower bound of the range of gadgets
+	 * @param end the upper bound of the range of gadgets (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the ordered range of matching gadgets
+	 */
+	@Override
+	public List<Gadget> findByUuid_C(String uuid, long companyId, int start,
+		int end, OrderByComparator<Gadget> orderByComparator,
+		boolean retrieveFromCache) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -1091,16 +1143,20 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 				};
 		}
 
-		List<Gadget> list = (List<Gadget>)FinderCacheUtil.getResult(finderPath,
-				finderArgs, this);
+		List<Gadget> list = null;
 
-		if ((list != null) && !list.isEmpty()) {
-			for (Gadget gadget : list) {
-				if (!Validator.equals(uuid, gadget.getUuid()) ||
-						(companyId != gadget.getCompanyId())) {
-					list = null;
+		if (retrieveFromCache) {
+			list = (List<Gadget>)finderCache.getResult(finderPath, finderArgs,
+					this);
 
-					break;
+			if ((list != null) && !list.isEmpty()) {
+				for (Gadget gadget : list) {
+					if (!Validator.equals(uuid, gadget.getUuid()) ||
+							(companyId != gadget.getCompanyId())) {
+						list = null;
+
+						break;
+					}
 				}
 			}
 		}
@@ -1175,10 +1231,10 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 
 				cacheResult(list);
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, list);
+				finderCache.putResult(finderPath, finderArgs, list);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -1197,7 +1253,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	 * @param companyId the company ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching gadget
-	 * @throws com.liferay.opensocial.NoSuchGadgetException if a matching gadget could not be found
+	 * @throws NoSuchGadgetException if a matching gadget could not be found
 	 */
 	@Override
 	public Gadget findByUuid_C_First(String uuid, long companyId,
@@ -1252,7 +1308,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	 * @param companyId the company ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching gadget
-	 * @throws com.liferay.opensocial.NoSuchGadgetException if a matching gadget could not be found
+	 * @throws NoSuchGadgetException if a matching gadget could not be found
 	 */
 	@Override
 	public Gadget findByUuid_C_Last(String uuid, long companyId,
@@ -1314,7 +1370,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	 * @param companyId the company ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next gadget
-	 * @throws com.liferay.opensocial.NoSuchGadgetException if a gadget with the primary key could not be found
+	 * @throws NoSuchGadgetException if a gadget with the primary key could not be found
 	 */
 	@Override
 	public Gadget[] findByUuid_C_PrevAndNext(long gadgetId, String uuid,
@@ -1487,7 +1543,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	 * Returns a range of all the gadgets that the user has permission to view where uuid = &#63; and companyId = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.opensocial.model.impl.GadgetModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link GadgetModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param uuid the uuid
@@ -1506,7 +1562,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	 * Returns an ordered range of all the gadgets that the user has permissions to view where uuid = &#63; and companyId = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.opensocial.model.impl.GadgetModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link GadgetModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param uuid the uuid
@@ -1622,7 +1678,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	 * @param companyId the company ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next gadget
-	 * @throws com.liferay.opensocial.NoSuchGadgetException if a gadget with the primary key could not be found
+	 * @throws NoSuchGadgetException if a gadget with the primary key could not be found
 	 */
 	@Override
 	public Gadget[] filterFindByUuid_C_PrevAndNext(long gadgetId, String uuid,
@@ -1844,8 +1900,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 
 		Object[] finderArgs = new Object[] { uuid, companyId };
 
-		Long count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs,
-				this);
+		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler query = new StringBundler(3);
@@ -1887,10 +1942,10 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 
 				count = (Long)q.uniqueResult();
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, count);
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -2013,7 +2068,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	 * Returns a range of all the gadgets where companyId = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.opensocial.model.impl.GadgetModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link GadgetModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param companyId the company ID
@@ -2030,7 +2085,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	 * Returns an ordered range of all the gadgets where companyId = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.opensocial.model.impl.GadgetModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link GadgetModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param companyId the company ID
@@ -2042,6 +2097,26 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	@Override
 	public List<Gadget> findByCompanyId(long companyId, int start, int end,
 		OrderByComparator<Gadget> orderByComparator) {
+		return findByCompanyId(companyId, start, end, orderByComparator, true);
+	}
+
+	/**
+	 * Returns an ordered range of all the gadgets where companyId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link GadgetModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param companyId the company ID
+	 * @param start the lower bound of the range of gadgets
+	 * @param end the upper bound of the range of gadgets (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the ordered range of matching gadgets
+	 */
+	@Override
+	public List<Gadget> findByCompanyId(long companyId, int start, int end,
+		OrderByComparator<Gadget> orderByComparator, boolean retrieveFromCache) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -2057,15 +2132,19 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 			finderArgs = new Object[] { companyId, start, end, orderByComparator };
 		}
 
-		List<Gadget> list = (List<Gadget>)FinderCacheUtil.getResult(finderPath,
-				finderArgs, this);
+		List<Gadget> list = null;
 
-		if ((list != null) && !list.isEmpty()) {
-			for (Gadget gadget : list) {
-				if ((companyId != gadget.getCompanyId())) {
-					list = null;
+		if (retrieveFromCache) {
+			list = (List<Gadget>)finderCache.getResult(finderPath, finderArgs,
+					this);
 
-					break;
+			if ((list != null) && !list.isEmpty()) {
+				for (Gadget gadget : list) {
+					if ((companyId != gadget.getCompanyId())) {
+						list = null;
+
+						break;
+					}
 				}
 			}
 		}
@@ -2122,10 +2201,10 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 
 				cacheResult(list);
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, list);
+				finderCache.putResult(finderPath, finderArgs, list);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -2143,7 +2222,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	 * @param companyId the company ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching gadget
-	 * @throws com.liferay.opensocial.NoSuchGadgetException if a matching gadget could not be found
+	 * @throws NoSuchGadgetException if a matching gadget could not be found
 	 */
 	@Override
 	public Gadget findByCompanyId_First(long companyId,
@@ -2192,7 +2271,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	 * @param companyId the company ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching gadget
-	 * @throws com.liferay.opensocial.NoSuchGadgetException if a matching gadget could not be found
+	 * @throws NoSuchGadgetException if a matching gadget could not be found
 	 */
 	@Override
 	public Gadget findByCompanyId_Last(long companyId,
@@ -2249,7 +2328,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	 * @param companyId the company ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next gadget
-	 * @throws com.liferay.opensocial.NoSuchGadgetException if a gadget with the primary key could not be found
+	 * @throws NoSuchGadgetException if a gadget with the primary key could not be found
 	 */
 	@Override
 	public Gadget[] findByCompanyId_PrevAndNext(long gadgetId, long companyId,
@@ -2403,7 +2482,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	 * Returns a range of all the gadgets that the user has permission to view where companyId = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.opensocial.model.impl.GadgetModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link GadgetModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param companyId the company ID
@@ -2420,7 +2499,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	 * Returns an ordered range of all the gadgets that the user has permissions to view where companyId = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.opensocial.model.impl.GadgetModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link GadgetModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param companyId the company ID
@@ -2516,7 +2595,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	 * @param companyId the company ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next gadget
-	 * @throws com.liferay.opensocial.NoSuchGadgetException if a gadget with the primary key could not be found
+	 * @throws NoSuchGadgetException if a gadget with the primary key could not be found
 	 */
 	@Override
 	public Gadget[] filterFindByCompanyId_PrevAndNext(long gadgetId,
@@ -2718,8 +2797,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 
 		Object[] finderArgs = new Object[] { companyId };
 
-		Long count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs,
-				this);
+		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler query = new StringBundler(2);
@@ -2743,10 +2821,10 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 
 				count = (Long)q.uniqueResult();
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, count);
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -2818,12 +2896,12 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 			new String[] { Long.class.getName(), String.class.getName() });
 
 	/**
-	 * Returns the gadget where companyId = &#63; and url = &#63; or throws a {@link com.liferay.opensocial.NoSuchGadgetException} if it could not be found.
+	 * Returns the gadget where companyId = &#63; and url = &#63; or throws a {@link NoSuchGadgetException} if it could not be found.
 	 *
 	 * @param companyId the company ID
 	 * @param url the url
 	 * @return the matching gadget
-	 * @throws com.liferay.opensocial.NoSuchGadgetException if a matching gadget could not be found
+	 * @throws NoSuchGadgetException if a matching gadget could not be found
 	 */
 	@Override
 	public Gadget findByC_U(long companyId, String url)
@@ -2870,7 +2948,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	 *
 	 * @param companyId the company ID
 	 * @param url the url
-	 * @param retrieveFromCache whether to use the finder cache
+	 * @param retrieveFromCache whether to retrieve from the finder cache
 	 * @return the matching gadget, or <code>null</code> if a matching gadget could not be found
 	 */
 	@Override
@@ -2881,7 +2959,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 		Object result = null;
 
 		if (retrieveFromCache) {
-			result = FinderCacheUtil.getResult(FINDER_PATH_FETCH_BY_C_U,
+			result = finderCache.getResult(FINDER_PATH_FETCH_BY_C_U,
 					finderArgs, this);
 		}
 
@@ -2935,8 +3013,8 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 				List<Gadget> list = q.list();
 
 				if (list.isEmpty()) {
-					FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_C_U,
-						finderArgs, list);
+					finderCache.putResult(FINDER_PATH_FETCH_BY_C_U, finderArgs,
+						list);
 				}
 				else {
 					Gadget gadget = list.get(0);
@@ -2948,14 +3026,13 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 					if ((gadget.getCompanyId() != companyId) ||
 							(gadget.getUrl() == null) ||
 							!gadget.getUrl().equals(url)) {
-						FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_C_U,
+						finderCache.putResult(FINDER_PATH_FETCH_BY_C_U,
 							finderArgs, gadget);
 					}
 				}
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_C_U,
-					finderArgs);
+				finderCache.removeResult(FINDER_PATH_FETCH_BY_C_U, finderArgs);
 
 				throw processException(e);
 			}
@@ -3000,8 +3077,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 
 		Object[] finderArgs = new Object[] { companyId, url };
 
-		Long count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs,
-				this);
+		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler query = new StringBundler(3);
@@ -3043,10 +3119,10 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 
 				count = (Long)q.uniqueResult();
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, count);
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -3074,10 +3150,10 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	 */
 	@Override
 	public void cacheResult(Gadget gadget) {
-		EntityCacheUtil.putResult(GadgetModelImpl.ENTITY_CACHE_ENABLED,
+		entityCache.putResult(GadgetModelImpl.ENTITY_CACHE_ENABLED,
 			GadgetImpl.class, gadget.getPrimaryKey(), gadget);
 
-		FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_C_U,
+		finderCache.putResult(FINDER_PATH_FETCH_BY_C_U,
 			new Object[] { gadget.getCompanyId(), gadget.getUrl() }, gadget);
 
 		gadget.resetOriginalValues();
@@ -3091,9 +3167,8 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	@Override
 	public void cacheResult(List<Gadget> gadgets) {
 		for (Gadget gadget : gadgets) {
-			if (EntityCacheUtil.getResult(
-						GadgetModelImpl.ENTITY_CACHE_ENABLED, GadgetImpl.class,
-						gadget.getPrimaryKey()) == null) {
+			if (entityCache.getResult(GadgetModelImpl.ENTITY_CACHE_ENABLED,
+						GadgetImpl.class, gadget.getPrimaryKey()) == null) {
 				cacheResult(gadget);
 			}
 			else {
@@ -3106,84 +3181,83 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	 * Clears the cache for all gadgets.
 	 *
 	 * <p>
-	 * The {@link com.liferay.portal.kernel.dao.orm.EntityCache} and {@link com.liferay.portal.kernel.dao.orm.FinderCache} are both cleared by this method.
+	 * The {@link EntityCache} and {@link FinderCache} are both cleared by this method.
 	 * </p>
 	 */
 	@Override
 	public void clearCache() {
-		if (_HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE) {
-			CacheRegistryUtil.clear(GadgetImpl.class.getName());
-		}
+		entityCache.clearCache(GadgetImpl.class);
 
-		EntityCacheUtil.clearCache(GadgetImpl.class);
-
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_ENTITY);
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_ENTITY);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
 	/**
 	 * Clears the cache for the gadget.
 	 *
 	 * <p>
-	 * The {@link com.liferay.portal.kernel.dao.orm.EntityCache} and {@link com.liferay.portal.kernel.dao.orm.FinderCache} are both cleared by this method.
+	 * The {@link EntityCache} and {@link FinderCache} are both cleared by this method.
 	 * </p>
 	 */
 	@Override
 	public void clearCache(Gadget gadget) {
-		EntityCacheUtil.removeResult(GadgetModelImpl.ENTITY_CACHE_ENABLED,
+		entityCache.removeResult(GadgetModelImpl.ENTITY_CACHE_ENABLED,
 			GadgetImpl.class, gadget.getPrimaryKey());
 
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 
-		clearUniqueFindersCache(gadget);
+		clearUniqueFindersCache((GadgetModelImpl)gadget);
 	}
 
 	@Override
 	public void clearCache(List<Gadget> gadgets) {
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 
 		for (Gadget gadget : gadgets) {
-			EntityCacheUtil.removeResult(GadgetModelImpl.ENTITY_CACHE_ENABLED,
+			entityCache.removeResult(GadgetModelImpl.ENTITY_CACHE_ENABLED,
 				GadgetImpl.class, gadget.getPrimaryKey());
 
-			clearUniqueFindersCache(gadget);
+			clearUniqueFindersCache((GadgetModelImpl)gadget);
 		}
 	}
 
-	protected void cacheUniqueFindersCache(Gadget gadget) {
-		if (gadget.isNew()) {
-			Object[] args = new Object[] { gadget.getCompanyId(), gadget.getUrl() };
+	protected void cacheUniqueFindersCache(GadgetModelImpl gadgetModelImpl,
+		boolean isNew) {
+		if (isNew) {
+			Object[] args = new Object[] {
+					gadgetModelImpl.getCompanyId(), gadgetModelImpl.getUrl()
+				};
 
-			FinderCacheUtil.putResult(FINDER_PATH_COUNT_BY_C_U, args,
+			finderCache.putResult(FINDER_PATH_COUNT_BY_C_U, args,
 				Long.valueOf(1));
-			FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_C_U, args, gadget);
+			finderCache.putResult(FINDER_PATH_FETCH_BY_C_U, args,
+				gadgetModelImpl);
 		}
 		else {
-			GadgetModelImpl gadgetModelImpl = (GadgetModelImpl)gadget;
-
 			if ((gadgetModelImpl.getColumnBitmask() &
 					FINDER_PATH_FETCH_BY_C_U.getColumnBitmask()) != 0) {
 				Object[] args = new Object[] {
-						gadget.getCompanyId(), gadget.getUrl()
+						gadgetModelImpl.getCompanyId(), gadgetModelImpl.getUrl()
 					};
 
-				FinderCacheUtil.putResult(FINDER_PATH_COUNT_BY_C_U, args,
+				finderCache.putResult(FINDER_PATH_COUNT_BY_C_U, args,
 					Long.valueOf(1));
-				FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_C_U, args, gadget);
+				finderCache.putResult(FINDER_PATH_FETCH_BY_C_U, args,
+					gadgetModelImpl);
 			}
 		}
 	}
 
-	protected void clearUniqueFindersCache(Gadget gadget) {
-		GadgetModelImpl gadgetModelImpl = (GadgetModelImpl)gadget;
+	protected void clearUniqueFindersCache(GadgetModelImpl gadgetModelImpl) {
+		Object[] args = new Object[] {
+				gadgetModelImpl.getCompanyId(), gadgetModelImpl.getUrl()
+			};
 
-		Object[] args = new Object[] { gadget.getCompanyId(), gadget.getUrl() };
-
-		FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_C_U, args);
-		FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_C_U, args);
+		finderCache.removeResult(FINDER_PATH_COUNT_BY_C_U, args);
+		finderCache.removeResult(FINDER_PATH_FETCH_BY_C_U, args);
 
 		if ((gadgetModelImpl.getColumnBitmask() &
 				FINDER_PATH_FETCH_BY_C_U.getColumnBitmask()) != 0) {
@@ -3192,8 +3266,8 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 					gadgetModelImpl.getOriginalUrl()
 				};
 
-			FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_C_U, args);
-			FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_C_U, args);
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_C_U, args);
+			finderCache.removeResult(FINDER_PATH_FETCH_BY_C_U, args);
 		}
 	}
 
@@ -3214,6 +3288,8 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 
 		gadget.setUuid(uuid);
 
+		gadget.setCompanyId(companyProvider.getCompanyId());
+
 		return gadget;
 	}
 
@@ -3222,7 +3298,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	 *
 	 * @param gadgetId the primary key of the gadget
 	 * @return the gadget that was removed
-	 * @throws com.liferay.opensocial.NoSuchGadgetException if a gadget with the primary key could not be found
+	 * @throws NoSuchGadgetException if a gadget with the primary key could not be found
 	 */
 	@Override
 	public Gadget remove(long gadgetId) throws NoSuchGadgetException {
@@ -3234,7 +3310,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	 *
 	 * @param primaryKey the primary key of the gadget
 	 * @return the gadget that was removed
-	 * @throws com.liferay.opensocial.NoSuchGadgetException if a gadget with the primary key could not be found
+	 * @throws NoSuchGadgetException if a gadget with the primary key could not be found
 	 */
 	@Override
 	public Gadget remove(Serializable primaryKey) throws NoSuchGadgetException {
@@ -3300,7 +3376,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	}
 
 	@Override
-	public Gadget updateImpl(com.liferay.opensocial.model.Gadget gadget) {
+	public Gadget updateImpl(Gadget gadget) {
 		gadget = toUnwrappedModel(gadget);
 
 		boolean isNew = gadget.isNew();
@@ -3311,6 +3387,28 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 			String uuid = PortalUUIDUtil.generate();
 
 			gadget.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext = ServiceContextThreadLocal.getServiceContext();
+
+		Date now = new Date();
+
+		if (isNew && (gadget.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				gadget.setCreateDate(now);
+			}
+			else {
+				gadget.setCreateDate(serviceContext.getCreateDate(now));
+			}
+		}
+
+		if (!gadgetModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				gadget.setModifiedDate(now);
+			}
+			else {
+				gadget.setModifiedDate(serviceContext.getModifiedDate(now));
+			}
 		}
 
 		Session session = null;
@@ -3324,7 +3422,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 				gadget.setNew(false);
 			}
 			else {
-				session.merge(gadget);
+				gadget = (Gadget)session.merge(gadget);
 			}
 		}
 		catch (Exception e) {
@@ -3334,10 +3432,10 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 			closeSession(session);
 		}
 
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 
 		if (isNew || !GadgetModelImpl.COLUMN_BITMASK_ENABLED) {
-			FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 		}
 
 		else {
@@ -3345,14 +3443,14 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 					FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID.getColumnBitmask()) != 0) {
 				Object[] args = new Object[] { gadgetModelImpl.getOriginalUuid() };
 
-				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_UUID, args);
-				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID,
+				finderCache.removeResult(FINDER_PATH_COUNT_BY_UUID, args);
+				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID,
 					args);
 
 				args = new Object[] { gadgetModelImpl.getUuid() };
 
-				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_UUID, args);
-				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID,
+				finderCache.removeResult(FINDER_PATH_COUNT_BY_UUID, args);
+				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID,
 					args);
 			}
 
@@ -3363,8 +3461,8 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 						gadgetModelImpl.getOriginalCompanyId()
 					};
 
-				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_UUID_C, args);
-				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID_C,
+				finderCache.removeResult(FINDER_PATH_COUNT_BY_UUID_C, args);
+				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID_C,
 					args);
 
 				args = new Object[] {
@@ -3372,8 +3470,8 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 						gadgetModelImpl.getCompanyId()
 					};
 
-				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_UUID_C, args);
-				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID_C,
+				finderCache.removeResult(FINDER_PATH_COUNT_BY_UUID_C, args);
+				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID_C,
 					args);
 			}
 
@@ -3383,25 +3481,23 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 						gadgetModelImpl.getOriginalCompanyId()
 					};
 
-				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_COMPANYID,
-					args);
-				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_COMPANYID,
+				finderCache.removeResult(FINDER_PATH_COUNT_BY_COMPANYID, args);
+				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_COMPANYID,
 					args);
 
 				args = new Object[] { gadgetModelImpl.getCompanyId() };
 
-				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_COMPANYID,
-					args);
-				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_COMPANYID,
+				finderCache.removeResult(FINDER_PATH_COUNT_BY_COMPANYID, args);
+				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_COMPANYID,
 					args);
 			}
 		}
 
-		EntityCacheUtil.putResult(GadgetModelImpl.ENTITY_CACHE_ENABLED,
+		entityCache.putResult(GadgetModelImpl.ENTITY_CACHE_ENABLED,
 			GadgetImpl.class, gadget.getPrimaryKey(), gadget, false);
 
-		clearUniqueFindersCache(gadget);
-		cacheUniqueFindersCache(gadget);
+		clearUniqueFindersCache(gadgetModelImpl);
+		cacheUniqueFindersCache(gadgetModelImpl, isNew);
 
 		gadget.resetOriginalValues();
 
@@ -3426,6 +3522,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 		gadgetImpl.setName(gadget.getName());
 		gadgetImpl.setUrl(gadget.getUrl());
 		gadgetImpl.setPortletCategoryNames(gadget.getPortletCategoryNames());
+		gadgetImpl.setLastPublishDate(gadget.getLastPublishDate());
 
 		return gadgetImpl;
 	}
@@ -3435,7 +3532,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	 *
 	 * @param primaryKey the primary key of the gadget
 	 * @return the gadget
-	 * @throws com.liferay.opensocial.NoSuchGadgetException if a gadget with the primary key could not be found
+	 * @throws NoSuchGadgetException if a gadget with the primary key could not be found
 	 */
 	@Override
 	public Gadget findByPrimaryKey(Serializable primaryKey)
@@ -3455,11 +3552,11 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	}
 
 	/**
-	 * Returns the gadget with the primary key or throws a {@link com.liferay.opensocial.NoSuchGadgetException} if it could not be found.
+	 * Returns the gadget with the primary key or throws a {@link NoSuchGadgetException} if it could not be found.
 	 *
 	 * @param gadgetId the primary key of the gadget
 	 * @return the gadget
-	 * @throws com.liferay.opensocial.NoSuchGadgetException if a gadget with the primary key could not be found
+	 * @throws NoSuchGadgetException if a gadget with the primary key could not be found
 	 */
 	@Override
 	public Gadget findByPrimaryKey(long gadgetId) throws NoSuchGadgetException {
@@ -3474,7 +3571,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	 */
 	@Override
 	public Gadget fetchByPrimaryKey(Serializable primaryKey) {
-		Gadget gadget = (Gadget)EntityCacheUtil.getResult(GadgetModelImpl.ENTITY_CACHE_ENABLED,
+		Gadget gadget = (Gadget)entityCache.getResult(GadgetModelImpl.ENTITY_CACHE_ENABLED,
 				GadgetImpl.class, primaryKey);
 
 		if (gadget == _nullGadget) {
@@ -3493,12 +3590,12 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 					cacheResult(gadget);
 				}
 				else {
-					EntityCacheUtil.putResult(GadgetModelImpl.ENTITY_CACHE_ENABLED,
+					entityCache.putResult(GadgetModelImpl.ENTITY_CACHE_ENABLED,
 						GadgetImpl.class, primaryKey, _nullGadget);
 				}
 			}
 			catch (Exception e) {
-				EntityCacheUtil.removeResult(GadgetModelImpl.ENTITY_CACHE_ENABLED,
+				entityCache.removeResult(GadgetModelImpl.ENTITY_CACHE_ENABLED,
 					GadgetImpl.class, primaryKey);
 
 				throw processException(e);
@@ -3548,7 +3645,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			Gadget gadget = (Gadget)EntityCacheUtil.getResult(GadgetModelImpl.ENTITY_CACHE_ENABLED,
+			Gadget gadget = (Gadget)entityCache.getResult(GadgetModelImpl.ENTITY_CACHE_ENABLED,
 					GadgetImpl.class, primaryKey);
 
 			if (gadget == null) {
@@ -3600,7 +3697,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 			}
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
-				EntityCacheUtil.putResult(GadgetModelImpl.ENTITY_CACHE_ENABLED,
+				entityCache.putResult(GadgetModelImpl.ENTITY_CACHE_ENABLED,
 					GadgetImpl.class, primaryKey, _nullGadget);
 			}
 		}
@@ -3628,7 +3725,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	 * Returns a range of all the gadgets.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.opensocial.model.impl.GadgetModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link GadgetModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of gadgets
@@ -3644,7 +3741,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	 * Returns an ordered range of all the gadgets.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.opensocial.model.impl.GadgetModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link GadgetModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of gadgets
@@ -3655,6 +3752,25 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	@Override
 	public List<Gadget> findAll(int start, int end,
 		OrderByComparator<Gadget> orderByComparator) {
+		return findAll(start, end, orderByComparator, true);
+	}
+
+	/**
+	 * Returns an ordered range of all the gadgets.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link GadgetModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param start the lower bound of the range of gadgets
+	 * @param end the upper bound of the range of gadgets (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the ordered range of gadgets
+	 */
+	@Override
+	public List<Gadget> findAll(int start, int end,
+		OrderByComparator<Gadget> orderByComparator, boolean retrieveFromCache) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -3670,8 +3786,12 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 			finderArgs = new Object[] { start, end, orderByComparator };
 		}
 
-		List<Gadget> list = (List<Gadget>)FinderCacheUtil.getResult(finderPath,
-				finderArgs, this);
+		List<Gadget> list = null;
+
+		if (retrieveFromCache) {
+			list = (List<Gadget>)finderCache.getResult(finderPath, finderArgs,
+					this);
+		}
 
 		if (list == null) {
 			StringBundler query = null;
@@ -3718,10 +3838,10 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 
 				cacheResult(list);
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, list);
+				finderCache.putResult(finderPath, finderArgs, list);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -3751,7 +3871,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)FinderCacheUtil.getResult(FINDER_PATH_COUNT_ALL,
+		Long count = (Long)finderCache.getResult(FINDER_PATH_COUNT_ALL,
 				FINDER_ARGS_EMPTY, this);
 
 		if (count == null) {
@@ -3764,11 +3884,11 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 
 				count = (Long)q.uniqueResult();
 
-				FinderCacheUtil.putResult(FINDER_PATH_COUNT_ALL,
-					FINDER_ARGS_EMPTY, count);
+				finderCache.putResult(FINDER_PATH_COUNT_ALL, FINDER_ARGS_EMPTY,
+					count);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_ALL,
+				finderCache.removeResult(FINDER_PATH_COUNT_ALL,
 					FINDER_ARGS_EMPTY);
 
 				throw processException(e);
@@ -3782,8 +3902,13 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	}
 
 	@Override
-	protected Set<String> getBadColumnNames() {
+	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return GadgetModelImpl.TABLE_COLUMNS_MAP;
 	}
 
 	/**
@@ -3793,12 +3918,16 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	}
 
 	public void destroy() {
-		EntityCacheUtil.removeCache(GadgetImpl.class.getName());
-		FinderCacheUtil.removeCache(FINDER_CLASS_NAME_ENTITY);
-		FinderCacheUtil.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		FinderCacheUtil.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		entityCache.removeCache(GadgetImpl.class.getName());
+		finderCache.removeCache(FINDER_CLASS_NAME_ENTITY);
+		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
+	@BeanReference(type = CompanyProviderWrapper.class)
+	protected CompanyProvider companyProvider;
+	protected EntityCache entityCache = EntityCacheUtil.getEntityCache();
+	protected FinderCache finderCache = FinderCacheUtil.getFinderCache();
 	private static final String _SQL_SELECT_GADGET = "SELECT gadget FROM Gadget gadget";
 	private static final String _SQL_SELECT_GADGET_WHERE_PKS_IN = "SELECT gadget FROM Gadget gadget WHERE gadgetId IN (";
 	private static final String _SQL_SELECT_GADGET_WHERE = "SELECT gadget FROM Gadget gadget WHERE ";
@@ -3817,13 +3946,11 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 	private static final String _ORDER_BY_ENTITY_TABLE = "OpenSocial_Gadget.";
 	private static final String _NO_SUCH_ENTITY_WITH_PRIMARY_KEY = "No Gadget exists with the primary key ";
 	private static final String _NO_SUCH_ENTITY_WITH_KEY = "No Gadget exists with the key {";
-	private static final boolean _HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE = GetterUtil.getBoolean(PropsUtil.get(
-				PropsKeys.HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE));
-	private static Log _log = LogFactoryUtil.getLog(GadgetPersistenceImpl.class);
-	private static Set<String> _badColumnNames = SetUtil.fromArray(new String[] {
+	private static final Log _log = LogFactoryUtil.getLog(GadgetPersistenceImpl.class);
+	private static final Set<String> _badColumnNames = SetUtil.fromArray(new String[] {
 				"uuid"
 			});
-	private static Gadget _nullGadget = new GadgetImpl() {
+	private static final Gadget _nullGadget = new GadgetImpl() {
 			@Override
 			public Object clone() {
 				return this;
@@ -3835,7 +3962,7 @@ public class GadgetPersistenceImpl extends BasePersistenceImpl<Gadget>
 			}
 		};
 
-	private static CacheModel<Gadget> _nullGadgetCacheModel = new CacheModel<Gadget>() {
+	private static final CacheModel<Gadget> _nullGadgetCacheModel = new CacheModel<Gadget>() {
 			@Override
 			public Gadget toEntityModel() {
 				return _nullGadget;

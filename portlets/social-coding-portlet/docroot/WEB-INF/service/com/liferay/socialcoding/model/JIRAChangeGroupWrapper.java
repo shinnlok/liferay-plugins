@@ -105,7 +105,7 @@ public class JIRAChangeGroupWrapper implements JIRAChangeGroup,
 	* @return the create date of this j i r a change group
 	*/
 	@Override
-	public java.util.Date getCreateDate() {
+	public Date getCreateDate() {
 		return _jiraChangeGroup.getCreateDate();
 	}
 
@@ -195,7 +195,7 @@ public class JIRAChangeGroupWrapper implements JIRAChangeGroup,
 	* @param createDate the create date of this j i r a change group
 	*/
 	@Override
-	public void setCreateDate(java.util.Date createDate) {
+	public void setCreateDate(Date createDate) {
 		_jiraChangeGroup.setCreateDate(createDate);
 	}
 
@@ -310,14 +310,6 @@ public class JIRAChangeGroupWrapper implements JIRAChangeGroup,
 		}
 
 		return false;
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedModel}
-	 */
-	@Deprecated
-	public JIRAChangeGroup getWrappedJIRAChangeGroup() {
-		return _jiraChangeGroup;
 	}
 
 	@Override

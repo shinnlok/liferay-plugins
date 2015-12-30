@@ -44,7 +44,7 @@ else if (filterBy.startsWith(ContactsConstants.FILTER_BY_TYPE)) {
 }
 
 if (showOnlySiteMembers) {
-	params.put("usersGroups", new Long(group.getGroupId()));
+	params.put("usersGroups", Long.valueOf(group.getGroupId()));
 }
 else if (filterBy.startsWith(ContactsConstants.FILTER_BY_GROUP)) {
 	params.put("usersGroups", ContactsUtil.getGroupId(filterBy));
@@ -333,11 +333,11 @@ portletURL.setWindowState(WindowState.NORMAL);
 									allUsersCount = EntryLocalServiceUtil.searchUsersAndContactsCount(themeDisplay.getCompanyId(), themeDisplay.getUserId(), StringPool.BLANK);
 								}
 
-								params.put("socialRelationType", new Long[] {themeDisplay.getUserId(), new Long(SocialRelationConstants.TYPE_BI_CONNECTION)});
+								params.put("socialRelationType", new Long[] {themeDisplay.getUserId(), Long.valueOf(SocialRelationConstants.TYPE_BI_CONNECTION)});
 
 								int connectionUsersCount = UserLocalServiceUtil.searchCount(themeDisplay.getCompanyId(), null, WorkflowConstants.STATUS_APPROVED, params);
 
-								params.put("socialRelationType", new Long[] {themeDisplay.getUserId(), new Long(SocialRelationConstants.TYPE_UNI_FOLLOWER)});
+								params.put("socialRelationType", new Long[] {themeDisplay.getUserId(), Long.valueOf(SocialRelationConstants.TYPE_UNI_FOLLOWER)});
 
 								int followingUsersCount = UserLocalServiceUtil.searchCount(themeDisplay.getCompanyId(), null, WorkflowConstants.STATUS_APPROVED, params);
 
@@ -372,7 +372,7 @@ portletURL.setWindowState(WindowState.NORMAL);
 
 								<c:if test="<%= !showOnlySiteMembers && (connectionUsersCount <= 0) && (followingUsersCount <= 0) %>">
 									<aui:layout cssClass="contacts-center-introduction">
-										<liferay-ui:message key="contacts-center-allows-you-to-search-view-and-establish-social-relations-with-other-users" />
+										<liferay-ui:message key="contacts-center-lets-you-search-view-and-establish-social-relations-with-other-users" />
 									</aui:layout>
 								</c:if>
 							</aui:layout>

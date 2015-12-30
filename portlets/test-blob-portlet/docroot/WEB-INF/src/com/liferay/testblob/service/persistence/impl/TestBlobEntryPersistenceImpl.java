@@ -14,8 +14,11 @@
 
 package com.liferay.testblob.service.persistence.impl;
 
-import com.liferay.portal.kernel.cache.CacheRegistryUtil;
+import aQute.bnd.annotation.ProviderType;
+
+import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
+import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
 import com.liferay.portal.kernel.dao.orm.Query;
@@ -24,10 +27,7 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
-import com.liferay.portal.kernel.util.PropsKeys;
-import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
@@ -61,9 +61,10 @@ import java.util.Set;
  *
  * @author Brian Wing Shun Chan
  * @see TestBlobEntryPersistence
- * @see TestBlobEntryUtil
+ * @see com.liferay.testblob.service.persistence.TestBlobEntryUtil
  * @generated
  */
+@ProviderType
 public class TestBlobEntryPersistenceImpl extends BasePersistenceImpl<TestBlobEntry>
 	implements TestBlobEntryPersistence {
 	/*
@@ -122,7 +123,7 @@ public class TestBlobEntryPersistenceImpl extends BasePersistenceImpl<TestBlobEn
 	 * Returns a range of all the test blob entries where uuid = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.testblob.model.impl.TestBlobEntryModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link TestBlobEntryModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param uuid the uuid
@@ -139,7 +140,7 @@ public class TestBlobEntryPersistenceImpl extends BasePersistenceImpl<TestBlobEn
 	 * Returns an ordered range of all the test blob entries where uuid = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.testblob.model.impl.TestBlobEntryModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link TestBlobEntryModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param uuid the uuid
@@ -151,6 +152,27 @@ public class TestBlobEntryPersistenceImpl extends BasePersistenceImpl<TestBlobEn
 	@Override
 	public List<TestBlobEntry> findByUuid(String uuid, int start, int end,
 		OrderByComparator<TestBlobEntry> orderByComparator) {
+		return findByUuid(uuid, start, end, orderByComparator, true);
+	}
+
+	/**
+	 * Returns an ordered range of all the test blob entries where uuid = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link TestBlobEntryModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param uuid the uuid
+	 * @param start the lower bound of the range of test blob entries
+	 * @param end the upper bound of the range of test blob entries (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the ordered range of matching test blob entries
+	 */
+	@Override
+	public List<TestBlobEntry> findByUuid(String uuid, int start, int end,
+		OrderByComparator<TestBlobEntry> orderByComparator,
+		boolean retrieveFromCache) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -166,15 +188,19 @@ public class TestBlobEntryPersistenceImpl extends BasePersistenceImpl<TestBlobEn
 			finderArgs = new Object[] { uuid, start, end, orderByComparator };
 		}
 
-		List<TestBlobEntry> list = (List<TestBlobEntry>)FinderCacheUtil.getResult(finderPath,
-				finderArgs, this);
+		List<TestBlobEntry> list = null;
 
-		if ((list != null) && !list.isEmpty()) {
-			for (TestBlobEntry testBlobEntry : list) {
-				if (!Validator.equals(uuid, testBlobEntry.getUuid())) {
-					list = null;
+		if (retrieveFromCache) {
+			list = (List<TestBlobEntry>)finderCache.getResult(finderPath,
+					finderArgs, this);
 
-					break;
+			if ((list != null) && !list.isEmpty()) {
+				for (TestBlobEntry testBlobEntry : list) {
+					if (!Validator.equals(uuid, testBlobEntry.getUuid())) {
+						list = null;
+
+						break;
+					}
 				}
 			}
 		}
@@ -245,10 +271,10 @@ public class TestBlobEntryPersistenceImpl extends BasePersistenceImpl<TestBlobEn
 
 				cacheResult(list);
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, list);
+				finderCache.putResult(finderPath, finderArgs, list);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -266,7 +292,7 @@ public class TestBlobEntryPersistenceImpl extends BasePersistenceImpl<TestBlobEn
 	 * @param uuid the uuid
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching test blob entry
-	 * @throws com.liferay.testblob.NoSuchEntryException if a matching test blob entry could not be found
+	 * @throws NoSuchEntryException if a matching test blob entry could not be found
 	 */
 	@Override
 	public TestBlobEntry findByUuid_First(String uuid,
@@ -315,7 +341,7 @@ public class TestBlobEntryPersistenceImpl extends BasePersistenceImpl<TestBlobEn
 	 * @param uuid the uuid
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching test blob entry
-	 * @throws com.liferay.testblob.NoSuchEntryException if a matching test blob entry could not be found
+	 * @throws NoSuchEntryException if a matching test blob entry could not be found
 	 */
 	@Override
 	public TestBlobEntry findByUuid_Last(String uuid,
@@ -372,7 +398,7 @@ public class TestBlobEntryPersistenceImpl extends BasePersistenceImpl<TestBlobEn
 	 * @param uuid the uuid
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next test blob entry
-	 * @throws com.liferay.testblob.NoSuchEntryException if a test blob entry with the primary key could not be found
+	 * @throws NoSuchEntryException if a test blob entry with the primary key could not be found
 	 */
 	@Override
 	public TestBlobEntry[] findByUuid_PrevAndNext(long testBlobEntryId,
@@ -549,8 +575,7 @@ public class TestBlobEntryPersistenceImpl extends BasePersistenceImpl<TestBlobEn
 
 		Object[] finderArgs = new Object[] { uuid };
 
-		Long count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs,
-				this);
+		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler query = new StringBundler(2);
@@ -588,10 +613,10 @@ public class TestBlobEntryPersistenceImpl extends BasePersistenceImpl<TestBlobEn
 
 				count = (Long)q.uniqueResult();
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, count);
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -618,7 +643,7 @@ public class TestBlobEntryPersistenceImpl extends BasePersistenceImpl<TestBlobEn
 	 */
 	@Override
 	public void cacheResult(TestBlobEntry testBlobEntry) {
-		EntityCacheUtil.putResult(TestBlobEntryModelImpl.ENTITY_CACHE_ENABLED,
+		entityCache.putResult(TestBlobEntryModelImpl.ENTITY_CACHE_ENABLED,
 			TestBlobEntryImpl.class, testBlobEntry.getPrimaryKey(),
 			testBlobEntry);
 
@@ -633,7 +658,7 @@ public class TestBlobEntryPersistenceImpl extends BasePersistenceImpl<TestBlobEn
 	@Override
 	public void cacheResult(List<TestBlobEntry> testBlobEntries) {
 		for (TestBlobEntry testBlobEntry : testBlobEntries) {
-			if (EntityCacheUtil.getResult(
+			if (entityCache.getResult(
 						TestBlobEntryModelImpl.ENTITY_CACHE_ENABLED,
 						TestBlobEntryImpl.class, testBlobEntry.getPrimaryKey()) == null) {
 				cacheResult(testBlobEntry);
@@ -648,45 +673,41 @@ public class TestBlobEntryPersistenceImpl extends BasePersistenceImpl<TestBlobEn
 	 * Clears the cache for all test blob entries.
 	 *
 	 * <p>
-	 * The {@link com.liferay.portal.kernel.dao.orm.EntityCache} and {@link com.liferay.portal.kernel.dao.orm.FinderCache} are both cleared by this method.
+	 * The {@link EntityCache} and {@link FinderCache} are both cleared by this method.
 	 * </p>
 	 */
 	@Override
 	public void clearCache() {
-		if (_HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE) {
-			CacheRegistryUtil.clear(TestBlobEntryImpl.class.getName());
-		}
+		entityCache.clearCache(TestBlobEntryImpl.class);
 
-		EntityCacheUtil.clearCache(TestBlobEntryImpl.class);
-
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_ENTITY);
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_ENTITY);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
 	/**
 	 * Clears the cache for the test blob entry.
 	 *
 	 * <p>
-	 * The {@link com.liferay.portal.kernel.dao.orm.EntityCache} and {@link com.liferay.portal.kernel.dao.orm.FinderCache} are both cleared by this method.
+	 * The {@link EntityCache} and {@link FinderCache} are both cleared by this method.
 	 * </p>
 	 */
 	@Override
 	public void clearCache(TestBlobEntry testBlobEntry) {
-		EntityCacheUtil.removeResult(TestBlobEntryModelImpl.ENTITY_CACHE_ENABLED,
+		entityCache.removeResult(TestBlobEntryModelImpl.ENTITY_CACHE_ENABLED,
 			TestBlobEntryImpl.class, testBlobEntry.getPrimaryKey());
 
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
 	@Override
 	public void clearCache(List<TestBlobEntry> testBlobEntries) {
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 
 		for (TestBlobEntry testBlobEntry : testBlobEntries) {
-			EntityCacheUtil.removeResult(TestBlobEntryModelImpl.ENTITY_CACHE_ENABLED,
+			entityCache.removeResult(TestBlobEntryModelImpl.ENTITY_CACHE_ENABLED,
 				TestBlobEntryImpl.class, testBlobEntry.getPrimaryKey());
 		}
 	}
@@ -716,7 +737,7 @@ public class TestBlobEntryPersistenceImpl extends BasePersistenceImpl<TestBlobEn
 	 *
 	 * @param testBlobEntryId the primary key of the test blob entry
 	 * @return the test blob entry that was removed
-	 * @throws com.liferay.testblob.NoSuchEntryException if a test blob entry with the primary key could not be found
+	 * @throws NoSuchEntryException if a test blob entry with the primary key could not be found
 	 */
 	@Override
 	public TestBlobEntry remove(long testBlobEntryId)
@@ -729,7 +750,7 @@ public class TestBlobEntryPersistenceImpl extends BasePersistenceImpl<TestBlobEn
 	 *
 	 * @param primaryKey the primary key of the test blob entry
 	 * @return the test blob entry that was removed
-	 * @throws com.liferay.testblob.NoSuchEntryException if a test blob entry with the primary key could not be found
+	 * @throws NoSuchEntryException if a test blob entry with the primary key could not be found
 	 */
 	@Override
 	public TestBlobEntry remove(Serializable primaryKey)
@@ -797,8 +818,7 @@ public class TestBlobEntryPersistenceImpl extends BasePersistenceImpl<TestBlobEn
 	}
 
 	@Override
-	public TestBlobEntry updateImpl(
-		com.liferay.testblob.model.TestBlobEntry testBlobEntry) {
+	public TestBlobEntry updateImpl(TestBlobEntry testBlobEntry) {
 		testBlobEntry = toUnwrappedModel(testBlobEntry);
 
 		boolean isNew = testBlobEntry.isNew();
@@ -836,10 +856,10 @@ public class TestBlobEntryPersistenceImpl extends BasePersistenceImpl<TestBlobEn
 			closeSession(session);
 		}
 
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 
 		if (isNew || !TestBlobEntryModelImpl.COLUMN_BITMASK_ENABLED) {
-			FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 		}
 
 		else {
@@ -849,19 +869,19 @@ public class TestBlobEntryPersistenceImpl extends BasePersistenceImpl<TestBlobEn
 						testBlobEntryModelImpl.getOriginalUuid()
 					};
 
-				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_UUID, args);
-				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID,
+				finderCache.removeResult(FINDER_PATH_COUNT_BY_UUID, args);
+				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID,
 					args);
 
 				args = new Object[] { testBlobEntryModelImpl.getUuid() };
 
-				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_UUID, args);
-				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID,
+				finderCache.removeResult(FINDER_PATH_COUNT_BY_UUID, args);
+				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID,
 					args);
 			}
 		}
 
-		EntityCacheUtil.putResult(TestBlobEntryModelImpl.ENTITY_CACHE_ENABLED,
+		entityCache.putResult(TestBlobEntryModelImpl.ENTITY_CACHE_ENABLED,
 			TestBlobEntryImpl.class, testBlobEntry.getPrimaryKey(),
 			testBlobEntry, false);
 
@@ -892,7 +912,7 @@ public class TestBlobEntryPersistenceImpl extends BasePersistenceImpl<TestBlobEn
 	 *
 	 * @param primaryKey the primary key of the test blob entry
 	 * @return the test blob entry
-	 * @throws com.liferay.testblob.NoSuchEntryException if a test blob entry with the primary key could not be found
+	 * @throws NoSuchEntryException if a test blob entry with the primary key could not be found
 	 */
 	@Override
 	public TestBlobEntry findByPrimaryKey(Serializable primaryKey)
@@ -912,11 +932,11 @@ public class TestBlobEntryPersistenceImpl extends BasePersistenceImpl<TestBlobEn
 	}
 
 	/**
-	 * Returns the test blob entry with the primary key or throws a {@link com.liferay.testblob.NoSuchEntryException} if it could not be found.
+	 * Returns the test blob entry with the primary key or throws a {@link NoSuchEntryException} if it could not be found.
 	 *
 	 * @param testBlobEntryId the primary key of the test blob entry
 	 * @return the test blob entry
-	 * @throws com.liferay.testblob.NoSuchEntryException if a test blob entry with the primary key could not be found
+	 * @throws NoSuchEntryException if a test blob entry with the primary key could not be found
 	 */
 	@Override
 	public TestBlobEntry findByPrimaryKey(long testBlobEntryId)
@@ -932,7 +952,7 @@ public class TestBlobEntryPersistenceImpl extends BasePersistenceImpl<TestBlobEn
 	 */
 	@Override
 	public TestBlobEntry fetchByPrimaryKey(Serializable primaryKey) {
-		TestBlobEntry testBlobEntry = (TestBlobEntry)EntityCacheUtil.getResult(TestBlobEntryModelImpl.ENTITY_CACHE_ENABLED,
+		TestBlobEntry testBlobEntry = (TestBlobEntry)entityCache.getResult(TestBlobEntryModelImpl.ENTITY_CACHE_ENABLED,
 				TestBlobEntryImpl.class, primaryKey);
 
 		if (testBlobEntry == _nullTestBlobEntry) {
@@ -952,12 +972,12 @@ public class TestBlobEntryPersistenceImpl extends BasePersistenceImpl<TestBlobEn
 					cacheResult(testBlobEntry);
 				}
 				else {
-					EntityCacheUtil.putResult(TestBlobEntryModelImpl.ENTITY_CACHE_ENABLED,
+					entityCache.putResult(TestBlobEntryModelImpl.ENTITY_CACHE_ENABLED,
 						TestBlobEntryImpl.class, primaryKey, _nullTestBlobEntry);
 				}
 			}
 			catch (Exception e) {
-				EntityCacheUtil.removeResult(TestBlobEntryModelImpl.ENTITY_CACHE_ENABLED,
+				entityCache.removeResult(TestBlobEntryModelImpl.ENTITY_CACHE_ENABLED,
 					TestBlobEntryImpl.class, primaryKey);
 
 				throw processException(e);
@@ -1007,7 +1027,7 @@ public class TestBlobEntryPersistenceImpl extends BasePersistenceImpl<TestBlobEn
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			TestBlobEntry testBlobEntry = (TestBlobEntry)EntityCacheUtil.getResult(TestBlobEntryModelImpl.ENTITY_CACHE_ENABLED,
+			TestBlobEntry testBlobEntry = (TestBlobEntry)entityCache.getResult(TestBlobEntryModelImpl.ENTITY_CACHE_ENABLED,
 					TestBlobEntryImpl.class, primaryKey);
 
 			if (testBlobEntry == null) {
@@ -1059,7 +1079,7 @@ public class TestBlobEntryPersistenceImpl extends BasePersistenceImpl<TestBlobEn
 			}
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
-				EntityCacheUtil.putResult(TestBlobEntryModelImpl.ENTITY_CACHE_ENABLED,
+				entityCache.putResult(TestBlobEntryModelImpl.ENTITY_CACHE_ENABLED,
 					TestBlobEntryImpl.class, primaryKey, _nullTestBlobEntry);
 			}
 		}
@@ -1087,7 +1107,7 @@ public class TestBlobEntryPersistenceImpl extends BasePersistenceImpl<TestBlobEn
 	 * Returns a range of all the test blob entries.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.testblob.model.impl.TestBlobEntryModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link TestBlobEntryModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of test blob entries
@@ -1103,7 +1123,7 @@ public class TestBlobEntryPersistenceImpl extends BasePersistenceImpl<TestBlobEn
 	 * Returns an ordered range of all the test blob entries.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.testblob.model.impl.TestBlobEntryModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link TestBlobEntryModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of test blob entries
@@ -1114,6 +1134,26 @@ public class TestBlobEntryPersistenceImpl extends BasePersistenceImpl<TestBlobEn
 	@Override
 	public List<TestBlobEntry> findAll(int start, int end,
 		OrderByComparator<TestBlobEntry> orderByComparator) {
+		return findAll(start, end, orderByComparator, true);
+	}
+
+	/**
+	 * Returns an ordered range of all the test blob entries.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link TestBlobEntryModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param start the lower bound of the range of test blob entries
+	 * @param end the upper bound of the range of test blob entries (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the ordered range of test blob entries
+	 */
+	@Override
+	public List<TestBlobEntry> findAll(int start, int end,
+		OrderByComparator<TestBlobEntry> orderByComparator,
+		boolean retrieveFromCache) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -1129,8 +1169,12 @@ public class TestBlobEntryPersistenceImpl extends BasePersistenceImpl<TestBlobEn
 			finderArgs = new Object[] { start, end, orderByComparator };
 		}
 
-		List<TestBlobEntry> list = (List<TestBlobEntry>)FinderCacheUtil.getResult(finderPath,
-				finderArgs, this);
+		List<TestBlobEntry> list = null;
+
+		if (retrieveFromCache) {
+			list = (List<TestBlobEntry>)finderCache.getResult(finderPath,
+					finderArgs, this);
+		}
 
 		if (list == null) {
 			StringBundler query = null;
@@ -1177,10 +1221,10 @@ public class TestBlobEntryPersistenceImpl extends BasePersistenceImpl<TestBlobEn
 
 				cacheResult(list);
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, list);
+				finderCache.putResult(finderPath, finderArgs, list);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -1210,7 +1254,7 @@ public class TestBlobEntryPersistenceImpl extends BasePersistenceImpl<TestBlobEn
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)FinderCacheUtil.getResult(FINDER_PATH_COUNT_ALL,
+		Long count = (Long)finderCache.getResult(FINDER_PATH_COUNT_ALL,
 				FINDER_ARGS_EMPTY, this);
 
 		if (count == null) {
@@ -1223,11 +1267,11 @@ public class TestBlobEntryPersistenceImpl extends BasePersistenceImpl<TestBlobEn
 
 				count = (Long)q.uniqueResult();
 
-				FinderCacheUtil.putResult(FINDER_PATH_COUNT_ALL,
-					FINDER_ARGS_EMPTY, count);
+				finderCache.putResult(FINDER_PATH_COUNT_ALL, FINDER_ARGS_EMPTY,
+					count);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_ALL,
+				finderCache.removeResult(FINDER_PATH_COUNT_ALL,
 					FINDER_ARGS_EMPTY);
 
 				throw processException(e);
@@ -1241,8 +1285,13 @@ public class TestBlobEntryPersistenceImpl extends BasePersistenceImpl<TestBlobEn
 	}
 
 	@Override
-	protected Set<String> getBadColumnNames() {
+	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return TestBlobEntryModelImpl.TABLE_COLUMNS_MAP;
 	}
 
 	/**
@@ -1252,12 +1301,14 @@ public class TestBlobEntryPersistenceImpl extends BasePersistenceImpl<TestBlobEn
 	}
 
 	public void destroy() {
-		EntityCacheUtil.removeCache(TestBlobEntryImpl.class.getName());
-		FinderCacheUtil.removeCache(FINDER_CLASS_NAME_ENTITY);
-		FinderCacheUtil.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		FinderCacheUtil.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		entityCache.removeCache(TestBlobEntryImpl.class.getName());
+		finderCache.removeCache(FINDER_CLASS_NAME_ENTITY);
+		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
+	protected EntityCache entityCache = EntityCacheUtil.getEntityCache();
+	protected FinderCache finderCache = FinderCacheUtil.getFinderCache();
 	private static final String _SQL_SELECT_TESTBLOBENTRY = "SELECT testBlobEntry FROM TestBlobEntry testBlobEntry";
 	private static final String _SQL_SELECT_TESTBLOBENTRY_WHERE_PKS_IN = "SELECT testBlobEntry FROM TestBlobEntry testBlobEntry WHERE testBlobEntryId IN (";
 	private static final String _SQL_SELECT_TESTBLOBENTRY_WHERE = "SELECT testBlobEntry FROM TestBlobEntry testBlobEntry WHERE ";
@@ -1266,13 +1317,11 @@ public class TestBlobEntryPersistenceImpl extends BasePersistenceImpl<TestBlobEn
 	private static final String _ORDER_BY_ENTITY_ALIAS = "testBlobEntry.";
 	private static final String _NO_SUCH_ENTITY_WITH_PRIMARY_KEY = "No TestBlobEntry exists with the primary key ";
 	private static final String _NO_SUCH_ENTITY_WITH_KEY = "No TestBlobEntry exists with the key {";
-	private static final boolean _HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE = GetterUtil.getBoolean(PropsUtil.get(
-				PropsKeys.HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE));
-	private static Log _log = LogFactoryUtil.getLog(TestBlobEntryPersistenceImpl.class);
-	private static Set<String> _badColumnNames = SetUtil.fromArray(new String[] {
+	private static final Log _log = LogFactoryUtil.getLog(TestBlobEntryPersistenceImpl.class);
+	private static final Set<String> _badColumnNames = SetUtil.fromArray(new String[] {
 				"uuid"
 			});
-	private static TestBlobEntry _nullTestBlobEntry = new TestBlobEntryImpl() {
+	private static final TestBlobEntry _nullTestBlobEntry = new TestBlobEntryImpl() {
 			@Override
 			public Object clone() {
 				return this;
@@ -1284,7 +1333,7 @@ public class TestBlobEntryPersistenceImpl extends BasePersistenceImpl<TestBlobEn
 			}
 		};
 
-	private static CacheModel<TestBlobEntry> _nullTestBlobEntryCacheModel = new CacheModel<TestBlobEntry>() {
+	private static final CacheModel<TestBlobEntry> _nullTestBlobEntryCacheModel = new CacheModel<TestBlobEntry>() {
 			@Override
 			public TestBlobEntry toEntityModel() {
 				return _nullTestBlobEntry;

@@ -14,6 +14,8 @@
 
 package com.liferay.ams.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.service.ServiceWrapper;
 
 /**
@@ -23,6 +25,7 @@ import com.liferay.portal.service.ServiceWrapper;
  * @see DefinitionLocalService
  * @generated
  */
+@ProviderType
 public class DefinitionLocalServiceWrapper implements DefinitionLocalService,
 	ServiceWrapper<DefinitionLocalService> {
 	public DefinitionLocalServiceWrapper(
@@ -147,10 +150,10 @@ public class DefinitionLocalServiceWrapper implements DefinitionLocalService,
 	}
 
 	/**
-	* Returns the number of rows that match the dynamic query.
+	* Returns the number of rows matching the dynamic query.
 	*
 	* @param dynamicQuery the dynamic query
-	* @return the number of rows that match the dynamic query
+	* @return the number of rows matching the dynamic query
 	*/
 	@Override
 	public long dynamicQueryCount(
@@ -159,11 +162,11 @@ public class DefinitionLocalServiceWrapper implements DefinitionLocalService,
 	}
 
 	/**
-	* Returns the number of rows that match the dynamic query.
+	* Returns the number of rows matching the dynamic query.
 	*
 	* @param dynamicQuery the dynamic query
 	* @param projection the projection to apply to the query
-	* @return the number of rows that match the dynamic query
+	* @return the number of rows matching the dynamic query
 	*/
 	@Override
 	public long dynamicQueryCount(
@@ -181,16 +184,6 @@ public class DefinitionLocalServiceWrapper implements DefinitionLocalService,
 	@Override
 	public com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery getActionableDynamicQuery() {
 		return _definitionLocalService.getActionableDynamicQuery();
-	}
-
-	/**
-	* Returns the Spring bean ID for this bean.
-	*
-	* @return the Spring bean ID for this bean
-	*/
-	@Override
-	public java.lang.String getBeanIdentifier() {
-		return _definitionLocalService.getBeanIdentifier();
 	}
 
 	/**
@@ -234,6 +227,21 @@ public class DefinitionLocalServiceWrapper implements DefinitionLocalService,
 	}
 
 	@Override
+	public com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery getIndexableActionableDynamicQuery() {
+		return _definitionLocalService.getIndexableActionableDynamicQuery();
+	}
+
+	/**
+	* Returns the OSGi service identifier.
+	*
+	* @return the OSGi service identifier
+	*/
+	@Override
+	public java.lang.String getOSGiServiceIdentifier() {
+		return _definitionLocalService.getOSGiServiceIdentifier();
+	}
+
+	@Override
 	public com.liferay.portal.model.PersistedModel getPersistedModel(
 		java.io.Serializable primaryKeyObj)
 		throws com.liferay.portal.kernel.exception.PortalException {
@@ -249,16 +257,6 @@ public class DefinitionLocalServiceWrapper implements DefinitionLocalService,
 	}
 
 	/**
-	* Sets the Spring bean ID for this bean.
-	*
-	* @param beanIdentifier the Spring bean ID for this bean
-	*/
-	@Override
-	public void setBeanIdentifier(java.lang.String beanIdentifier) {
-		_definitionLocalService.setBeanIdentifier(beanIdentifier);
-	}
-
-	/**
 	* Updates the definition in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
 	*
 	* @param definition the definition
@@ -268,23 +266,6 @@ public class DefinitionLocalServiceWrapper implements DefinitionLocalService,
 	public com.liferay.ams.model.Definition updateDefinition(
 		com.liferay.ams.model.Definition definition) {
 		return _definitionLocalService.updateDefinition(definition);
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedService}
-	 */
-	@Deprecated
-	public DefinitionLocalService getWrappedDefinitionLocalService() {
-		return _definitionLocalService;
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #setWrappedService}
-	 */
-	@Deprecated
-	public void setWrappedDefinitionLocalService(
-		DefinitionLocalService definitionLocalService) {
-		_definitionLocalService = definitionLocalService;
 	}
 
 	@Override

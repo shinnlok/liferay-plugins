@@ -14,6 +14,8 @@
 
 package com.liferay.contacts.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.contacts.service.ClpSerializer;
 import com.liferay.contacts.service.EntryLocalServiceUtil;
 
@@ -39,6 +41,7 @@ import java.util.Map;
 /**
  * @author Brian Wing Shun Chan
  */
+@ProviderType
 public class EntryClp extends BaseModelImpl<Entry> implements Entry {
 	public EntryClp() {
 	}

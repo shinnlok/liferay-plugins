@@ -19,14 +19,13 @@ import com.liferay.knowledgebase.model.KBFolderConstants;
 import com.liferay.knowledgebase.service.KBFolderLocalServiceUtil;
 import com.liferay.knowledgebase.service.persistence.KBFolderUtil;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
-import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.lar.BaseStagedModelDataHandler;
-import com.liferay.portal.kernel.lar.ExportImportPathUtil;
-import com.liferay.portal.kernel.lar.PortletDataContext;
-import com.liferay.portal.kernel.lar.StagedModelDataHandlerUtil;
-import com.liferay.portal.kernel.lar.StagedModelModifiedDateComparator;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.service.ServiceContext;
+import com.liferay.portlet.exportimport.lar.BaseStagedModelDataHandler;
+import com.liferay.portlet.exportimport.lar.ExportImportPathUtil;
+import com.liferay.portlet.exportimport.lar.PortletDataContext;
+import com.liferay.portlet.exportimport.lar.StagedModelDataHandlerUtil;
+import com.liferay.portlet.exportimport.lar.StagedModelModifiedDateComparator;
 
 import java.util.List;
 import java.util.Map;
@@ -40,16 +39,20 @@ public class KBFolderStagedModelDataHandler
 	public static final String[] CLASS_NAMES = {KBFolder.class.getName()};
 
 	@Override
+	public void deleteStagedModel(KBFolder kbFolder) {
+		KBFolderLocalServiceUtil.deleteKBFolder(kbFolder);
+	}
+
+	@Override
 	public void deleteStagedModel(
-			String uuid, long groupId, String className, String extraData)
-		throws PortalException {
+		String uuid, long groupId, String className, String extraData) {
 
 		KBFolder kbFolder =
 			KBFolderLocalServiceUtil.fetchKBFolderByUuidAndGroupId(
 				uuid, groupId);
 
 		if (kbFolder != null) {
-			KBFolderLocalServiceUtil.deleteKBFolder(kbFolder.getKbFolderId());
+			deleteStagedModel(kbFolder);
 		}
 	}
 

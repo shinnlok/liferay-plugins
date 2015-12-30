@@ -14,6 +14,9 @@
 
 package com.liferay.testpacl.model;
 
+import aQute.bnd.annotation.ProviderType;
+
+import com.liferay.portal.kernel.util.Accessor;
 import com.liferay.portal.model.PersistedModel;
 
 /**
@@ -25,10 +28,27 @@ import com.liferay.portal.model.PersistedModel;
  * @see com.liferay.testpacl.model.impl.FooModelImpl
  * @generated
  */
+@ProviderType
 public interface Foo extends FooModel, PersistedModel {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
 	 * Never modify this interface directly. Add methods to {@link com.liferay.testpacl.model.impl.FooImpl} and rerun ServiceBuilder to automatically copy the method declarations to this interface.
 	 */
+	public static final Accessor<Foo, Long> FOO_ID_ACCESSOR = new Accessor<Foo, Long>() {
+			@Override
+			public Long get(Foo foo) {
+				return foo.getFooId();
+			}
+
+			@Override
+			public Class<Long> getAttributeClass() {
+				return Long.class;
+			}
+
+			@Override
+			public Class<Foo> getTypeClass() {
+				return Foo.class;
+			}
+		};
 }

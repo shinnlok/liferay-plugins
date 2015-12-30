@@ -14,6 +14,8 @@
 
 package com.liferay.so.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.service.ServiceWrapper;
 
 /**
@@ -23,6 +25,7 @@ import com.liferay.portal.service.ServiceWrapper;
  * @see FavoriteSiteLocalService
  * @generated
  */
+@ProviderType
 public class FavoriteSiteLocalServiceWrapper implements FavoriteSiteLocalService,
 	ServiceWrapper<FavoriteSiteLocalService> {
 	public FavoriteSiteLocalServiceWrapper(
@@ -162,10 +165,10 @@ public class FavoriteSiteLocalServiceWrapper implements FavoriteSiteLocalService
 	}
 
 	/**
-	* Returns the number of rows that match the dynamic query.
+	* Returns the number of rows matching the dynamic query.
 	*
 	* @param dynamicQuery the dynamic query
-	* @return the number of rows that match the dynamic query
+	* @return the number of rows matching the dynamic query
 	*/
 	@Override
 	public long dynamicQueryCount(
@@ -174,11 +177,11 @@ public class FavoriteSiteLocalServiceWrapper implements FavoriteSiteLocalService
 	}
 
 	/**
-	* Returns the number of rows that match the dynamic query.
+	* Returns the number of rows matching the dynamic query.
 	*
 	* @param dynamicQuery the dynamic query
 	* @param projection the projection to apply to the query
-	* @return the number of rows that match the dynamic query
+	* @return the number of rows matching the dynamic query
 	*/
 	@Override
 	public long dynamicQueryCount(
@@ -197,16 +200,6 @@ public class FavoriteSiteLocalServiceWrapper implements FavoriteSiteLocalService
 	@Override
 	public com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery getActionableDynamicQuery() {
 		return _favoriteSiteLocalService.getActionableDynamicQuery();
-	}
-
-	/**
-	* Returns the Spring bean ID for this bean.
-	*
-	* @return the Spring bean ID for this bean
-	*/
-	@Override
-	public java.lang.String getBeanIdentifier() {
-		return _favoriteSiteLocalService.getBeanIdentifier();
 	}
 
 	/**
@@ -274,6 +267,21 @@ public class FavoriteSiteLocalServiceWrapper implements FavoriteSiteLocalService
 	}
 
 	@Override
+	public com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery getIndexableActionableDynamicQuery() {
+		return _favoriteSiteLocalService.getIndexableActionableDynamicQuery();
+	}
+
+	/**
+	* Returns the OSGi service identifier.
+	*
+	* @return the OSGi service identifier
+	*/
+	@Override
+	public java.lang.String getOSGiServiceIdentifier() {
+		return _favoriteSiteLocalService.getOSGiServiceIdentifier();
+	}
+
+	@Override
 	public com.liferay.portal.model.PersistedModel getPersistedModel(
 		java.io.Serializable primaryKeyObj)
 		throws com.liferay.portal.kernel.exception.PortalException {
@@ -299,16 +307,6 @@ public class FavoriteSiteLocalServiceWrapper implements FavoriteSiteLocalService
 	}
 
 	/**
-	* Sets the Spring bean ID for this bean.
-	*
-	* @param beanIdentifier the Spring bean ID for this bean
-	*/
-	@Override
-	public void setBeanIdentifier(java.lang.String beanIdentifier) {
-		_favoriteSiteLocalService.setBeanIdentifier(beanIdentifier);
-	}
-
-	/**
 	* Updates the favorite site in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
 	*
 	* @param favoriteSite the favorite site
@@ -318,23 +316,6 @@ public class FavoriteSiteLocalServiceWrapper implements FavoriteSiteLocalService
 	public com.liferay.so.model.FavoriteSite updateFavoriteSite(
 		com.liferay.so.model.FavoriteSite favoriteSite) {
 		return _favoriteSiteLocalService.updateFavoriteSite(favoriteSite);
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedService}
-	 */
-	@Deprecated
-	public FavoriteSiteLocalService getWrappedFavoriteSiteLocalService() {
-		return _favoriteSiteLocalService;
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #setWrappedService}
-	 */
-	@Deprecated
-	public void setWrappedFavoriteSiteLocalService(
-		FavoriteSiteLocalService favoriteSiteLocalService) {
-		_favoriteSiteLocalService = favoriteSiteLocalService;
 	}
 
 	@Override

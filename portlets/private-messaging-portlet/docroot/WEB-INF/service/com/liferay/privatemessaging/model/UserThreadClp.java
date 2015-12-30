@@ -14,6 +14,8 @@
 
 package com.liferay.privatemessaging.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.util.DateUtil;
@@ -40,6 +42,7 @@ import java.util.Map;
 /**
  * @author Brian Wing Shun Chan
  */
+@ProviderType
 public class UserThreadClp extends BaseModelImpl<UserThread>
 	implements UserThread {
 	public UserThreadClp() {

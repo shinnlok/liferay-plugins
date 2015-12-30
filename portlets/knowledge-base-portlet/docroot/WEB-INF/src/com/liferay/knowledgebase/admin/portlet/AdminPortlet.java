@@ -133,6 +133,8 @@ public class AdminPortlet extends BaseKBPortlet {
 			UploadPortletRequest uploadPortletRequest =
 				PortalUtil.getUploadPortletRequest(actionRequest);
 
+			checkExceededSizeLimit(actionRequest);
+
 			long parentKBFolderId = ParamUtil.getLong(
 				uploadPortletRequest, "parentKBFolderId",
 				KBFolderConstants.DEFAULT_PARENT_FOLDER_ID);
@@ -385,7 +387,7 @@ public class AdminPortlet extends BaseKBPortlet {
 			SessionErrors.contains(
 				renderRequest, NoSuchTemplateException.class.getName()) ||
 			SessionErrors.contains(
-				renderRequest, PrincipalException.class.getName())) {
+				renderRequest, PrincipalException.getNestedClasses())) {
 
 			include(templatePath + "error.jsp", renderRequest, renderResponse);
 		}

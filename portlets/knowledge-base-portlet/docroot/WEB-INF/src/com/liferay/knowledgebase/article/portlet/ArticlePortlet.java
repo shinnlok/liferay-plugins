@@ -115,7 +115,7 @@ public class ArticlePortlet extends BaseKBPortlet {
 			SessionErrors.contains(
 				renderRequest, NoSuchSubscriptionException.class.getName()) ||
 			SessionErrors.contains(
-				renderRequest, PrincipalException.class.getName())) {
+				renderRequest, PrincipalException.getNestedClasses())) {
 
 			include(templatePath + "error.jsp", renderRequest, renderResponse);
 		}
@@ -138,7 +138,7 @@ public class ArticlePortlet extends BaseKBPortlet {
 		String mvcPath = ParamUtil.getString(renderRequest, "mvcPath");
 
 		if (((defaultValue == 0) && mvcPath.equals(viewTemplate)) ||
-			mvcPath.equals("/article/select_configuration_article.jsp")) {
+			mvcPath.equals("/article/select_configuration_object.jsp")) {
 
 			return 0;
 		}

@@ -15,13 +15,13 @@
 package com.liferay.wsrp.admin.lar;
 
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.lar.BaseStagedModelDataHandler;
-import com.liferay.portal.kernel.lar.ExportImportPathUtil;
-import com.liferay.portal.kernel.lar.PortletDataContext;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
+import com.liferay.portlet.exportimport.lar.BaseStagedModelDataHandler;
+import com.liferay.portlet.exportimport.lar.ExportImportPathUtil;
+import com.liferay.portlet.exportimport.lar.PortletDataContext;
 import com.liferay.wsrp.model.WSRPConsumer;
 import com.liferay.wsrp.service.WSRPConsumerLocalServiceUtil;
 
@@ -48,8 +48,15 @@ public class WSRPConsumerStagedModelDataHandler
 				uuid, group.getCompanyId());
 
 		if (wsrpConsumer != null) {
-			WSRPConsumerLocalServiceUtil.deleteWSRPConsumer(wsrpConsumer);
+			deleteStagedModel(wsrpConsumer);
 		}
+	}
+
+	@Override
+	public void deleteStagedModel(WSRPConsumer wsrpConsumer)
+		throws PortalException {
+
+		WSRPConsumerLocalServiceUtil.deleteWSRPConsumer(wsrpConsumer);
 	}
 
 	@Override

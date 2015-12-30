@@ -32,10 +32,10 @@ import com.liferay.portal.model.Layout;
 import com.liferay.portal.model.LayoutConstants;
 import com.liferay.portal.model.LayoutSet;
 import com.liferay.portal.model.LayoutTypePortlet;
+import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.service.LayoutLocalServiceUtil;
 import com.liferay.portal.service.LayoutSetLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
-import com.liferay.portal.service.persistence.GroupActionableDynamicQuery;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.PortletPreferencesFactoryUtil;
 import com.liferay.so.util.LayoutSetPrototypeUtil;
@@ -53,66 +53,75 @@ public class UpgradeGroup extends UpgradeProcess {
 	@Override
 	protected void doUpgrade() throws Exception {
 		ActionableDynamicQuery actionableDynamicQuery =
-			new GroupActionableDynamicQuery() {
+			GroupLocalServiceUtil.getActionableDynamicQuery();
 
-			@Override
-			protected void addCriteria(DynamicQuery dynamicQuery) {
-				Property classNameIdProperty = PropertyFactoryUtil.forName(
-					"classNameId");
+		actionableDynamicQuery.setAddCriteriaMethod(
+			new ActionableDynamicQuery.AddCriteriaMethod() {
 
-				long classNameId = PortalUtil.getClassNameId(Group.class);
+				@Override
+				public void addCriteria(DynamicQuery dynamicQuery) {
+					Property classNameIdProperty = PropertyFactoryUtil.forName(
+						"classNameId");
 
-				dynamicQuery.add(classNameIdProperty.eq(classNameId));
-			}
+					long classNameId = PortalUtil.getClassNameId(Group.class);
 
-			@Override
-			protected void performAction(Object object) throws PortalException {
-				Group group = (Group)object;
-
-				if (group.isGuest()) {
-					return;
+					dynamicQuery.add(classNameIdProperty.eq(classNameId));
 				}
 
-				boolean privateLayout = group.hasPrivateLayouts();
+			});
+		actionableDynamicQuery.setPerformActionMethod(
+			new ActionableDynamicQuery.PerformActionMethod<Group>() {
 
-				LayoutSet layoutSet = LayoutSetLocalServiceUtil.getLayoutSet(
-					group.getGroupId(), privateLayout);
+				@Override
+				public void performAction(Group group) throws PortalException {
+					if (group.isGuest()) {
+						return;
+					}
 
-				String themeId = layoutSet.getThemeId();
+					boolean privateLayout = group.hasPrivateLayouts();
 
-				if (!themeId.equals("so_WAR_sotheme")) {
-					return;
-				}
-
-				try {
-					PortletPreferences portletPreferences =
-						getPortletPreferences(
+					LayoutSet layoutSet =
+						LayoutSetLocalServiceUtil.getLayoutSet(
 							group.getGroupId(), privateLayout);
 
-					LayoutLocalServiceUtil.deleteLayouts(
-						group.getGroupId(), privateLayout,
-						new ServiceContext());
+					String themeId = layoutSet.getThemeId();
 
-					LayoutSetPrototypeUtil.updateLayoutSetPrototype(
-						group, privateLayout,
-						SocialOfficeConstants.LAYOUT_SET_PROTOTYPE_KEY_SITE);
+					if (!themeId.equals("so_WAR_sotheme")) {
+						return;
+					}
 
-					layoutSet = LayoutSetLocalServiceUtil.getLayoutSet(
-						group.getGroupId(), privateLayout);
+					try {
+						PortletPreferences portletPreferences =
+							getPortletPreferences(
+								group.getGroupId(), privateLayout);
 
-					PortalClassInvoker.invoke(
-						_mergeLayoutSetPrototypeLayoutsMethodKey, group,
-						layoutSet);
+						LayoutLocalServiceUtil.deleteLayouts(
+							group.getGroupId(), privateLayout,
+							new ServiceContext());
 
-					updatePortletPreferences(
-						group.getGroupId(), privateLayout, portletPreferences);
+						LayoutSetPrototypeUtil.updateLayoutSetPrototype(
+							group, privateLayout,
+							SocialOfficeConstants.
+								LAYOUT_SET_PROTOTYPE_KEY_SITE);
 
-					SocialOfficeUtil.enableSocialOffice(group);
+						layoutSet = LayoutSetLocalServiceUtil.getLayoutSet(
+							group.getGroupId(), privateLayout);
+
+						PortalClassInvoker.invoke(
+							_mergeLayoutSetPrototypeLayoutsMethodKey, group,
+							layoutSet);
+
+						updatePortletPreferences(
+							group.getGroupId(), privateLayout,
+							portletPreferences);
+
+						SocialOfficeUtil.enableSocialOffice(group);
+					}
+					catch (Exception e) {
+					}
 				}
-				catch (Exception e) {
-				}
-			}
-		};
+
+			});
 
 		actionableDynamicQuery.performActions();
 	}

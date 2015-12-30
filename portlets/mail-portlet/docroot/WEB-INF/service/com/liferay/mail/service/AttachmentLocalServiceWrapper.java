@@ -247,16 +247,6 @@ public class AttachmentLocalServiceWrapper implements AttachmentLocalService,
 		return _attachmentLocalService.getAttachmentsCount();
 	}
 
-	/**
-	* Returns the Spring bean ID for this bean.
-	*
-	* @return the Spring bean ID for this bean
-	*/
-	@Override
-	public java.lang.String getBeanIdentifier() {
-		return _attachmentLocalService.getBeanIdentifier();
-	}
-
 	@Override
 	public java.io.File getFile(long attachmentId)
 		throws com.liferay.portal.kernel.exception.PortalException {
@@ -264,9 +254,24 @@ public class AttachmentLocalServiceWrapper implements AttachmentLocalService,
 	}
 
 	@Override
+	public com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery getIndexableActionableDynamicQuery() {
+		return _attachmentLocalService.getIndexableActionableDynamicQuery();
+	}
+
+	@Override
 	public java.io.InputStream getInputStream(long attachmentId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _attachmentLocalService.getInputStream(attachmentId);
+	}
+
+	/**
+	* Returns the OSGi service identifier.
+	*
+	* @return the OSGi service identifier
+	*/
+	@Override
+	public java.lang.String getOSGiServiceIdentifier() {
+		return _attachmentLocalService.getOSGiServiceIdentifier();
 	}
 
 	@Override
@@ -285,16 +290,6 @@ public class AttachmentLocalServiceWrapper implements AttachmentLocalService,
 	}
 
 	/**
-	* Sets the Spring bean ID for this bean.
-	*
-	* @param beanIdentifier the Spring bean ID for this bean
-	*/
-	@Override
-	public void setBeanIdentifier(java.lang.String beanIdentifier) {
-		_attachmentLocalService.setBeanIdentifier(beanIdentifier);
-	}
-
-	/**
 	* Updates the attachment in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
 	*
 	* @param attachment the attachment
@@ -304,23 +299,6 @@ public class AttachmentLocalServiceWrapper implements AttachmentLocalService,
 	public com.liferay.mail.model.Attachment updateAttachment(
 		com.liferay.mail.model.Attachment attachment) {
 		return _attachmentLocalService.updateAttachment(attachment);
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedService}
-	 */
-	@Deprecated
-	public AttachmentLocalService getWrappedAttachmentLocalService() {
-		return _attachmentLocalService;
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #setWrappedService}
-	 */
-	@Deprecated
-	public void setWrappedAttachmentLocalService(
-		AttachmentLocalService attachmentLocalService) {
-		_attachmentLocalService = attachmentLocalService;
 	}
 
 	@Override

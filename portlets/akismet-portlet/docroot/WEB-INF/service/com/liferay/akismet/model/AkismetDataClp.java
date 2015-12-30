@@ -14,6 +14,8 @@
 
 package com.liferay.akismet.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.akismet.service.AkismetDataLocalServiceUtil;
 import com.liferay.akismet.service.ClpSerializer;
 
@@ -38,6 +40,7 @@ import java.util.Map;
 /**
  * @author Brian Wing Shun Chan
  */
+@ProviderType
 public class AkismetDataClp extends BaseModelImpl<AkismetData>
 	implements AkismetData {
 	public AkismetDataClp() {

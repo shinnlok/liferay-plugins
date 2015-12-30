@@ -18,6 +18,7 @@
 package com.liferay.so.util;
 
 import com.liferay.asset.publisher.web.constants.AssetPublisherPortletKeys;
+import com.liferay.message.boards.web.constants.MBPortletKeys;
 import com.liferay.portal.kernel.configuration.Filter;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
@@ -159,13 +160,15 @@ public class LayoutUtil {
 			else if (portletId.startsWith(BreadcrumbPortletKeys.BREADCRUMB)) {
 				removePortletBorder(layout, portletId);
 			}
+			else if (portletId.startsWith(
+						MBPortletKeys.MESSAGE_BOARDS)) {
+
+				configureMessageBoards(layout);
+				removePortletBorder(layout, portletId);
+			}
 			else if (portletId.startsWith(PortletKeys.BLOGS_AGGREGATOR)) {
 				configureBlogsAggregator(layout);
 				updatePortletTitle(layout, portletId, "recent-blogs");
-			}
-			else if (portletId.startsWith(PortletKeys.MESSAGE_BOARDS)) {
-				configureMessageBoards(layout);
-				removePortletBorder(layout, portletId);
 			}
 			else if (portletId.equals(PortletKeys.DOCUMENT_LIBRARY) ||
 					 portletId.equals(PortletKeys.BLOGS) ||
@@ -220,7 +223,7 @@ public class LayoutUtil {
 	public static void configureMessageBoards(Layout layout) throws Exception {
 		PortletPreferences portletSetup =
 			PortletPreferencesFactoryUtil.getLayoutPortletSetup(
-				layout, PortletKeys.MESSAGE_BOARDS);
+				layout, MBPortletKeys.MESSAGE_BOARDS);
 
 		String[] ranks = {
 			"Bronze=0", "Silver=25", "Gold=100", "Platinum=250",

@@ -235,50 +235,19 @@ public class AMIBuilder extends BaseAMITool {
 		}
 	}
 
-	protected String getKeyFileName() {
-		StringBuilder sb = new StringBuilder(6);
-
-		sb.append(System.getProperty("user.home"));
-		sb.append(File.separator);
-		sb.append(".ssh");
-		sb.append(File.separator);
-		sb.append(properties.getProperty("key.name"));
-		sb.append(".pem");
-
-		return sb.toString();
-	}
-
-	protected Map<String, String> getProvisioners(Properties properties) {
-		Map<String, String> provisioners = new TreeMap<>();
-
-		Set<String> names = properties.stringPropertyNames();
-
-		for (String name : names) {
-			if (!name.contains("provisioners")) {
-				continue;
-			}
-
-			String value = properties.getProperty(name);
-
-			provisioners.put(name, value);
-		}
-
-		return provisioners;
-	}
-
-	protected Instance getRunningInstance(String instanceId) {
+	protected Instance getInstance(String instanceId, String state) {
 		DescribeInstancesRequest describeInstancesRequest =
 			new DescribeInstancesRequest();
 
-		List<Filter> filters = new ArrayList<>();
+		List<Filter> filters = new ArrayList<Filter>();
 
 		Filter filter = new Filter();
 
 		filter.setName("instance-state-name");
 
-		List<String> values = new ArrayList<>();
+		List<String> values = new ArrayList<String>();
 
-		values.add("running");
+		values.add(state);
 
 		filter.setValues(values);
 
@@ -286,7 +255,7 @@ public class AMIBuilder extends BaseAMITool {
 
 		describeInstancesRequest.setFilters(filters);
 
-		List<String> instanceIds = new ArrayList<>();
+		List<String> instanceIds = new ArrayList<String>();
 
 		instanceIds.add(instanceId);
 
@@ -309,17 +278,48 @@ public class AMIBuilder extends BaseAMITool {
 		return instances.get(0);
 	}
 
+	protected String getKeyFileName() {
+		StringBuilder sb = new StringBuilder(6);
+
+		sb.append(System.getProperty("user.home"));
+		sb.append(File.separator);
+		sb.append(".ssh");
+		sb.append(File.separator);
+		sb.append(properties.getProperty("key.name"));
+		sb.append(".pem");
+
+		return sb.toString();
+	}
+
+	protected Map<String, String> getProvisioners(Properties properties) {
+		Map<String, String> provisioners = new TreeMap<String, String>();
+
+		Set<String> names = properties.stringPropertyNames();
+
+		for (String name : names) {
+			if (!name.contains("provisioners")) {
+				continue;
+			}
+
+			String value = properties.getProperty(name);
+
+			provisioners.put(name, value);
+		}
+
+		return provisioners;
+	}
+
 	protected boolean isImageCreated(String imageId) {
 		DescribeImagesRequest describeImagesRequest =
 			new DescribeImagesRequest();
 
-		List<Filter> filters = new ArrayList<>();
+		List<Filter> filters = new ArrayList<Filter>();
 
 		Filter filter = new Filter();
 
 		filter.setName("state");
 
-		List<String> values = new ArrayList<>();
+		List<String> values = new ArrayList<String>();
 
 		values.add("available");
 
@@ -329,7 +329,7 @@ public class AMIBuilder extends BaseAMITool {
 
 		describeImagesRequest.setFilters(filters);
 
-		List<String> imageIds = new ArrayList<>();
+		List<String> imageIds = new ArrayList<String>();
 
 		imageIds.add(imageId);
 
@@ -476,7 +476,7 @@ public class AMIBuilder extends BaseAMITool {
 
 		runInstancesRequest.setPlacement(placement);
 
-		List<String> securityGroupsIds = new ArrayList<>();
+		List<String> securityGroupsIds = new ArrayList<String>();
 
 		securityGroupsIds.add(properties.getProperty("security.group.id"));
 
@@ -522,34 +522,41 @@ public class AMIBuilder extends BaseAMITool {
 
 		boolean running = false;
 
-		for (int i = 0; i < 6; i++) {
+		int i = 0;
+
+		do {
+			System.out.println("Waiting for running instance " + i + "...");
+
+			i = i + 1;
+
 			sleep(30);
 
-			instance = getRunningInstance(_instanceId);
+			instance = getInstance(_instanceId, "pending");
+		}
+		while (instance != null);
 
-			if (instance != null) {
-				_publicIpAddress = instance.getPublicIpAddress();
+		instance = getInstance(_instanceId, "running");
 
-				running = true;
+		if (instance != null) {
+			_publicIpAddress = instance.getPublicIpAddress();
 
-				sb = new StringBuilder(7);
+			running = true;
 
-				sb.append("{instanceId=");
-				sb.append(_instanceId);
-				sb.append(", publicIpAddress=");
-				sb.append(_publicIpAddress);
-				sb.append(", stat=");
+			sb = new StringBuilder(7);
 
-				instanceState = instance.getState();
+			sb.append("{instanceId=");
+			sb.append(_instanceId);
+			sb.append(", publicIpAddress=");
+			sb.append(_publicIpAddress);
+			sb.append(", stat=");
 
-				sb.append(instanceState.getName());
+			instanceState = instance.getState();
 
-				sb.append("}");
+			sb.append(instanceState.getName());
 
-				System.out.println("Started instance " + sb.toString());
+			sb.append("}");
 
-				break;
-			}
+			System.out.println("Started instance " + sb.toString());
 		}
 
 		if (!running) {

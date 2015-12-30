@@ -37,10 +37,13 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.portlet.PortletResponseUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.servlet.SessionMessages;
+import com.liferay.portal.kernel.upload.LiferayFileItemException;
 import com.liferay.portal.kernel.upload.UploadException;
 import com.liferay.portal.kernel.upload.UploadPortletRequest;
+import com.liferay.portal.kernel.upload.UploadRequestSizeException;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.ContentTypes;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HttpUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.StreamUtil;
@@ -65,10 +68,10 @@ import java.io.InputStream;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletException;
+import javax.portlet.PortletPreferences;
+import javax.portlet.PortletRequest;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Adolfo Pérez
@@ -81,6 +84,8 @@ public abstract class BaseKBPortlet extends MVCPortlet {
 
 		UploadPortletRequest uploadPortletRequest =
 			PortalUtil.getUploadPortletRequest(actionRequest);
+
+		checkExceededSizeLimit(actionRequest);
 
 		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
@@ -198,7 +203,13 @@ public abstract class BaseKBPortlet extends MVCPortlet {
 			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
 		throws Exception {
 
-		if (!PortalUtil.isRSSFeedsEnabled()) {
+		PortletPreferences portletPreferences =
+			resourceRequest.getPreferences();
+
+		boolean enableRss = GetterUtil.getBoolean(
+			portletPreferences.getValue("enableRss", null), true);
+
+		if (!PortalUtil.isRSSFeedsEnabled() || !enableRss) {
 			PortalUtil.sendRSSFeedsDisabledError(
 				resourceRequest, resourceResponse);
 
@@ -313,6 +324,13 @@ public abstract class BaseKBPortlet extends MVCPortlet {
 				title, urlTitle, content, description, sourceURL, sections,
 				selectedFileNames, serviceContext);
 		}
+		else if (cmd.equals(Constants.REVERT)) {
+			int version = ParamUtil.getInteger(
+				actionRequest, "version", KBArticleConstants.DEFAULT_VERSION);
+
+			kbArticle = KBArticleServiceUtil.revertKBArticle(
+				resourcePrimKey, version, serviceContext);
+		}
 		else if (cmd.equals(Constants.UPDATE)) {
 			kbArticle = KBArticleServiceUtil.updateKBArticle(
 				resourcePrimKey, title, content, description, sourceURL,
@@ -423,18 +441,29 @@ public abstract class BaseKBPortlet extends MVCPortlet {
 		return editURL;
 	}
 
-	protected void checkExceededSizeLimit(HttpServletRequest request)
+	protected void checkExceededSizeLimit(PortletRequest portletRequest)
 		throws PortalException {
 
-		UploadException uploadException = (UploadException)request.getAttribute(
-			WebKeys.UPLOAD_EXCEPTION);
+		UploadException uploadException =
+			(UploadException)portletRequest.getAttribute(
+				WebKeys.UPLOAD_EXCEPTION);
 
 		if (uploadException != null) {
-			if (uploadException.isExceededSizeLimit()) {
-				throw new FileSizeException(uploadException.getCause());
+			Throwable cause = uploadException.getCause();
+
+			if (uploadException.isExceededFileSizeLimit()) {
+				throw new FileSizeException(cause);
 			}
 
-			throw new PortalException(uploadException.getCause());
+			if (uploadException.isExceededLiferayFileItemSizeLimit()) {
+				throw new LiferayFileItemException(cause);
+			}
+
+			if (uploadException.isExceededUploadRequestSizeLimit()) {
+				throw new UploadRequestSizeException(cause);
+			}
+
+			throw new PortalException(cause);
 		}
 	}
 

@@ -14,6 +14,8 @@
 
 package com.liferay.twitter.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.service.ServiceWrapper;
 
 /**
@@ -23,6 +25,7 @@ import com.liferay.portal.service.ServiceWrapper;
  * @see FeedLocalService
  * @generated
  */
+@ProviderType
 public class FeedLocalServiceWrapper implements FeedLocalService,
 	ServiceWrapper<FeedLocalService> {
 	public FeedLocalServiceWrapper(FeedLocalService feedLocalService) {
@@ -146,10 +149,10 @@ public class FeedLocalServiceWrapper implements FeedLocalService,
 	}
 
 	/**
-	* Returns the number of rows that match the dynamic query.
+	* Returns the number of rows matching the dynamic query.
 	*
 	* @param dynamicQuery the dynamic query
-	* @return the number of rows that match the dynamic query
+	* @return the number of rows matching the dynamic query
 	*/
 	@Override
 	public long dynamicQueryCount(
@@ -158,11 +161,11 @@ public class FeedLocalServiceWrapper implements FeedLocalService,
 	}
 
 	/**
-	* Returns the number of rows that match the dynamic query.
+	* Returns the number of rows matching the dynamic query.
 	*
 	* @param dynamicQuery the dynamic query
 	* @param projection the projection to apply to the query
-	* @return the number of rows that match the dynamic query
+	* @return the number of rows matching the dynamic query
 	*/
 	@Override
 	public long dynamicQueryCount(
@@ -179,16 +182,6 @@ public class FeedLocalServiceWrapper implements FeedLocalService,
 	@Override
 	public com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery getActionableDynamicQuery() {
 		return _feedLocalService.getActionableDynamicQuery();
-	}
-
-	/**
-	* Returns the Spring bean ID for this bean.
-	*
-	* @return the Spring bean ID for this bean
-	*/
-	@Override
-	public java.lang.String getBeanIdentifier() {
-		return _feedLocalService.getBeanIdentifier();
 	}
 
 	/**
@@ -232,6 +225,21 @@ public class FeedLocalServiceWrapper implements FeedLocalService,
 	}
 
 	@Override
+	public com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery getIndexableActionableDynamicQuery() {
+		return _feedLocalService.getIndexableActionableDynamicQuery();
+	}
+
+	/**
+	* Returns the OSGi service identifier.
+	*
+	* @return the OSGi service identifier
+	*/
+	@Override
+	public java.lang.String getOSGiServiceIdentifier() {
+		return _feedLocalService.getOSGiServiceIdentifier();
+	}
+
+	@Override
 	public com.liferay.portal.model.PersistedModel getPersistedModel(
 		java.io.Serializable primaryKeyObj)
 		throws com.liferay.portal.kernel.exception.PortalException {
@@ -243,16 +251,6 @@ public class FeedLocalServiceWrapper implements FeedLocalService,
 		java.lang.String[] parameterTypes, java.lang.Object[] arguments)
 		throws java.lang.Throwable {
 		return _feedLocalService.invokeMethod(name, parameterTypes, arguments);
-	}
-
-	/**
-	* Sets the Spring bean ID for this bean.
-	*
-	* @param beanIdentifier the Spring bean ID for this bean
-	*/
-	@Override
-	public void setBeanIdentifier(java.lang.String beanIdentifier) {
-		_feedLocalService.setBeanIdentifier(beanIdentifier);
 	}
 
 	/**
@@ -281,22 +279,6 @@ public class FeedLocalServiceWrapper implements FeedLocalService,
 	@Override
 	public void updateFeeds(long companyId) {
 		_feedLocalService.updateFeeds(companyId);
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedService}
-	 */
-	@Deprecated
-	public FeedLocalService getWrappedFeedLocalService() {
-		return _feedLocalService;
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #setWrappedService}
-	 */
-	@Deprecated
-	public void setWrappedFeedLocalService(FeedLocalService feedLocalService) {
-		_feedLocalService = feedLocalService;
 	}
 
 	@Override

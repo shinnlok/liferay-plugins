@@ -15,14 +15,15 @@
 package com.liferay.sync.service.impl;
 
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.repository.model.FileEntry;
-import com.liferay.portal.kernel.util.PropsKeys;
-import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.Company;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.portletfilerepository.PortletFileRepositoryUtil;
+import com.liferay.portal.security.auth.CompanyThreadLocal;
 import com.liferay.portal.util.PortletKeys;
 import com.liferay.portlet.documentlibrary.model.DLFolderConstants;
 import com.liferay.sync.model.SyncDLFileVersionDiff;
@@ -55,12 +56,12 @@ public class SyncDLFileVersionDiffLocalServiceImpl
 		syncDLFileVersionDiff.setSourceFileVersionId(sourceFileVersionId);
 		syncDLFileVersionDiff.setTargetFileVersionId(targetFileVersionId);
 
-		Company company = companyLocalService.getCompanyByMx(
-			PropsUtil.get(PropsKeys.COMPANY_DEFAULT_WEB_ID));
+		Company company = companyLocalService.getCompanyById(
+			CompanyThreadLocal.getCompanyId());
 
 		Group group = company.getGroup();
 
-		FileEntry fileEntry = dlAppService.getFileEntry(fileEntryId);
+		FileEntry fileEntry = dlAppLocalService.getFileEntry(fileEntryId);
 
 		String dataFileName = getDataFileName(
 			fileEntryId, sourceFileVersionId, targetFileVersionId);
@@ -109,8 +110,17 @@ public class SyncDLFileVersionDiffLocalServiceImpl
 			SyncDLFileVersionDiff syncDLFileVersionDiff)
 		throws PortalException {
 
-		PortletFileRepositoryUtil.deletePortletFileEntry(
-			syncDLFileVersionDiff.getDataFileEntryId());
+		try {
+			PortletFileRepositoryUtil.deletePortletFileEntry(
+				syncDLFileVersionDiff.getDataFileEntryId());
+		}
+		catch (Exception e) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(
+					"Unable to delete file entry " +
+						syncDLFileVersionDiff.getDataFileEntryId());
+			}
+		}
 
 		return super.deleteSyncDLFileVersionDiff(syncDLFileVersionDiff);
 	}
@@ -170,5 +180,8 @@ public class SyncDLFileVersionDiffLocalServiceImpl
 
 		return sb.toString();
 	}
+
+	private static Log _log = LogFactoryUtil.getLog(
+		SyncDLFileVersionDiffLocalServiceImpl.class);
 
 }

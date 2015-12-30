@@ -25,6 +25,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Igor Beslic
@@ -77,7 +79,7 @@ public abstract class BaseJSONWebServiceClientHandler {
 
 		if (json.contains("exception\":\"")) {
 			throw new JSONWebServiceInvocationException(
-				getExceptionMessage(json));
+				getExceptionMessage(json), getStatus(json));
 		}
 
 		try {
@@ -119,7 +121,7 @@ public abstract class BaseJSONWebServiceClientHandler {
 
 		if (json.contains("exception\":\"")) {
 			throw new JSONWebServiceInvocationException(
-				getExceptionMessage(json));
+				getExceptionMessage(json), getStatus(json));
 		}
 
 		try {
@@ -167,6 +169,29 @@ public abstract class BaseJSONWebServiceClientHandler {
 		}
 	}
 
+	protected <T> T doPostToObject(
+			Class<T> clazz, String url, String... parametersArray)
+		throws JSONWebServiceInvocationException {
+
+		String json = doPost(url, parametersArray);
+
+		if ((json == null) || json.equals("") || json.equals("{}")) {
+			return null;
+		}
+
+		if (json.contains("exception\":\"")) {
+			throw new JSONWebServiceInvocationException(
+				getExceptionMessage(json), getStatus(json));
+		}
+
+		try {
+			return objectMapper.readValue(json, clazz);
+		}
+		catch (IOException ie) {
+			throw new JSONWebServiceInvocationException(ie);
+		}
+	}
+
 	protected String getExceptionMessage(String json) {
 		int exceptionMessageStart = json.indexOf("exception\":\"") + 12;
 
@@ -175,6 +200,18 @@ public abstract class BaseJSONWebServiceClientHandler {
 		return json.substring(exceptionMessageStart, exceptionMessageEnd);
 	}
 
+	protected int getStatus(String json) {
+		Matcher statusMatcher = _statusPattern.matcher(json);
+
+		if (!statusMatcher.find()) {
+			return 0;
+		}
+
+		return Integer.parseInt(statusMatcher.group(1));
+	}
+
 	protected ObjectMapper objectMapper = new ObjectMapper();
+
+	private Pattern _statusPattern = Pattern.compile("status\":(\\d+)");
 
 }

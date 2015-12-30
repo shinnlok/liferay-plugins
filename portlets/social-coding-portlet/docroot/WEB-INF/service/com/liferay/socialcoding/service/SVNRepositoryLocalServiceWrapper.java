@@ -153,10 +153,10 @@ public class SVNRepositoryLocalServiceWrapper
 	}
 
 	/**
-	* Returns the number of rows that match the dynamic query.
+	* Returns the number of rows matching the dynamic query.
 	*
 	* @param dynamicQuery the dynamic query
-	* @return the number of rows that match the dynamic query
+	* @return the number of rows matching the dynamic query
 	*/
 	@Override
 	public long dynamicQueryCount(
@@ -165,11 +165,11 @@ public class SVNRepositoryLocalServiceWrapper
 	}
 
 	/**
-	* Returns the number of rows that match the dynamic query.
+	* Returns the number of rows matching the dynamic query.
 	*
 	* @param dynamicQuery the dynamic query
 	* @param projection the projection to apply to the query
-	* @return the number of rows that match the dynamic query
+	* @return the number of rows matching the dynamic query
 	*/
 	@Override
 	public long dynamicQueryCount(
@@ -190,14 +190,19 @@ public class SVNRepositoryLocalServiceWrapper
 		return _svnRepositoryLocalService.getActionableDynamicQuery();
 	}
 
+	@Override
+	public com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery getIndexableActionableDynamicQuery() {
+		return _svnRepositoryLocalService.getIndexableActionableDynamicQuery();
+	}
+
 	/**
-	* Returns the Spring bean ID for this bean.
+	* Returns the OSGi service identifier.
 	*
-	* @return the Spring bean ID for this bean
+	* @return the OSGi service identifier
 	*/
 	@Override
-	public java.lang.String getBeanIdentifier() {
-		return _svnRepositoryLocalService.getBeanIdentifier();
+	public java.lang.String getOSGiServiceIdentifier() {
+		return _svnRepositoryLocalService.getOSGiServiceIdentifier();
 	}
 
 	@Override
@@ -264,16 +269,6 @@ public class SVNRepositoryLocalServiceWrapper
 	}
 
 	/**
-	* Sets the Spring bean ID for this bean.
-	*
-	* @param beanIdentifier the Spring bean ID for this bean
-	*/
-	@Override
-	public void setBeanIdentifier(java.lang.String beanIdentifier) {
-		_svnRepositoryLocalService.setBeanIdentifier(beanIdentifier);
-	}
-
-	/**
 	* Updates the s v n repository in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
 	*
 	* @param svnRepository the s v n repository
@@ -289,23 +284,6 @@ public class SVNRepositoryLocalServiceWrapper
 	public void updateSVNRepository(java.lang.String url)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		_svnRepositoryLocalService.updateSVNRepository(url);
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedService}
-	 */
-	@Deprecated
-	public SVNRepositoryLocalService getWrappedSVNRepositoryLocalService() {
-		return _svnRepositoryLocalService;
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #setWrappedService}
-	 */
-	@Deprecated
-	public void setWrappedSVNRepositoryLocalService(
-		SVNRepositoryLocalService svnRepositoryLocalService) {
-		_svnRepositoryLocalService = svnRepositoryLocalService;
 	}
 
 	@Override

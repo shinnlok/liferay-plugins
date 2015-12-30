@@ -14,6 +14,9 @@
 
 package com.liferay.testtransaction.model;
 
+import aQute.bnd.annotation.ProviderType;
+
+import com.liferay.portal.kernel.util.Accessor;
 import com.liferay.portal.model.PersistedModel;
 
 /**
@@ -25,10 +28,27 @@ import com.liferay.portal.model.PersistedModel;
  * @see com.liferay.testtransaction.model.impl.BarModelImpl
  * @generated
  */
+@ProviderType
 public interface Bar extends BarModel, PersistedModel {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
 	 * Never modify this interface directly. Add methods to {@link com.liferay.testtransaction.model.impl.BarImpl} and rerun ServiceBuilder to automatically copy the method declarations to this interface.
 	 */
+	public static final Accessor<Bar, Long> BAR_ID_ACCESSOR = new Accessor<Bar, Long>() {
+			@Override
+			public Long get(Bar bar) {
+				return bar.getBarId();
+			}
+
+			@Override
+			public Class<Long> getAttributeClass() {
+				return Long.class;
+			}
+
+			@Override
+			public Class<Bar> getTypeClass() {
+				return Bar.class;
+			}
+		};
 }

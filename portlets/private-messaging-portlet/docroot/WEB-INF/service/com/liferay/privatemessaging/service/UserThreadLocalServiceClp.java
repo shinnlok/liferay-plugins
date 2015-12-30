@@ -14,12 +14,15 @@
 
 package com.liferay.privatemessaging.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.service.InvokableLocalService;
 
 /**
  * @author Brian Wing Shun Chan
  * @generated
  */
+@ProviderType
 public class UserThreadLocalServiceClp implements UserThreadLocalService {
 	public UserThreadLocalServiceClp(
 		InvokableLocalService invokableLocalService) {
@@ -128,7 +131,7 @@ public class UserThreadLocalServiceClp implements UserThreadLocalService {
 
 		_methodParameterTypes18 = new String[] {  };
 
-		_methodName19 = "getBeanIdentifier";
+		_methodName19 = "getIndexableActionableDynamicQuery";
 
 		_methodParameterTypes19 = new String[] {  };
 
@@ -136,57 +139,57 @@ public class UserThreadLocalServiceClp implements UserThreadLocalService {
 
 		_methodParameterTypes20 = new String[] { "long" };
 
-		_methodName21 = "getPersistedModel";
+		_methodName21 = "getOSGiServiceIdentifier";
 
-		_methodParameterTypes21 = new String[] { "java.io.Serializable" };
+		_methodParameterTypes21 = new String[] {  };
 
-		_methodName22 = "getUserThread";
+		_methodName22 = "getPersistedModel";
 
-		_methodParameterTypes22 = new String[] { "long", "long" };
+		_methodParameterTypes22 = new String[] { "java.io.Serializable" };
 
 		_methodName23 = "getUserThread";
 
-		_methodParameterTypes23 = new String[] { "long" };
+		_methodParameterTypes23 = new String[] { "long", "long" };
 
-		_methodName24 = "getUserThreads";
+		_methodName24 = "getUserThread";
 
-		_methodParameterTypes24 = new String[] { "int", "int" };
+		_methodParameterTypes24 = new String[] { "long" };
 
-		_methodName25 = "getUserThreadsCount";
+		_methodName25 = "getUserThreads";
 
-		_methodParameterTypes25 = new String[] {  };
+		_methodParameterTypes25 = new String[] { "int", "int" };
 
-		_methodName26 = "getUserUserThreadCount";
+		_methodName26 = "getUserThreadsCount";
 
-		_methodParameterTypes26 = new String[] { "long", "boolean" };
+		_methodParameterTypes26 = new String[] {  };
 
 		_methodName27 = "getUserUserThreadCount";
 
-		_methodParameterTypes27 = new String[] { "long", "boolean", "boolean" };
+		_methodParameterTypes27 = new String[] { "long", "boolean" };
 
-		_methodName28 = "getUserUserThreads";
+		_methodName28 = "getUserUserThreadCount";
 
-		_methodParameterTypes28 = new String[] { "long", "boolean" };
+		_methodParameterTypes28 = new String[] { "long", "boolean", "boolean" };
 
 		_methodName29 = "getUserUserThreads";
 
-		_methodParameterTypes29 = new String[] { "long", "boolean", "int", "int" };
+		_methodParameterTypes29 = new String[] { "long", "boolean" };
 
 		_methodName30 = "getUserUserThreads";
 
-		_methodParameterTypes30 = new String[] { "long", "boolean", "boolean" };
+		_methodParameterTypes30 = new String[] { "long", "boolean", "int", "int" };
 
-		_methodName32 = "markUserThreadAsRead";
+		_methodName31 = "getUserUserThreads";
 
-		_methodParameterTypes32 = new String[] { "long", "long" };
+		_methodParameterTypes31 = new String[] { "long", "boolean", "boolean" };
 
-		_methodName33 = "markUserThreadAsUnread";
+		_methodName33 = "markUserThreadAsRead";
 
 		_methodParameterTypes33 = new String[] { "long", "long" };
 
-		_methodName34 = "setBeanIdentifier";
+		_methodName34 = "markUserThreadAsUnread";
 
-		_methodParameterTypes34 = new String[] { "java.lang.String" };
+		_methodParameterTypes34 = new String[] { "long", "long" };
 
 		_methodName35 = "updateUserName";
 
@@ -742,7 +745,7 @@ public class UserThreadLocalServiceClp implements UserThreadLocalService {
 	}
 
 	@Override
-	public java.lang.String getBeanIdentifier() {
+	public com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery getIndexableActionableDynamicQuery() {
 		Object returnObj = null;
 
 		try {
@@ -761,7 +764,7 @@ public class UserThreadLocalServiceClp implements UserThreadLocalService {
 			}
 		}
 
-		return (java.lang.String)ClpSerializer.translateOutput(returnObj);
+		return (com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery)ClpSerializer.translateOutput(returnObj);
 	}
 
 	@Override
@@ -789,14 +792,37 @@ public class UserThreadLocalServiceClp implements UserThreadLocalService {
 	}
 
 	@Override
+	public java.lang.String getOSGiServiceIdentifier() {
+		Object returnObj = null;
+
+		try {
+			returnObj = _invokableLocalService.invokeMethod(_methodName21,
+					_methodParameterTypes21, new Object[] {  });
+		}
+		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
+			if (t instanceof RuntimeException) {
+				throw (RuntimeException)t;
+			}
+			else {
+				throw new RuntimeException(t.getClass().getName() +
+					" is not a valid exception");
+			}
+		}
+
+		return (java.lang.String)ClpSerializer.translateOutput(returnObj);
+	}
+
+	@Override
 	public com.liferay.portal.model.PersistedModel getPersistedModel(
 		java.io.Serializable primaryKeyObj)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName21,
-					_methodParameterTypes21,
+			returnObj = _invokableLocalService.invokeMethod(_methodName22,
+					_methodParameterTypes22,
 					new Object[] { ClpSerializer.translateInput(primaryKeyObj) });
 		}
 		catch (Throwable t) {
@@ -825,8 +851,8 @@ public class UserThreadLocalServiceClp implements UserThreadLocalService {
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName22,
-					_methodParameterTypes22, new Object[] { userId, mbThreadId });
+			returnObj = _invokableLocalService.invokeMethod(_methodName23,
+					_methodParameterTypes23, new Object[] { userId, mbThreadId });
 		}
 		catch (Throwable t) {
 			t = ClpSerializer.translateThrowable(t);
@@ -854,8 +880,8 @@ public class UserThreadLocalServiceClp implements UserThreadLocalService {
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName23,
-					_methodParameterTypes23, new Object[] { userThreadId });
+			returnObj = _invokableLocalService.invokeMethod(_methodName24,
+					_methodParameterTypes24, new Object[] { userThreadId });
 		}
 		catch (Throwable t) {
 			t = ClpSerializer.translateThrowable(t);
@@ -882,8 +908,8 @@ public class UserThreadLocalServiceClp implements UserThreadLocalService {
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName24,
-					_methodParameterTypes24, new Object[] { start, end });
+			returnObj = _invokableLocalService.invokeMethod(_methodName25,
+					_methodParameterTypes25, new Object[] { start, end });
 		}
 		catch (Throwable t) {
 			t = ClpSerializer.translateThrowable(t);
@@ -905,8 +931,8 @@ public class UserThreadLocalServiceClp implements UserThreadLocalService {
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName25,
-					_methodParameterTypes25, new Object[] {  });
+			returnObj = _invokableLocalService.invokeMethod(_methodName26,
+					_methodParameterTypes26, new Object[] {  });
 		}
 		catch (Throwable t) {
 			t = ClpSerializer.translateThrowable(t);
@@ -928,8 +954,8 @@ public class UserThreadLocalServiceClp implements UserThreadLocalService {
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName26,
-					_methodParameterTypes26, new Object[] { userId, deleted });
+			returnObj = _invokableLocalService.invokeMethod(_methodName27,
+					_methodParameterTypes27, new Object[] { userId, deleted });
 		}
 		catch (Throwable t) {
 			t = ClpSerializer.translateThrowable(t);
@@ -951,8 +977,8 @@ public class UserThreadLocalServiceClp implements UserThreadLocalService {
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName27,
-					_methodParameterTypes27,
+			returnObj = _invokableLocalService.invokeMethod(_methodName28,
+					_methodParameterTypes28,
 					new Object[] { userId, read, deleted });
 		}
 		catch (Throwable t) {
@@ -976,8 +1002,8 @@ public class UserThreadLocalServiceClp implements UserThreadLocalService {
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName28,
-					_methodParameterTypes28, new Object[] { userId, deleted });
+			returnObj = _invokableLocalService.invokeMethod(_methodName29,
+					_methodParameterTypes29, new Object[] { userId, deleted });
 		}
 		catch (Throwable t) {
 			t = ClpSerializer.translateThrowable(t);
@@ -1000,8 +1026,8 @@ public class UserThreadLocalServiceClp implements UserThreadLocalService {
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName29,
-					_methodParameterTypes29,
+			returnObj = _invokableLocalService.invokeMethod(_methodName30,
+					_methodParameterTypes30,
 					new Object[] { userId, deleted, start, end });
 		}
 		catch (Throwable t) {
@@ -1025,8 +1051,8 @@ public class UserThreadLocalServiceClp implements UserThreadLocalService {
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName30,
-					_methodParameterTypes30,
+			returnObj = _invokableLocalService.invokeMethod(_methodName31,
+					_methodParameterTypes31,
 					new Object[] { userId, read, deleted });
 		}
 		catch (Throwable t) {
@@ -1055,8 +1081,8 @@ public class UserThreadLocalServiceClp implements UserThreadLocalService {
 	public void markUserThreadAsRead(long userId, long mbThreadId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		try {
-			_invokableLocalService.invokeMethod(_methodName32,
-				_methodParameterTypes32, new Object[] { userId, mbThreadId });
+			_invokableLocalService.invokeMethod(_methodName33,
+				_methodParameterTypes33, new Object[] { userId, mbThreadId });
 		}
 		catch (Throwable t) {
 			t = ClpSerializer.translateThrowable(t);
@@ -1079,8 +1105,8 @@ public class UserThreadLocalServiceClp implements UserThreadLocalService {
 	public void markUserThreadAsUnread(long userId, long mbThreadId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		try {
-			_invokableLocalService.invokeMethod(_methodName33,
-				_methodParameterTypes33, new Object[] { userId, mbThreadId });
+			_invokableLocalService.invokeMethod(_methodName34,
+				_methodParameterTypes34, new Object[] { userId, mbThreadId });
 		}
 		catch (Throwable t) {
 			t = ClpSerializer.translateThrowable(t);
@@ -1088,26 +1114,6 @@ public class UserThreadLocalServiceClp implements UserThreadLocalService {
 			if (t instanceof com.liferay.portal.kernel.exception.PortalException) {
 				throw (com.liferay.portal.kernel.exception.PortalException)t;
 			}
-
-			if (t instanceof RuntimeException) {
-				throw (RuntimeException)t;
-			}
-			else {
-				throw new RuntimeException(t.getClass().getName() +
-					" is not a valid exception");
-			}
-		}
-	}
-
-	@Override
-	public void setBeanIdentifier(java.lang.String beanIdentifier) {
-		try {
-			_invokableLocalService.invokeMethod(_methodName34,
-				_methodParameterTypes34,
-				new Object[] { ClpSerializer.translateInput(beanIdentifier) });
-		}
-		catch (Throwable t) {
-			t = ClpSerializer.translateThrowable(t);
 
 			if (t instanceof RuntimeException) {
 				throw (RuntimeException)t;
@@ -1227,8 +1233,8 @@ public class UserThreadLocalServiceClp implements UserThreadLocalService {
 	private String[] _methodParameterTypes29;
 	private String _methodName30;
 	private String[] _methodParameterTypes30;
-	private String _methodName32;
-	private String[] _methodParameterTypes32;
+	private String _methodName31;
+	private String[] _methodParameterTypes31;
 	private String _methodName33;
 	private String[] _methodParameterTypes33;
 	private String _methodName34;

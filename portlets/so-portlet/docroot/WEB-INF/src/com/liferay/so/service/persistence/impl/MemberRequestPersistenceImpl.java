@@ -14,8 +14,12 @@
 
 package com.liferay.so.service.persistence.impl;
 
-import com.liferay.portal.kernel.cache.CacheRegistryUtil;
+import aQute.bnd.annotation.ProviderType;
+
+import com.liferay.portal.kernel.bean.BeanReference;
+import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
+import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
 import com.liferay.portal.kernel.dao.orm.Query;
@@ -24,16 +28,17 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
-import com.liferay.portal.kernel.util.PropsKeys;
-import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.CacheModel;
+import com.liferay.portal.service.ServiceContext;
+import com.liferay.portal.service.ServiceContextThreadLocal;
+import com.liferay.portal.service.persistence.CompanyProvider;
+import com.liferay.portal.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
 
 import com.liferay.so.NoSuchMemberRequestException;
@@ -45,6 +50,7 @@ import com.liferay.so.service.persistence.MemberRequestPersistence;
 import java.io.Serializable;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -61,9 +67,10 @@ import java.util.Set;
  *
  * @author Brian Wing Shun Chan
  * @see MemberRequestPersistence
- * @see MemberRequestUtil
+ * @see com.liferay.so.service.persistence.MemberRequestUtil
  * @generated
  */
+@ProviderType
 public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequest>
 	implements MemberRequestPersistence {
 	/*
@@ -98,11 +105,11 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 			new String[] { String.class.getName() });
 
 	/**
-	 * Returns the member request where key = &#63; or throws a {@link com.liferay.so.NoSuchMemberRequestException} if it could not be found.
+	 * Returns the member request where key = &#63; or throws a {@link NoSuchMemberRequestException} if it could not be found.
 	 *
 	 * @param key the key
 	 * @return the matching member request
-	 * @throws com.liferay.so.NoSuchMemberRequestException if a matching member request could not be found
+	 * @throws NoSuchMemberRequestException if a matching member request could not be found
 	 */
 	@Override
 	public MemberRequest findByKey(String key)
@@ -144,7 +151,7 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 	 * Returns the member request where key = &#63; or returns <code>null</code> if it could not be found, optionally using the finder cache.
 	 *
 	 * @param key the key
-	 * @param retrieveFromCache whether to use the finder cache
+	 * @param retrieveFromCache whether to retrieve from the finder cache
 	 * @return the matching member request, or <code>null</code> if a matching member request could not be found
 	 */
 	@Override
@@ -154,7 +161,7 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 		Object result = null;
 
 		if (retrieveFromCache) {
-			result = FinderCacheUtil.getResult(FINDER_PATH_FETCH_BY_KEY,
+			result = finderCache.getResult(FINDER_PATH_FETCH_BY_KEY,
 					finderArgs, this);
 		}
 
@@ -203,8 +210,8 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 				List<MemberRequest> list = q.list();
 
 				if (list.isEmpty()) {
-					FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_KEY,
-						finderArgs, list);
+					finderCache.putResult(FINDER_PATH_FETCH_BY_KEY, finderArgs,
+						list);
 				}
 				else {
 					if ((list.size() > 1) && _log.isWarnEnabled()) {
@@ -222,14 +229,13 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 
 					if ((memberRequest.getKey() == null) ||
 							!memberRequest.getKey().equals(key)) {
-						FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_KEY,
+						finderCache.putResult(FINDER_PATH_FETCH_BY_KEY,
 							finderArgs, memberRequest);
 					}
 				}
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_KEY,
-					finderArgs);
+				finderCache.removeResult(FINDER_PATH_FETCH_BY_KEY, finderArgs);
 
 				throw processException(e);
 			}
@@ -272,8 +278,7 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 
 		Object[] finderArgs = new Object[] { key };
 
-		Long count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs,
-				this);
+		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler query = new StringBundler(2);
@@ -311,10 +316,10 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 
 				count = (Long)q.uniqueResult();
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, count);
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -368,7 +373,7 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 	 * Returns a range of all the member requests where receiverUserId = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.so.model.impl.MemberRequestModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link MemberRequestModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param receiverUserId the receiver user ID
@@ -386,7 +391,7 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 	 * Returns an ordered range of all the member requests where receiverUserId = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.so.model.impl.MemberRequestModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link MemberRequestModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param receiverUserId the receiver user ID
@@ -398,6 +403,28 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 	@Override
 	public List<MemberRequest> findByReceiverUserId(long receiverUserId,
 		int start, int end, OrderByComparator<MemberRequest> orderByComparator) {
+		return findByReceiverUserId(receiverUserId, start, end,
+			orderByComparator, true);
+	}
+
+	/**
+	 * Returns an ordered range of all the member requests where receiverUserId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link MemberRequestModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param receiverUserId the receiver user ID
+	 * @param start the lower bound of the range of member requests
+	 * @param end the upper bound of the range of member requests (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the ordered range of matching member requests
+	 */
+	@Override
+	public List<MemberRequest> findByReceiverUserId(long receiverUserId,
+		int start, int end, OrderByComparator<MemberRequest> orderByComparator,
+		boolean retrieveFromCache) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -417,15 +444,19 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 				};
 		}
 
-		List<MemberRequest> list = (List<MemberRequest>)FinderCacheUtil.getResult(finderPath,
-				finderArgs, this);
+		List<MemberRequest> list = null;
 
-		if ((list != null) && !list.isEmpty()) {
-			for (MemberRequest memberRequest : list) {
-				if ((receiverUserId != memberRequest.getReceiverUserId())) {
-					list = null;
+		if (retrieveFromCache) {
+			list = (List<MemberRequest>)finderCache.getResult(finderPath,
+					finderArgs, this);
 
-					break;
+			if ((list != null) && !list.isEmpty()) {
+				for (MemberRequest memberRequest : list) {
+					if ((receiverUserId != memberRequest.getReceiverUserId())) {
+						list = null;
+
+						break;
+					}
 				}
 			}
 		}
@@ -482,10 +513,10 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 
 				cacheResult(list);
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, list);
+				finderCache.putResult(finderPath, finderArgs, list);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -503,7 +534,7 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 	 * @param receiverUserId the receiver user ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching member request
-	 * @throws com.liferay.so.NoSuchMemberRequestException if a matching member request could not be found
+	 * @throws NoSuchMemberRequestException if a matching member request could not be found
 	 */
 	@Override
 	public MemberRequest findByReceiverUserId_First(long receiverUserId,
@@ -554,7 +585,7 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 	 * @param receiverUserId the receiver user ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching member request
-	 * @throws com.liferay.so.NoSuchMemberRequestException if a matching member request could not be found
+	 * @throws NoSuchMemberRequestException if a matching member request could not be found
 	 */
 	@Override
 	public MemberRequest findByReceiverUserId_Last(long receiverUserId,
@@ -612,7 +643,7 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 	 * @param receiverUserId the receiver user ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next member request
-	 * @throws com.liferay.so.NoSuchMemberRequestException if a member request with the primary key could not be found
+	 * @throws NoSuchMemberRequestException if a member request with the primary key could not be found
 	 */
 	@Override
 	public MemberRequest[] findByReceiverUserId_PrevAndNext(
@@ -776,8 +807,7 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 
 		Object[] finderArgs = new Object[] { receiverUserId };
 
-		Long count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs,
-				this);
+		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler query = new StringBundler(2);
@@ -801,10 +831,10 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 
 				count = (Long)q.uniqueResult();
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, count);
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -857,7 +887,7 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 	 * Returns a range of all the member requests where receiverUserId = &#63; and status = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.so.model.impl.MemberRequestModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link MemberRequestModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param receiverUserId the receiver user ID
@@ -876,7 +906,7 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 	 * Returns an ordered range of all the member requests where receiverUserId = &#63; and status = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.so.model.impl.MemberRequestModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link MemberRequestModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param receiverUserId the receiver user ID
@@ -889,6 +919,29 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 	@Override
 	public List<MemberRequest> findByR_S(long receiverUserId, int status,
 		int start, int end, OrderByComparator<MemberRequest> orderByComparator) {
+		return findByR_S(receiverUserId, status, start, end, orderByComparator,
+			true);
+	}
+
+	/**
+	 * Returns an ordered range of all the member requests where receiverUserId = &#63; and status = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link MemberRequestModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param receiverUserId the receiver user ID
+	 * @param status the status
+	 * @param start the lower bound of the range of member requests
+	 * @param end the upper bound of the range of member requests (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the ordered range of matching member requests
+	 */
+	@Override
+	public List<MemberRequest> findByR_S(long receiverUserId, int status,
+		int start, int end, OrderByComparator<MemberRequest> orderByComparator,
+		boolean retrieveFromCache) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -908,16 +961,20 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 				};
 		}
 
-		List<MemberRequest> list = (List<MemberRequest>)FinderCacheUtil.getResult(finderPath,
-				finderArgs, this);
+		List<MemberRequest> list = null;
 
-		if ((list != null) && !list.isEmpty()) {
-			for (MemberRequest memberRequest : list) {
-				if ((receiverUserId != memberRequest.getReceiverUserId()) ||
-						(status != memberRequest.getStatus())) {
-					list = null;
+		if (retrieveFromCache) {
+			list = (List<MemberRequest>)finderCache.getResult(finderPath,
+					finderArgs, this);
 
-					break;
+			if ((list != null) && !list.isEmpty()) {
+				for (MemberRequest memberRequest : list) {
+					if ((receiverUserId != memberRequest.getReceiverUserId()) ||
+							(status != memberRequest.getStatus())) {
+						list = null;
+
+						break;
+					}
 				}
 			}
 		}
@@ -978,10 +1035,10 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 
 				cacheResult(list);
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, list);
+				finderCache.putResult(finderPath, finderArgs, list);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -1000,7 +1057,7 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 	 * @param status the status
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching member request
-	 * @throws com.liferay.so.NoSuchMemberRequestException if a matching member request could not be found
+	 * @throws NoSuchMemberRequestException if a matching member request could not be found
 	 */
 	@Override
 	public MemberRequest findByR_S_First(long receiverUserId, int status,
@@ -1056,7 +1113,7 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 	 * @param status the status
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching member request
-	 * @throws com.liferay.so.NoSuchMemberRequestException if a matching member request could not be found
+	 * @throws NoSuchMemberRequestException if a matching member request could not be found
 	 */
 	@Override
 	public MemberRequest findByR_S_Last(long receiverUserId, int status,
@@ -1119,7 +1176,7 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 	 * @param status the status
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next member request
-	 * @throws com.liferay.so.NoSuchMemberRequestException if a member request with the primary key could not be found
+	 * @throws NoSuchMemberRequestException if a member request with the primary key could not be found
 	 */
 	@Override
 	public MemberRequest[] findByR_S_PrevAndNext(long memberRequestId,
@@ -1289,8 +1346,7 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 
 		Object[] finderArgs = new Object[] { receiverUserId, status };
 
-		Long count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs,
-				this);
+		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler query = new StringBundler(3);
@@ -1318,10 +1374,10 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 
 				count = (Long)q.uniqueResult();
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, count);
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -1354,13 +1410,13 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 			});
 
 	/**
-	 * Returns the member request where groupId = &#63; and receiverUserId = &#63; and status = &#63; or throws a {@link com.liferay.so.NoSuchMemberRequestException} if it could not be found.
+	 * Returns the member request where groupId = &#63; and receiverUserId = &#63; and status = &#63; or throws a {@link NoSuchMemberRequestException} if it could not be found.
 	 *
 	 * @param groupId the group ID
 	 * @param receiverUserId the receiver user ID
 	 * @param status the status
 	 * @return the matching member request
-	 * @throws com.liferay.so.NoSuchMemberRequestException if a matching member request could not be found
+	 * @throws NoSuchMemberRequestException if a matching member request could not be found
 	 */
 	@Override
 	public MemberRequest findByG_R_S(long groupId, long receiverUserId,
@@ -1414,7 +1470,7 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 	 * @param groupId the group ID
 	 * @param receiverUserId the receiver user ID
 	 * @param status the status
-	 * @param retrieveFromCache whether to use the finder cache
+	 * @param retrieveFromCache whether to retrieve from the finder cache
 	 * @return the matching member request, or <code>null</code> if a matching member request could not be found
 	 */
 	@Override
@@ -1425,7 +1481,7 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 		Object result = null;
 
 		if (retrieveFromCache) {
-			result = FinderCacheUtil.getResult(FINDER_PATH_FETCH_BY_G_R_S,
+			result = finderCache.getResult(FINDER_PATH_FETCH_BY_G_R_S,
 					finderArgs, this);
 		}
 
@@ -1470,7 +1526,7 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 				List<MemberRequest> list = q.list();
 
 				if (list.isEmpty()) {
-					FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_G_R_S,
+					finderCache.putResult(FINDER_PATH_FETCH_BY_G_R_S,
 						finderArgs, list);
 				}
 				else {
@@ -1490,14 +1546,13 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 					if ((memberRequest.getGroupId() != groupId) ||
 							(memberRequest.getReceiverUserId() != receiverUserId) ||
 							(memberRequest.getStatus() != status)) {
-						FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_G_R_S,
+						finderCache.putResult(FINDER_PATH_FETCH_BY_G_R_S,
 							finderArgs, memberRequest);
 					}
 				}
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_G_R_S,
-					finderArgs);
+				finderCache.removeResult(FINDER_PATH_FETCH_BY_G_R_S, finderArgs);
 
 				throw processException(e);
 			}
@@ -1545,8 +1600,7 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 
 		Object[] finderArgs = new Object[] { groupId, receiverUserId, status };
 
-		Long count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs,
-				this);
+		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler query = new StringBundler(4);
@@ -1578,10 +1632,10 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 
 				count = (Long)q.uniqueResult();
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, count);
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -1608,14 +1662,14 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 	 */
 	@Override
 	public void cacheResult(MemberRequest memberRequest) {
-		EntityCacheUtil.putResult(MemberRequestModelImpl.ENTITY_CACHE_ENABLED,
+		entityCache.putResult(MemberRequestModelImpl.ENTITY_CACHE_ENABLED,
 			MemberRequestImpl.class, memberRequest.getPrimaryKey(),
 			memberRequest);
 
-		FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_KEY,
+		finderCache.putResult(FINDER_PATH_FETCH_BY_KEY,
 			new Object[] { memberRequest.getKey() }, memberRequest);
 
-		FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_G_R_S,
+		finderCache.putResult(FINDER_PATH_FETCH_BY_G_R_S,
 			new Object[] {
 				memberRequest.getGroupId(), memberRequest.getReceiverUserId(),
 				memberRequest.getStatus()
@@ -1632,7 +1686,7 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 	@Override
 	public void cacheResult(List<MemberRequest> memberRequests) {
 		for (MemberRequest memberRequest : memberRequests) {
-			if (EntityCacheUtil.getResult(
+			if (entityCache.getResult(
 						MemberRequestModelImpl.ENTITY_CACHE_ENABLED,
 						MemberRequestImpl.class, memberRequest.getPrimaryKey()) == null) {
 				cacheResult(memberRequest);
@@ -1647,124 +1701,120 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 	 * Clears the cache for all member requests.
 	 *
 	 * <p>
-	 * The {@link com.liferay.portal.kernel.dao.orm.EntityCache} and {@link com.liferay.portal.kernel.dao.orm.FinderCache} are both cleared by this method.
+	 * The {@link EntityCache} and {@link FinderCache} are both cleared by this method.
 	 * </p>
 	 */
 	@Override
 	public void clearCache() {
-		if (_HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE) {
-			CacheRegistryUtil.clear(MemberRequestImpl.class.getName());
-		}
+		entityCache.clearCache(MemberRequestImpl.class);
 
-		EntityCacheUtil.clearCache(MemberRequestImpl.class);
-
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_ENTITY);
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_ENTITY);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
 	/**
 	 * Clears the cache for the member request.
 	 *
 	 * <p>
-	 * The {@link com.liferay.portal.kernel.dao.orm.EntityCache} and {@link com.liferay.portal.kernel.dao.orm.FinderCache} are both cleared by this method.
+	 * The {@link EntityCache} and {@link FinderCache} are both cleared by this method.
 	 * </p>
 	 */
 	@Override
 	public void clearCache(MemberRequest memberRequest) {
-		EntityCacheUtil.removeResult(MemberRequestModelImpl.ENTITY_CACHE_ENABLED,
+		entityCache.removeResult(MemberRequestModelImpl.ENTITY_CACHE_ENABLED,
 			MemberRequestImpl.class, memberRequest.getPrimaryKey());
 
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 
-		clearUniqueFindersCache(memberRequest);
+		clearUniqueFindersCache((MemberRequestModelImpl)memberRequest);
 	}
 
 	@Override
 	public void clearCache(List<MemberRequest> memberRequests) {
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 
 		for (MemberRequest memberRequest : memberRequests) {
-			EntityCacheUtil.removeResult(MemberRequestModelImpl.ENTITY_CACHE_ENABLED,
+			entityCache.removeResult(MemberRequestModelImpl.ENTITY_CACHE_ENABLED,
 				MemberRequestImpl.class, memberRequest.getPrimaryKey());
 
-			clearUniqueFindersCache(memberRequest);
+			clearUniqueFindersCache((MemberRequestModelImpl)memberRequest);
 		}
 	}
 
-	protected void cacheUniqueFindersCache(MemberRequest memberRequest) {
-		if (memberRequest.isNew()) {
-			Object[] args = new Object[] { memberRequest.getKey() };
+	protected void cacheUniqueFindersCache(
+		MemberRequestModelImpl memberRequestModelImpl, boolean isNew) {
+		if (isNew) {
+			Object[] args = new Object[] { memberRequestModelImpl.getKey() };
 
-			FinderCacheUtil.putResult(FINDER_PATH_COUNT_BY_KEY, args,
+			finderCache.putResult(FINDER_PATH_COUNT_BY_KEY, args,
 				Long.valueOf(1));
-			FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_KEY, args,
-				memberRequest);
+			finderCache.putResult(FINDER_PATH_FETCH_BY_KEY, args,
+				memberRequestModelImpl);
 
 			args = new Object[] {
-					memberRequest.getGroupId(),
-					memberRequest.getReceiverUserId(), memberRequest.getStatus()
+					memberRequestModelImpl.getGroupId(),
+					memberRequestModelImpl.getReceiverUserId(),
+					memberRequestModelImpl.getStatus()
 				};
 
-			FinderCacheUtil.putResult(FINDER_PATH_COUNT_BY_G_R_S, args,
+			finderCache.putResult(FINDER_PATH_COUNT_BY_G_R_S, args,
 				Long.valueOf(1));
-			FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_G_R_S, args,
-				memberRequest);
+			finderCache.putResult(FINDER_PATH_FETCH_BY_G_R_S, args,
+				memberRequestModelImpl);
 		}
 		else {
-			MemberRequestModelImpl memberRequestModelImpl = (MemberRequestModelImpl)memberRequest;
-
 			if ((memberRequestModelImpl.getColumnBitmask() &
 					FINDER_PATH_FETCH_BY_KEY.getColumnBitmask()) != 0) {
-				Object[] args = new Object[] { memberRequest.getKey() };
+				Object[] args = new Object[] { memberRequestModelImpl.getKey() };
 
-				FinderCacheUtil.putResult(FINDER_PATH_COUNT_BY_KEY, args,
+				finderCache.putResult(FINDER_PATH_COUNT_BY_KEY, args,
 					Long.valueOf(1));
-				FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_KEY, args,
-					memberRequest);
+				finderCache.putResult(FINDER_PATH_FETCH_BY_KEY, args,
+					memberRequestModelImpl);
 			}
 
 			if ((memberRequestModelImpl.getColumnBitmask() &
 					FINDER_PATH_FETCH_BY_G_R_S.getColumnBitmask()) != 0) {
 				Object[] args = new Object[] {
-						memberRequest.getGroupId(),
-						memberRequest.getReceiverUserId(),
-						memberRequest.getStatus()
+						memberRequestModelImpl.getGroupId(),
+						memberRequestModelImpl.getReceiverUserId(),
+						memberRequestModelImpl.getStatus()
 					};
 
-				FinderCacheUtil.putResult(FINDER_PATH_COUNT_BY_G_R_S, args,
+				finderCache.putResult(FINDER_PATH_COUNT_BY_G_R_S, args,
 					Long.valueOf(1));
-				FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_G_R_S, args,
-					memberRequest);
+				finderCache.putResult(FINDER_PATH_FETCH_BY_G_R_S, args,
+					memberRequestModelImpl);
 			}
 		}
 	}
 
-	protected void clearUniqueFindersCache(MemberRequest memberRequest) {
-		MemberRequestModelImpl memberRequestModelImpl = (MemberRequestModelImpl)memberRequest;
+	protected void clearUniqueFindersCache(
+		MemberRequestModelImpl memberRequestModelImpl) {
+		Object[] args = new Object[] { memberRequestModelImpl.getKey() };
 
-		Object[] args = new Object[] { memberRequest.getKey() };
-
-		FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_KEY, args);
-		FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_KEY, args);
+		finderCache.removeResult(FINDER_PATH_COUNT_BY_KEY, args);
+		finderCache.removeResult(FINDER_PATH_FETCH_BY_KEY, args);
 
 		if ((memberRequestModelImpl.getColumnBitmask() &
 				FINDER_PATH_FETCH_BY_KEY.getColumnBitmask()) != 0) {
 			args = new Object[] { memberRequestModelImpl.getOriginalKey() };
 
-			FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_KEY, args);
-			FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_KEY, args);
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_KEY, args);
+			finderCache.removeResult(FINDER_PATH_FETCH_BY_KEY, args);
 		}
 
 		args = new Object[] {
-				memberRequest.getGroupId(), memberRequest.getReceiverUserId(),
-				memberRequest.getStatus()
+				memberRequestModelImpl.getGroupId(),
+				memberRequestModelImpl.getReceiverUserId(),
+				memberRequestModelImpl.getStatus()
 			};
 
-		FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_G_R_S, args);
-		FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_G_R_S, args);
+		finderCache.removeResult(FINDER_PATH_COUNT_BY_G_R_S, args);
+		finderCache.removeResult(FINDER_PATH_FETCH_BY_G_R_S, args);
 
 		if ((memberRequestModelImpl.getColumnBitmask() &
 				FINDER_PATH_FETCH_BY_G_R_S.getColumnBitmask()) != 0) {
@@ -1774,8 +1824,8 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 					memberRequestModelImpl.getOriginalStatus()
 				};
 
-			FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_G_R_S, args);
-			FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_G_R_S, args);
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_G_R_S, args);
+			finderCache.removeResult(FINDER_PATH_FETCH_BY_G_R_S, args);
 		}
 	}
 
@@ -1792,6 +1842,8 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 		memberRequest.setNew(true);
 		memberRequest.setPrimaryKey(memberRequestId);
 
+		memberRequest.setCompanyId(companyProvider.getCompanyId());
+
 		return memberRequest;
 	}
 
@@ -1800,7 +1852,7 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 	 *
 	 * @param memberRequestId the primary key of the member request
 	 * @return the member request that was removed
-	 * @throws com.liferay.so.NoSuchMemberRequestException if a member request with the primary key could not be found
+	 * @throws NoSuchMemberRequestException if a member request with the primary key could not be found
 	 */
 	@Override
 	public MemberRequest remove(long memberRequestId)
@@ -1813,7 +1865,7 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 	 *
 	 * @param primaryKey the primary key of the member request
 	 * @return the member request that was removed
-	 * @throws com.liferay.so.NoSuchMemberRequestException if a member request with the primary key could not be found
+	 * @throws NoSuchMemberRequestException if a member request with the primary key could not be found
 	 */
 	@Override
 	public MemberRequest remove(Serializable primaryKey)
@@ -1881,13 +1933,35 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 	}
 
 	@Override
-	public MemberRequest updateImpl(
-		com.liferay.so.model.MemberRequest memberRequest) {
+	public MemberRequest updateImpl(MemberRequest memberRequest) {
 		memberRequest = toUnwrappedModel(memberRequest);
 
 		boolean isNew = memberRequest.isNew();
 
 		MemberRequestModelImpl memberRequestModelImpl = (MemberRequestModelImpl)memberRequest;
+
+		ServiceContext serviceContext = ServiceContextThreadLocal.getServiceContext();
+
+		Date now = new Date();
+
+		if (isNew && (memberRequest.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				memberRequest.setCreateDate(now);
+			}
+			else {
+				memberRequest.setCreateDate(serviceContext.getCreateDate(now));
+			}
+		}
+
+		if (!memberRequestModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				memberRequest.setModifiedDate(now);
+			}
+			else {
+				memberRequest.setModifiedDate(serviceContext.getModifiedDate(
+						now));
+			}
+		}
 
 		Session session = null;
 
@@ -1900,7 +1974,7 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 				memberRequest.setNew(false);
 			}
 			else {
-				session.merge(memberRequest);
+				memberRequest = (MemberRequest)session.merge(memberRequest);
 			}
 		}
 		catch (Exception e) {
@@ -1910,10 +1984,10 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 			closeSession(session);
 		}
 
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 
 		if (isNew || !MemberRequestModelImpl.COLUMN_BITMASK_ENABLED) {
-			FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 		}
 
 		else {
@@ -1923,16 +1997,16 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 						memberRequestModelImpl.getOriginalReceiverUserId()
 					};
 
-				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_RECEIVERUSERID,
+				finderCache.removeResult(FINDER_PATH_COUNT_BY_RECEIVERUSERID,
 					args);
-				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_RECEIVERUSERID,
+				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_RECEIVERUSERID,
 					args);
 
 				args = new Object[] { memberRequestModelImpl.getReceiverUserId() };
 
-				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_RECEIVERUSERID,
+				finderCache.removeResult(FINDER_PATH_COUNT_BY_RECEIVERUSERID,
 					args);
-				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_RECEIVERUSERID,
+				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_RECEIVERUSERID,
 					args);
 			}
 
@@ -1943,8 +2017,8 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 						memberRequestModelImpl.getOriginalStatus()
 					};
 
-				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_R_S, args);
-				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_R_S,
+				finderCache.removeResult(FINDER_PATH_COUNT_BY_R_S, args);
+				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_R_S,
 					args);
 
 				args = new Object[] {
@@ -1952,18 +2026,18 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 						memberRequestModelImpl.getStatus()
 					};
 
-				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_R_S, args);
-				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_R_S,
+				finderCache.removeResult(FINDER_PATH_COUNT_BY_R_S, args);
+				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_R_S,
 					args);
 			}
 		}
 
-		EntityCacheUtil.putResult(MemberRequestModelImpl.ENTITY_CACHE_ENABLED,
+		entityCache.putResult(MemberRequestModelImpl.ENTITY_CACHE_ENABLED,
 			MemberRequestImpl.class, memberRequest.getPrimaryKey(),
 			memberRequest, false);
 
-		clearUniqueFindersCache(memberRequest);
-		cacheUniqueFindersCache(memberRequest);
+		clearUniqueFindersCache(memberRequestModelImpl);
+		cacheUniqueFindersCache(memberRequestModelImpl, isNew);
 
 		memberRequest.resetOriginalValues();
 
@@ -2001,7 +2075,7 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 	 *
 	 * @param primaryKey the primary key of the member request
 	 * @return the member request
-	 * @throws com.liferay.so.NoSuchMemberRequestException if a member request with the primary key could not be found
+	 * @throws NoSuchMemberRequestException if a member request with the primary key could not be found
 	 */
 	@Override
 	public MemberRequest findByPrimaryKey(Serializable primaryKey)
@@ -2021,11 +2095,11 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 	}
 
 	/**
-	 * Returns the member request with the primary key or throws a {@link com.liferay.so.NoSuchMemberRequestException} if it could not be found.
+	 * Returns the member request with the primary key or throws a {@link NoSuchMemberRequestException} if it could not be found.
 	 *
 	 * @param memberRequestId the primary key of the member request
 	 * @return the member request
-	 * @throws com.liferay.so.NoSuchMemberRequestException if a member request with the primary key could not be found
+	 * @throws NoSuchMemberRequestException if a member request with the primary key could not be found
 	 */
 	@Override
 	public MemberRequest findByPrimaryKey(long memberRequestId)
@@ -2041,7 +2115,7 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 	 */
 	@Override
 	public MemberRequest fetchByPrimaryKey(Serializable primaryKey) {
-		MemberRequest memberRequest = (MemberRequest)EntityCacheUtil.getResult(MemberRequestModelImpl.ENTITY_CACHE_ENABLED,
+		MemberRequest memberRequest = (MemberRequest)entityCache.getResult(MemberRequestModelImpl.ENTITY_CACHE_ENABLED,
 				MemberRequestImpl.class, primaryKey);
 
 		if (memberRequest == _nullMemberRequest) {
@@ -2061,12 +2135,12 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 					cacheResult(memberRequest);
 				}
 				else {
-					EntityCacheUtil.putResult(MemberRequestModelImpl.ENTITY_CACHE_ENABLED,
+					entityCache.putResult(MemberRequestModelImpl.ENTITY_CACHE_ENABLED,
 						MemberRequestImpl.class, primaryKey, _nullMemberRequest);
 				}
 			}
 			catch (Exception e) {
-				EntityCacheUtil.removeResult(MemberRequestModelImpl.ENTITY_CACHE_ENABLED,
+				entityCache.removeResult(MemberRequestModelImpl.ENTITY_CACHE_ENABLED,
 					MemberRequestImpl.class, primaryKey);
 
 				throw processException(e);
@@ -2116,7 +2190,7 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			MemberRequest memberRequest = (MemberRequest)EntityCacheUtil.getResult(MemberRequestModelImpl.ENTITY_CACHE_ENABLED,
+			MemberRequest memberRequest = (MemberRequest)entityCache.getResult(MemberRequestModelImpl.ENTITY_CACHE_ENABLED,
 					MemberRequestImpl.class, primaryKey);
 
 			if (memberRequest == null) {
@@ -2168,7 +2242,7 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 			}
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
-				EntityCacheUtil.putResult(MemberRequestModelImpl.ENTITY_CACHE_ENABLED,
+				entityCache.putResult(MemberRequestModelImpl.ENTITY_CACHE_ENABLED,
 					MemberRequestImpl.class, primaryKey, _nullMemberRequest);
 			}
 		}
@@ -2196,7 +2270,7 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 	 * Returns a range of all the member requests.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.so.model.impl.MemberRequestModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link MemberRequestModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of member requests
@@ -2212,7 +2286,7 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 	 * Returns an ordered range of all the member requests.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.so.model.impl.MemberRequestModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link MemberRequestModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of member requests
@@ -2223,6 +2297,26 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 	@Override
 	public List<MemberRequest> findAll(int start, int end,
 		OrderByComparator<MemberRequest> orderByComparator) {
+		return findAll(start, end, orderByComparator, true);
+	}
+
+	/**
+	 * Returns an ordered range of all the member requests.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link MemberRequestModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param start the lower bound of the range of member requests
+	 * @param end the upper bound of the range of member requests (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the ordered range of member requests
+	 */
+	@Override
+	public List<MemberRequest> findAll(int start, int end,
+		OrderByComparator<MemberRequest> orderByComparator,
+		boolean retrieveFromCache) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -2238,8 +2332,12 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 			finderArgs = new Object[] { start, end, orderByComparator };
 		}
 
-		List<MemberRequest> list = (List<MemberRequest>)FinderCacheUtil.getResult(finderPath,
-				finderArgs, this);
+		List<MemberRequest> list = null;
+
+		if (retrieveFromCache) {
+			list = (List<MemberRequest>)finderCache.getResult(finderPath,
+					finderArgs, this);
+		}
 
 		if (list == null) {
 			StringBundler query = null;
@@ -2286,10 +2384,10 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 
 				cacheResult(list);
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, list);
+				finderCache.putResult(finderPath, finderArgs, list);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -2319,7 +2417,7 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)FinderCacheUtil.getResult(FINDER_PATH_COUNT_ALL,
+		Long count = (Long)finderCache.getResult(FINDER_PATH_COUNT_ALL,
 				FINDER_ARGS_EMPTY, this);
 
 		if (count == null) {
@@ -2332,11 +2430,11 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 
 				count = (Long)q.uniqueResult();
 
-				FinderCacheUtil.putResult(FINDER_PATH_COUNT_ALL,
-					FINDER_ARGS_EMPTY, count);
+				finderCache.putResult(FINDER_PATH_COUNT_ALL, FINDER_ARGS_EMPTY,
+					count);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_ALL,
+				finderCache.removeResult(FINDER_PATH_COUNT_ALL,
 					FINDER_ARGS_EMPTY);
 
 				throw processException(e);
@@ -2350,8 +2448,13 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 	}
 
 	@Override
-	protected Set<String> getBadColumnNames() {
+	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return MemberRequestModelImpl.TABLE_COLUMNS_MAP;
 	}
 
 	/**
@@ -2361,12 +2464,16 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 	}
 
 	public void destroy() {
-		EntityCacheUtil.removeCache(MemberRequestImpl.class.getName());
-		FinderCacheUtil.removeCache(FINDER_CLASS_NAME_ENTITY);
-		FinderCacheUtil.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		FinderCacheUtil.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		entityCache.removeCache(MemberRequestImpl.class.getName());
+		finderCache.removeCache(FINDER_CLASS_NAME_ENTITY);
+		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
+	@BeanReference(type = CompanyProviderWrapper.class)
+	protected CompanyProvider companyProvider;
+	protected EntityCache entityCache = EntityCacheUtil.getEntityCache();
+	protected FinderCache finderCache = FinderCacheUtil.getFinderCache();
 	private static final String _SQL_SELECT_MEMBERREQUEST = "SELECT memberRequest FROM MemberRequest memberRequest";
 	private static final String _SQL_SELECT_MEMBERREQUEST_WHERE_PKS_IN = "SELECT memberRequest FROM MemberRequest memberRequest WHERE memberRequestId IN (";
 	private static final String _SQL_SELECT_MEMBERREQUEST_WHERE = "SELECT memberRequest FROM MemberRequest memberRequest WHERE ";
@@ -2375,13 +2482,11 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 	private static final String _ORDER_BY_ENTITY_ALIAS = "memberRequest.";
 	private static final String _NO_SUCH_ENTITY_WITH_PRIMARY_KEY = "No MemberRequest exists with the primary key ";
 	private static final String _NO_SUCH_ENTITY_WITH_KEY = "No MemberRequest exists with the key {";
-	private static final boolean _HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE = GetterUtil.getBoolean(PropsUtil.get(
-				PropsKeys.HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE));
-	private static Log _log = LogFactoryUtil.getLog(MemberRequestPersistenceImpl.class);
-	private static Set<String> _badColumnNames = SetUtil.fromArray(new String[] {
+	private static final Log _log = LogFactoryUtil.getLog(MemberRequestPersistenceImpl.class);
+	private static final Set<String> _badColumnNames = SetUtil.fromArray(new String[] {
 				"key"
 			});
-	private static MemberRequest _nullMemberRequest = new MemberRequestImpl() {
+	private static final MemberRequest _nullMemberRequest = new MemberRequestImpl() {
 			@Override
 			public Object clone() {
 				return this;
@@ -2393,7 +2498,7 @@ public class MemberRequestPersistenceImpl extends BasePersistenceImpl<MemberRequ
 			}
 		};
 
-	private static CacheModel<MemberRequest> _nullMemberRequestCacheModel = new CacheModel<MemberRequest>() {
+	private static final CacheModel<MemberRequest> _nullMemberRequestCacheModel = new CacheModel<MemberRequest>() {
 			@Override
 			public MemberRequest toEntityModel() {
 				return _nullMemberRequest;

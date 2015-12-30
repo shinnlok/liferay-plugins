@@ -14,6 +14,8 @@
 
 package com.liferay.chat.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.ModelWrapper;
 
@@ -29,6 +31,7 @@ import java.util.Map;
  * @see Status
  * @generated
  */
+@ProviderType
 public class StatusWrapper implements Status, ModelWrapper<Status> {
 	public StatusWrapper(Status status) {
 		_status = status;
@@ -463,14 +466,6 @@ public class StatusWrapper implements Status, ModelWrapper<Status> {
 		return false;
 	}
 
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedModel}
-	 */
-	@Deprecated
-	public Status getWrappedStatus() {
-		return _status;
-	}
-
 	@Override
 	public Status getWrappedModel() {
 		return _status;
@@ -491,5 +486,5 @@ public class StatusWrapper implements Status, ModelWrapper<Status> {
 		_status.resetOriginalValues();
 	}
 
-	private Status _status;
+	private final Status _status;
 }

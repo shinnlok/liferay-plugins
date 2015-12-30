@@ -14,6 +14,8 @@
 
 package com.liferay.testblob.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.service.ServiceWrapper;
 
 /**
@@ -23,6 +25,7 @@ import com.liferay.portal.service.ServiceWrapper;
  * @see TestBlobEntryLocalService
  * @generated
  */
+@ProviderType
 public class TestBlobEntryLocalServiceWrapper
 	implements TestBlobEntryLocalService,
 		ServiceWrapper<TestBlobEntryLocalService> {
@@ -150,10 +153,10 @@ public class TestBlobEntryLocalServiceWrapper
 	}
 
 	/**
-	* Returns the number of rows that match the dynamic query.
+	* Returns the number of rows matching the dynamic query.
 	*
 	* @param dynamicQuery the dynamic query
-	* @return the number of rows that match the dynamic query
+	* @return the number of rows matching the dynamic query
 	*/
 	@Override
 	public long dynamicQueryCount(
@@ -162,11 +165,11 @@ public class TestBlobEntryLocalServiceWrapper
 	}
 
 	/**
-	* Returns the number of rows that match the dynamic query.
+	* Returns the number of rows matching the dynamic query.
 	*
 	* @param dynamicQuery the dynamic query
 	* @param projection the projection to apply to the query
-	* @return the number of rows that match the dynamic query
+	* @return the number of rows matching the dynamic query
 	*/
 	@Override
 	public long dynamicQueryCount(
@@ -187,20 +190,25 @@ public class TestBlobEntryLocalServiceWrapper
 		return _testBlobEntryLocalService.getActionableDynamicQuery();
 	}
 
-	/**
-	* Returns the Spring bean ID for this bean.
-	*
-	* @return the Spring bean ID for this bean
-	*/
-	@Override
-	public java.lang.String getBeanIdentifier() {
-		return _testBlobEntryLocalService.getBeanIdentifier();
-	}
-
 	@Override
 	public com.liferay.testblob.model.TestBlobEntryBlobFieldBlobModel getBlobFieldBlobModel(
 		java.io.Serializable primaryKey) {
 		return _testBlobEntryLocalService.getBlobFieldBlobModel(primaryKey);
+	}
+
+	@Override
+	public com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery getIndexableActionableDynamicQuery() {
+		return _testBlobEntryLocalService.getIndexableActionableDynamicQuery();
+	}
+
+	/**
+	* Returns the OSGi service identifier.
+	*
+	* @return the OSGi service identifier
+	*/
+	@Override
+	public java.lang.String getOSGiServiceIdentifier() {
+		return _testBlobEntryLocalService.getOSGiServiceIdentifier();
 	}
 
 	@Override
@@ -260,16 +268,6 @@ public class TestBlobEntryLocalServiceWrapper
 	}
 
 	/**
-	* Sets the Spring bean ID for this bean.
-	*
-	* @param beanIdentifier the Spring bean ID for this bean
-	*/
-	@Override
-	public void setBeanIdentifier(java.lang.String beanIdentifier) {
-		_testBlobEntryLocalService.setBeanIdentifier(beanIdentifier);
-	}
-
-	/**
 	* Updates the test blob entry in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
 	*
 	* @param testBlobEntry the test blob entry
@@ -279,23 +277,6 @@ public class TestBlobEntryLocalServiceWrapper
 	public com.liferay.testblob.model.TestBlobEntry updateTestBlobEntry(
 		com.liferay.testblob.model.TestBlobEntry testBlobEntry) {
 		return _testBlobEntryLocalService.updateTestBlobEntry(testBlobEntry);
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedService}
-	 */
-	@Deprecated
-	public TestBlobEntryLocalService getWrappedTestBlobEntryLocalService() {
-		return _testBlobEntryLocalService;
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #setWrappedService}
-	 */
-	@Deprecated
-	public void setWrappedTestBlobEntryLocalService(
-		TestBlobEntryLocalService testBlobEntryLocalService) {
-		_testBlobEntryLocalService = testBlobEntryLocalService;
 	}
 
 	@Override

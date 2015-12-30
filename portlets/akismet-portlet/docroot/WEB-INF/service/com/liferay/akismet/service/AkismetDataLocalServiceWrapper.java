@@ -14,6 +14,8 @@
 
 package com.liferay.akismet.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.service.ServiceWrapper;
 
 /**
@@ -23,6 +25,7 @@ import com.liferay.portal.service.ServiceWrapper;
  * @see AkismetDataLocalService
  * @generated
  */
+@ProviderType
 public class AkismetDataLocalServiceWrapper implements AkismetDataLocalService,
 	ServiceWrapper<AkismetDataLocalService> {
 	public AkismetDataLocalServiceWrapper(
@@ -160,10 +163,10 @@ public class AkismetDataLocalServiceWrapper implements AkismetDataLocalService,
 	}
 
 	/**
-	* Returns the number of rows that match the dynamic query.
+	* Returns the number of rows matching the dynamic query.
 	*
 	* @param dynamicQuery the dynamic query
-	* @return the number of rows that match the dynamic query
+	* @return the number of rows matching the dynamic query
 	*/
 	@Override
 	public long dynamicQueryCount(
@@ -172,11 +175,11 @@ public class AkismetDataLocalServiceWrapper implements AkismetDataLocalService,
 	}
 
 	/**
-	* Returns the number of rows that match the dynamic query.
+	* Returns the number of rows matching the dynamic query.
 	*
 	* @param dynamicQuery the dynamic query
 	* @param projection the projection to apply to the query
-	* @return the number of rows that match the dynamic query
+	* @return the number of rows matching the dynamic query
 	*/
 	@Override
 	public long dynamicQueryCount(
@@ -244,14 +247,19 @@ public class AkismetDataLocalServiceWrapper implements AkismetDataLocalService,
 		return _akismetDataLocalService.getAkismetDatasCount();
 	}
 
+	@Override
+	public com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery getIndexableActionableDynamicQuery() {
+		return _akismetDataLocalService.getIndexableActionableDynamicQuery();
+	}
+
 	/**
-	* Returns the Spring bean ID for this bean.
+	* Returns the OSGi service identifier.
 	*
-	* @return the Spring bean ID for this bean
+	* @return the OSGi service identifier
 	*/
 	@Override
-	public java.lang.String getBeanIdentifier() {
-		return _akismetDataLocalService.getBeanIdentifier();
+	public java.lang.String getOSGiServiceIdentifier() {
+		return _akismetDataLocalService.getOSGiServiceIdentifier();
 	}
 
 	@Override
@@ -267,16 +275,6 @@ public class AkismetDataLocalServiceWrapper implements AkismetDataLocalService,
 		throws java.lang.Throwable {
 		return _akismetDataLocalService.invokeMethod(name, parameterTypes,
 			arguments);
-	}
-
-	/**
-	* Sets the Spring bean ID for this bean.
-	*
-	* @param beanIdentifier the Spring bean ID for this bean
-	*/
-	@Override
-	public void setBeanIdentifier(java.lang.String beanIdentifier) {
-		_akismetDataLocalService.setBeanIdentifier(beanIdentifier);
 	}
 
 	/**
@@ -299,23 +297,6 @@ public class AkismetDataLocalServiceWrapper implements AkismetDataLocalService,
 		java.lang.String userURL) {
 		return _akismetDataLocalService.updateAkismetData(className, classPK,
 			type, permalink, referrer, userAgent, userIP, userURL);
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedService}
-	 */
-	@Deprecated
-	public AkismetDataLocalService getWrappedAkismetDataLocalService() {
-		return _akismetDataLocalService;
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #setWrappedService}
-	 */
-	@Deprecated
-	public void setWrappedAkismetDataLocalService(
-		AkismetDataLocalService akismetDataLocalService) {
-		_akismetDataLocalService = akismetDataLocalService;
 	}
 
 	@Override

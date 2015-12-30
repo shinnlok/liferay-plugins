@@ -14,6 +14,8 @@
 
 package com.liferay.contacts.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.service.ServiceWrapper;
 
 /**
@@ -23,6 +25,7 @@ import com.liferay.portal.service.ServiceWrapper;
  * @see EntryService
  * @generated
  */
+@ProviderType
 public class EntryServiceWrapper implements EntryService,
 	ServiceWrapper<EntryService> {
 	public EntryServiceWrapper(EntryService entryService) {
@@ -30,13 +33,13 @@ public class EntryServiceWrapper implements EntryService,
 	}
 
 	/**
-	* Returns the Spring bean ID for this bean.
+	* Returns the OSGi service identifier.
 	*
-	* @return the Spring bean ID for this bean
+	* @return the OSGi service identifier
 	*/
 	@Override
-	public java.lang.String getBeanIdentifier() {
-		return _entryService.getBeanIdentifier();
+	public java.lang.String getOSGiServiceIdentifier() {
+		return _entryService.getOSGiServiceIdentifier();
 	}
 
 	@Override
@@ -52,32 +55,6 @@ public class EntryServiceWrapper implements EntryService,
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _entryService.searchUsersAndContacts(companyId, keywords, start,
 			end);
-	}
-
-	/**
-	* Sets the Spring bean ID for this bean.
-	*
-	* @param beanIdentifier the Spring bean ID for this bean
-	*/
-	@Override
-	public void setBeanIdentifier(java.lang.String beanIdentifier) {
-		_entryService.setBeanIdentifier(beanIdentifier);
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedService}
-	 */
-	@Deprecated
-	public EntryService getWrappedEntryService() {
-		return _entryService;
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #setWrappedService}
-	 */
-	@Deprecated
-	public void setWrappedEntryService(EntryService entryService) {
-		_entryService = entryService;
 	}
 
 	@Override

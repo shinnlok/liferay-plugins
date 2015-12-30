@@ -57,16 +57,6 @@ public class KBFolderServiceWrapper implements KBFolderService,
 			parentKbFolderId, urlTitle);
 	}
 
-	/**
-	* Returns the Spring bean ID for this bean.
-	*
-	* @return the Spring bean ID for this bean
-	*/
-	@Override
-	public java.lang.String getBeanIdentifier() {
-		return _kbFolderService.getBeanIdentifier();
-	}
-
 	@Override
 	public com.liferay.knowledgebase.model.KBFolder getKBFolder(long kbFolderId)
 		throws com.liferay.portal.kernel.exception.PortalException {
@@ -95,6 +85,16 @@ public class KBFolderServiceWrapper implements KBFolderService,
 		return _kbFolderService.getKBFoldersCount(groupId, parentKBFolderId);
 	}
 
+	/**
+	* Returns the OSGi service identifier.
+	*
+	* @return the OSGi service identifier
+	*/
+	@Override
+	public java.lang.String getOSGiServiceIdentifier() {
+		return _kbFolderService.getOSGiServiceIdentifier();
+	}
+
 	@Override
 	public java.lang.Object invokeMethod(java.lang.String name,
 		java.lang.String[] parameterTypes, java.lang.Object[] arguments)
@@ -108,16 +108,6 @@ public class KBFolderServiceWrapper implements KBFolderService,
 		_kbFolderService.moveKBFolder(kbFolderId, parentKBFolderId);
 	}
 
-	/**
-	* Sets the Spring bean ID for this bean.
-	*
-	* @param beanIdentifier the Spring bean ID for this bean
-	*/
-	@Override
-	public void setBeanIdentifier(java.lang.String beanIdentifier) {
-		_kbFolderService.setBeanIdentifier(beanIdentifier);
-	}
-
 	@Override
 	public com.liferay.knowledgebase.model.KBFolder updateKBFolder(
 		long parentResourceClassNameId, long parentResourcePrimKey,
@@ -125,22 +115,6 @@ public class KBFolderServiceWrapper implements KBFolderService,
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _kbFolderService.updateKBFolder(parentResourceClassNameId,
 			parentResourcePrimKey, kbFolderId, name, description);
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedService}
-	 */
-	@Deprecated
-	public KBFolderService getWrappedKBFolderService() {
-		return _kbFolderService;
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #setWrappedService}
-	 */
-	@Deprecated
-	public void setWrappedKBFolderService(KBFolderService kbFolderService) {
-		_kbFolderService = kbFolderService;
 	}
 
 	@Override

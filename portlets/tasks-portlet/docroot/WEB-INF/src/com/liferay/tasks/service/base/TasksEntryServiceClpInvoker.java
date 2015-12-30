@@ -14,6 +14,8 @@
 
 package com.liferay.tasks.service.base;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.tasks.service.TasksEntryServiceUtil;
 
 import java.util.Arrays;
@@ -22,30 +24,27 @@ import java.util.Arrays;
  * @author Ryan Park
  * @generated
  */
+@ProviderType
 public class TasksEntryServiceClpInvoker {
 	public TasksEntryServiceClpInvoker() {
-		_methodName26 = "getBeanIdentifier";
+		_methodName26 = "getOSGiServiceIdentifier";
 
 		_methodParameterTypes26 = new String[] {  };
 
-		_methodName27 = "setBeanIdentifier";
+		_methodName31 = "addTasksEntry";
 
-		_methodParameterTypes27 = new String[] { "java.lang.String" };
-
-		_methodName32 = "addTasksEntry";
-
-		_methodParameterTypes32 = new String[] {
+		_methodParameterTypes31 = new String[] {
 				"java.lang.String", "int", "long", "int", "int", "int", "int",
 				"int", "boolean", "com.liferay.portal.service.ServiceContext"
 			};
 
-		_methodName33 = "getTasksEntry";
+		_methodName32 = "getTasksEntry";
 
-		_methodParameterTypes33 = new String[] { "long" };
+		_methodParameterTypes32 = new String[] { "long" };
 
-		_methodName34 = "updateTasksEntry";
+		_methodName33 = "updateTasksEntry";
 
-		_methodParameterTypes34 = new String[] {
+		_methodParameterTypes33 = new String[] {
 				"long", "java.lang.String", "int", "long", "long", "int", "int",
 				"int", "int", "int", "boolean", "int",
 				"com.liferay.portal.service.ServiceContext"
@@ -56,18 +55,11 @@ public class TasksEntryServiceClpInvoker {
 		Object[] arguments) throws Throwable {
 		if (_methodName26.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes26, parameterTypes)) {
-			return TasksEntryServiceUtil.getBeanIdentifier();
+			return TasksEntryServiceUtil.getOSGiServiceIdentifier();
 		}
 
-		if (_methodName27.equals(name) &&
-				Arrays.deepEquals(_methodParameterTypes27, parameterTypes)) {
-			TasksEntryServiceUtil.setBeanIdentifier((java.lang.String)arguments[0]);
-
-			return null;
-		}
-
-		if (_methodName32.equals(name) &&
-				Arrays.deepEquals(_methodParameterTypes32, parameterTypes)) {
+		if (_methodName31.equals(name) &&
+				Arrays.deepEquals(_methodParameterTypes31, parameterTypes)) {
 			return TasksEntryServiceUtil.addTasksEntry((java.lang.String)arguments[0],
 				((Integer)arguments[1]).intValue(),
 				((Long)arguments[2]).longValue(),
@@ -80,13 +72,13 @@ public class TasksEntryServiceClpInvoker {
 				(com.liferay.portal.service.ServiceContext)arguments[9]);
 		}
 
-		if (_methodName33.equals(name) &&
-				Arrays.deepEquals(_methodParameterTypes33, parameterTypes)) {
+		if (_methodName32.equals(name) &&
+				Arrays.deepEquals(_methodParameterTypes32, parameterTypes)) {
 			return TasksEntryServiceUtil.getTasksEntry(((Long)arguments[0]).longValue());
 		}
 
-		if (_methodName34.equals(name) &&
-				Arrays.deepEquals(_methodParameterTypes34, parameterTypes)) {
+		if (_methodName33.equals(name) &&
+				Arrays.deepEquals(_methodParameterTypes33, parameterTypes)) {
 			return TasksEntryServiceUtil.updateTasksEntry(((Long)arguments[0]).longValue(),
 				(java.lang.String)arguments[1],
 				((Integer)arguments[2]).intValue(),
@@ -107,12 +99,10 @@ public class TasksEntryServiceClpInvoker {
 
 	private String _methodName26;
 	private String[] _methodParameterTypes26;
-	private String _methodName27;
-	private String[] _methodParameterTypes27;
+	private String _methodName31;
+	private String[] _methodParameterTypes31;
 	private String _methodName32;
 	private String[] _methodParameterTypes32;
 	private String _methodName33;
 	private String[] _methodParameterTypes33;
-	private String _methodName34;
-	private String[] _methodParameterTypes34;
 }

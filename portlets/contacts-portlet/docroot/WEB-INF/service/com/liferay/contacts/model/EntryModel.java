@@ -14,10 +14,13 @@
 
 package com.liferay.contacts.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.bean.AutoEscape;
 import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.model.GroupedModel;
+import com.liferay.portal.model.ShardedModel;
 import com.liferay.portal.service.ServiceContext;
 
 import com.liferay.portlet.expando.model.ExpandoBridge;
@@ -39,7 +42,8 @@ import java.util.Date;
  * @see com.liferay.contacts.model.impl.EntryModelImpl
  * @generated
  */
-public interface EntryModel extends BaseModel<Entry>, GroupedModel {
+@ProviderType
+public interface EntryModel extends BaseModel<Entry>, GroupedModel, ShardedModel {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
@@ -269,19 +273,19 @@ public interface EntryModel extends BaseModel<Entry>, GroupedModel {
 	public Object clone();
 
 	@Override
-	public int compareTo(Entry entry);
+	public int compareTo(com.liferay.contacts.model.Entry entry);
 
 	@Override
 	public int hashCode();
 
 	@Override
-	public CacheModel<Entry> toCacheModel();
+	public CacheModel<com.liferay.contacts.model.Entry> toCacheModel();
 
 	@Override
-	public Entry toEscapedModel();
+	public com.liferay.contacts.model.Entry toEscapedModel();
 
 	@Override
-	public Entry toUnescapedModel();
+	public com.liferay.contacts.model.Entry toUnescapedModel();
 
 	@Override
 	public String toString();

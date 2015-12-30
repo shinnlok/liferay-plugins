@@ -264,14 +264,19 @@ public class AccountLocalServiceWrapper implements AccountLocalService,
 		return _accountLocalService.getActionableDynamicQuery();
 	}
 
+	@Override
+	public com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery getIndexableActionableDynamicQuery() {
+		return _accountLocalService.getIndexableActionableDynamicQuery();
+	}
+
 	/**
-	* Returns the Spring bean ID for this bean.
+	* Returns the OSGi service identifier.
 	*
-	* @return the Spring bean ID for this bean
+	* @return the OSGi service identifier
 	*/
 	@Override
-	public java.lang.String getBeanIdentifier() {
-		return _accountLocalService.getBeanIdentifier();
+	public java.lang.String getOSGiServiceIdentifier() {
+		return _accountLocalService.getOSGiServiceIdentifier();
 	}
 
 	@Override
@@ -286,16 +291,6 @@ public class AccountLocalServiceWrapper implements AccountLocalService,
 		java.lang.String[] parameterTypes, java.lang.Object[] arguments)
 		throws java.lang.Throwable {
 		return _accountLocalService.invokeMethod(name, parameterTypes, arguments);
-	}
-
-	/**
-	* Sets the Spring bean ID for this bean.
-	*
-	* @param beanIdentifier the Spring bean ID for this bean
-	*/
-	@Override
-	public void setBeanIdentifier(java.lang.String beanIdentifier) {
-		_accountLocalService.setBeanIdentifier(beanIdentifier);
 	}
 
 	/**
@@ -328,23 +323,6 @@ public class AccountLocalServiceWrapper implements AccountLocalService,
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _accountLocalService.updateFolders(accountId, inboxFolderId,
 			draftFolderId, sentFolderId, trashFolderId);
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedService}
-	 */
-	@Deprecated
-	public AccountLocalService getWrappedAccountLocalService() {
-		return _accountLocalService;
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #setWrappedService}
-	 */
-	@Deprecated
-	public void setWrappedAccountLocalService(
-		AccountLocalService accountLocalService) {
-		_accountLocalService = accountLocalService;
 	}
 
 	@Override

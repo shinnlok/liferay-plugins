@@ -14,6 +14,8 @@
 
 package com.liferay.wsrp.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.service.ServiceWrapper;
 
 /**
@@ -23,6 +25,7 @@ import com.liferay.portal.service.ServiceWrapper;
  * @see WSRPConsumerLocalService
  * @generated
  */
+@ProviderType
 public class WSRPConsumerLocalServiceWrapper implements WSRPConsumerLocalService,
 	ServiceWrapper<WSRPConsumerLocalService> {
 	public WSRPConsumerLocalServiceWrapper(
@@ -169,10 +172,10 @@ public class WSRPConsumerLocalServiceWrapper implements WSRPConsumerLocalService
 	}
 
 	/**
-	* Returns the number of rows that match the dynamic query.
+	* Returns the number of rows matching the dynamic query.
 	*
 	* @param dynamicQuery the dynamic query
-	* @return the number of rows that match the dynamic query
+	* @return the number of rows matching the dynamic query
 	*/
 	@Override
 	public long dynamicQueryCount(
@@ -181,11 +184,11 @@ public class WSRPConsumerLocalServiceWrapper implements WSRPConsumerLocalService
 	}
 
 	/**
-	* Returns the number of rows that match the dynamic query.
+	* Returns the number of rows matching the dynamic query.
 	*
 	* @param dynamicQuery the dynamic query
 	* @param projection the projection to apply to the query
-	* @return the number of rows that match the dynamic query
+	* @return the number of rows matching the dynamic query
 	*/
 	@Override
 	public long dynamicQueryCount(
@@ -220,20 +223,25 @@ public class WSRPConsumerLocalServiceWrapper implements WSRPConsumerLocalService
 		return _wsrpConsumerLocalService.getActionableDynamicQuery();
 	}
 
-	/**
-	* Returns the Spring bean ID for this bean.
-	*
-	* @return the Spring bean ID for this bean
-	*/
 	@Override
-	public java.lang.String getBeanIdentifier() {
-		return _wsrpConsumerLocalService.getBeanIdentifier();
+	public com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery getExportActionableDynamicQuery(
+		com.liferay.portlet.exportimport.lar.PortletDataContext portletDataContext) {
+		return _wsrpConsumerLocalService.getExportActionableDynamicQuery(portletDataContext);
 	}
 
 	@Override
-	public com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery getExportActionableDynamicQuery(
-		com.liferay.portal.kernel.lar.PortletDataContext portletDataContext) {
-		return _wsrpConsumerLocalService.getExportActionableDynamicQuery(portletDataContext);
+	public com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery getIndexableActionableDynamicQuery() {
+		return _wsrpConsumerLocalService.getIndexableActionableDynamicQuery();
+	}
+
+	/**
+	* Returns the OSGi service identifier.
+	*
+	* @return the OSGi service identifier
+	*/
+	@Override
+	public java.lang.String getOSGiServiceIdentifier() {
+		return _wsrpConsumerLocalService.getOSGiServiceIdentifier();
 	}
 
 	@Override
@@ -342,16 +350,6 @@ public class WSRPConsumerLocalServiceWrapper implements WSRPConsumerLocalService
 		_wsrpConsumerLocalService.restartConsumer(wsrpConsumerId);
 	}
 
-	/**
-	* Sets the Spring bean ID for this bean.
-	*
-	* @param beanIdentifier the Spring bean ID for this bean
-	*/
-	@Override
-	public void setBeanIdentifier(java.lang.String beanIdentifier) {
-		_wsrpConsumerLocalService.setBeanIdentifier(beanIdentifier);
-	}
-
 	@Override
 	public void updateServiceDescription(long wsrpConsumerId)
 		throws com.liferay.portal.kernel.exception.PortalException {
@@ -380,23 +378,6 @@ public class WSRPConsumerLocalServiceWrapper implements WSRPConsumerLocalService
 		return _wsrpConsumerLocalService.updateWSRPConsumer(wsrpConsumerId,
 			adminPortletId, name, url, forwardCookies, forwardHeaders,
 			markupCharacterSets);
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedService}
-	 */
-	@Deprecated
-	public WSRPConsumerLocalService getWrappedWSRPConsumerLocalService() {
-		return _wsrpConsumerLocalService;
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #setWrappedService}
-	 */
-	@Deprecated
-	public void setWrappedWSRPConsumerLocalService(
-		WSRPConsumerLocalService wsrpConsumerLocalService) {
-		_wsrpConsumerLocalService = wsrpConsumerLocalService;
 	}
 
 	@Override

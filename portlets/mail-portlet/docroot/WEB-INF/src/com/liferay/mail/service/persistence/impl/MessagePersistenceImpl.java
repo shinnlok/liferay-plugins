@@ -22,8 +22,10 @@ import com.liferay.mail.model.impl.MessageImpl;
 import com.liferay.mail.model.impl.MessageModelImpl;
 import com.liferay.mail.service.persistence.MessagePersistence;
 
-import com.liferay.portal.kernel.cache.CacheRegistryUtil;
+import com.liferay.portal.kernel.bean.BeanReference;
+import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
+import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
 import com.liferay.portal.kernel.dao.orm.Query;
@@ -32,20 +34,22 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
-import com.liferay.portal.kernel.util.PropsKeys;
-import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.model.CacheModel;
+import com.liferay.portal.service.ServiceContext;
+import com.liferay.portal.service.ServiceContextThreadLocal;
+import com.liferay.portal.service.persistence.CompanyProvider;
+import com.liferay.portal.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
 
 import java.io.Serializable;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -62,7 +66,7 @@ import java.util.Set;
  *
  * @author Brian Wing Shun Chan
  * @see MessagePersistence
- * @see MessageUtil
+ * @see com.liferay.mail.service.persistence.MessageUtil
  * @generated
  */
 @ProviderType
@@ -125,7 +129,7 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 	 * Returns a range of all the messages where companyId = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.mail.model.impl.MessageModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link MessageModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param companyId the company ID
@@ -142,7 +146,7 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 	 * Returns an ordered range of all the messages where companyId = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.mail.model.impl.MessageModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link MessageModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param companyId the company ID
@@ -154,6 +158,26 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 	@Override
 	public List<Message> findByCompanyId(long companyId, int start, int end,
 		OrderByComparator<Message> orderByComparator) {
+		return findByCompanyId(companyId, start, end, orderByComparator, true);
+	}
+
+	/**
+	 * Returns an ordered range of all the messages where companyId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link MessageModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param companyId the company ID
+	 * @param start the lower bound of the range of messages
+	 * @param end the upper bound of the range of messages (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the ordered range of matching messages
+	 */
+	@Override
+	public List<Message> findByCompanyId(long companyId, int start, int end,
+		OrderByComparator<Message> orderByComparator, boolean retrieveFromCache) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -169,15 +193,19 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 			finderArgs = new Object[] { companyId, start, end, orderByComparator };
 		}
 
-		List<Message> list = (List<Message>)FinderCacheUtil.getResult(finderPath,
-				finderArgs, this);
+		List<Message> list = null;
 
-		if ((list != null) && !list.isEmpty()) {
-			for (Message message : list) {
-				if ((companyId != message.getCompanyId())) {
-					list = null;
+		if (retrieveFromCache) {
+			list = (List<Message>)finderCache.getResult(finderPath, finderArgs,
+					this);
 
-					break;
+			if ((list != null) && !list.isEmpty()) {
+				for (Message message : list) {
+					if ((companyId != message.getCompanyId())) {
+						list = null;
+
+						break;
+					}
 				}
 			}
 		}
@@ -234,10 +262,10 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 
 				cacheResult(list);
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, list);
+				finderCache.putResult(finderPath, finderArgs, list);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -255,7 +283,7 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 	 * @param companyId the company ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching message
-	 * @throws com.liferay.mail.NoSuchMessageException if a matching message could not be found
+	 * @throws NoSuchMessageException if a matching message could not be found
 	 */
 	@Override
 	public Message findByCompanyId_First(long companyId,
@@ -304,7 +332,7 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 	 * @param companyId the company ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching message
-	 * @throws com.liferay.mail.NoSuchMessageException if a matching message could not be found
+	 * @throws NoSuchMessageException if a matching message could not be found
 	 */
 	@Override
 	public Message findByCompanyId_Last(long companyId,
@@ -361,7 +389,7 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 	 * @param companyId the company ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next message
-	 * @throws com.liferay.mail.NoSuchMessageException if a message with the primary key could not be found
+	 * @throws NoSuchMessageException if a message with the primary key could not be found
 	 */
 	@Override
 	public Message[] findByCompanyId_PrevAndNext(long messageId,
@@ -524,8 +552,7 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 
 		Object[] finderArgs = new Object[] { companyId };
 
-		Long count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs,
-				this);
+		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler query = new StringBundler(2);
@@ -549,10 +576,10 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 
 				count = (Long)q.uniqueResult();
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, count);
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -602,7 +629,7 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 	 * Returns a range of all the messages where folderId = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.mail.model.impl.MessageModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link MessageModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param folderId the folder ID
@@ -619,7 +646,7 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 	 * Returns an ordered range of all the messages where folderId = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.mail.model.impl.MessageModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link MessageModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param folderId the folder ID
@@ -631,6 +658,26 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 	@Override
 	public List<Message> findByFolderId(long folderId, int start, int end,
 		OrderByComparator<Message> orderByComparator) {
+		return findByFolderId(folderId, start, end, orderByComparator, true);
+	}
+
+	/**
+	 * Returns an ordered range of all the messages where folderId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link MessageModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param folderId the folder ID
+	 * @param start the lower bound of the range of messages
+	 * @param end the upper bound of the range of messages (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the ordered range of matching messages
+	 */
+	@Override
+	public List<Message> findByFolderId(long folderId, int start, int end,
+		OrderByComparator<Message> orderByComparator, boolean retrieveFromCache) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -646,15 +693,19 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 			finderArgs = new Object[] { folderId, start, end, orderByComparator };
 		}
 
-		List<Message> list = (List<Message>)FinderCacheUtil.getResult(finderPath,
-				finderArgs, this);
+		List<Message> list = null;
 
-		if ((list != null) && !list.isEmpty()) {
-			for (Message message : list) {
-				if ((folderId != message.getFolderId())) {
-					list = null;
+		if (retrieveFromCache) {
+			list = (List<Message>)finderCache.getResult(finderPath, finderArgs,
+					this);
 
-					break;
+			if ((list != null) && !list.isEmpty()) {
+				for (Message message : list) {
+					if ((folderId != message.getFolderId())) {
+						list = null;
+
+						break;
+					}
 				}
 			}
 		}
@@ -711,10 +762,10 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 
 				cacheResult(list);
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, list);
+				finderCache.putResult(finderPath, finderArgs, list);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -732,7 +783,7 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 	 * @param folderId the folder ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching message
-	 * @throws com.liferay.mail.NoSuchMessageException if a matching message could not be found
+	 * @throws NoSuchMessageException if a matching message could not be found
 	 */
 	@Override
 	public Message findByFolderId_First(long folderId,
@@ -781,7 +832,7 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 	 * @param folderId the folder ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching message
-	 * @throws com.liferay.mail.NoSuchMessageException if a matching message could not be found
+	 * @throws NoSuchMessageException if a matching message could not be found
 	 */
 	@Override
 	public Message findByFolderId_Last(long folderId,
@@ -838,7 +889,7 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 	 * @param folderId the folder ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next message
-	 * @throws com.liferay.mail.NoSuchMessageException if a message with the primary key could not be found
+	 * @throws NoSuchMessageException if a message with the primary key could not be found
 	 */
 	@Override
 	public Message[] findByFolderId_PrevAndNext(long messageId, long folderId,
@@ -1001,8 +1052,7 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 
 		Object[] finderArgs = new Object[] { folderId };
 
-		Long count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs,
-				this);
+		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler query = new StringBundler(2);
@@ -1026,10 +1076,10 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 
 				count = (Long)q.uniqueResult();
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, count);
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -1054,12 +1104,12 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 			new String[] { Long.class.getName(), Long.class.getName() });
 
 	/**
-	 * Returns the message where folderId = &#63; and remoteMessageId = &#63; or throws a {@link com.liferay.mail.NoSuchMessageException} if it could not be found.
+	 * Returns the message where folderId = &#63; and remoteMessageId = &#63; or throws a {@link NoSuchMessageException} if it could not be found.
 	 *
 	 * @param folderId the folder ID
 	 * @param remoteMessageId the remote message ID
 	 * @return the matching message
-	 * @throws com.liferay.mail.NoSuchMessageException if a matching message could not be found
+	 * @throws NoSuchMessageException if a matching message could not be found
 	 */
 	@Override
 	public Message findByF_R(long folderId, long remoteMessageId)
@@ -1106,7 +1156,7 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 	 *
 	 * @param folderId the folder ID
 	 * @param remoteMessageId the remote message ID
-	 * @param retrieveFromCache whether to use the finder cache
+	 * @param retrieveFromCache whether to retrieve from the finder cache
 	 * @return the matching message, or <code>null</code> if a matching message could not be found
 	 */
 	@Override
@@ -1117,7 +1167,7 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 		Object result = null;
 
 		if (retrieveFromCache) {
-			result = FinderCacheUtil.getResult(FINDER_PATH_FETCH_BY_F_R,
+			result = finderCache.getResult(FINDER_PATH_FETCH_BY_F_R,
 					finderArgs, this);
 		}
 
@@ -1157,8 +1207,8 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 				List<Message> list = q.list();
 
 				if (list.isEmpty()) {
-					FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_F_R,
-						finderArgs, list);
+					finderCache.putResult(FINDER_PATH_FETCH_BY_F_R, finderArgs,
+						list);
 				}
 				else {
 					if ((list.size() > 1) && _log.isWarnEnabled()) {
@@ -1176,14 +1226,13 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 
 					if ((message.getFolderId() != folderId) ||
 							(message.getRemoteMessageId() != remoteMessageId)) {
-						FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_F_R,
+						finderCache.putResult(FINDER_PATH_FETCH_BY_F_R,
 							finderArgs, message);
 					}
 				}
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_F_R,
-					finderArgs);
+				finderCache.removeResult(FINDER_PATH_FETCH_BY_F_R, finderArgs);
 
 				throw processException(e);
 			}
@@ -1228,8 +1277,7 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 
 		Object[] finderArgs = new Object[] { folderId, remoteMessageId };
 
-		Long count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs,
-				this);
+		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler query = new StringBundler(3);
@@ -1257,10 +1305,10 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 
 				count = (Long)q.uniqueResult();
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, count);
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -1286,10 +1334,10 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 	 */
 	@Override
 	public void cacheResult(Message message) {
-		EntityCacheUtil.putResult(MessageModelImpl.ENTITY_CACHE_ENABLED,
+		entityCache.putResult(MessageModelImpl.ENTITY_CACHE_ENABLED,
 			MessageImpl.class, message.getPrimaryKey(), message);
 
-		FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_F_R,
+		finderCache.putResult(FINDER_PATH_FETCH_BY_F_R,
 			new Object[] { message.getFolderId(), message.getRemoteMessageId() },
 			message);
 
@@ -1304,8 +1352,7 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 	@Override
 	public void cacheResult(List<Message> messages) {
 		for (Message message : messages) {
-			if (EntityCacheUtil.getResult(
-						MessageModelImpl.ENTITY_CACHE_ENABLED,
+			if (entityCache.getResult(MessageModelImpl.ENTITY_CACHE_ENABLED,
 						MessageImpl.class, message.getPrimaryKey()) == null) {
 				cacheResult(message);
 			}
@@ -1319,89 +1366,86 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 	 * Clears the cache for all messages.
 	 *
 	 * <p>
-	 * The {@link com.liferay.portal.kernel.dao.orm.EntityCache} and {@link com.liferay.portal.kernel.dao.orm.FinderCache} are both cleared by this method.
+	 * The {@link EntityCache} and {@link FinderCache} are both cleared by this method.
 	 * </p>
 	 */
 	@Override
 	public void clearCache() {
-		if (_HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE) {
-			CacheRegistryUtil.clear(MessageImpl.class.getName());
-		}
+		entityCache.clearCache(MessageImpl.class);
 
-		EntityCacheUtil.clearCache(MessageImpl.class);
-
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_ENTITY);
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_ENTITY);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
 	/**
 	 * Clears the cache for the message.
 	 *
 	 * <p>
-	 * The {@link com.liferay.portal.kernel.dao.orm.EntityCache} and {@link com.liferay.portal.kernel.dao.orm.FinderCache} are both cleared by this method.
+	 * The {@link EntityCache} and {@link FinderCache} are both cleared by this method.
 	 * </p>
 	 */
 	@Override
 	public void clearCache(Message message) {
-		EntityCacheUtil.removeResult(MessageModelImpl.ENTITY_CACHE_ENABLED,
+		entityCache.removeResult(MessageModelImpl.ENTITY_CACHE_ENABLED,
 			MessageImpl.class, message.getPrimaryKey());
 
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 
-		clearUniqueFindersCache(message);
+		clearUniqueFindersCache((MessageModelImpl)message);
 	}
 
 	@Override
 	public void clearCache(List<Message> messages) {
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 
 		for (Message message : messages) {
-			EntityCacheUtil.removeResult(MessageModelImpl.ENTITY_CACHE_ENABLED,
+			entityCache.removeResult(MessageModelImpl.ENTITY_CACHE_ENABLED,
 				MessageImpl.class, message.getPrimaryKey());
 
-			clearUniqueFindersCache(message);
+			clearUniqueFindersCache((MessageModelImpl)message);
 		}
 	}
 
-	protected void cacheUniqueFindersCache(Message message) {
-		if (message.isNew()) {
+	protected void cacheUniqueFindersCache(MessageModelImpl messageModelImpl,
+		boolean isNew) {
+		if (isNew) {
 			Object[] args = new Object[] {
-					message.getFolderId(), message.getRemoteMessageId()
+					messageModelImpl.getFolderId(),
+					messageModelImpl.getRemoteMessageId()
 				};
 
-			FinderCacheUtil.putResult(FINDER_PATH_COUNT_BY_F_R, args,
+			finderCache.putResult(FINDER_PATH_COUNT_BY_F_R, args,
 				Long.valueOf(1));
-			FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_F_R, args, message);
+			finderCache.putResult(FINDER_PATH_FETCH_BY_F_R, args,
+				messageModelImpl);
 		}
 		else {
-			MessageModelImpl messageModelImpl = (MessageModelImpl)message;
-
 			if ((messageModelImpl.getColumnBitmask() &
 					FINDER_PATH_FETCH_BY_F_R.getColumnBitmask()) != 0) {
 				Object[] args = new Object[] {
-						message.getFolderId(), message.getRemoteMessageId()
+						messageModelImpl.getFolderId(),
+						messageModelImpl.getRemoteMessageId()
 					};
 
-				FinderCacheUtil.putResult(FINDER_PATH_COUNT_BY_F_R, args,
+				finderCache.putResult(FINDER_PATH_COUNT_BY_F_R, args,
 					Long.valueOf(1));
-				FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_F_R, args,
-					message);
+				finderCache.putResult(FINDER_PATH_FETCH_BY_F_R, args,
+					messageModelImpl);
 			}
 		}
 	}
 
-	protected void clearUniqueFindersCache(Message message) {
-		MessageModelImpl messageModelImpl = (MessageModelImpl)message;
-
+	protected void clearUniqueFindersCache(MessageModelImpl messageModelImpl) {
 		Object[] args = new Object[] {
-				message.getFolderId(), message.getRemoteMessageId()
+				messageModelImpl.getFolderId(),
+				messageModelImpl.getRemoteMessageId()
 			};
 
-		FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_F_R, args);
-		FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_F_R, args);
+		finderCache.removeResult(FINDER_PATH_COUNT_BY_F_R, args);
+		finderCache.removeResult(FINDER_PATH_FETCH_BY_F_R, args);
 
 		if ((messageModelImpl.getColumnBitmask() &
 				FINDER_PATH_FETCH_BY_F_R.getColumnBitmask()) != 0) {
@@ -1410,8 +1454,8 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 					messageModelImpl.getOriginalRemoteMessageId()
 				};
 
-			FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_F_R, args);
-			FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_F_R, args);
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_F_R, args);
+			finderCache.removeResult(FINDER_PATH_FETCH_BY_F_R, args);
 		}
 	}
 
@@ -1428,6 +1472,8 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 		message.setNew(true);
 		message.setPrimaryKey(messageId);
 
+		message.setCompanyId(companyProvider.getCompanyId());
+
 		return message;
 	}
 
@@ -1436,7 +1482,7 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 	 *
 	 * @param messageId the primary key of the message
 	 * @return the message that was removed
-	 * @throws com.liferay.mail.NoSuchMessageException if a message with the primary key could not be found
+	 * @throws NoSuchMessageException if a message with the primary key could not be found
 	 */
 	@Override
 	public Message remove(long messageId) throws NoSuchMessageException {
@@ -1448,7 +1494,7 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 	 *
 	 * @param primaryKey the primary key of the message
 	 * @return the message that was removed
-	 * @throws com.liferay.mail.NoSuchMessageException if a message with the primary key could not be found
+	 * @throws NoSuchMessageException if a message with the primary key could not be found
 	 */
 	@Override
 	public Message remove(Serializable primaryKey)
@@ -1515,12 +1561,34 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 	}
 
 	@Override
-	public Message updateImpl(com.liferay.mail.model.Message message) {
+	public Message updateImpl(Message message) {
 		message = toUnwrappedModel(message);
 
 		boolean isNew = message.isNew();
 
 		MessageModelImpl messageModelImpl = (MessageModelImpl)message;
+
+		ServiceContext serviceContext = ServiceContextThreadLocal.getServiceContext();
+
+		Date now = new Date();
+
+		if (isNew && (message.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				message.setCreateDate(now);
+			}
+			else {
+				message.setCreateDate(serviceContext.getCreateDate(now));
+			}
+		}
+
+		if (!messageModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				message.setModifiedDate(now);
+			}
+			else {
+				message.setModifiedDate(serviceContext.getModifiedDate(now));
+			}
+		}
 
 		Session session = null;
 
@@ -1533,7 +1601,7 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 				message.setNew(false);
 			}
 			else {
-				session.merge(message);
+				message = (Message)session.merge(message);
 			}
 		}
 		catch (Exception e) {
@@ -1543,10 +1611,10 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 			closeSession(session);
 		}
 
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 
 		if (isNew || !MessageModelImpl.COLUMN_BITMASK_ENABLED) {
-			FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 		}
 
 		else {
@@ -1556,16 +1624,14 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 						messageModelImpl.getOriginalCompanyId()
 					};
 
-				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_COMPANYID,
-					args);
-				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_COMPANYID,
+				finderCache.removeResult(FINDER_PATH_COUNT_BY_COMPANYID, args);
+				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_COMPANYID,
 					args);
 
 				args = new Object[] { messageModelImpl.getCompanyId() };
 
-				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_COMPANYID,
-					args);
-				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_COMPANYID,
+				finderCache.removeResult(FINDER_PATH_COUNT_BY_COMPANYID, args);
+				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_COMPANYID,
 					args);
 			}
 
@@ -1575,23 +1641,23 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 						messageModelImpl.getOriginalFolderId()
 					};
 
-				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_FOLDERID, args);
-				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_FOLDERID,
+				finderCache.removeResult(FINDER_PATH_COUNT_BY_FOLDERID, args);
+				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_FOLDERID,
 					args);
 
 				args = new Object[] { messageModelImpl.getFolderId() };
 
-				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_FOLDERID, args);
-				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_FOLDERID,
+				finderCache.removeResult(FINDER_PATH_COUNT_BY_FOLDERID, args);
+				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_FOLDERID,
 					args);
 			}
 		}
 
-		EntityCacheUtil.putResult(MessageModelImpl.ENTITY_CACHE_ENABLED,
+		entityCache.putResult(MessageModelImpl.ENTITY_CACHE_ENABLED,
 			MessageImpl.class, message.getPrimaryKey(), message, false);
 
-		clearUniqueFindersCache(message);
-		cacheUniqueFindersCache(message);
+		clearUniqueFindersCache(messageModelImpl);
+		cacheUniqueFindersCache(messageModelImpl, isNew);
 
 		message.resetOriginalValues();
 
@@ -1637,7 +1703,7 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 	 *
 	 * @param primaryKey the primary key of the message
 	 * @return the message
-	 * @throws com.liferay.mail.NoSuchMessageException if a message with the primary key could not be found
+	 * @throws NoSuchMessageException if a message with the primary key could not be found
 	 */
 	@Override
 	public Message findByPrimaryKey(Serializable primaryKey)
@@ -1657,11 +1723,11 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 	}
 
 	/**
-	 * Returns the message with the primary key or throws a {@link com.liferay.mail.NoSuchMessageException} if it could not be found.
+	 * Returns the message with the primary key or throws a {@link NoSuchMessageException} if it could not be found.
 	 *
 	 * @param messageId the primary key of the message
 	 * @return the message
-	 * @throws com.liferay.mail.NoSuchMessageException if a message with the primary key could not be found
+	 * @throws NoSuchMessageException if a message with the primary key could not be found
 	 */
 	@Override
 	public Message findByPrimaryKey(long messageId)
@@ -1677,7 +1743,7 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 	 */
 	@Override
 	public Message fetchByPrimaryKey(Serializable primaryKey) {
-		Message message = (Message)EntityCacheUtil.getResult(MessageModelImpl.ENTITY_CACHE_ENABLED,
+		Message message = (Message)entityCache.getResult(MessageModelImpl.ENTITY_CACHE_ENABLED,
 				MessageImpl.class, primaryKey);
 
 		if (message == _nullMessage) {
@@ -1696,12 +1762,12 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 					cacheResult(message);
 				}
 				else {
-					EntityCacheUtil.putResult(MessageModelImpl.ENTITY_CACHE_ENABLED,
+					entityCache.putResult(MessageModelImpl.ENTITY_CACHE_ENABLED,
 						MessageImpl.class, primaryKey, _nullMessage);
 				}
 			}
 			catch (Exception e) {
-				EntityCacheUtil.removeResult(MessageModelImpl.ENTITY_CACHE_ENABLED,
+				entityCache.removeResult(MessageModelImpl.ENTITY_CACHE_ENABLED,
 					MessageImpl.class, primaryKey);
 
 				throw processException(e);
@@ -1751,7 +1817,7 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			Message message = (Message)EntityCacheUtil.getResult(MessageModelImpl.ENTITY_CACHE_ENABLED,
+			Message message = (Message)entityCache.getResult(MessageModelImpl.ENTITY_CACHE_ENABLED,
 					MessageImpl.class, primaryKey);
 
 			if (message == null) {
@@ -1803,7 +1869,7 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 			}
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
-				EntityCacheUtil.putResult(MessageModelImpl.ENTITY_CACHE_ENABLED,
+				entityCache.putResult(MessageModelImpl.ENTITY_CACHE_ENABLED,
 					MessageImpl.class, primaryKey, _nullMessage);
 			}
 		}
@@ -1831,7 +1897,7 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 	 * Returns a range of all the messages.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.mail.model.impl.MessageModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link MessageModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of messages
@@ -1847,7 +1913,7 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 	 * Returns an ordered range of all the messages.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.mail.model.impl.MessageModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link MessageModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of messages
@@ -1858,6 +1924,25 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 	@Override
 	public List<Message> findAll(int start, int end,
 		OrderByComparator<Message> orderByComparator) {
+		return findAll(start, end, orderByComparator, true);
+	}
+
+	/**
+	 * Returns an ordered range of all the messages.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link MessageModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param start the lower bound of the range of messages
+	 * @param end the upper bound of the range of messages (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the ordered range of messages
+	 */
+	@Override
+	public List<Message> findAll(int start, int end,
+		OrderByComparator<Message> orderByComparator, boolean retrieveFromCache) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -1873,8 +1958,12 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 			finderArgs = new Object[] { start, end, orderByComparator };
 		}
 
-		List<Message> list = (List<Message>)FinderCacheUtil.getResult(finderPath,
-				finderArgs, this);
+		List<Message> list = null;
+
+		if (retrieveFromCache) {
+			list = (List<Message>)finderCache.getResult(finderPath, finderArgs,
+					this);
+		}
 
 		if (list == null) {
 			StringBundler query = null;
@@ -1921,10 +2010,10 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 
 				cacheResult(list);
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, list);
+				finderCache.putResult(finderPath, finderArgs, list);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -1954,7 +2043,7 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)FinderCacheUtil.getResult(FINDER_PATH_COUNT_ALL,
+		Long count = (Long)finderCache.getResult(FINDER_PATH_COUNT_ALL,
 				FINDER_ARGS_EMPTY, this);
 
 		if (count == null) {
@@ -1967,11 +2056,11 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 
 				count = (Long)q.uniqueResult();
 
-				FinderCacheUtil.putResult(FINDER_PATH_COUNT_ALL,
-					FINDER_ARGS_EMPTY, count);
+				finderCache.putResult(FINDER_PATH_COUNT_ALL, FINDER_ARGS_EMPTY,
+					count);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_ALL,
+				finderCache.removeResult(FINDER_PATH_COUNT_ALL,
 					FINDER_ARGS_EMPTY);
 
 				throw processException(e);
@@ -1985,8 +2074,13 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 	}
 
 	@Override
-	protected Set<String> getBadColumnNames() {
+	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return MessageModelImpl.TABLE_COLUMNS_MAP;
 	}
 
 	/**
@@ -1996,12 +2090,16 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 	}
 
 	public void destroy() {
-		EntityCacheUtil.removeCache(MessageImpl.class.getName());
-		FinderCacheUtil.removeCache(FINDER_CLASS_NAME_ENTITY);
-		FinderCacheUtil.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		FinderCacheUtil.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		entityCache.removeCache(MessageImpl.class.getName());
+		finderCache.removeCache(FINDER_CLASS_NAME_ENTITY);
+		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
+	@BeanReference(type = CompanyProviderWrapper.class)
+	protected CompanyProvider companyProvider;
+	protected EntityCache entityCache = EntityCacheUtil.getEntityCache();
+	protected FinderCache finderCache = FinderCacheUtil.getFinderCache();
 	private static final String _SQL_SELECT_MESSAGE = "SELECT message FROM Message message";
 	private static final String _SQL_SELECT_MESSAGE_WHERE_PKS_IN = "SELECT message FROM Message message WHERE messageId IN (";
 	private static final String _SQL_SELECT_MESSAGE_WHERE = "SELECT message FROM Message message WHERE ";
@@ -2010,8 +2108,6 @@ public class MessagePersistenceImpl extends BasePersistenceImpl<Message>
 	private static final String _ORDER_BY_ENTITY_ALIAS = "message.";
 	private static final String _NO_SUCH_ENTITY_WITH_PRIMARY_KEY = "No Message exists with the primary key ";
 	private static final String _NO_SUCH_ENTITY_WITH_KEY = "No Message exists with the key {";
-	private static final boolean _HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE = GetterUtil.getBoolean(PropsUtil.get(
-				PropsKeys.HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE));
 	private static final Log _log = LogFactoryUtil.getLog(MessagePersistenceImpl.class);
 	private static final Set<String> _badColumnNames = SetUtil.fromArray(new String[] {
 				"to", "size"

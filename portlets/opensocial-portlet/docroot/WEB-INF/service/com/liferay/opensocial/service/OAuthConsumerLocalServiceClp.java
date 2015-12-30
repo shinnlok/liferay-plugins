@@ -14,12 +14,15 @@
 
 package com.liferay.opensocial.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.service.InvokableLocalService;
 
 /**
  * @author Brian Wing Shun Chan
  * @generated
  */
+@ProviderType
 public class OAuthConsumerLocalServiceClp implements OAuthConsumerLocalService {
 	public OAuthConsumerLocalServiceClp(
 		InvokableLocalService invokableLocalService) {
@@ -112,7 +115,7 @@ public class OAuthConsumerLocalServiceClp implements OAuthConsumerLocalService {
 
 		_methodParameterTypes15 = new String[] {  };
 
-		_methodName16 = "getBeanIdentifier";
+		_methodName16 = "getIndexableActionableDynamicQuery";
 
 		_methodParameterTypes16 = new String[] {  };
 
@@ -146,13 +149,13 @@ public class OAuthConsumerLocalServiceClp implements OAuthConsumerLocalService {
 
 		_methodParameterTypes23 = new String[] { "java.lang.String" };
 
-		_methodName24 = "getPersistedModel";
+		_methodName24 = "getOSGiServiceIdentifier";
 
-		_methodParameterTypes24 = new String[] { "java.io.Serializable" };
+		_methodParameterTypes24 = new String[] {  };
 
-		_methodName26 = "setBeanIdentifier";
+		_methodName25 = "getPersistedModel";
 
-		_methodParameterTypes26 = new String[] { "java.lang.String" };
+		_methodParameterTypes25 = new String[] { "java.io.Serializable" };
 
 		_methodName27 = "updateOAuthConsumer";
 
@@ -607,7 +610,7 @@ public class OAuthConsumerLocalServiceClp implements OAuthConsumerLocalService {
 	}
 
 	@Override
-	public java.lang.String getBeanIdentifier() {
+	public com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery getIndexableActionableDynamicQuery() {
 		Object returnObj = null;
 
 		try {
@@ -626,7 +629,7 @@ public class OAuthConsumerLocalServiceClp implements OAuthConsumerLocalService {
 			}
 		}
 
-		return (java.lang.String)ClpSerializer.translateOutput(returnObj);
+		return (com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery)ClpSerializer.translateOutput(returnObj);
 	}
 
 	@Override
@@ -820,14 +823,37 @@ public class OAuthConsumerLocalServiceClp implements OAuthConsumerLocalService {
 	}
 
 	@Override
+	public java.lang.String getOSGiServiceIdentifier() {
+		Object returnObj = null;
+
+		try {
+			returnObj = _invokableLocalService.invokeMethod(_methodName24,
+					_methodParameterTypes24, new Object[] {  });
+		}
+		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
+			if (t instanceof RuntimeException) {
+				throw (RuntimeException)t;
+			}
+			else {
+				throw new RuntimeException(t.getClass().getName() +
+					" is not a valid exception");
+			}
+		}
+
+		return (java.lang.String)ClpSerializer.translateOutput(returnObj);
+	}
+
+	@Override
 	public com.liferay.portal.model.PersistedModel getPersistedModel(
 		java.io.Serializable primaryKeyObj)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName24,
-					_methodParameterTypes24,
+			returnObj = _invokableLocalService.invokeMethod(_methodName25,
+					_methodParameterTypes25,
 					new Object[] { ClpSerializer.translateInput(primaryKeyObj) });
 		}
 		catch (Throwable t) {
@@ -854,26 +880,6 @@ public class OAuthConsumerLocalServiceClp implements OAuthConsumerLocalService {
 		java.lang.String[] parameterTypes, java.lang.Object[] arguments)
 		throws java.lang.Throwable {
 		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void setBeanIdentifier(java.lang.String beanIdentifier) {
-		try {
-			_invokableLocalService.invokeMethod(_methodName26,
-				_methodParameterTypes26,
-				new Object[] { ClpSerializer.translateInput(beanIdentifier) });
-		}
-		catch (Throwable t) {
-			t = ClpSerializer.translateThrowable(t);
-
-			if (t instanceof RuntimeException) {
-				throw (RuntimeException)t;
-			}
-			else {
-				throw new RuntimeException(t.getClass().getName() +
-					" is not a valid exception");
-			}
-		}
 	}
 
 	@Override
@@ -996,8 +1002,8 @@ public class OAuthConsumerLocalServiceClp implements OAuthConsumerLocalService {
 	private String[] _methodParameterTypes23;
 	private String _methodName24;
 	private String[] _methodParameterTypes24;
-	private String _methodName26;
-	private String[] _methodParameterTypes26;
+	private String _methodName25;
+	private String[] _methodParameterTypes25;
 	private String _methodName27;
 	private String[] _methodParameterTypes27;
 	private String _methodName28;

@@ -14,6 +14,8 @@
 
 package com.liferay.ams.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.service.ServiceWrapper;
 
 /**
@@ -23,6 +25,7 @@ import com.liferay.portal.service.ServiceWrapper;
  * @see TypeLocalService
  * @generated
  */
+@ProviderType
 public class TypeLocalServiceWrapper implements TypeLocalService,
 	ServiceWrapper<TypeLocalService> {
 	public TypeLocalServiceWrapper(TypeLocalService typeLocalService) {
@@ -145,10 +148,10 @@ public class TypeLocalServiceWrapper implements TypeLocalService,
 	}
 
 	/**
-	* Returns the number of rows that match the dynamic query.
+	* Returns the number of rows matching the dynamic query.
 	*
 	* @param dynamicQuery the dynamic query
-	* @return the number of rows that match the dynamic query
+	* @return the number of rows matching the dynamic query
 	*/
 	@Override
 	public long dynamicQueryCount(
@@ -157,11 +160,11 @@ public class TypeLocalServiceWrapper implements TypeLocalService,
 	}
 
 	/**
-	* Returns the number of rows that match the dynamic query.
+	* Returns the number of rows matching the dynamic query.
 	*
 	* @param dynamicQuery the dynamic query
 	* @param projection the projection to apply to the query
-	* @return the number of rows that match the dynamic query
+	* @return the number of rows matching the dynamic query
 	*/
 	@Override
 	public long dynamicQueryCount(
@@ -180,14 +183,19 @@ public class TypeLocalServiceWrapper implements TypeLocalService,
 		return _typeLocalService.getActionableDynamicQuery();
 	}
 
+	@Override
+	public com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery getIndexableActionableDynamicQuery() {
+		return _typeLocalService.getIndexableActionableDynamicQuery();
+	}
+
 	/**
-	* Returns the Spring bean ID for this bean.
+	* Returns the OSGi service identifier.
 	*
-	* @return the Spring bean ID for this bean
+	* @return the OSGi service identifier
 	*/
 	@Override
-	public java.lang.String getBeanIdentifier() {
-		return _typeLocalService.getBeanIdentifier();
+	public java.lang.String getOSGiServiceIdentifier() {
+		return _typeLocalService.getOSGiServiceIdentifier();
 	}
 
 	@Override
@@ -245,16 +253,6 @@ public class TypeLocalServiceWrapper implements TypeLocalService,
 	}
 
 	/**
-	* Sets the Spring bean ID for this bean.
-	*
-	* @param beanIdentifier the Spring bean ID for this bean
-	*/
-	@Override
-	public void setBeanIdentifier(java.lang.String beanIdentifier) {
-		_typeLocalService.setBeanIdentifier(beanIdentifier);
-	}
-
-	/**
 	* Updates the type in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
 	*
 	* @param type the type
@@ -264,22 +262,6 @@ public class TypeLocalServiceWrapper implements TypeLocalService,
 	public com.liferay.ams.model.Type updateType(
 		com.liferay.ams.model.Type type) {
 		return _typeLocalService.updateType(type);
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedService}
-	 */
-	@Deprecated
-	public TypeLocalService getWrappedTypeLocalService() {
-		return _typeLocalService;
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #setWrappedService}
-	 */
-	@Deprecated
-	public void setWrappedTypeLocalService(TypeLocalService typeLocalService) {
-		_typeLocalService = typeLocalService;
 	}
 
 	@Override

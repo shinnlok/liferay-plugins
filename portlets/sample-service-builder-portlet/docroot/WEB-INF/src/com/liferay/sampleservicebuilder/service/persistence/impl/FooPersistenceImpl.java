@@ -14,8 +14,12 @@
 
 package com.liferay.sampleservicebuilder.service.persistence.impl;
 
-import com.liferay.portal.kernel.cache.CacheRegistryUtil;
+import aQute.bnd.annotation.ProviderType;
+
+import com.liferay.portal.kernel.bean.BeanReference;
+import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
+import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
 import com.liferay.portal.kernel.dao.orm.Query;
@@ -24,16 +28,17 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
-import com.liferay.portal.kernel.util.PropsKeys;
-import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
 import com.liferay.portal.model.CacheModel;
+import com.liferay.portal.service.ServiceContext;
+import com.liferay.portal.service.ServiceContextThreadLocal;
+import com.liferay.portal.service.persistence.CompanyProvider;
+import com.liferay.portal.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
 
 import com.liferay.sampleservicebuilder.NoSuchFooException;
@@ -45,6 +50,7 @@ import com.liferay.sampleservicebuilder.service.persistence.FooPersistence;
 import java.io.Serializable;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -61,9 +67,10 @@ import java.util.Set;
  *
  * @author Brian Wing Shun Chan
  * @see FooPersistence
- * @see FooUtil
+ * @see com.liferay.sampleservicebuilder.service.persistence.FooUtil
  * @generated
  */
+@ProviderType
 public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	implements FooPersistence {
 	/*
@@ -120,7 +127,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	 * Returns a range of all the foos where uuid = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.sampleservicebuilder.model.impl.FooModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link FooModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param uuid the uuid
@@ -137,7 +144,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	 * Returns an ordered range of all the foos where uuid = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.sampleservicebuilder.model.impl.FooModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link FooModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param uuid the uuid
@@ -149,6 +156,26 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	@Override
 	public List<Foo> findByUuid(String uuid, int start, int end,
 		OrderByComparator<Foo> orderByComparator) {
+		return findByUuid(uuid, start, end, orderByComparator, true);
+	}
+
+	/**
+	 * Returns an ordered range of all the foos where uuid = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link FooModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param uuid the uuid
+	 * @param start the lower bound of the range of foos
+	 * @param end the upper bound of the range of foos (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the ordered range of matching foos
+	 */
+	@Override
+	public List<Foo> findByUuid(String uuid, int start, int end,
+		OrderByComparator<Foo> orderByComparator, boolean retrieveFromCache) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -164,15 +191,18 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 			finderArgs = new Object[] { uuid, start, end, orderByComparator };
 		}
 
-		List<Foo> list = (List<Foo>)FinderCacheUtil.getResult(finderPath,
-				finderArgs, this);
+		List<Foo> list = null;
 
-		if ((list != null) && !list.isEmpty()) {
-			for (Foo foo : list) {
-				if (!Validator.equals(uuid, foo.getUuid())) {
-					list = null;
+		if (retrieveFromCache) {
+			list = (List<Foo>)finderCache.getResult(finderPath, finderArgs, this);
 
-					break;
+			if ((list != null) && !list.isEmpty()) {
+				for (Foo foo : list) {
+					if (!Validator.equals(uuid, foo.getUuid())) {
+						list = null;
+
+						break;
+					}
 				}
 			}
 		}
@@ -242,10 +272,10 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 
 				cacheResult(list);
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, list);
+				finderCache.putResult(finderPath, finderArgs, list);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -263,7 +293,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	 * @param uuid the uuid
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching foo
-	 * @throws com.liferay.sampleservicebuilder.NoSuchFooException if a matching foo could not be found
+	 * @throws NoSuchFooException if a matching foo could not be found
 	 */
 	@Override
 	public Foo findByUuid_First(String uuid,
@@ -311,7 +341,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	 * @param uuid the uuid
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching foo
-	 * @throws com.liferay.sampleservicebuilder.NoSuchFooException if a matching foo could not be found
+	 * @throws NoSuchFooException if a matching foo could not be found
 	 */
 	@Override
 	public Foo findByUuid_Last(String uuid,
@@ -366,7 +396,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	 * @param uuid the uuid
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next foo
-	 * @throws com.liferay.sampleservicebuilder.NoSuchFooException if a foo with the primary key could not be found
+	 * @throws NoSuchFooException if a foo with the primary key could not be found
 	 */
 	@Override
 	public Foo[] findByUuid_PrevAndNext(long fooId, String uuid,
@@ -541,8 +571,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 
 		Object[] finderArgs = new Object[] { uuid };
 
-		Long count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs,
-				this);
+		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler query = new StringBundler(2);
@@ -580,10 +609,10 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 
 				count = (Long)q.uniqueResult();
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, count);
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -610,12 +639,12 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 			new String[] { String.class.getName(), Long.class.getName() });
 
 	/**
-	 * Returns the foo where uuid = &#63; and groupId = &#63; or throws a {@link com.liferay.sampleservicebuilder.NoSuchFooException} if it could not be found.
+	 * Returns the foo where uuid = &#63; and groupId = &#63; or throws a {@link NoSuchFooException} if it could not be found.
 	 *
 	 * @param uuid the uuid
 	 * @param groupId the group ID
 	 * @return the matching foo
-	 * @throws com.liferay.sampleservicebuilder.NoSuchFooException if a matching foo could not be found
+	 * @throws NoSuchFooException if a matching foo could not be found
 	 */
 	@Override
 	public Foo findByUUID_G(String uuid, long groupId)
@@ -662,7 +691,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	 *
 	 * @param uuid the uuid
 	 * @param groupId the group ID
-	 * @param retrieveFromCache whether to use the finder cache
+	 * @param retrieveFromCache whether to retrieve from the finder cache
 	 * @return the matching foo, or <code>null</code> if a matching foo could not be found
 	 */
 	@Override
@@ -673,7 +702,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 		Object result = null;
 
 		if (retrieveFromCache) {
-			result = FinderCacheUtil.getResult(FINDER_PATH_FETCH_BY_UUID_G,
+			result = finderCache.getResult(FINDER_PATH_FETCH_BY_UUID_G,
 					finderArgs, this);
 		}
 
@@ -727,7 +756,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 				List<Foo> list = q.list();
 
 				if (list.isEmpty()) {
-					FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_UUID_G,
+					finderCache.putResult(FINDER_PATH_FETCH_BY_UUID_G,
 						finderArgs, list);
 				}
 				else {
@@ -739,14 +768,13 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 
 					if ((foo.getUuid() == null) || !foo.getUuid().equals(uuid) ||
 							(foo.getGroupId() != groupId)) {
-						FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_UUID_G,
+						finderCache.putResult(FINDER_PATH_FETCH_BY_UUID_G,
 							finderArgs, foo);
 					}
 				}
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_UUID_G,
-					finderArgs);
+				finderCache.removeResult(FINDER_PATH_FETCH_BY_UUID_G, finderArgs);
 
 				throw processException(e);
 			}
@@ -791,8 +819,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 
 		Object[] finderArgs = new Object[] { uuid, groupId };
 
-		Long count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs,
-				this);
+		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler query = new StringBundler(3);
@@ -834,10 +861,10 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 
 				count = (Long)q.uniqueResult();
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, count);
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -892,7 +919,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	 * Returns a range of all the foos where uuid = &#63; and companyId = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.sampleservicebuilder.model.impl.FooModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link FooModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param uuid the uuid
@@ -911,7 +938,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	 * Returns an ordered range of all the foos where uuid = &#63; and companyId = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.sampleservicebuilder.model.impl.FooModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link FooModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param uuid the uuid
@@ -924,6 +951,28 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	@Override
 	public List<Foo> findByUuid_C(String uuid, long companyId, int start,
 		int end, OrderByComparator<Foo> orderByComparator) {
+		return findByUuid_C(uuid, companyId, start, end, orderByComparator, true);
+	}
+
+	/**
+	 * Returns an ordered range of all the foos where uuid = &#63; and companyId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link FooModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param uuid the uuid
+	 * @param companyId the company ID
+	 * @param start the lower bound of the range of foos
+	 * @param end the upper bound of the range of foos (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the ordered range of matching foos
+	 */
+	@Override
+	public List<Foo> findByUuid_C(String uuid, long companyId, int start,
+		int end, OrderByComparator<Foo> orderByComparator,
+		boolean retrieveFromCache) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -943,16 +992,19 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 				};
 		}
 
-		List<Foo> list = (List<Foo>)FinderCacheUtil.getResult(finderPath,
-				finderArgs, this);
+		List<Foo> list = null;
 
-		if ((list != null) && !list.isEmpty()) {
-			for (Foo foo : list) {
-				if (!Validator.equals(uuid, foo.getUuid()) ||
-						(companyId != foo.getCompanyId())) {
-					list = null;
+		if (retrieveFromCache) {
+			list = (List<Foo>)finderCache.getResult(finderPath, finderArgs, this);
 
-					break;
+			if ((list != null) && !list.isEmpty()) {
+				for (Foo foo : list) {
+					if (!Validator.equals(uuid, foo.getUuid()) ||
+							(companyId != foo.getCompanyId())) {
+						list = null;
+
+						break;
+					}
 				}
 			}
 		}
@@ -1026,10 +1078,10 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 
 				cacheResult(list);
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, list);
+				finderCache.putResult(finderPath, finderArgs, list);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -1048,7 +1100,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	 * @param companyId the company ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching foo
-	 * @throws com.liferay.sampleservicebuilder.NoSuchFooException if a matching foo could not be found
+	 * @throws NoSuchFooException if a matching foo could not be found
 	 */
 	@Override
 	public Foo findByUuid_C_First(String uuid, long companyId,
@@ -1101,7 +1153,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	 * @param companyId the company ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching foo
-	 * @throws com.liferay.sampleservicebuilder.NoSuchFooException if a matching foo could not be found
+	 * @throws NoSuchFooException if a matching foo could not be found
 	 */
 	@Override
 	public Foo findByUuid_C_Last(String uuid, long companyId,
@@ -1162,7 +1214,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	 * @param companyId the company ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next foo
-	 * @throws com.liferay.sampleservicebuilder.NoSuchFooException if a foo with the primary key could not be found
+	 * @throws NoSuchFooException if a foo with the primary key could not be found
 	 */
 	@Override
 	public Foo[] findByUuid_C_PrevAndNext(long fooId, String uuid,
@@ -1345,8 +1397,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 
 		Object[] finderArgs = new Object[] { uuid, companyId };
 
-		Long count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs,
-				this);
+		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler query = new StringBundler(3);
@@ -1388,10 +1439,10 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 
 				count = (Long)q.uniqueResult();
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, count);
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -1443,7 +1494,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	 * Returns a range of all the foos where field2 = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.sampleservicebuilder.model.impl.FooModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link FooModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param field2 the field2
@@ -1460,7 +1511,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	 * Returns an ordered range of all the foos where field2 = &#63;.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.sampleservicebuilder.model.impl.FooModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link FooModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param field2 the field2
@@ -1472,6 +1523,26 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	@Override
 	public List<Foo> findByField2(boolean field2, int start, int end,
 		OrderByComparator<Foo> orderByComparator) {
+		return findByField2(field2, start, end, orderByComparator, true);
+	}
+
+	/**
+	 * Returns an ordered range of all the foos where field2 = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link FooModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param field2 the field2
+	 * @param start the lower bound of the range of foos
+	 * @param end the upper bound of the range of foos (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the ordered range of matching foos
+	 */
+	@Override
+	public List<Foo> findByField2(boolean field2, int start, int end,
+		OrderByComparator<Foo> orderByComparator, boolean retrieveFromCache) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -1487,15 +1558,18 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 			finderArgs = new Object[] { field2, start, end, orderByComparator };
 		}
 
-		List<Foo> list = (List<Foo>)FinderCacheUtil.getResult(finderPath,
-				finderArgs, this);
+		List<Foo> list = null;
 
-		if ((list != null) && !list.isEmpty()) {
-			for (Foo foo : list) {
-				if ((field2 != foo.getField2())) {
-					list = null;
+		if (retrieveFromCache) {
+			list = (List<Foo>)finderCache.getResult(finderPath, finderArgs, this);
 
-					break;
+			if ((list != null) && !list.isEmpty()) {
+				for (Foo foo : list) {
+					if ((field2 != foo.getField2())) {
+						list = null;
+
+						break;
+					}
 				}
 			}
 		}
@@ -1551,10 +1625,10 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 
 				cacheResult(list);
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, list);
+				finderCache.putResult(finderPath, finderArgs, list);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -1572,7 +1646,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	 * @param field2 the field2
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching foo
-	 * @throws com.liferay.sampleservicebuilder.NoSuchFooException if a matching foo could not be found
+	 * @throws NoSuchFooException if a matching foo could not be found
 	 */
 	@Override
 	public Foo findByField2_First(boolean field2,
@@ -1620,7 +1694,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	 * @param field2 the field2
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching foo
-	 * @throws com.liferay.sampleservicebuilder.NoSuchFooException if a matching foo could not be found
+	 * @throws NoSuchFooException if a matching foo could not be found
 	 */
 	@Override
 	public Foo findByField2_Last(boolean field2,
@@ -1676,7 +1750,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	 * @param field2 the field2
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next foo
-	 * @throws com.liferay.sampleservicebuilder.NoSuchFooException if a foo with the primary key could not be found
+	 * @throws NoSuchFooException if a foo with the primary key could not be found
 	 */
 	@Override
 	public Foo[] findByField2_PrevAndNext(long fooId, boolean field2,
@@ -1838,8 +1912,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 
 		Object[] finderArgs = new Object[] { field2 };
 
-		Long count = (Long)FinderCacheUtil.getResult(finderPath, finderArgs,
-				this);
+		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
 		if (count == null) {
 			StringBundler query = new StringBundler(2);
@@ -1863,10 +1936,10 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 
 				count = (Long)q.uniqueResult();
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, count);
+				finderCache.putResult(finderPath, finderArgs, count);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -1891,10 +1964,10 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	 */
 	@Override
 	public void cacheResult(Foo foo) {
-		EntityCacheUtil.putResult(FooModelImpl.ENTITY_CACHE_ENABLED,
-			FooImpl.class, foo.getPrimaryKey(), foo);
+		entityCache.putResult(FooModelImpl.ENTITY_CACHE_ENABLED, FooImpl.class,
+			foo.getPrimaryKey(), foo);
 
-		FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_UUID_G,
+		finderCache.putResult(FINDER_PATH_FETCH_BY_UUID_G,
 			new Object[] { foo.getUuid(), foo.getGroupId() }, foo);
 
 		foo.resetOriginalValues();
@@ -1908,7 +1981,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	@Override
 	public void cacheResult(List<Foo> foos) {
 		for (Foo foo : foos) {
-			if (EntityCacheUtil.getResult(FooModelImpl.ENTITY_CACHE_ENABLED,
+			if (entityCache.getResult(FooModelImpl.ENTITY_CACHE_ENABLED,
 						FooImpl.class, foo.getPrimaryKey()) == null) {
 				cacheResult(foo);
 			}
@@ -1922,82 +1995,83 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	 * Clears the cache for all foos.
 	 *
 	 * <p>
-	 * The {@link com.liferay.portal.kernel.dao.orm.EntityCache} and {@link com.liferay.portal.kernel.dao.orm.FinderCache} are both cleared by this method.
+	 * The {@link EntityCache} and {@link FinderCache} are both cleared by this method.
 	 * </p>
 	 */
 	@Override
 	public void clearCache() {
-		if (_HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE) {
-			CacheRegistryUtil.clear(FooImpl.class.getName());
-		}
+		entityCache.clearCache(FooImpl.class);
 
-		EntityCacheUtil.clearCache(FooImpl.class);
-
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_ENTITY);
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_ENTITY);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
 	/**
 	 * Clears the cache for the foo.
 	 *
 	 * <p>
-	 * The {@link com.liferay.portal.kernel.dao.orm.EntityCache} and {@link com.liferay.portal.kernel.dao.orm.FinderCache} are both cleared by this method.
+	 * The {@link EntityCache} and {@link FinderCache} are both cleared by this method.
 	 * </p>
 	 */
 	@Override
 	public void clearCache(Foo foo) {
-		EntityCacheUtil.removeResult(FooModelImpl.ENTITY_CACHE_ENABLED,
+		entityCache.removeResult(FooModelImpl.ENTITY_CACHE_ENABLED,
 			FooImpl.class, foo.getPrimaryKey());
 
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 
-		clearUniqueFindersCache(foo);
+		clearUniqueFindersCache((FooModelImpl)foo);
 	}
 
 	@Override
 	public void clearCache(List<Foo> foos) {
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 
 		for (Foo foo : foos) {
-			EntityCacheUtil.removeResult(FooModelImpl.ENTITY_CACHE_ENABLED,
+			entityCache.removeResult(FooModelImpl.ENTITY_CACHE_ENABLED,
 				FooImpl.class, foo.getPrimaryKey());
 
-			clearUniqueFindersCache(foo);
+			clearUniqueFindersCache((FooModelImpl)foo);
 		}
 	}
 
-	protected void cacheUniqueFindersCache(Foo foo) {
-		if (foo.isNew()) {
-			Object[] args = new Object[] { foo.getUuid(), foo.getGroupId() };
+	protected void cacheUniqueFindersCache(FooModelImpl fooModelImpl,
+		boolean isNew) {
+		if (isNew) {
+			Object[] args = new Object[] {
+					fooModelImpl.getUuid(), fooModelImpl.getGroupId()
+				};
 
-			FinderCacheUtil.putResult(FINDER_PATH_COUNT_BY_UUID_G, args,
+			finderCache.putResult(FINDER_PATH_COUNT_BY_UUID_G, args,
 				Long.valueOf(1));
-			FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_UUID_G, args, foo);
+			finderCache.putResult(FINDER_PATH_FETCH_BY_UUID_G, args,
+				fooModelImpl);
 		}
 		else {
-			FooModelImpl fooModelImpl = (FooModelImpl)foo;
-
 			if ((fooModelImpl.getColumnBitmask() &
 					FINDER_PATH_FETCH_BY_UUID_G.getColumnBitmask()) != 0) {
-				Object[] args = new Object[] { foo.getUuid(), foo.getGroupId() };
+				Object[] args = new Object[] {
+						fooModelImpl.getUuid(), fooModelImpl.getGroupId()
+					};
 
-				FinderCacheUtil.putResult(FINDER_PATH_COUNT_BY_UUID_G, args,
+				finderCache.putResult(FINDER_PATH_COUNT_BY_UUID_G, args,
 					Long.valueOf(1));
-				FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_UUID_G, args, foo);
+				finderCache.putResult(FINDER_PATH_FETCH_BY_UUID_G, args,
+					fooModelImpl);
 			}
 		}
 	}
 
-	protected void clearUniqueFindersCache(Foo foo) {
-		FooModelImpl fooModelImpl = (FooModelImpl)foo;
+	protected void clearUniqueFindersCache(FooModelImpl fooModelImpl) {
+		Object[] args = new Object[] {
+				fooModelImpl.getUuid(), fooModelImpl.getGroupId()
+			};
 
-		Object[] args = new Object[] { foo.getUuid(), foo.getGroupId() };
-
-		FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_UUID_G, args);
-		FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_UUID_G, args);
+		finderCache.removeResult(FINDER_PATH_COUNT_BY_UUID_G, args);
+		finderCache.removeResult(FINDER_PATH_FETCH_BY_UUID_G, args);
 
 		if ((fooModelImpl.getColumnBitmask() &
 				FINDER_PATH_FETCH_BY_UUID_G.getColumnBitmask()) != 0) {
@@ -2006,8 +2080,8 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 					fooModelImpl.getOriginalGroupId()
 				};
 
-			FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_UUID_G, args);
-			FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_UUID_G, args);
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_UUID_G, args);
+			finderCache.removeResult(FINDER_PATH_FETCH_BY_UUID_G, args);
 		}
 	}
 
@@ -2028,6 +2102,8 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 
 		foo.setUuid(uuid);
 
+		foo.setCompanyId(companyProvider.getCompanyId());
+
 		return foo;
 	}
 
@@ -2036,7 +2112,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	 *
 	 * @param fooId the primary key of the foo
 	 * @return the foo that was removed
-	 * @throws com.liferay.sampleservicebuilder.NoSuchFooException if a foo with the primary key could not be found
+	 * @throws NoSuchFooException if a foo with the primary key could not be found
 	 */
 	@Override
 	public Foo remove(long fooId) throws NoSuchFooException {
@@ -2048,7 +2124,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	 *
 	 * @param primaryKey the primary key of the foo
 	 * @return the foo that was removed
-	 * @throws com.liferay.sampleservicebuilder.NoSuchFooException if a foo with the primary key could not be found
+	 * @throws NoSuchFooException if a foo with the primary key could not be found
 	 */
 	@Override
 	public Foo remove(Serializable primaryKey) throws NoSuchFooException {
@@ -2113,7 +2189,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	}
 
 	@Override
-	public Foo updateImpl(com.liferay.sampleservicebuilder.model.Foo foo) {
+	public Foo updateImpl(Foo foo) {
 		foo = toUnwrappedModel(foo);
 
 		boolean isNew = foo.isNew();
@@ -2124,6 +2200,28 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 			String uuid = PortalUUIDUtil.generate();
 
 			foo.setUuid(uuid);
+		}
+
+		ServiceContext serviceContext = ServiceContextThreadLocal.getServiceContext();
+
+		Date now = new Date();
+
+		if (isNew && (foo.getCreateDate() == null)) {
+			if (serviceContext == null) {
+				foo.setCreateDate(now);
+			}
+			else {
+				foo.setCreateDate(serviceContext.getCreateDate(now));
+			}
+		}
+
+		if (!fooModelImpl.hasSetModifiedDate()) {
+			if (serviceContext == null) {
+				foo.setModifiedDate(now);
+			}
+			else {
+				foo.setModifiedDate(serviceContext.getModifiedDate(now));
+			}
 		}
 
 		Session session = null;
@@ -2137,7 +2235,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 				foo.setNew(false);
 			}
 			else {
-				session.merge(foo);
+				foo = (Foo)session.merge(foo);
 			}
 		}
 		catch (Exception e) {
@@ -2147,10 +2245,10 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 			closeSession(session);
 		}
 
-		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 
 		if (isNew || !FooModelImpl.COLUMN_BITMASK_ENABLED) {
-			FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 		}
 
 		else {
@@ -2158,14 +2256,14 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 					FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID.getColumnBitmask()) != 0) {
 				Object[] args = new Object[] { fooModelImpl.getOriginalUuid() };
 
-				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_UUID, args);
-				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID,
+				finderCache.removeResult(FINDER_PATH_COUNT_BY_UUID, args);
+				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID,
 					args);
 
 				args = new Object[] { fooModelImpl.getUuid() };
 
-				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_UUID, args);
-				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID,
+				finderCache.removeResult(FINDER_PATH_COUNT_BY_UUID, args);
+				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID,
 					args);
 			}
 
@@ -2176,16 +2274,16 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 						fooModelImpl.getOriginalCompanyId()
 					};
 
-				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_UUID_C, args);
-				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID_C,
+				finderCache.removeResult(FINDER_PATH_COUNT_BY_UUID_C, args);
+				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID_C,
 					args);
 
 				args = new Object[] {
 						fooModelImpl.getUuid(), fooModelImpl.getCompanyId()
 					};
 
-				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_UUID_C, args);
-				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID_C,
+				finderCache.removeResult(FINDER_PATH_COUNT_BY_UUID_C, args);
+				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID_C,
 					args);
 			}
 
@@ -2193,23 +2291,23 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 					FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_FIELD2.getColumnBitmask()) != 0) {
 				Object[] args = new Object[] { fooModelImpl.getOriginalField2() };
 
-				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_FIELD2, args);
-				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_FIELD2,
+				finderCache.removeResult(FINDER_PATH_COUNT_BY_FIELD2, args);
+				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_FIELD2,
 					args);
 
 				args = new Object[] { fooModelImpl.getField2() };
 
-				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_FIELD2, args);
-				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_FIELD2,
+				finderCache.removeResult(FINDER_PATH_COUNT_BY_FIELD2, args);
+				finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_FIELD2,
 					args);
 			}
 		}
 
-		EntityCacheUtil.putResult(FooModelImpl.ENTITY_CACHE_ENABLED,
-			FooImpl.class, foo.getPrimaryKey(), foo, false);
+		entityCache.putResult(FooModelImpl.ENTITY_CACHE_ENABLED, FooImpl.class,
+			foo.getPrimaryKey(), foo, false);
 
-		clearUniqueFindersCache(foo);
-		cacheUniqueFindersCache(foo);
+		clearUniqueFindersCache(fooModelImpl);
+		cacheUniqueFindersCache(fooModelImpl, isNew);
 
 		foo.resetOriginalValues();
 
@@ -2248,7 +2346,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	 *
 	 * @param primaryKey the primary key of the foo
 	 * @return the foo
-	 * @throws com.liferay.sampleservicebuilder.NoSuchFooException if a foo with the primary key could not be found
+	 * @throws NoSuchFooException if a foo with the primary key could not be found
 	 */
 	@Override
 	public Foo findByPrimaryKey(Serializable primaryKey)
@@ -2268,11 +2366,11 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	}
 
 	/**
-	 * Returns the foo with the primary key or throws a {@link com.liferay.sampleservicebuilder.NoSuchFooException} if it could not be found.
+	 * Returns the foo with the primary key or throws a {@link NoSuchFooException} if it could not be found.
 	 *
 	 * @param fooId the primary key of the foo
 	 * @return the foo
-	 * @throws com.liferay.sampleservicebuilder.NoSuchFooException if a foo with the primary key could not be found
+	 * @throws NoSuchFooException if a foo with the primary key could not be found
 	 */
 	@Override
 	public Foo findByPrimaryKey(long fooId) throws NoSuchFooException {
@@ -2287,7 +2385,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	 */
 	@Override
 	public Foo fetchByPrimaryKey(Serializable primaryKey) {
-		Foo foo = (Foo)EntityCacheUtil.getResult(FooModelImpl.ENTITY_CACHE_ENABLED,
+		Foo foo = (Foo)entityCache.getResult(FooModelImpl.ENTITY_CACHE_ENABLED,
 				FooImpl.class, primaryKey);
 
 		if (foo == _nullFoo) {
@@ -2306,12 +2404,12 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 					cacheResult(foo);
 				}
 				else {
-					EntityCacheUtil.putResult(FooModelImpl.ENTITY_CACHE_ENABLED,
+					entityCache.putResult(FooModelImpl.ENTITY_CACHE_ENABLED,
 						FooImpl.class, primaryKey, _nullFoo);
 				}
 			}
 			catch (Exception e) {
-				EntityCacheUtil.removeResult(FooModelImpl.ENTITY_CACHE_ENABLED,
+				entityCache.removeResult(FooModelImpl.ENTITY_CACHE_ENABLED,
 					FooImpl.class, primaryKey);
 
 				throw processException(e);
@@ -2361,7 +2459,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			Foo foo = (Foo)EntityCacheUtil.getResult(FooModelImpl.ENTITY_CACHE_ENABLED,
+			Foo foo = (Foo)entityCache.getResult(FooModelImpl.ENTITY_CACHE_ENABLED,
 					FooImpl.class, primaryKey);
 
 			if (foo == null) {
@@ -2413,7 +2511,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 			}
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
-				EntityCacheUtil.putResult(FooModelImpl.ENTITY_CACHE_ENABLED,
+				entityCache.putResult(FooModelImpl.ENTITY_CACHE_ENABLED,
 					FooImpl.class, primaryKey, _nullFoo);
 			}
 		}
@@ -2441,7 +2539,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	 * Returns a range of all the foos.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.sampleservicebuilder.model.impl.FooModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link FooModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of foos
@@ -2457,7 +2555,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	 * Returns an ordered range of all the foos.
 	 *
 	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link com.liferay.sampleservicebuilder.model.impl.FooModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link FooModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
 	 * </p>
 	 *
 	 * @param start the lower bound of the range of foos
@@ -2468,6 +2566,25 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	@Override
 	public List<Foo> findAll(int start, int end,
 		OrderByComparator<Foo> orderByComparator) {
+		return findAll(start, end, orderByComparator, true);
+	}
+
+	/**
+	 * Returns an ordered range of all the foos.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link FooModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+	 * </p>
+	 *
+	 * @param start the lower bound of the range of foos
+	 * @param end the upper bound of the range of foos (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @param retrieveFromCache whether to retrieve from the finder cache
+	 * @return the ordered range of foos
+	 */
+	@Override
+	public List<Foo> findAll(int start, int end,
+		OrderByComparator<Foo> orderByComparator, boolean retrieveFromCache) {
 		boolean pagination = true;
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
@@ -2483,8 +2600,11 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 			finderArgs = new Object[] { start, end, orderByComparator };
 		}
 
-		List<Foo> list = (List<Foo>)FinderCacheUtil.getResult(finderPath,
-				finderArgs, this);
+		List<Foo> list = null;
+
+		if (retrieveFromCache) {
+			list = (List<Foo>)finderCache.getResult(finderPath, finderArgs, this);
+		}
 
 		if (list == null) {
 			StringBundler query = null;
@@ -2530,10 +2650,10 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 
 				cacheResult(list);
 
-				FinderCacheUtil.putResult(finderPath, finderArgs, list);
+				finderCache.putResult(finderPath, finderArgs, list);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(finderPath, finderArgs);
+				finderCache.removeResult(finderPath, finderArgs);
 
 				throw processException(e);
 			}
@@ -2563,7 +2683,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	 */
 	@Override
 	public int countAll() {
-		Long count = (Long)FinderCacheUtil.getResult(FINDER_PATH_COUNT_ALL,
+		Long count = (Long)finderCache.getResult(FINDER_PATH_COUNT_ALL,
 				FINDER_ARGS_EMPTY, this);
 
 		if (count == null) {
@@ -2576,11 +2696,11 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 
 				count = (Long)q.uniqueResult();
 
-				FinderCacheUtil.putResult(FINDER_PATH_COUNT_ALL,
-					FINDER_ARGS_EMPTY, count);
+				finderCache.putResult(FINDER_PATH_COUNT_ALL, FINDER_ARGS_EMPTY,
+					count);
 			}
 			catch (Exception e) {
-				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_ALL,
+				finderCache.removeResult(FINDER_PATH_COUNT_ALL,
 					FINDER_ARGS_EMPTY);
 
 				throw processException(e);
@@ -2594,8 +2714,13 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	}
 
 	@Override
-	protected Set<String> getBadColumnNames() {
+	public Set<String> getBadColumnNames() {
 		return _badColumnNames;
+	}
+
+	@Override
+	protected Map<String, Integer> getTableColumnsMap() {
+		return FooModelImpl.TABLE_COLUMNS_MAP;
 	}
 
 	/**
@@ -2605,12 +2730,16 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	}
 
 	public void destroy() {
-		EntityCacheUtil.removeCache(FooImpl.class.getName());
-		FinderCacheUtil.removeCache(FINDER_CLASS_NAME_ENTITY);
-		FinderCacheUtil.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
-		FinderCacheUtil.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		entityCache.removeCache(FooImpl.class.getName());
+		finderCache.removeCache(FINDER_CLASS_NAME_ENTITY);
+		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
+		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
+	@BeanReference(type = CompanyProviderWrapper.class)
+	protected CompanyProvider companyProvider;
+	protected EntityCache entityCache = EntityCacheUtil.getEntityCache();
+	protected FinderCache finderCache = FinderCacheUtil.getFinderCache();
 	private static final String _SQL_SELECT_FOO = "SELECT foo FROM Foo foo";
 	private static final String _SQL_SELECT_FOO_WHERE_PKS_IN = "SELECT foo FROM Foo foo WHERE fooId IN (";
 	private static final String _SQL_SELECT_FOO_WHERE = "SELECT foo FROM Foo foo WHERE ";
@@ -2619,13 +2748,11 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 	private static final String _ORDER_BY_ENTITY_ALIAS = "foo.";
 	private static final String _NO_SUCH_ENTITY_WITH_PRIMARY_KEY = "No Foo exists with the primary key ";
 	private static final String _NO_SUCH_ENTITY_WITH_KEY = "No Foo exists with the key {";
-	private static final boolean _HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE = GetterUtil.getBoolean(PropsUtil.get(
-				PropsKeys.HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE));
-	private static Log _log = LogFactoryUtil.getLog(FooPersistenceImpl.class);
-	private static Set<String> _badColumnNames = SetUtil.fromArray(new String[] {
+	private static final Log _log = LogFactoryUtil.getLog(FooPersistenceImpl.class);
+	private static final Set<String> _badColumnNames = SetUtil.fromArray(new String[] {
 				"uuid"
 			});
-	private static Foo _nullFoo = new FooImpl() {
+	private static final Foo _nullFoo = new FooImpl() {
 			@Override
 			public Object clone() {
 				return this;
@@ -2637,7 +2764,7 @@ public class FooPersistenceImpl extends BasePersistenceImpl<Foo>
 			}
 		};
 
-	private static CacheModel<Foo> _nullFooCacheModel = new CacheModel<Foo>() {
+	private static final CacheModel<Foo> _nullFooCacheModel = new CacheModel<Foo>() {
 			@Override
 			public Foo toEntityModel() {
 				return _nullFoo;

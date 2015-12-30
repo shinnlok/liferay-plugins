@@ -16,6 +16,7 @@ package com.liferay.knowledgebase.display.portlet;
 
 import com.liferay.knowledgebase.NoSuchArticleException;
 import com.liferay.knowledgebase.NoSuchCommentException;
+import com.liferay.knowledgebase.display.selector.KBArticleSelection;
 import com.liferay.knowledgebase.display.selector.KBArticleSelector;
 import com.liferay.knowledgebase.display.selector.KBArticleSelectorFactoryUtil;
 import com.liferay.knowledgebase.model.KBArticle;
@@ -60,6 +61,8 @@ import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * @author Peter Shin
  * @author Brian Wing Shun Chan
@@ -73,7 +76,9 @@ public class DisplayPortlet extends BaseKBPortlet {
 		throws IOException, PortletException {
 
 		try {
-			KBArticle kbArticle = getKBArticle(renderRequest);
+			KBArticleSelection kbArticleSelection = getKBArticle(renderRequest);
+
+			KBArticle kbArticle = kbArticleSelection.getKBArticle();
 
 			int status = getStatus(renderRequest, kbArticle);
 
@@ -86,6 +91,19 @@ public class DisplayPortlet extends BaseKBPortlet {
 
 			renderRequest.setAttribute(
 				WebKeys.KNOWLEDGE_BASE_KB_ARTICLE, kbArticle);
+			renderRequest.setAttribute(
+				WebKeys.KNOWLEDGE_BASE_EXACT_MATCH,
+				kbArticleSelection.isExactMatch());
+			renderRequest.setAttribute(
+				WebKeys.KNOWLEDGE_BASE_SEARCH_KEYWORDS,
+				kbArticleSelection.getKeywords());
+
+			if (!kbArticleSelection.isExactMatch()) {
+				HttpServletResponse response =
+					PortalUtil.getHttpServletResponse(renderResponse);
+
+				response.setStatus(404);
+			}
 		}
 		catch (Exception e) {
 			if (e instanceof NoSuchArticleException ||
@@ -136,36 +154,30 @@ public class DisplayPortlet extends BaseKBPortlet {
 
 		String urlTitle = ParamUtil.getString(actionRequest, "urlTitle");
 
-		if (Validator.isNull(urlTitle)) {
-			return;
-		}
+		KBArticle kbArticle = null;
 
-		KBArticle kbArticle =
-			KBArticleLocalServiceUtil.fetchKBArticleByUrlTitle(
+		if (Validator.isNotNull(urlTitle)) {
+			kbArticle = KBArticleLocalServiceUtil.fetchKBArticleByUrlTitle(
 				kbFolder.getGroupId(), kbFolder.getUrlTitle(), urlTitle);
 
-		if (kbArticle == null) {
-			if (Validator.isNull(previousPreferredKBFolderURLTitle)) {
-				return;
-			}
+			if ((kbArticle == null) &&
+				Validator.isNull(previousPreferredKBFolderURLTitle)) {
 
-			kbArticle = findClosestMatchingKBArticle(
-				kbFolder.getGroupId(), previousPreferredKBFolderURLTitle,
-				kbFolder.getKbFolderId(), urlTitle);
-
-			if (kbArticle == null) {
-				return;
+				kbArticle = findClosestMatchingKBArticle(
+					kbFolder.getGroupId(), previousPreferredKBFolderURLTitle,
+					kbFolder.getKbFolderId(), urlTitle);
 			}
 		}
 
 		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
-		if (!KBArticlePermission.contains(
+		if ((kbArticle != null) &&
+			!KBArticlePermission.contains(
 				themeDisplay.getPermissionChecker(), kbArticle,
 				ActionKeys.VIEW)) {
 
-			return;
+			kbArticle = null;
 		}
 
 		PortletURL redirectURL = PortletURLFactoryUtil.create(
@@ -173,7 +185,10 @@ public class DisplayPortlet extends BaseKBPortlet {
 			themeDisplay.getPlid(), PortletRequest.RENDER_PHASE);
 
 		redirectURL.setParameter("kbFolderUrlTitle", kbFolder.getUrlTitle());
-		redirectURL.setParameter("urlTitle", kbArticle.getUrlTitle());
+
+		if (kbArticle != null) {
+			redirectURL.setParameter("urlTitle", kbArticle.getUrlTitle());
+		}
 
 		actionResponse.sendRedirect(redirectURL.toString());
 	}
@@ -207,7 +222,7 @@ public class DisplayPortlet extends BaseKBPortlet {
 			SessionErrors.contains(
 				renderRequest, NoSuchSubscriptionException.class.getName()) ||
 			SessionErrors.contains(
-				renderRequest, PrincipalException.class.getName())) {
+				renderRequest, PrincipalException.getNestedClasses())) {
 
 			include(templatePath + "error.jsp", renderRequest, renderResponse);
 		}
@@ -250,21 +265,27 @@ public class DisplayPortlet extends BaseKBPortlet {
 		return kbArticle;
 	}
 
-	protected KBArticle getKBArticle(RenderRequest renderRequest)
+	protected KBArticleSelection getKBArticle(RenderRequest renderRequest)
 		throws PortalException {
 
 		String mvcPath = ParamUtil.getString(renderRequest, "mvcPath");
 
-		if (mvcPath.endsWith("/edit_article.jsp")) {
+		if (mvcPath.endsWith("/edit_article.jsp") ||
+			mvcPath.endsWith("/history.jsp") ||
+			mvcPath.endsWith("/print_article.jsp")) {
+
 			long resourcePrimKey = ParamUtil.getLong(
 				renderRequest, "resourcePrimKey");
 
 			if (resourcePrimKey == 0) {
-				return null;
+				return new KBArticleSelection(null, false);
 			}
 
-			return KBArticleLocalServiceUtil.getLatestKBArticle(
-				resourcePrimKey, WorkflowConstants.STATUS_ANY);
+			KBArticle latestKBArticle =
+				KBArticleLocalServiceUtil.getLatestKBArticle(
+					resourcePrimKey, WorkflowConstants.STATUS_ANY);
+
+			return new KBArticleSelection(latestKBArticle, true);
 		}
 
 		PortletPreferences portletPreferences = renderRequest.getPreferences();

@@ -152,10 +152,10 @@ public class JIRAProjectLocalServiceWrapper implements JIRAProjectLocalService,
 	}
 
 	/**
-	* Returns the number of rows that match the dynamic query.
+	* Returns the number of rows matching the dynamic query.
 	*
 	* @param dynamicQuery the dynamic query
-	* @return the number of rows that match the dynamic query
+	* @return the number of rows matching the dynamic query
 	*/
 	@Override
 	public long dynamicQueryCount(
@@ -164,11 +164,11 @@ public class JIRAProjectLocalServiceWrapper implements JIRAProjectLocalService,
 	}
 
 	/**
-	* Returns the number of rows that match the dynamic query.
+	* Returns the number of rows matching the dynamic query.
 	*
 	* @param dynamicQuery the dynamic query
 	* @param projection the projection to apply to the query
-	* @return the number of rows that match the dynamic query
+	* @return the number of rows matching the dynamic query
 	*/
 	@Override
 	public long dynamicQueryCount(
@@ -189,14 +189,9 @@ public class JIRAProjectLocalServiceWrapper implements JIRAProjectLocalService,
 		return _jiraProjectLocalService.getActionableDynamicQuery();
 	}
 
-	/**
-	* Returns the Spring bean ID for this bean.
-	*
-	* @return the Spring bean ID for this bean
-	*/
 	@Override
-	public java.lang.String getBeanIdentifier() {
-		return _jiraProjectLocalService.getBeanIdentifier();
+	public com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery getIndexableActionableDynamicQuery() {
+		return _jiraProjectLocalService.getIndexableActionableDynamicQuery();
 	}
 
 	/**
@@ -240,6 +235,16 @@ public class JIRAProjectLocalServiceWrapper implements JIRAProjectLocalService,
 		return _jiraProjectLocalService.getJIRAProjectsCount();
 	}
 
+	/**
+	* Returns the OSGi service identifier.
+	*
+	* @return the OSGi service identifier
+	*/
+	@Override
+	public java.lang.String getOSGiServiceIdentifier() {
+		return _jiraProjectLocalService.getOSGiServiceIdentifier();
+	}
+
 	@Override
 	public com.liferay.portal.model.PersistedModel getPersistedModel(
 		java.io.Serializable primaryKeyObj)
@@ -256,16 +261,6 @@ public class JIRAProjectLocalServiceWrapper implements JIRAProjectLocalService,
 	}
 
 	/**
-	* Sets the Spring bean ID for this bean.
-	*
-	* @param beanIdentifier the Spring bean ID for this bean
-	*/
-	@Override
-	public void setBeanIdentifier(java.lang.String beanIdentifier) {
-		_jiraProjectLocalService.setBeanIdentifier(beanIdentifier);
-	}
-
-	/**
 	* Updates the j i r a project in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
 	*
 	* @param jiraProject the j i r a project
@@ -275,23 +270,6 @@ public class JIRAProjectLocalServiceWrapper implements JIRAProjectLocalService,
 	public com.liferay.socialcoding.model.JIRAProject updateJIRAProject(
 		com.liferay.socialcoding.model.JIRAProject jiraProject) {
 		return _jiraProjectLocalService.updateJIRAProject(jiraProject);
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedService}
-	 */
-	@Deprecated
-	public JIRAProjectLocalService getWrappedJIRAProjectLocalService() {
-		return _jiraProjectLocalService;
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #setWrappedService}
-	 */
-	@Deprecated
-	public void setWrappedJIRAProjectLocalService(
-		JIRAProjectLocalService jiraProjectLocalService) {
-		_jiraProjectLocalService = jiraProjectLocalService;
 	}
 
 	@Override

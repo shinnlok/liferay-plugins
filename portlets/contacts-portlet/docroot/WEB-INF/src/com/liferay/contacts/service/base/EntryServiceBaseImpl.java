@@ -20,12 +20,12 @@ import com.liferay.contacts.service.persistence.EntryFinder;
 import com.liferay.contacts.service.persistence.EntryPersistence;
 
 import com.liferay.portal.kernel.bean.BeanReference;
-import com.liferay.portal.kernel.bean.IdentifiableBean;
 import com.liferay.portal.kernel.dao.db.DB;
-import com.liferay.portal.kernel.dao.db.DBFactoryUtil;
+import com.liferay.portal.kernel.dao.db.DBManagerUtil;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdate;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdateFactoryUtil;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.module.framework.service.IdentifiableOSGiService;
 import com.liferay.portal.service.BaseServiceImpl;
 import com.liferay.portal.service.persistence.ClassNamePersistence;
 import com.liferay.portal.service.persistence.UserPersistence;
@@ -46,7 +46,7 @@ import javax.sql.DataSource;
  * @generated
  */
 public abstract class EntryServiceBaseImpl extends BaseServiceImpl
-	implements EntryService, IdentifiableBean {
+	implements EntryService, IdentifiableOSGiService {
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
@@ -77,7 +77,7 @@ public abstract class EntryServiceBaseImpl extends BaseServiceImpl
 	 *
 	 * @return the entry remote service
 	 */
-	public com.liferay.contacts.service.EntryService getEntryService() {
+	public EntryService getEntryService() {
 		return entryService;
 	}
 
@@ -86,8 +86,7 @@ public abstract class EntryServiceBaseImpl extends BaseServiceImpl
 	 *
 	 * @param entryService the entry remote service
 	 */
-	public void setEntryService(
-		com.liferay.contacts.service.EntryService entryService) {
+	public void setEntryService(EntryService entryService) {
 		this.entryService = entryService;
 	}
 
@@ -288,23 +287,13 @@ public abstract class EntryServiceBaseImpl extends BaseServiceImpl
 	}
 
 	/**
-	 * Returns the Spring bean ID for this bean.
+	 * Returns the OSGi service identifier.
 	 *
-	 * @return the Spring bean ID for this bean
+	 * @return the OSGi service identifier
 	 */
 	@Override
-	public String getBeanIdentifier() {
-		return _beanIdentifier;
-	}
-
-	/**
-	 * Sets the Spring bean ID for this bean.
-	 *
-	 * @param beanIdentifier the Spring bean ID for this bean
-	 */
-	@Override
-	public void setBeanIdentifier(String beanIdentifier) {
-		_beanIdentifier = beanIdentifier;
+	public String getOSGiServiceIdentifier() {
+		return EntryService.class.getName();
 	}
 
 	@Override
@@ -345,7 +334,7 @@ public abstract class EntryServiceBaseImpl extends BaseServiceImpl
 		try {
 			DataSource dataSource = entryPersistence.getDataSource();
 
-			DB db = DBFactoryUtil.getDB();
+			DB db = DBManagerUtil.getDB();
 
 			sql = db.buildSQL(sql);
 			sql = PortalUtil.transformSQL(sql);
@@ -363,7 +352,7 @@ public abstract class EntryServiceBaseImpl extends BaseServiceImpl
 	@BeanReference(type = com.liferay.contacts.service.EntryLocalService.class)
 	protected com.liferay.contacts.service.EntryLocalService entryLocalService;
 	@BeanReference(type = com.liferay.contacts.service.EntryService.class)
-	protected com.liferay.contacts.service.EntryService entryService;
+	protected EntryService entryService;
 	@BeanReference(type = EntryPersistence.class)
 	protected EntryPersistence entryPersistence;
 	@BeanReference(type = EntryFinder.class)
@@ -384,7 +373,6 @@ public abstract class EntryServiceBaseImpl extends BaseServiceImpl
 	protected com.liferay.portal.service.UserService userService;
 	@BeanReference(type = UserPersistence.class)
 	protected UserPersistence userPersistence;
-	private String _beanIdentifier;
 	private ClassLoader _classLoader;
 	private EntryServiceClpInvoker _clpInvoker = new EntryServiceClpInvoker();
 }

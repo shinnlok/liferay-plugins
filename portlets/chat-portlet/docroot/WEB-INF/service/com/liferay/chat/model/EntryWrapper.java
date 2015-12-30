@@ -14,6 +14,8 @@
 
 package com.liferay.chat.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.ModelWrapper;
 
@@ -29,6 +31,7 @@ import java.util.Map;
  * @see Entry
  * @generated
  */
+@ProviderType
 public class EntryWrapper implements Entry, ModelWrapper<Entry> {
 	public EntryWrapper(Entry entry) {
 		_entry = entry;
@@ -399,14 +402,6 @@ public class EntryWrapper implements Entry, ModelWrapper<Entry> {
 		return false;
 	}
 
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedModel}
-	 */
-	@Deprecated
-	public Entry getWrappedEntry() {
-		return _entry;
-	}
-
 	@Override
 	public Entry getWrappedModel() {
 		return _entry;
@@ -427,5 +422,5 @@ public class EntryWrapper implements Entry, ModelWrapper<Entry> {
 		_entry.resetOriginalValues();
 	}
 
-	private Entry _entry;
+	private final Entry _entry;
 }

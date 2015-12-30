@@ -221,14 +221,19 @@ public class SyncDLFileVersionDiffLocalServiceWrapper
 		return _syncDLFileVersionDiffLocalService.getActionableDynamicQuery();
 	}
 
+	@Override
+	public com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery getIndexableActionableDynamicQuery() {
+		return _syncDLFileVersionDiffLocalService.getIndexableActionableDynamicQuery();
+	}
+
 	/**
-	* Returns the Spring bean ID for this bean.
+	* Returns the OSGi service identifier.
 	*
-	* @return the Spring bean ID for this bean
+	* @return the OSGi service identifier
 	*/
 	@Override
-	public java.lang.String getBeanIdentifier() {
-		return _syncDLFileVersionDiffLocalService.getBeanIdentifier();
+	public java.lang.String getOSGiServiceIdentifier() {
+		return _syncDLFileVersionDiffLocalService.getOSGiServiceIdentifier();
 	}
 
 	@Override
@@ -295,16 +300,6 @@ public class SyncDLFileVersionDiffLocalServiceWrapper
 	}
 
 	/**
-	* Sets the Spring bean ID for this bean.
-	*
-	* @param beanIdentifier the Spring bean ID for this bean
-	*/
-	@Override
-	public void setBeanIdentifier(java.lang.String beanIdentifier) {
-		_syncDLFileVersionDiffLocalService.setBeanIdentifier(beanIdentifier);
-	}
-
-	/**
 	* Updates the sync d l file version diff in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
 	*
 	* @param syncDLFileVersionDiff the sync d l file version diff
@@ -314,23 +309,6 @@ public class SyncDLFileVersionDiffLocalServiceWrapper
 	public com.liferay.sync.model.SyncDLFileVersionDiff updateSyncDLFileVersionDiff(
 		com.liferay.sync.model.SyncDLFileVersionDiff syncDLFileVersionDiff) {
 		return _syncDLFileVersionDiffLocalService.updateSyncDLFileVersionDiff(syncDLFileVersionDiff);
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedService}
-	 */
-	@Deprecated
-	public SyncDLFileVersionDiffLocalService getWrappedSyncDLFileVersionDiffLocalService() {
-		return _syncDLFileVersionDiffLocalService;
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #setWrappedService}
-	 */
-	@Deprecated
-	public void setWrappedSyncDLFileVersionDiffLocalService(
-		SyncDLFileVersionDiffLocalService syncDLFileVersionDiffLocalService) {
-		_syncDLFileVersionDiffLocalService = syncDLFileVersionDiffLocalService;
 	}
 
 	@Override

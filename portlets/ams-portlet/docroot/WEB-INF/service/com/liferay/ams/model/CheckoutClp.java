@@ -14,6 +14,8 @@
 
 package com.liferay.ams.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.ams.service.CheckoutLocalServiceUtil;
 import com.liferay.ams.service.ClpSerializer;
 
@@ -39,6 +41,7 @@ import java.util.Map;
 /**
  * @author Brian Wing Shun Chan
  */
+@ProviderType
 public class CheckoutClp extends BaseModelImpl<Checkout> implements Checkout {
 	public CheckoutClp() {
 	}

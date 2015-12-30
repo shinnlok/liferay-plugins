@@ -14,6 +14,8 @@
 
 package com.liferay.ams.model;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.ModelWrapper;
 
@@ -29,6 +31,7 @@ import java.util.Map;
  * @see Type
  * @generated
  */
+@ProviderType
 public class TypeWrapper implements Type, ModelWrapper<Type> {
 	public TypeWrapper(Type type) {
 		_type = type;
@@ -278,14 +281,6 @@ public class TypeWrapper implements Type, ModelWrapper<Type> {
 		return false;
 	}
 
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedModel}
-	 */
-	@Deprecated
-	public Type getWrappedType() {
-		return _type;
-	}
-
 	@Override
 	public Type getWrappedModel() {
 		return _type;
@@ -306,5 +301,5 @@ public class TypeWrapper implements Type, ModelWrapper<Type> {
 		_type.resetOriginalValues();
 	}
 
-	private Type _type;
+	private final Type _type;
 }

@@ -14,6 +14,8 @@
 
 package com.liferay.so.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.kernel.bean.PortletBeanLocatorUtil;
 import com.liferay.portal.kernel.util.ReferenceRegistry;
 import com.liferay.portal.service.InvokableService;
@@ -32,6 +34,7 @@ import com.liferay.portal.service.InvokableService;
  * @see com.liferay.so.service.impl.SocialOfficeServiceImpl
  * @generated
  */
+@ProviderType
 public class SocialOfficeServiceUtil {
 	/*
 	 * NOTE FOR DEVELOPERS:
@@ -40,12 +43,12 @@ public class SocialOfficeServiceUtil {
 	 */
 
 	/**
-	* Returns the Spring bean ID for this bean.
+	* Returns the OSGi service identifier.
 	*
-	* @return the Spring bean ID for this bean
+	* @return the OSGi service identifier
 	*/
-	public static java.lang.String getBeanIdentifier() {
-		return getService().getBeanIdentifier();
+	public static java.lang.String getOSGiServiceIdentifier() {
+		return getService().getOSGiServiceIdentifier();
 	}
 
 	public static long[] getUserSocialOfficeGroupIds()
@@ -62,15 +65,6 @@ public class SocialOfficeServiceUtil {
 	public static boolean isSocialOfficeGroup(long groupId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return getService().isSocialOfficeGroup(groupId);
-	}
-
-	/**
-	* Sets the Spring bean ID for this bean.
-	*
-	* @param beanIdentifier the Spring bean ID for this bean
-	*/
-	public static void setBeanIdentifier(java.lang.String beanIdentifier) {
-		getService().setBeanIdentifier(beanIdentifier);
 	}
 
 	public static void clearService() {
@@ -94,13 +88,6 @@ public class SocialOfficeServiceUtil {
 		}
 
 		return _service;
-	}
-
-	/**
-	 * @deprecated As of 6.2.0
-	 */
-	@Deprecated
-	public void setService(SocialOfficeService service) {
 	}
 
 	private static SocialOfficeService _service;

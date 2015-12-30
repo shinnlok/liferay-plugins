@@ -14,6 +14,8 @@
 
 package com.liferay.tasks.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.service.ServiceWrapper;
 
 /**
@@ -23,6 +25,7 @@ import com.liferay.portal.service.ServiceWrapper;
  * @see TasksEntryLocalService
  * @generated
  */
+@ProviderType
 public class TasksEntryLocalServiceWrapper implements TasksEntryLocalService,
 	ServiceWrapper<TasksEntryLocalService> {
 	public TasksEntryLocalServiceWrapper(
@@ -163,10 +166,10 @@ public class TasksEntryLocalServiceWrapper implements TasksEntryLocalService,
 	}
 
 	/**
-	* Returns the number of rows that match the dynamic query.
+	* Returns the number of rows matching the dynamic query.
 	*
 	* @param dynamicQuery the dynamic query
-	* @return the number of rows that match the dynamic query
+	* @return the number of rows matching the dynamic query
 	*/
 	@Override
 	public long dynamicQueryCount(
@@ -175,11 +178,11 @@ public class TasksEntryLocalServiceWrapper implements TasksEntryLocalService,
 	}
 
 	/**
-	* Returns the number of rows that match the dynamic query.
+	* Returns the number of rows matching the dynamic query.
 	*
 	* @param dynamicQuery the dynamic query
 	* @param projection the projection to apply to the query
-	* @return the number of rows that match the dynamic query
+	* @return the number of rows matching the dynamic query
 	*/
 	@Override
 	public long dynamicQueryCount(
@@ -209,16 +212,6 @@ public class TasksEntryLocalServiceWrapper implements TasksEntryLocalService,
 	@Override
 	public int getAssigneeTasksEntriesCount(long assigneeUserId) {
 		return _tasksEntryLocalService.getAssigneeTasksEntriesCount(assigneeUserId);
-	}
-
-	/**
-	* Returns the Spring bean ID for this bean.
-	*
-	* @return the Spring bean ID for this bean
-	*/
-	@Override
-	public java.lang.String getBeanIdentifier() {
-		return _tasksEntryLocalService.getBeanIdentifier();
 	}
 
 	@Override
@@ -260,6 +253,21 @@ public class TasksEntryLocalServiceWrapper implements TasksEntryLocalService,
 	public int getGroupUserTasksEntriesCount(long groupId, long userId) {
 		return _tasksEntryLocalService.getGroupUserTasksEntriesCount(groupId,
 			userId);
+	}
+
+	@Override
+	public com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery getIndexableActionableDynamicQuery() {
+		return _tasksEntryLocalService.getIndexableActionableDynamicQuery();
+	}
+
+	/**
+	* Returns the OSGi service identifier.
+	*
+	* @return the OSGi service identifier
+	*/
+	@Override
+	public java.lang.String getOSGiServiceIdentifier() {
+		return _tasksEntryLocalService.getOSGiServiceIdentifier();
 	}
 
 	@Override
@@ -369,16 +377,6 @@ public class TasksEntryLocalServiceWrapper implements TasksEntryLocalService,
 			arguments);
 	}
 
-	/**
-	* Sets the Spring bean ID for this bean.
-	*
-	* @param beanIdentifier the Spring bean ID for this bean
-	*/
-	@Override
-	public void setBeanIdentifier(java.lang.String beanIdentifier) {
-		_tasksEntryLocalService.setBeanIdentifier(beanIdentifier);
-	}
-
 	@Override
 	public void updateAsset(long userId,
 		com.liferay.tasks.model.TasksEntry tasksEntry, long[] assetCategoryIds,
@@ -421,23 +419,6 @@ public class TasksEntryLocalServiceWrapper implements TasksEntryLocalService,
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _tasksEntryLocalService.updateTasksEntryStatus(tasksEntryId,
 			resolverUserId, status, serviceContext);
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #getWrappedService}
-	 */
-	@Deprecated
-	public TasksEntryLocalService getWrappedTasksEntryLocalService() {
-		return _tasksEntryLocalService;
-	}
-
-	/**
-	 * @deprecated As of 6.1.0, replaced by {@link #setWrappedService}
-	 */
-	@Deprecated
-	public void setWrappedTasksEntryLocalService(
-		TasksEntryLocalService tasksEntryLocalService) {
-		_tasksEntryLocalService = tasksEntryLocalService;
 	}
 
 	@Override

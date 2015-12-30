@@ -14,12 +14,15 @@
 
 package com.liferay.testpacl.service;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.portal.service.InvokableLocalService;
 
 /**
  * @author Brian Wing Shun Chan
  * @generated
  */
+@ProviderType
 public class FooLocalServiceClp implements FooLocalService {
 	public FooLocalServiceClp(InvokableLocalService invokableLocalService) {
 		_invokableLocalService = invokableLocalService;
@@ -90,97 +93,97 @@ public class FooLocalServiceClp implements FooLocalService {
 
 		_methodParameterTypes12 = new String[] {  };
 
-		_methodName13 = "getBeanIdentifier";
+		_methodName13 = "getCompanyPersistence_FindByPrimaryKey";
 
-		_methodParameterTypes13 = new String[] {  };
+		_methodParameterTypes13 = new String[] { "long" };
 
-		_methodName14 = "getCompanyPersistence_FindByPrimaryKey";
+		_methodName14 = "getCompanyUtil_FindByPrimaryKey";
 
 		_methodParameterTypes14 = new String[] { "long" };
 
-		_methodName15 = "getCompanyUtil_FindByPrimaryKey";
+		_methodName15 = "getEntryLocalServiceUtil_GetEntries";
 
-		_methodParameterTypes15 = new String[] { "long" };
+		_methodParameterTypes15 = new String[] { "int", "int" };
 
-		_methodName16 = "getEntryLocalServiceUtil_GetEntries";
+		_methodName16 = "getEntryLocalServiceUtil_GetEntry";
 
-		_methodParameterTypes16 = new String[] { "int", "int" };
+		_methodParameterTypes16 = new String[] { "long" };
 
-		_methodName17 = "getEntryLocalServiceUtil_GetEntry";
+		_methodName17 = "getFoo";
 
 		_methodParameterTypes17 = new String[] { "long" };
 
-		_methodName18 = "getFoo";
+		_methodName18 = "getFoos";
 
-		_methodParameterTypes18 = new String[] { "long" };
+		_methodParameterTypes18 = new String[] { "int", "int" };
 
-		_methodName19 = "getFoos";
+		_methodName19 = "getFoosCount";
 
-		_methodParameterTypes19 = new String[] { "int", "int" };
+		_methodParameterTypes19 = new String[] {  };
 
-		_methodName20 = "getFoosCount";
+		_methodName20 = "getGroupPersistence_FindByPrimaryKey";
 
-		_methodParameterTypes20 = new String[] {  };
+		_methodParameterTypes20 = new String[] { "long" };
 
-		_methodName21 = "getGroupPersistence_FindByPrimaryKey";
+		_methodName21 = "getGroupUtil_FindByPrimaryKey";
 
 		_methodParameterTypes21 = new String[] { "long" };
 
-		_methodName22 = "getGroupUtil_FindByPrimaryKey";
+		_methodName22 = "getIndexableActionableDynamicQuery";
 
-		_methodParameterTypes22 = new String[] { "long" };
+		_methodParameterTypes22 = new String[] {  };
 
-		_methodName23 = "getPersistedModel";
+		_methodName23 = "getOSGiServiceIdentifier";
 
-		_methodParameterTypes23 = new String[] { "java.io.Serializable" };
+		_methodParameterTypes23 = new String[] {  };
 
-		_methodName24 = "getPortalServiceUtil_GetBuildNumber";
+		_methodName24 = "getPersistedModel";
 
-		_methodParameterTypes24 = new String[] {  };
+		_methodParameterTypes24 = new String[] { "java.io.Serializable" };
 
-		_methodName25 = "getPortalServiceUtil_TestGetBuildNumber";
+		_methodName25 = "getPortalServiceUtil_GetBuildNumber";
 
 		_methodParameterTypes25 = new String[] {  };
 
-		_methodName26 = "getPortalServiceUtil_TestHasClassName";
+		_methodName26 = "getPortalServiceUtil_TestGetBuildNumber";
 
 		_methodParameterTypes26 = new String[] {  };
 
-		_methodName27 = "getPortalService_GetBuildNumber";
+		_methodName27 = "getPortalServiceUtil_TestHasClassName";
 
 		_methodParameterTypes27 = new String[] {  };
 
-		_methodName28 = "getPortalService_TestGetBuildNumber";
+		_methodName28 = "getPortalService_GetBuildNumber";
 
 		_methodParameterTypes28 = new String[] {  };
 
-		_methodName29 = "getPortalService_TestHasClassName";
+		_methodName29 = "getPortalService_TestGetBuildNumber";
 
 		_methodParameterTypes29 = new String[] {  };
 
-		_methodName30 = "getReleaseInfo_GetBuildNumber";
+		_methodName30 = "getPortalService_TestHasClassName";
 
 		_methodParameterTypes30 = new String[] {  };
 
-		_methodName31 = "getStatusLocalServiceUtil_GetStatus";
+		_methodName31 = "getReleaseInfo_GetBuildNumber";
 
-		_methodParameterTypes31 = new String[] { "long" };
+		_methodParameterTypes31 = new String[] {  };
 
-		_methodName32 = "getStatusLocalServiceUtil_GetStatuses";
+		_methodName32 = "getStatusLocalServiceUtil_GetStatus";
 
-		_methodParameterTypes32 = new String[] { "int", "int" };
+		_methodParameterTypes32 = new String[] { "long" };
 
-		_methodName33 = "getUserPersistence_FindByPrimaryKey";
+		_methodName33 = "getStatusLocalServiceUtil_GetStatuses";
 
-		_methodParameterTypes33 = new String[] { "long" };
+		_methodParameterTypes33 = new String[] { "int", "int" };
 
-		_methodName34 = "getUserUtil_FindByPrimaryKey";
+		_methodName34 = "getUserPersistence_FindByPrimaryKey";
 
 		_methodParameterTypes34 = new String[] { "long" };
 
-		_methodName36 = "setBeanIdentifier";
+		_methodName35 = "getUserUtil_FindByPrimaryKey";
 
-		_methodParameterTypes36 = new String[] { "java.lang.String" };
+		_methodParameterTypes35 = new String[] { "long" };
 
 		_methodName37 = "updateFoo";
 
@@ -535,15 +538,21 @@ public class FooLocalServiceClp implements FooLocalService {
 	}
 
 	@Override
-	public java.lang.String getBeanIdentifier() {
+	public com.liferay.portal.model.Company getCompanyPersistence_FindByPrimaryKey(
+		long companyId)
+		throws com.liferay.portal.kernel.exception.PortalException {
 		Object returnObj = null;
 
 		try {
 			returnObj = _invokableLocalService.invokeMethod(_methodName13,
-					_methodParameterTypes13, new Object[] {  });
+					_methodParameterTypes13, new Object[] { companyId });
 		}
 		catch (Throwable t) {
 			t = ClpSerializer.translateThrowable(t);
+
+			if (t instanceof com.liferay.portal.kernel.exception.PortalException) {
+				throw (com.liferay.portal.kernel.exception.PortalException)t;
+			}
 
 			if (t instanceof RuntimeException) {
 				throw (RuntimeException)t;
@@ -554,11 +563,11 @@ public class FooLocalServiceClp implements FooLocalService {
 			}
 		}
 
-		return (java.lang.String)ClpSerializer.translateOutput(returnObj);
+		return (com.liferay.portal.model.Company)ClpSerializer.translateOutput(returnObj);
 	}
 
 	@Override
-	public com.liferay.portal.model.Company getCompanyPersistence_FindByPrimaryKey(
+	public com.liferay.portal.model.Company getCompanyUtil_FindByPrimaryKey(
 		long companyId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		Object returnObj = null;
@@ -587,42 +596,13 @@ public class FooLocalServiceClp implements FooLocalService {
 	}
 
 	@Override
-	public com.liferay.portal.model.Company getCompanyUtil_FindByPrimaryKey(
-		long companyId)
-		throws com.liferay.portal.kernel.exception.PortalException {
-		Object returnObj = null;
-
-		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName15,
-					_methodParameterTypes15, new Object[] { companyId });
-		}
-		catch (Throwable t) {
-			t = ClpSerializer.translateThrowable(t);
-
-			if (t instanceof com.liferay.portal.kernel.exception.PortalException) {
-				throw (com.liferay.portal.kernel.exception.PortalException)t;
-			}
-
-			if (t instanceof RuntimeException) {
-				throw (RuntimeException)t;
-			}
-			else {
-				throw new RuntimeException(t.getClass().getName() +
-					" is not a valid exception");
-			}
-		}
-
-		return (com.liferay.portal.model.Company)ClpSerializer.translateOutput(returnObj);
-	}
-
-	@Override
 	public java.util.List<com.liferay.chat.model.Entry> getEntryLocalServiceUtil_GetEntries(
 		int start, int end) {
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName16,
-					_methodParameterTypes16, new Object[] { start, end });
+			returnObj = _invokableLocalService.invokeMethod(_methodName15,
+					_methodParameterTypes15, new Object[] { start, end });
 		}
 		catch (Throwable t) {
 			t = ClpSerializer.translateThrowable(t);
@@ -646,8 +626,8 @@ public class FooLocalServiceClp implements FooLocalService {
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName17,
-					_methodParameterTypes17, new Object[] { entryId });
+			returnObj = _invokableLocalService.invokeMethod(_methodName16,
+					_methodParameterTypes16, new Object[] { entryId });
 		}
 		catch (Throwable t) {
 			t = ClpSerializer.translateThrowable(t);
@@ -674,8 +654,8 @@ public class FooLocalServiceClp implements FooLocalService {
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName18,
-					_methodParameterTypes18, new Object[] { fooId });
+			returnObj = _invokableLocalService.invokeMethod(_methodName17,
+					_methodParameterTypes17, new Object[] { fooId });
 		}
 		catch (Throwable t) {
 			t = ClpSerializer.translateThrowable(t);
@@ -702,8 +682,8 @@ public class FooLocalServiceClp implements FooLocalService {
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName19,
-					_methodParameterTypes19, new Object[] { start, end });
+			returnObj = _invokableLocalService.invokeMethod(_methodName18,
+					_methodParameterTypes18, new Object[] { start, end });
 		}
 		catch (Throwable t) {
 			t = ClpSerializer.translateThrowable(t);
@@ -725,8 +705,8 @@ public class FooLocalServiceClp implements FooLocalService {
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName20,
-					_methodParameterTypes20, new Object[] {  });
+			returnObj = _invokableLocalService.invokeMethod(_methodName19,
+					_methodParameterTypes19, new Object[] {  });
 		}
 		catch (Throwable t) {
 			t = ClpSerializer.translateThrowable(t);
@@ -745,6 +725,35 @@ public class FooLocalServiceClp implements FooLocalService {
 
 	@Override
 	public com.liferay.portal.model.Group getGroupPersistence_FindByPrimaryKey(
+		long groupId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		Object returnObj = null;
+
+		try {
+			returnObj = _invokableLocalService.invokeMethod(_methodName20,
+					_methodParameterTypes20, new Object[] { groupId });
+		}
+		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
+			if (t instanceof com.liferay.portal.kernel.exception.PortalException) {
+				throw (com.liferay.portal.kernel.exception.PortalException)t;
+			}
+
+			if (t instanceof RuntimeException) {
+				throw (RuntimeException)t;
+			}
+			else {
+				throw new RuntimeException(t.getClass().getName() +
+					" is not a valid exception");
+			}
+		}
+
+		return (com.liferay.portal.model.Group)ClpSerializer.translateOutput(returnObj);
+	}
+
+	@Override
+	public com.liferay.portal.model.Group getGroupUtil_FindByPrimaryKey(
 		long groupId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		Object returnObj = null;
@@ -773,21 +782,15 @@ public class FooLocalServiceClp implements FooLocalService {
 	}
 
 	@Override
-	public com.liferay.portal.model.Group getGroupUtil_FindByPrimaryKey(
-		long groupId)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery getIndexableActionableDynamicQuery() {
 		Object returnObj = null;
 
 		try {
 			returnObj = _invokableLocalService.invokeMethod(_methodName22,
-					_methodParameterTypes22, new Object[] { groupId });
+					_methodParameterTypes22, new Object[] {  });
 		}
 		catch (Throwable t) {
 			t = ClpSerializer.translateThrowable(t);
-
-			if (t instanceof com.liferay.portal.kernel.exception.PortalException) {
-				throw (com.liferay.portal.kernel.exception.PortalException)t;
-			}
 
 			if (t instanceof RuntimeException) {
 				throw (RuntimeException)t;
@@ -798,7 +801,30 @@ public class FooLocalServiceClp implements FooLocalService {
 			}
 		}
 
-		return (com.liferay.portal.model.Group)ClpSerializer.translateOutput(returnObj);
+		return (com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery)ClpSerializer.translateOutput(returnObj);
+	}
+
+	@Override
+	public java.lang.String getOSGiServiceIdentifier() {
+		Object returnObj = null;
+
+		try {
+			returnObj = _invokableLocalService.invokeMethod(_methodName23,
+					_methodParameterTypes23, new Object[] {  });
+		}
+		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
+			if (t instanceof RuntimeException) {
+				throw (RuntimeException)t;
+			}
+			else {
+				throw new RuntimeException(t.getClass().getName() +
+					" is not a valid exception");
+			}
+		}
+
+		return (java.lang.String)ClpSerializer.translateOutput(returnObj);
 	}
 
 	@Override
@@ -808,8 +834,8 @@ public class FooLocalServiceClp implements FooLocalService {
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName23,
-					_methodParameterTypes23,
+			returnObj = _invokableLocalService.invokeMethod(_methodName24,
+					_methodParameterTypes24,
 					new Object[] { ClpSerializer.translateInput(primaryKeyObj) });
 		}
 		catch (Throwable t) {
@@ -836,8 +862,8 @@ public class FooLocalServiceClp implements FooLocalService {
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName24,
-					_methodParameterTypes24, new Object[] {  });
+			returnObj = _invokableLocalService.invokeMethod(_methodName25,
+					_methodParameterTypes25, new Object[] {  });
 		}
 		catch (Throwable t) {
 			t = ClpSerializer.translateThrowable(t);
@@ -859,8 +885,8 @@ public class FooLocalServiceClp implements FooLocalService {
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName25,
-					_methodParameterTypes25, new Object[] {  });
+			returnObj = _invokableLocalService.invokeMethod(_methodName26,
+					_methodParameterTypes26, new Object[] {  });
 		}
 		catch (Throwable t) {
 			t = ClpSerializer.translateThrowable(t);
@@ -882,8 +908,8 @@ public class FooLocalServiceClp implements FooLocalService {
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName26,
-					_methodParameterTypes26, new Object[] {  });
+			returnObj = _invokableLocalService.invokeMethod(_methodName27,
+					_methodParameterTypes27, new Object[] {  });
 		}
 		catch (Throwable t) {
 			t = ClpSerializer.translateThrowable(t);
@@ -902,29 +928,6 @@ public class FooLocalServiceClp implements FooLocalService {
 
 	@Override
 	public int getPortalService_GetBuildNumber() {
-		Object returnObj = null;
-
-		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName27,
-					_methodParameterTypes27, new Object[] {  });
-		}
-		catch (Throwable t) {
-			t = ClpSerializer.translateThrowable(t);
-
-			if (t instanceof RuntimeException) {
-				throw (RuntimeException)t;
-			}
-			else {
-				throw new RuntimeException(t.getClass().getName() +
-					" is not a valid exception");
-			}
-		}
-
-		return ((Integer)returnObj).intValue();
-	}
-
-	@Override
-	public int getPortalService_TestGetBuildNumber() {
 		Object returnObj = null;
 
 		try {
@@ -947,12 +950,35 @@ public class FooLocalServiceClp implements FooLocalService {
 	}
 
 	@Override
-	public boolean getPortalService_TestHasClassName() {
+	public int getPortalService_TestGetBuildNumber() {
 		Object returnObj = null;
 
 		try {
 			returnObj = _invokableLocalService.invokeMethod(_methodName29,
 					_methodParameterTypes29, new Object[] {  });
+		}
+		catch (Throwable t) {
+			t = ClpSerializer.translateThrowable(t);
+
+			if (t instanceof RuntimeException) {
+				throw (RuntimeException)t;
+			}
+			else {
+				throw new RuntimeException(t.getClass().getName() +
+					" is not a valid exception");
+			}
+		}
+
+		return ((Integer)returnObj).intValue();
+	}
+
+	@Override
+	public boolean getPortalService_TestHasClassName() {
+		Object returnObj = null;
+
+		try {
+			returnObj = _invokableLocalService.invokeMethod(_methodName30,
+					_methodParameterTypes30, new Object[] {  });
 		}
 		catch (Throwable t) {
 			t = ClpSerializer.translateThrowable(t);
@@ -974,8 +1000,8 @@ public class FooLocalServiceClp implements FooLocalService {
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName30,
-					_methodParameterTypes30, new Object[] {  });
+			returnObj = _invokableLocalService.invokeMethod(_methodName31,
+					_methodParameterTypes31, new Object[] {  });
 		}
 		catch (Throwable t) {
 			t = ClpSerializer.translateThrowable(t);
@@ -999,8 +1025,8 @@ public class FooLocalServiceClp implements FooLocalService {
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName31,
-					_methodParameterTypes31, new Object[] { statusId });
+			returnObj = _invokableLocalService.invokeMethod(_methodName32,
+					_methodParameterTypes32, new Object[] { statusId });
 		}
 		catch (Throwable t) {
 			t = ClpSerializer.translateThrowable(t);
@@ -1027,8 +1053,8 @@ public class FooLocalServiceClp implements FooLocalService {
 		Object returnObj = null;
 
 		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName32,
-					_methodParameterTypes32, new Object[] { start, end });
+			returnObj = _invokableLocalService.invokeMethod(_methodName33,
+					_methodParameterTypes33, new Object[] { start, end });
 		}
 		catch (Throwable t) {
 			t = ClpSerializer.translateThrowable(t);
@@ -1047,34 +1073,6 @@ public class FooLocalServiceClp implements FooLocalService {
 
 	@Override
 	public com.liferay.portal.model.User getUserPersistence_FindByPrimaryKey(
-		long userId) throws com.liferay.portal.kernel.exception.PortalException {
-		Object returnObj = null;
-
-		try {
-			returnObj = _invokableLocalService.invokeMethod(_methodName33,
-					_methodParameterTypes33, new Object[] { userId });
-		}
-		catch (Throwable t) {
-			t = ClpSerializer.translateThrowable(t);
-
-			if (t instanceof com.liferay.portal.kernel.exception.PortalException) {
-				throw (com.liferay.portal.kernel.exception.PortalException)t;
-			}
-
-			if (t instanceof RuntimeException) {
-				throw (RuntimeException)t;
-			}
-			else {
-				throw new RuntimeException(t.getClass().getName() +
-					" is not a valid exception");
-			}
-		}
-
-		return (com.liferay.portal.model.User)ClpSerializer.translateOutput(returnObj);
-	}
-
-	@Override
-	public com.liferay.portal.model.User getUserUtil_FindByPrimaryKey(
 		long userId) throws com.liferay.portal.kernel.exception.PortalException {
 		Object returnObj = null;
 
@@ -1102,21 +1100,20 @@ public class FooLocalServiceClp implements FooLocalService {
 	}
 
 	@Override
-	public java.lang.Object invokeMethod(java.lang.String name,
-		java.lang.String[] parameterTypes, java.lang.Object[] arguments)
-		throws java.lang.Throwable {
-		throw new UnsupportedOperationException();
-	}
+	public com.liferay.portal.model.User getUserUtil_FindByPrimaryKey(
+		long userId) throws com.liferay.portal.kernel.exception.PortalException {
+		Object returnObj = null;
 
-	@Override
-	public void setBeanIdentifier(java.lang.String beanIdentifier) {
 		try {
-			_invokableLocalService.invokeMethod(_methodName36,
-				_methodParameterTypes36,
-				new Object[] { ClpSerializer.translateInput(beanIdentifier) });
+			returnObj = _invokableLocalService.invokeMethod(_methodName35,
+					_methodParameterTypes35, new Object[] { userId });
 		}
 		catch (Throwable t) {
 			t = ClpSerializer.translateThrowable(t);
+
+			if (t instanceof com.liferay.portal.kernel.exception.PortalException) {
+				throw (com.liferay.portal.kernel.exception.PortalException)t;
+			}
 
 			if (t instanceof RuntimeException) {
 				throw (RuntimeException)t;
@@ -1126,6 +1123,15 @@ public class FooLocalServiceClp implements FooLocalService {
 					" is not a valid exception");
 			}
 		}
+
+		return (com.liferay.portal.model.User)ClpSerializer.translateOutput(returnObj);
+	}
+
+	@Override
+	public java.lang.Object invokeMethod(java.lang.String name,
+		java.lang.String[] parameterTypes, java.lang.Object[] arguments)
+		throws java.lang.Throwable {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -1224,8 +1230,8 @@ public class FooLocalServiceClp implements FooLocalService {
 	private String[] _methodParameterTypes33;
 	private String _methodName34;
 	private String[] _methodParameterTypes34;
-	private String _methodName36;
-	private String[] _methodParameterTypes36;
+	private String _methodName35;
+	private String[] _methodParameterTypes35;
 	private String _methodName37;
 	private String[] _methodParameterTypes37;
 }
