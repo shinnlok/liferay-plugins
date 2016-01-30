@@ -28,8 +28,8 @@ import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portlet.documentlibrary.model.DLFileEntry;
 import com.liferay.portlet.documentlibrary.model.DLFolderConstants;
-import com.liferay.sync.model.SyncConstants;
 import com.liferay.sync.model.SyncDLObject;
+import com.liferay.sync.model.SyncDLObjectConstants;
 import com.liferay.sync.service.base.SyncDLObjectLocalServiceBaseImpl;
 import com.liferay.sync.util.PortletPropsValues;
 
@@ -73,10 +73,10 @@ public class SyncDLObjectLocalServiceImpl
 			syncDLObject.setTypePK(typePK);
 			syncDLObject.setTypeUuid(typeUuid);
 
-			if (type.equals(SyncConstants.TYPE_PRIVATE_WORKING_COPY)) {
+			if (type.equals(SyncDLObjectConstants.TYPE_PRIVATE_WORKING_COPY)) {
 				SyncDLObject approvedSyncDLObject =
 					syncDLObjectPersistence.fetchByT_T(
-						SyncConstants.TYPE_FILE, typePK);
+						SyncDLObjectConstants.TYPE_FILE, typePK);
 
 				approvedSyncDLObject.setModifiedTime(modifiedTime);
 				approvedSyncDLObject.setLockExpirationDate(lockExpirationDate);
@@ -89,9 +89,9 @@ public class SyncDLObjectLocalServiceImpl
 		else if (syncDLObject.getModifiedTime() >= modifiedTime) {
 			return null;
 		}
-		else if (type.equals(SyncConstants.TYPE_FILE)) {
+		else if (type.equals(SyncDLObjectConstants.TYPE_FILE)) {
 			SyncDLObject pwcSyncDLObject = syncDLObjectPersistence.fetchByT_T(
-				SyncConstants.TYPE_PRIVATE_WORKING_COPY, typePK);
+				SyncDLObjectConstants.TYPE_PRIVATE_WORKING_COPY, typePK);
 
 			if (pwcSyncDLObject != null) {
 				DLFileEntry dlFileEntry =
@@ -102,13 +102,13 @@ public class SyncDLObjectLocalServiceImpl
 				}
 			}
 		}
-		else if (type.equals(SyncConstants.TYPE_PRIVATE_WORKING_COPY)) {
-			if (event.equals(SyncConstants.EVENT_RESTORE) ||
-				event.equals(SyncConstants.EVENT_TRASH)) {
+		else if (type.equals(SyncDLObjectConstants.TYPE_PRIVATE_WORKING_COPY)) {
+			if (event.equals(SyncDLObjectConstants.EVENT_RESTORE) ||
+				event.equals(SyncDLObjectConstants.EVENT_TRASH)) {
 
 				SyncDLObject approvedSyncDLObject =
 					syncDLObjectPersistence.fetchByT_T(
-						SyncConstants.TYPE_FILE, typePK);
+						SyncDLObjectConstants.TYPE_FILE, typePK);
 
 				approvedSyncDLObject.setEvent(event);
 
@@ -137,14 +137,14 @@ public class SyncDLObjectLocalServiceImpl
 
 		syncDLObject = syncDLObjectPersistence.update(syncDLObject);
 
-		if (type.equals(SyncConstants.TYPE_FILE) &&
+		if (type.equals(SyncDLObjectConstants.TYPE_FILE) &&
 			ArrayUtil.contains(
 				PortletPropsValues.SYNC_MAC_PACKAGE_METADATA_FILE_NAMES,
 				syncDLObject.getName())) {
 
 			SyncDLObject parentFolderSyncDLObject =
 				syncDLObjectPersistence.fetchByT_T(
-					SyncConstants.TYPE_FOLDER,
+					SyncDLObjectConstants.TYPE_FOLDER,
 					syncDLObject.getParentFolderId());
 
 			String parentFolderExtension = FileUtil.getExtension(
@@ -167,9 +167,9 @@ public class SyncDLObjectLocalServiceImpl
 			}
 		}
 
-		if ((event.equals(SyncConstants.EVENT_DELETE) ||
-			 event.equals(SyncConstants.EVENT_TRASH)) &&
-			!type.equals(SyncConstants.TYPE_FOLDER)) {
+		if ((event.equals(SyncDLObjectConstants.EVENT_DELETE) ||
+			 event.equals(SyncDLObjectConstants.EVENT_TRASH)) &&
+			!type.equals(SyncDLObjectConstants.TYPE_FOLDER)) {
 
 			try {
 				syncDLFileVersionDiffLocalService.deleteSyncDLFileVersionDiffs(

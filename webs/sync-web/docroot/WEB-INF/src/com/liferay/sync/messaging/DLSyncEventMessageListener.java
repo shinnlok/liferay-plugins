@@ -32,8 +32,8 @@ import com.liferay.portlet.documentlibrary.model.DLSyncEvent;
 import com.liferay.portlet.documentlibrary.service.DLAppLocalServiceUtil;
 import com.liferay.portlet.documentlibrary.service.DLAppServiceUtil;
 import com.liferay.portlet.documentlibrary.service.DLSyncEventLocalServiceUtil;
-import com.liferay.sync.model.SyncConstants;
 import com.liferay.sync.model.SyncDLObject;
+import com.liferay.sync.model.SyncDLObjectConstants;
 import com.liferay.sync.service.SyncDLObjectLocalServiceUtil;
 import com.liferay.sync.util.SyncUtil;
 
@@ -105,7 +105,7 @@ public class DLSyncEventMessageListener extends BaseMessageListener {
 			long modifiedTime, String event, String type, long typePK)
 		throws Exception {
 
-		if (event.equals(SyncConstants.EVENT_DELETE)) {
+		if (event.equals(SyncDLObjectConstants.EVENT_DELETE)) {
 			long userId = 0;
 			String userName = StringPool.BLANK;
 
@@ -131,7 +131,7 @@ public class DLSyncEventMessageListener extends BaseMessageListener {
 
 		SyncDLObject syncDLObject = null;
 
-		if (type.equals(SyncConstants.TYPE_FILE)) {
+		if (type.equals(SyncDLObjectConstants.TYPE_FILE)) {
 			FileEntry fileEntry = null;
 
 			try {
@@ -164,8 +164,8 @@ public class DLSyncEventMessageListener extends BaseMessageListener {
 
 		addSyncDLObject(syncDLObject);
 
-		if (event.equals(SyncConstants.EVENT_RESTORE) &&
-			type.equals(SyncConstants.TYPE_FOLDER)) {
+		if (event.equals(SyncDLObjectConstants.EVENT_RESTORE) &&
+			type.equals(SyncDLObjectConstants.TYPE_FOLDER)) {
 
 			restoreFolder(
 				syncDLObject.getRepositoryId(), syncDLObject.getTypePK(),
@@ -195,7 +195,7 @@ public class DLSyncEventMessageListener extends BaseMessageListener {
 					(FileEntry)folderAndFileEntryAndFileShortcut;
 
 				syncDLObject = SyncUtil.toSyncDLObject(
-					fileEntry, SyncConstants.EVENT_RESTORE, true);
+					fileEntry, SyncDLObjectConstants.EVENT_RESTORE, true);
 			}
 			else if (folderAndFileEntryAndFileShortcut instanceof Folder) {
 				folder = (Folder)folderAndFileEntryAndFileShortcut;
@@ -205,7 +205,7 @@ public class DLSyncEventMessageListener extends BaseMessageListener {
 				}
 
 				syncDLObject = SyncUtil.toSyncDLObject(
-					folder, SyncConstants.EVENT_RESTORE);
+					folder, SyncDLObjectConstants.EVENT_RESTORE);
 			}
 
 			syncDLObject.setUserId(userId);
