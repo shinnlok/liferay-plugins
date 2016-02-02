@@ -55,7 +55,9 @@ import com.liferay.portlet.documentlibrary.service.DLFileEntryLocalServiceUtil;
 import com.liferay.portlet.documentlibrary.service.DLFileVersionLocalServiceUtil;
 import com.liferay.sync.SyncSiteUnavailableException;
 import com.liferay.sync.model.SyncDLFileVersionDiff;
+import com.liferay.sync.model.SyncDevice;
 import com.liferay.sync.service.SyncDLFileVersionDiffLocalServiceUtil;
+import com.liferay.sync.service.SyncDeviceLocalServiceUtil;
 import com.liferay.sync.util.PortletPropsValues;
 import com.liferay.sync.util.SyncUtil;
 
@@ -83,6 +85,19 @@ public class DownloadServlet extends HttpServlet {
 		throws IOException, ServletException {
 
 		try {
+			String syncUuid = request.getHeader("Sync-UUID");
+
+			if (syncUuid != null) {
+				SyncDevice syncDevice =
+					SyncDeviceLocalServiceUtil.
+						fetchSyncDeviceByUuidAndCompanyId(
+							syncUuid, PortalUtil.getCompanyId(request));
+
+				if (syncDevice != null) {
+					syncDevice.checkStatus();
+				}
+			}
+
 			HttpSession session = request.getSession();
 
 			if (PortalSessionThreadLocal.getHttpSession() == null) {
@@ -136,7 +151,7 @@ public class DownloadServlet extends HttpServlet {
 			}
 			else {
 				long groupId = GetterUtil.getLong(pathArray[0]);
-				String uuid = pathArray[1];
+				String fileUuid = pathArray[1];
 
 				Group group = GroupLocalServiceUtil.fetchGroup(groupId);
 
@@ -154,11 +169,11 @@ public class DownloadServlet extends HttpServlet {
 
 				if (patch) {
 					sendPatch(
-						request, response, user.getUserId(), groupId, uuid);
+						request, response, user.getUserId(), groupId, fileUuid);
 				}
 				else {
 					sendFile(
-						request, response, user.getUserId(), groupId, uuid);
+						request, response, user.getUserId(), groupId, fileUuid);
 				}
 			}
 		}
