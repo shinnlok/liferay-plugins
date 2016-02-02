@@ -18,9 +18,9 @@ import aQute.bnd.annotation.ProviderType;
 
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.security.auth.HttpPrincipal;
 import com.liferay.portal.kernel.util.MethodHandler;
 import com.liferay.portal.kernel.util.MethodKey;
-import com.liferay.portal.security.auth.HttpPrincipal;
 import com.liferay.portal.service.http.TunnelUtil;
 
 import com.liferay.sync.service.SyncDLObjectServiceUtil;
@@ -526,7 +526,8 @@ public class SyncDLObjectServiceHttp {
 		}
 	}
 
-	public static long getLatestModifiedTime(HttpPrincipal httpPrincipal) {
+	public static long getLatestModifiedTime(HttpPrincipal httpPrincipal)
+		throws com.liferay.portal.kernel.exception.PortalException {
 		try {
 			MethodKey methodKey = new MethodKey(SyncDLObjectServiceUtil.class,
 					"getLatestModifiedTime",
@@ -540,6 +541,10 @@ public class SyncDLObjectServiceHttp {
 				returnObj = TunnelUtil.invoke(httpPrincipal, methodHandler);
 			}
 			catch (Exception e) {
+				if (e instanceof com.liferay.portal.kernel.exception.PortalException) {
+					throw (com.liferay.portal.kernel.exception.PortalException)e;
+				}
+
 				throw new com.liferay.portal.kernel.exception.SystemException(e);
 			}
 

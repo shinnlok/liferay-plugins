@@ -15,25 +15,22 @@
 package com.liferay.sync.messaging;
 
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
-import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.messaging.BaseMessageListener;
 import com.liferay.portal.kernel.messaging.Message;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.Folder;
+import com.liferay.portal.kernel.security.permission.PermissionChecker;
+import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.model.User;
-import com.liferay.portal.security.permission.PermissionChecker;
-import com.liferay.portal.security.permission.PermissionThreadLocal;
 import com.liferay.portlet.documentlibrary.exception.NoSuchFileEntryException;
 import com.liferay.portlet.documentlibrary.exception.NoSuchFolderException;
 import com.liferay.portlet.documentlibrary.model.DLSyncEvent;
 import com.liferay.portlet.documentlibrary.service.DLAppLocalServiceUtil;
-import com.liferay.portlet.documentlibrary.service.DLAppServiceUtil;
 import com.liferay.portlet.documentlibrary.service.DLSyncEventLocalServiceUtil;
-import com.liferay.sync.model.SyncConstants;
 import com.liferay.sync.model.SyncDLObject;
+import com.liferay.sync.model.SyncDLObjectConstants;
 import com.liferay.sync.service.SyncDLObjectLocalServiceUtil;
 import com.liferay.sync.util.SyncUtil;
 
@@ -105,7 +102,7 @@ public class DLSyncEventMessageListener extends BaseMessageListener {
 			long modifiedTime, String event, String type, long typePK)
 		throws Exception {
 
-		if (event.equals(SyncConstants.EVENT_DELETE)) {
+		if (event.equals(SyncDLObjectConstants.EVENT_DELETE)) {
 			long userId = 0;
 			String userName = StringPool.BLANK;
 
@@ -131,7 +128,7 @@ public class DLSyncEventMessageListener extends BaseMessageListener {
 
 		SyncDLObject syncDLObject = null;
 
-		if (type.equals(SyncConstants.TYPE_FILE)) {
+		if (type.equals(SyncDLObjectConstants.TYPE_FILE)) {
 			FileEntry fileEntry = null;
 
 			try {
@@ -164,61 +161,38 @@ public class DLSyncEventMessageListener extends BaseMessageListener {
 
 		addSyncDLObject(syncDLObject);
 
-		if (event.equals(SyncConstants.EVENT_RESTORE) &&
-			type.equals(SyncConstants.TYPE_FOLDER)) {
+		if ((event.equals(SyncDLObjectConstants.EVENT_RESTORE) ||
+			 event.equals(SyncDLObjectConstants.EVENT_TRASH)) &&
+			type.equals(SyncDLObjectConstants.TYPE_FOLDER)) {
 
-			restoreFolder(
-				syncDLObject.getRepositoryId(), syncDLObject.getTypePK(),
-				syncDLObject.getUserId(), syncDLObject.getUserName(),
-				modifiedTime);
+			restoreOrTrashFolder(syncDLObject);
 		}
 	}
 
-	protected void restoreFolder(
-			long repositoryId, long folderId, long userId, String userName,
-			long modifiedTime)
+	protected void restoreOrTrashFolder(SyncDLObject parentSyncDLObject)
 		throws Exception {
 
-		List<Object> foldersAndFileEntriesAndFileShortcuts =
-			DLAppServiceUtil.getFoldersAndFileEntriesAndFileShortcuts(
-				repositoryId, folderId, WorkflowConstants.STATUS_APPROVED,
-				false, QueryUtil.ALL_POS, QueryUtil.ALL_POS);
+		DynamicQuery dynamicQuery = SyncDLObjectLocalServiceUtil.dynamicQuery();
 
-		for (Object folderAndFileEntryAndFileShortcut :
-				foldersAndFileEntriesAndFileShortcuts) {
+		dynamicQuery.add(
+			RestrictionsFactoryUtil.ne("event", parentSyncDLObject.getEvent()));
 
-			Folder folder = null;
-			SyncDLObject syncDLObject = null;
+		String treePath = parentSyncDLObject.getTreePath();
 
-			if (folderAndFileEntryAndFileShortcut instanceof FileEntry) {
-				FileEntry fileEntry =
-					(FileEntry)folderAndFileEntryAndFileShortcut;
+		dynamicQuery.add(
+			RestrictionsFactoryUtil.like("treePath", treePath + "%"));
 
-				syncDLObject = SyncUtil.toSyncDLObject(
-					fileEntry, SyncConstants.EVENT_RESTORE, true);
-			}
-			else if (folderAndFileEntryAndFileShortcut instanceof Folder) {
-				folder = (Folder)folderAndFileEntryAndFileShortcut;
+		List<SyncDLObject> childSyncDLObjects =
+			SyncDLObjectLocalServiceUtil.dynamicQuery(dynamicQuery);
 
-				if (!SyncUtil.isSupportedFolder(folder)) {
-					continue;
-				}
+		for (SyncDLObject childSyncDLObject : childSyncDLObjects) {
+			childSyncDLObject.setUserId(parentSyncDLObject.getUserId());
+			childSyncDLObject.setUserName(parentSyncDLObject.getUserName());
+			childSyncDLObject.setModifiedTime(
+				parentSyncDLObject.getModifiedTime());
+			childSyncDLObject.setEvent(parentSyncDLObject.getEvent());
 
-				syncDLObject = SyncUtil.toSyncDLObject(
-					folder, SyncConstants.EVENT_RESTORE);
-			}
-
-			syncDLObject.setUserId(userId);
-			syncDLObject.setUserName(userName);
-			syncDLObject.setModifiedTime(modifiedTime);
-
-			addSyncDLObject(syncDLObject);
-
-			if (folderAndFileEntryAndFileShortcut instanceof Folder) {
-				restoreFolder(
-					repositoryId, folder.getFolderId(), userId, userName,
-					modifiedTime);
-			}
+			addSyncDLObject(childSyncDLObject);
 		}
 	}
 

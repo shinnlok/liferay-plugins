@@ -117,7 +117,7 @@ public interface SyncDLObjectService extends BaseService, InvokableService {
 		throws PortalException;
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public long getLatestModifiedTime();
+	public long getLatestModifiedTime() throws PortalException;
 
 	/**
 	* Returns the OSGi service identifier.

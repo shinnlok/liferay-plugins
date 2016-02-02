@@ -17,9 +17,9 @@
 
 package com.liferay.so.announcements.service.permission;
 
+import com.liferay.announcements.kernel.model.AnnouncementsEntry;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.security.permission.PermissionChecker;
-import com.liferay.portlet.announcements.model.AnnouncementsEntry;
+import com.liferay.portal.kernel.security.permission.PermissionChecker;
 
 /**
  * @author Istvan Andras Dezsi
