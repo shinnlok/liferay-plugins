@@ -63,18 +63,19 @@ public class UpgradeSyncDLObject extends UpgradeProcess {
 		dynamicQuery.add(
 			RestrictionsFactoryUtil.like("treePath", treePath + "%"));
 
-		List<SyncDLObject> syncDLObjects =
+		List<SyncDLObject> childSyncDLObjects =
 			SyncDLObjectLocalServiceUtil.dynamicQuery(dynamicQuery);
 
-		for (SyncDLObject syncDLObject : syncDLObjects) {
-			syncDLObject.setUserId(parentSyncDLObject.getUserId());
-			syncDLObject.setUserName(parentSyncDLObject.getUserName());
-			syncDLObject.setModifiedTime(parentSyncDLObject.getModifiedTime());
-			syncDLObject.setEvent(parentSyncDLObject.getEvent());
+		for (SyncDLObject childSyncDLObject : childSyncDLObjects) {
+			childSyncDLObject.setUserId(parentSyncDLObject.getUserId());
+			childSyncDLObject.setUserName(parentSyncDLObject.getUserName());
+			childSyncDLObject.setModifiedTime(
+				parentSyncDLObject.getModifiedTime());
+			childSyncDLObject.setEvent(parentSyncDLObject.getEvent());
 
-			SyncDLObjectLocalServiceUtil.updateSyncDLObject(syncDLObject);
+			SyncDLObjectLocalServiceUtil.updateSyncDLObject(childSyncDLObject);
 
-			String type = syncDLObject.getType();
+			String type = childSyncDLObject.getType();
 
 			if (type.equals(SyncDLObjectConstants.TYPE_FOLDER)) {
 				continue;
@@ -82,7 +83,7 @@ public class UpgradeSyncDLObject extends UpgradeProcess {
 
 			try {
 				SyncDLFileVersionDiffLocalServiceUtil.
-					deleteSyncDLFileVersionDiffs(syncDLObject.getTypePK());
+					deleteSyncDLFileVersionDiffs(childSyncDLObject.getTypePK());
 			}
 			catch (Exception e) {
 				_log.error(e, e);
