@@ -192,19 +192,7 @@
 		};
 		%>
 
-	com.liferay.portal.kernel.util.PortalClassLoaderUtil#getClassLoader=
-
-		<%
-		new SecurityExceptionTest(out, themeDisplay, true) {
-
-			protected void test() throws Exception {
-				PortalClassLoaderUtil.getClassLoader();
-			}
-
-		};
-		%>
-
-	com.liferay.portal.util.Portal#getClass#getClassLoader=
+	com.liferay.portal.kernel.util.Portal#getClass#getClassLoader=
 
 		<%
 		new SecurityExceptionTest(out, themeDisplay, true) {
@@ -215,6 +203,18 @@
 				Class<?> clazz = portal.getClass();
 
 				clazz.getClassLoader();
+			}
+
+		};
+		%>
+
+	com.liferay.portal.kernel.util.PortalClassLoaderUtil#getClassLoader=
+
+		<%
+		new SecurityExceptionTest(out, themeDisplay, true) {
+
+			protected void test() throws Exception {
+				PortalClassLoaderUtil.getClassLoader();
 			}
 
 		};
